@@ -1,0 +1,194 @@
+App Name: LexoHub
+Tagline: Your Practice, Amplified. The Advocate's Intelligence Platform.
+
+Vision Statement: LexoHub is an integrated ecosystem designed to empower the South African advocate. It moves beyond simple administration to provide predictive intelligence, strategic financial tools, and powerful networking capabilities, enabling advocates to build more profitable, resilient, and transformative practices.
+
+IMPLEMENTATION STATUS LEGEND:
+✅ LIVE - Fully implemented and operational
+🚧 BETA - Implemented but in testing phase
+📋 ROADMAP - Planned for future development
+⚡ ENHANCED - Recently upgraded with new capabilities
+
+=== CURRENT IMPLEMENTATION STATUS (January 2025) ===
+
+Feature Ecosystem
+
+1. Core Engine: Financial Command & Control ✅ LIVE
+The foundational tools to manage your day-to-day finances with unparalleled efficiency.
+
+✅ Rule-Aware Fee Lifecycle: Automatically calculates and tracks the 60/90-day payment timelines with Supabase integration.
+
+✅ Pro Forma Management System: Complete workflow for quote generation, client approval, and conversion to invoices with automated numbering (PF2025XXXX format).
+
+✅ Advanced Invoice Management: Comprehensive invoicing system with payment tracking, status management, and automated reminders.
+
+✅ Professional Automated Reminders: System-driven follow-ups via email integration to preserve client relationships.
+
+📋 Direct Bank Feed Integration: Automatic reconciliation of business accounts for real-time payment verification (planned).
+
+📋 Automated Disbursement Recovery: Track and automatically invoice for all matter-related costs (planned).
+
+2. Matter & Case Intelligence ✅ LIVE
+Go beyond invoicing. Understand the health, risk, and trajectory of every brief you accept.
+
+📋 Settlement Probability Predictor: AI engine for settlement likelihood estimation (roadmap).
+
+✅ Budget vs. Actual Tracking: Real-time matter cost monitoring with WIP alerts.
+
+✅ Automated WIP Reporting: Dashboard summaries of unbilled work across practice.
+
+⚡ Voice-First Time Capture: FULLY IMPLEMENTED with AWS Claude Sonnet 3.5 integration
+   - 90%+ transcription accuracy for legal terminology
+   - Global keyboard shortcuts (Ctrl+Shift+V) for instant activation
+   - Natural language processing for time entries and file notes
+   - Real-time audio processing with ElevenLabs voice synthesis
+   - Multi-language support for South African legal context
+
+3. Practice Growth & Referral Engine 🚧 BETA
+Actively build your practice with intelligent networking and opportunity management.
+
+🚧 Overflow Brief Matching: Private marketplace for matter referrals between advocates.
+
+🚧 Specialisation Directory: Searchable directory for niche expertise and targeted referrals.
+
+🚧 Reciprocal Brief Tracking: Dashboard monitoring referral ratios between advocates and chambers.
+
+✅ Automated Conflict Check System: Instant matter screening against case history for conflict identification.
+
+4. Document & Data Intelligence ✅ LIVE
+Turn unstructured information into billable work and valuable insights.
+
+✅ Brief Analysis AI: AWS Bedrock-powered document analysis with automatic extraction of:
+   - Key dates and deadlines
+   - Party information and relationships
+   - Deliverable identification
+   - Matter file pre-population
+
+✅ Automated Fee Narrative Generator: AI-assisted creation of detailed, justifiable fee descriptions with legal context awareness.
+
+🚧 Community Precedent Bank: Shared template library with usage analytics (beta testing).
+
+5. Strategic Finance & Optimization ✅ LIVE
+Move from reactive billing to proactive financial strategy.
+
+✅ AI Analytics Dashboard: Comprehensive practice metrics including:
+   - Revenue forecasting and trend analysis
+   - Matter profitability tracking
+   - Client payment pattern analysis
+   - Practice performance KPIs
+
+✅ Advanced Cash Flow Management: AI-powered seasonal pattern recognition with proactive budgeting advice.
+
+📋 Invoice Factoring Marketplace: Multi-provider financing platform (roadmap).
+
+📋 Success Fee Calculator: Risk/reward modeling for contingency arrangements (roadmap).
+
+6. Workflow & External Integrations ✅ LIVE
+Seamlessly connect your practice to the broader legal ecosystem.
+
+✅ Court Integration Module:
+   - Automated Court Diary Sync with official court systems
+   - Judge Analytics with anonymised judicial briefing patterns
+   - Performance scoring and preference tracking
+   - Hearing date management and conflict detection
+
+⚡ Voice-Activated Queries: Enhanced natural language interface supporting:
+   - "LexoHub, what is my projected income for October?"
+   - "LexoHub, summarise my new brief from XYZ Attorneys"
+   - Complex financial and matter queries
+   - Real-time voice command processing
+
+🚧 Language Accessibility: Multi-language interface with legal translation tools (11 official languages in development).
+
+7. Professional Development & Transformation (The Academy) 🚧 BETA
+Invest in career growth and the future of the Bar.
+
+🚧 Virtual Shadowing & Brief Simulation: Training modules with AI-generated practice matters.
+
+🚧 Peer Review Network: Structured feedback system for written work and arguments.
+
+📋 Automated CPD Credit Tracking: Compliance monitoring for professional development requirements.
+
+📋 Practice Succession Planning: Valuation tools and confidential marketplace for practice transitions.
+
+8. Risk Management & Compliance Engine ✅ LIVE
+Practice with confidence, knowing you are protected by an intelligent compliance framework.
+
+✅ Ethics Rule Alerts: Proactive conflict of interest detection based on Bar Council rules.
+
+✅ Automated Trust Account Monitoring: Transaction flagging for trust account regulation compliance.
+
+✅ One-Click Audit Trail Generator: Comprehensive compliance reports for Bar Council and LPFF investigations.
+
+=== TECHNICAL ARCHITECTURE ===
+
+Backend Infrastructure:
+- Supabase PostgreSQL database with real-time subscriptions
+- Row-level security (RLS) for multi-tenant data isolation
+- Automated backup and disaster recovery
+
+AI & Machine Learning:
+- AWS Bedrock integration for document intelligence
+- Claude Sonnet 3.5 for natural language processing
+- ElevenLabs for voice synthesis and audio processing
+- Custom legal terminology training models
+
+Frontend Technology:
+- React 18 with TypeScript for type safety
+- Tailwind CSS for responsive design system
+- Real-time updates with WebSocket connections
+- Progressive Web App (PWA) capabilities
+
+Security & Compliance:
+- End-to-end encryption for sensitive data
+- POPIA compliance framework
+- Multi-factor authentication
+- Audit logging for all user actions
+
+=== RECENT ACHIEVEMENTS (Q4 2024 - Q1 2025) ===
+
+✅ Voice-First Time Capture: Achieved 90%+ accuracy with AWS Claude integration
+✅ Pro Forma Workflow: Complete quote-to-invoice conversion system
+✅ Court Integration: Live sync with official court diaries
+✅ AI Analytics: Advanced practice intelligence dashboard
+✅ Service Architecture: Resolved all critical TypeError issues and service dependencies
+
+LexoHub Pricing Packages (Updated January 2025)
+
+Feature	Junior Start	Advocate Pro	Senior Counsel	Chambers Enterprise
+Price	R 349 / month	R 899 / month	R 2,499 / month	Contact for Quote
+Ideal For	Pupils & 1st/2nd Year	Solo Practitioners	SCs & Progressives	Entire Chambers
+Core Financial Engine	✅	✅	✅	✅
+Voice-First Time Capture	✅ Basic	✅ Full Suite	✅ Advanced	✅ Enterprise
+Matter Intelligence	✅ Basic WIP	✅ Full Suite	✅ AI Analytics	✅ Advanced Analytics
+Practice Growth Engine	✅ Receive Only	✅ Full Access	✅ Premium	✅ Network Admin
+Document Intelligence	-	✅ Narrative Gen	✅ Full AI Suite	✅ Custom Models
+Strategic Finance	-	✅ Basic Analytics	✅ Advanced AI	✅ Predictive Models
+Court Integrations	-	✅ Basic Sync	✅ Judge Analytics	✅ Advanced Insights
+The Academy	✅ As Pupil	✅ Peer Review	✅ As Mentor	✅ Training Admin
+Risk & Compliance	✅ Basic Alerts	✅ Full Suite	✅ Advanced	✅ Enterprise
+Pro Forma Management	✅	✅	✅	✅
+Voice Query System	✅ Basic	✅ Advanced	✅ Premium	✅ Custom
+White-Label Branding	-	-	-	✅
+Group Analytics	-	-	-	✅
+Centralised Admin	-	-	-	✅
+
+Value-Added Services & Revenue Models
+
+LexoHub Capital Marketplace: Access competitive invoice financing from multiple providers. Transactional fees apply.
+
+Ethical Data Monetization: Anonymised, aggregated market intelligence products—such as the Annual State of Fees Report—to law societies and legal recruiters to fund Transformation initiatives. Individual advocate and attorney data is never sold.
+
+Performance-Based Options: Enterprise clients can opt for success-sharing models, where a percentage of collected fees is shared in exchange for lower subscription costs.
+
+AI Training Services: Custom model training for specialized legal domains and practice areas.
+
+=== DEVELOPMENT ROADMAP 2025 ===
+
+Q1 2025: ✅ Voice-First completion, Pro Forma workflow, Court integration
+Q2 2025: 📋 Multi-language support, Advanced analytics, Mobile app
+Q3 2025: 📋 Invoice factoring marketplace, Succession planning tools
+Q4 2025: 📋 Full Academy platform, Advanced AI legal research integration
+
+For technical support or feature requests, contact: support@lexohub.co.za
+For partnership inquiries: partnerships@lexohub.co.za
