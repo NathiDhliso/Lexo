@@ -14,7 +14,8 @@ import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 // Types
-import type { Page, Matter, UserTier } from './types';
+import type { Page, Matter } from './types';
+import { UserTier } from './types';
 import {
   DashboardPage,
   MattersPage,
@@ -134,7 +135,7 @@ const MainLayout: React.FC<{
   const { user } = useAuth();
   
   // Determine user tier based on user data (simplified for now)
-  const userTier: UserTier = 'professional'; // This should come from user data/subscription
+  const userTier: UserTier = UserTier.ADVOCATE_PRO; // This should come from user data/subscription
   
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col">
@@ -161,6 +162,7 @@ const AppContent: React.FC = () => {
     activePage: 'dashboard' as Page,
     currentPage: 'dashboard' as Page,
     selectedMatter: null as Matter | null,
+    sidebarOpen: false,
   });
 
 
