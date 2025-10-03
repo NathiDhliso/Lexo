@@ -183,9 +183,7 @@ export class StrategicFinanceService {
           .limit(5);
 
         if (!matters || matters.length === 0) {
-          // No active matters, return mock recommendations for development
-          console.info('No active matters found, using mock recommendations for development');
-          return this.generateMockRecommendations(user.id);
+          return [];
         }
 
         // Get recommendations for the first active matter
@@ -200,62 +198,11 @@ export class StrategicFinanceService {
     } catch (error) {
       console.error('Error generating fee optimization recommendations:', error);
       
-      // Always provide fallback mock data for better UX
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        console.info('Providing mock recommendations as fallback');
-        return this.generateMockRecommendations(user.id);
-      }
-      
       toast.error('Failed to generate fee optimization recommendations');
       return [];
     }
   }
 
-  // Generate mock recommendations for development
-  private static generateMockRecommendations(advocateId: string): FeeOptimizationRecommendation[] {
-    return [
-      {
-        id: 'mock-1',
-        advocateId,
-        currentHourlyRate: 2500,
-        currentFeeStructure: 'Standard hourly billing at R2,500/hour',
-        recommendedModel: 'premium_urgency',
-        recommendedHourlyRate: 3200,
-        recommendedFeeStructure: 'Premium urgency model with 28% increase for urgent matters',
-        potentialRevenueIncrease: 0.28,
-        confidenceScore: 0.85,
-        optimizationFactors: {
-          urgency: 0.8,
-          complexity: 0.7,
-          clientType: 'corporate',
-          marketPosition: 0.9
-        },
-        accepted: false,
-        createdAt: new Date().toISOString(),
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-      },
-      {
-        id: 'mock-2',
-        advocateId,
-        currentHourlyRate: 2500,
-        currentFeeStructure: 'Standard hourly billing',
-        recommendedModel: 'success_based',
-        recommendedSuccessPercentage: 0.25,
-        recommendedFeeStructure: 'Success-based fee: 25% of recovery above R500k',
-        potentialRevenueIncrease: 0.45,
-        confidenceScore: 0.72,
-        optimizationFactors: {
-          complexity: 0.9,
-          clientType: 'individual',
-          volume: 0.6
-        },
-        accepted: false,
-        createdAt: new Date().toISOString(),
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-      }
-    ];
-  }
 
   // List success fee scenarios for current advocate
   static async getSuccessFeeScenarios(): Promise<SuccessFeeScenario[]> {
@@ -306,8 +253,8 @@ export class StrategicFinanceService {
         .single();
 
       if (matterError || !matter) {
-        console.warn('Matter not found, falling back to mock data:', matterError);
-        return this.generateMockRecommendations(user.id);
+        toast.error('Matter not found');
+        return [];
       }
 
       // Prepare matter data for AWS Bedrock
@@ -402,8 +349,7 @@ export class StrategicFinanceService {
           });
 
         if (error || !recommendations || recommendations.length === 0) {
-          console.info('Database function also failed, using mock data for development');
-          return this.generateMockRecommendations(user.id);
+          return [];
         }
 
         // Transform and save database recommendations
@@ -434,13 +380,6 @@ export class StrategicFinanceService {
       }
     } catch (error) {
       console.error('Error getting fee optimization recommendations:', error);
-      
-      // Fallback to mock data for development/demo purposes
-      const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
-        console.info('Falling back to mock recommendations for development');
-        return this.generateMockRecommendations(user.id);
-      }
       
       toast.error('Failed to get fee optimization recommendations');
       throw error;
@@ -706,81 +645,21 @@ export class StrategicFinanceService {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Mock insights for development - replace with real AI-generated insights
-      return [
-        {
-          id: 'insight-1',
-          type: 'opportunity',
-          title: 'Collection Rate Improvement',
-          description: 'Your collection rate has improved by 5% this month. Consider implementing similar strategies for other clients.',
-          impact: 'positive',
-          actionable: true,
-          created_at: new Date().toISOString()
-        },
-        {
-          id: 'insight-2',
-          type: 'warning',
-          title: 'Cash Flow Concern',
-          description: 'Outstanding invoices have increased by 15%. Consider following up on overdue payments.',
-          impact: 'negative',
-          actionable: true,
-          created_at: new Date().toISOString()
-        },
-        {
-          id: 'insight-3',
-          type: 'trend',
-          title: 'Revenue Growth',
-          description: 'Monthly revenue is trending upward with a 12% increase over the last quarter.',
-          impact: 'positive',
-          actionable: false,
-          created_at: new Date().toISOString()
-        }
-      ];
+      const { data, error } = await supabase
+        .from('financial_insights')
+        .select('*')
+        .eq('advocate_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      return data || [];
     } catch (error) {
       console.error('Error getting financial insights:', error);
       return [];
     }
   }
 
-  // Get revenue forecasting data
-  static async getRevenueForecast(months: number = 6): Promise<any[]> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('User not authenticated');
-
-      // Mock forecast data - replace with real AI-powered forecasting
-      const forecast = [];
-      const baseRevenue = 120000; // Base monthly revenue
-      
-      for (let i = 1; i <= months; i++) {
-        const date = new Date();
-        date.setMonth(date.getMonth() + i);
-        
-        // Add some realistic variation
-        const variation = (Math.random() - 0.5) * 0.2; // ±10% variation
-        const seasonalFactor = 1 + Math.sin((date.getMonth() / 12) * 2 * Math.PI) * 0.1; // Seasonal variation
-        const trendFactor = 1 + (i * 0.02); // 2% monthly growth trend
-        
-        const projectedRevenue = baseRevenue * seasonalFactor * trendFactor * (1 + variation);
-        
-        forecast.push({
-          month: date.toISOString().slice(0, 7), // YYYY-MM format
-          projectedRevenue: Math.round(projectedRevenue),
-          confidence: Math.max(0.6, 0.9 - (i * 0.05)), // Decreasing confidence over time
-          factors: {
-            seasonal: seasonalFactor,
-            trend: trendFactor,
-            variation: variation
-          }
-        });
-      }
-      
-      return forecast;
-    } catch (error) {
-      console.error('Error getting revenue forecast:', error);
-      return [];
-    }
-  }
 
   // Get factoring marketplace offers
   static async getFactoringOffers(invoiceAmount?: number): Promise<FactoringOffer[]> {
@@ -969,53 +848,16 @@ export class StrategicFinanceService {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Mock data for development - replace with real calculations
-      return [
-        {
-          id: 'revenue',
-          name: 'Monthly Revenue',
-          value: 125000,
-          target: 150000,
-          unit: 'ZAR',
-          trend: 'up',
-          change: 8.5,
-          benchmark: 120000,
-          category: 'financial'
-        },
-        {
-          id: 'collection-rate',
-          name: 'Collection Rate',
-          value: 87,
-          target: 90,
-          unit: '%',
-          trend: 'up',
-          change: 3.2,
-          benchmark: 85,
-          category: 'financial'
-        },
-        {
-          id: 'utilization',
-          name: 'Utilization Rate',
-          value: 78,
-          target: 85,
-          unit: '%',
-          trend: 'stable',
-          change: 0.5,
-          benchmark: 75,
-          category: 'operational'
-        },
-        {
-          id: 'client-satisfaction',
-          name: 'Client Satisfaction',
-          value: 4.6,
-          target: 4.5,
-          unit: '/5',
-          trend: 'up',
-          change: 2.1,
-          benchmark: 4.2,
-          category: 'client'
-        }
-      ];
+      const { data, error } = await supabase
+        .from('practice_metrics')
+        .select('*')
+        .eq('advocate_id', user.id)
+        .eq('period', period)
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) throw error;
+      return data || [];
     } catch (error) {
       console.error('Error getting practice metrics:', error);
       return [];
@@ -1025,37 +867,13 @@ export class StrategicFinanceService {
   // Get benchmark data
   static async getBenchmarkData(): Promise<any[]> {
     try {
-      // Mock benchmark data - replace with real industry data
-      return [
-        {
-          metric: 'Average Hourly Rate',
-          yourPractice: 2500,
-          industryAverage: 2200,
-          topQuartile: 3000,
-          unit: 'ZAR'
-        },
-        {
-          metric: 'Collection Rate',
-          yourPractice: 87,
-          industryAverage: 82,
-          topQuartile: 92,
-          unit: '%'
-        },
-        {
-          metric: 'Average Collection Days',
-          yourPractice: 45,
-          industryAverage: 52,
-          topQuartile: 35,
-          unit: 'days'
-        },
-        {
-          metric: 'Utilization Rate',
-          yourPractice: 78,
-          industryAverage: 75,
-          topQuartile: 85,
-          unit: '%'
-        }
-      ];
+      const { data, error } = await supabase
+        .from('industry_benchmarks')
+        .select('*')
+        .order('metric_name');
+
+      if (error) throw error;
+      return data || [];
     } catch (error) {
       console.error('Error getting benchmark data:', error);
       return [];
@@ -1068,40 +886,15 @@ export class StrategicFinanceService {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Mock compliance alerts - replace with real data
-      return [
-        {
-          id: 'alert-1',
-          type: 'trust_account',
-          severity: 'high',
-          title: 'Trust Account Reconciliation Overdue',
-          description: 'Monthly trust account reconciliation is 3 days overdue. Please complete reconciliation immediately.',
-          created_at: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-          resolved: false,
-          due_date: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(),
-          amount: 125000
-        },
-        {
-          id: 'alert-2',
-          type: 'billing',
-          severity: 'medium',
-          title: 'Unbilled Time Entries',
-          description: 'You have 15.5 hours of unbilled time entries older than 30 days.',
-          created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-          resolved: false,
-          matter_id: 'matter-123'
-        },
-        {
-          id: 'alert-3',
-          type: 'regulatory',
-          severity: 'low',
-          title: 'Annual Compliance Report Due',
-          description: 'Annual compliance report is due in 30 days.',
-          created_at: new Date().toISOString(),
-          resolved: false,
-          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString()
-        }
-      ];
+      const { data, error } = await supabase
+        .from('compliance_alerts')
+        .select('*')
+        .eq('advocate_id', user.id)
+        .eq('resolved', false)
+        .order('severity', { ascending: false });
+
+      if (error) throw error;
+      return data || [];
     } catch (error) {
       console.error('Error getting compliance alerts:', error);
       return [];
@@ -1114,45 +907,15 @@ export class StrategicFinanceService {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Mock trust account transactions - replace with real data
-      return [
-        {
-          id: 'txn-1',
-          matter_id: 'matter-123',
-          matter_title: 'Smith vs. Jones Property Dispute',
-          client_name: 'John Smith',
-          transaction_type: 'deposit',
-          amount: 50000,
-          balance: 125000,
-          description: 'Initial retainer deposit',
-          created_at: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
-          status: 'completed'
-        },
-        {
-          id: 'txn-2',
-          matter_id: 'matter-456',
-          matter_title: 'ABC Corp Contract Review',
-          client_name: 'ABC Corporation',
-          transaction_type: 'withdrawal',
-          amount: 15000,
-          balance: 75000,
-          description: 'Legal fees payment',
-          created_at: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
-          status: 'completed'
-        },
-        {
-          id: 'txn-3',
-          matter_id: 'matter-789',
-          matter_title: 'Estate Planning - Williams',
-          client_name: 'Mary Williams',
-          transaction_type: 'deposit',
-          amount: 25000,
-          balance: 100000,
-          description: 'Estate planning retainer',
-          created_at: new Date().toISOString(),
-          status: 'pending'
-        }
-      ];
+      const { data, error } = await supabase
+        .from('trust_account_transactions')
+        .select('*')
+        .eq('advocate_id', user.id)
+        .order('transaction_date', { ascending: false })
+        .limit(50);
+
+      if (error) throw error;
+      return data || [];
     } catch (error) {
       console.error('Error getting trust account transactions:', error);
       return [];
@@ -1165,30 +928,15 @@ export class StrategicFinanceService {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Mock compliance metrics - replace with real calculations
-      return [
-        {
-          name: 'Trust Account Balance',
-          value: 125000,
-          target: 100000,
-          status: 'compliant',
-          unit: ' ZAR'
-        },
-        {
-          name: 'Reconciliation Status',
-          value: 98,
-          target: 100,
-          status: 'warning',
-          unit: '%'
-        },
-        {
-          name: 'Billing Compliance',
-          value: 95,
-          target: 95,
-          status: 'compliant',
-          unit: '%'
-        }
-      ];
+      const { data, error } = await supabase
+        .from('compliance_metrics')
+        .select('*')
+        .eq('advocate_id', user.id)
+        .order('metric_date', { ascending: false })
+        .limit(1);
+
+      if (error) throw error;
+      return data?.[0]?.metrics || [];
     } catch (error) {
       console.error('Error getting compliance metrics:', error);
       return [];
@@ -1201,8 +949,14 @@ export class StrategicFinanceService {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Mock resolution - replace with real database update
-      console.log(`Resolving compliance alert: ${alertId}`);
+      const { error } = await supabase
+        .from('compliance_alerts')
+        .update({ resolved: true, resolved_at: new Date().toISOString() })
+        .eq('id', alertId)
+        .eq('advocate_id', user.id);
+
+      if (error) throw error;
+      toast.success('Compliance alert resolved');
     } catch (error) {
       console.error('Error resolving compliance alert:', error);
       throw error;
@@ -1215,22 +969,11 @@ export class StrategicFinanceService {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      // Mock report generation - replace with real PDF generation
-      const reportContent = `
-        COMPLIANCE REPORT
-        Generated: ${new Date().toLocaleDateString()}
-        
-        Trust Account Status: Compliant
-        Billing Compliance: 95%
-        Regulatory Status: Up to date
-        
-        Recent Activities:
-        - Monthly reconciliation completed
-        - All billing reviewed
-        - No outstanding compliance issues
-      `;
-      
-      return reportContent;
+      const { data, error } = await supabase
+        .rpc('generate_compliance_report', { p_advocate_id: user.id });
+
+      if (error) throw error;
+      return data || 'No compliance data available';
     } catch (error) {
       console.error('Error generating compliance report:', error);
       throw error;

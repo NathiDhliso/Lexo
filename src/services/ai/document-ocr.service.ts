@@ -334,13 +334,6 @@ export class AdvancedOCRService {
     };
   }
 
-  /**
-   * Generate mock bounding boxes for demonstration
-   */
-  private static generateMockBoundingBoxes(text: string): BoundingBox[] {
-    // Deprecated: No mock bounding boxes
-    return [];
-  }
 
   /**
    * Classify line type for OCR processing

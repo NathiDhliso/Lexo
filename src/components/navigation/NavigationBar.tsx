@@ -20,6 +20,7 @@ import type {
   UserTier,
   NavigationA11y 
 } from '../../types';
+import { UserTier as UserTierValue } from '../../types';
 import type { NotificationBadge, SmartNotification } from '../../services/smart-notifications.service';
 
 interface NavigationBarProps {
@@ -27,13 +28,17 @@ interface NavigationBarProps {
   onPageChange: (page: Page) => void;
   userTier?: UserTier;
   className?: string;
+  onToggleSidebar?: () => void;
+  sidebarOpen?: boolean;
 }
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({
   activePage,
   onPageChange,
-  userTier = 'junior_start',
-  className = ''
+  userTier = UserTierValue.JUNIOR_START,
+  className = '',
+  onToggleSidebar,
+  sidebarOpen
 }) => {
   const [navigationState, setNavigationState] = useState<NavigationState>({
     activeCategory: null,
@@ -414,6 +419,22 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                  <AlertsDropdown onNavigate={handlePageNavigation} onClose={() => setAlertsOpen(false)} />
                )}
              </div>
+
+             {/* Sidebar Toggle Button */}
+             <Button
+               variant="ghost"
+               size="sm"
+               onClick={onToggleSidebar}
+               className="lg:hidden"
+               aria-label="Open sidebar"
+               aria-expanded={Boolean(sidebarOpen)}
+             >
+               {sidebarOpen ? (
+                 <Icon icon={X} className="w-5 h-5" noGradient />
+               ) : (
+                 <Icon icon={Menu} className="w-5 h-5" noGradient />
+               )}
+             </Button>
 
              {/* Mobile Menu Toggle */}
              <Button

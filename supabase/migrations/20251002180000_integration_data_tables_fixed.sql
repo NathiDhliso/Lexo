@@ -84,6 +84,12 @@ BEGIN
     WHERE table_name = 'invoices' AND column_name = 'external_id'
   ) THEN
     ALTER TABLE public.invoices ADD COLUMN external_id TEXT;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'invoices' AND column_name = 'sync_source'
+  ) THEN
     ALTER TABLE public.invoices ADD COLUMN sync_source TEXT;
   END IF;
 END $$;
@@ -96,6 +102,12 @@ BEGIN
     WHERE table_name = 'payments' AND column_name = 'external_id'
   ) THEN
     ALTER TABLE public.payments ADD COLUMN external_id TEXT;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'payments' AND column_name = 'sync_source'
+  ) THEN
     ALTER TABLE public.payments ADD COLUMN sync_source TEXT;
   END IF;
 END $$;
@@ -108,7 +120,19 @@ BEGIN
     WHERE table_name = 'documents' AND column_name = 'external_id'
   ) THEN
     ALTER TABLE public.documents ADD COLUMN external_id TEXT;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'documents' AND column_name = 'sync_source'
+  ) THEN
     ALTER TABLE public.documents ADD COLUMN sync_source TEXT;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'documents' AND column_name = 'document_type'
+  ) THEN
     ALTER TABLE public.documents ADD COLUMN document_type TEXT;
   END IF;
 END $$;
@@ -121,6 +145,12 @@ BEGIN
     WHERE table_name = 'time_entries' AND column_name = 'external_id'
   ) THEN
     ALTER TABLE public.time_entries ADD COLUMN external_id TEXT;
+  END IF;
+  
+  IF NOT EXISTS (
+    SELECT 1 FROM information_schema.columns 
+    WHERE table_name = 'time_entries' AND column_name = 'sync_source'
+  ) THEN
     ALTER TABLE public.time_entries ADD COLUMN sync_source TEXT;
   END IF;
 END $$;
@@ -128,11 +158,16 @@ END $$;
 -- Add external_id to existing clients table if not exists
 DO $$ 
 BEGIN
-  IF NOT EXISTS (
-    SELECT 1 FROM information_schema.columns 
-    WHERE table_name = 'clients' AND column_name = 'external_id'
+  IF EXISTS (
+    SELECT 1 FROM information_schema.tables 
+    WHERE table_schema = 'public' AND table_name = 'clients'
   ) THEN
-    ALTER TABLE public.clients ADD COLUMN external_id TEXT;
+    IF NOT EXISTS (
+      SELECT 1 FROM information_schema.columns 
+      WHERE table_name = 'clients' AND column_name = 'external_id'
+    ) THEN
+      ALTER TABLE public.clients ADD COLUMN external_id TEXT;
+    END IF;
   END IF;
 END $$;
 

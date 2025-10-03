@@ -4,7 +4,13 @@ import {
   AlertTriangle,
   ChevronRight,
   Minus,
-  Plus
+  Plus,
+  DollarSign,
+  FileText,
+  Gavel,
+  Users,
+  CheckCircle,
+  Bell
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 import { tickerDataService } from '../../services/ticker-data.service';
@@ -18,7 +24,7 @@ export interface TickerItem {
   dueDate?: Date;
   amount?: number;
   navigateTo: string;
-  icon: React.ReactNode;
+  iconName?: string;
 }
 
 interface RealTimeTickerProps {
@@ -27,6 +33,26 @@ interface RealTimeTickerProps {
   autoRefresh?: boolean;
   refreshInterval?: number;
 }
+
+const getIconForType = (type: TickerItem['type']) => {
+  const iconClass = 'w-4 h-4';
+  switch (type) {
+    case 'deadline':
+      return <Clock className={iconClass} />;
+    case 'invoice':
+      return <DollarSign className={iconClass} />;
+    case 'matter':
+      return <FileText className={iconClass} />;
+    case 'court_date':
+      return <Gavel className={iconClass} />;
+    case 'client':
+      return <Users className={iconClass} />;
+    case 'payment':
+      return <CheckCircle className={iconClass} />;
+    default:
+      return <Bell className={iconClass} />;
+  }
+};
 
 export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
   className = '',
@@ -205,7 +231,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
           >
             {/* Icon */}
             <div className={cn("flex-shrink-0 mr-3", urgencyStyles.icon)}>
-              {currentItem.icon}
+              {getIconForType(currentItem.type)}
             </div>
 
             {/* Content */}
@@ -272,7 +298,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
                     onClick={() => handleItemClick(item)}
                   >
                     <div className={cn("flex-shrink-0 mr-3", itemStyles.icon)}>
-                      {item.icon}
+                      {getIconForType(item.type)}
                     </div>
                     
                     <div className="flex-1 min-w-0">

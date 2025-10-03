@@ -1,30 +1,28 @@
 import React from 'react';
 import { Search, Filter, Calendar, Building2, X } from 'lucide-react';
-import type { InvoiceStatus, Bar } from '@/types';
+import { InvoiceStatus, BarAssociation } from '@/types';
 
 interface InvoiceFiltersProps {
   filters: {
     search: string;
     status: InvoiceStatus[];
-    bar: Bar[];
+    bar: BarAssociation[];
     dateRange: { start: string; end: string } | null;
   };
-  onFiltersChange: (filters: InvoiceFilters) => void;
+  onFiltersChange: (filters: InvoiceFiltersProps['filters']) => void;
   onClearFilters: () => void;
 }
 
 const STATUS_OPTIONS: { value: InvoiceStatus; label: string; color: string }[] = [
-  { value: 'Draft', label: 'Draft', color: 'bg-neutral-100 text-neutral-700' },
-  { value: 'Sent', label: 'Sent', color: 'bg-blue-100 text-blue-700' },
-  { value: 'Unpaid', label: 'Unpaid', color: 'bg-warning-100 text-warning-700' },
-  { value: 'Overdue', label: 'Overdue', color: 'bg-error-100 text-error-700' },
-  { value: 'Paid', label: 'Paid', color: 'bg-success-100 text-success-700' },
-  { value: 'Pending', label: 'Pending', color: 'bg-neutral-100 text-neutral-700' }
+  { value: InvoiceStatus.DRAFT, label: 'Draft', color: 'bg-neutral-100 text-neutral-700' },
+  { value: InvoiceStatus.SENT, label: 'Sent', color: 'bg-blue-100 text-blue-700' },
+  { value: InvoiceStatus.OVERDUE, label: 'Overdue', color: 'bg-error-100 text-error-700' },
+  { value: InvoiceStatus.PAID, label: 'Paid', color: 'bg-success-100 text-success-700' },
 ];
 
-const BAR_OPTIONS: { value: Bar; label: string; color: string }[] = [
-  { value: 'Johannesburg', label: 'Johannesburg', color: 'bg-mpondo-gold-100 text-mpondo-gold-700' },
-  { value: 'Cape Town', label: 'Cape Town', color: 'bg-judicial-blue-100 text-judicial-blue-700' }
+const BAR_OPTIONS: { value: BarAssociation; label: string; color: string }[] = [
+  { value: BarAssociation.JOHANNESBURG, label: 'Johannesburg', color: 'bg-mpondo-gold-100 text-mpondo-gold-700' },
+  { value: BarAssociation.CAPE_TOWN, label: 'Cape Town', color: 'bg-judicial-blue-100 text-judicial-blue-700' }
 ];
 
 export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
@@ -49,7 +47,7 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
     onFiltersChange({ ...filters, status: newStatus });
   };
 
-  const handleBarToggle = (bar: Bar) => {
+  const handleBarToggle = (bar: BarAssociation) => {
     const newBar = filters.bar.includes(bar)
       ? filters.bar.filter(b => b !== bar)
       : [...filters.bar, bar];

@@ -91,6 +91,22 @@ export class MatterTemplatesService extends BaseApiService<MatterTemplate> {
         .rpc('get_user_templates', { user_id: user.id });
 
       if (error) {
+        if (error.code === '42883' || error.message?.includes('function') || error.message?.includes('does not exist')) {
+          return {
+            data: null,
+            error: {
+              type: ErrorType.DATABASE_ERROR,
+              message: 'Templates feature not yet configured. Please run the database migration script.',
+              details: { 
+                hint: 'Run apply_templates_migration.sql in Supabase SQL Editor',
+                originalError: error.message 
+              },
+              timestamp: new Date(),
+              requestId: this.generateRequestId()
+            }
+          };
+        }
+        
         return {
           data: null,
           error: this.transformError(error, this.generateRequestId())
@@ -643,15 +659,12 @@ export class MatterTemplatesService extends BaseApiService<MatterTemplate> {
 
       return { data: stats, error: null };
     } catch (error) {
+      const requestId = `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
       return {
         data: null,
-        error: this.transformError(error as Error, this.generateRequestId())
+        error: this.transformError(error as Error, requestId)
       };
     }
-  }
-
-  private generateRequestId(): string {
-    return `req_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
   }
 }
 

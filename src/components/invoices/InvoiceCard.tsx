@@ -15,7 +15,8 @@ import { format, differenceInDays, isAfter } from 'date-fns';
 import { Card, CardHeader, CardContent, Button } from '../../design-system/components';
 import { RandIcon } from '../icons/RandIcon';
 import { formatRand } from '../../lib/currency';
-import type { Invoice, InvoiceStatus } from '@/types';
+import type { Invoice } from '@/types';
+import { InvoiceStatus, BarAssociation } from '@/types';
 
 interface InvoiceCardProps {
   invoice: Invoice;
@@ -38,41 +39,35 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
 }) => {
   const getStatusConfig = (status: InvoiceStatus) => {
     switch (status) {
-      case 'Draft':
+      case InvoiceStatus.DRAFT:
         return {
           color: 'bg-neutral-100 text-neutral-700',
           icon: FileText,
           label: 'Draft'
         };
-      case 'Sent':
+      case InvoiceStatus.SENT:
         return {
           color: 'bg-blue-100 text-blue-700',
           icon: Send,
           label: 'Sent'
         };
-      case 'Paid':
+      case InvoiceStatus.PAID:
         return {
           color: 'bg-success-100 text-success-700',
           icon: CheckCircle,
           label: 'Paid'
         };
-      case 'Overdue':
+      case InvoiceStatus.OVERDUE:
         return {
           color: 'bg-error-100 text-error-700',
           icon: AlertTriangle,
           label: 'Overdue'
         };
-      case 'Unpaid':
-        return {
-          color: 'bg-warning-100 text-warning-700',
-          icon: Clock,
-          label: 'Unpaid'
-        };
       default:
         return {
           color: 'bg-neutral-100 text-neutral-700',
           icon: FileText,
-          label: status
+          label: String(status)
         };
     }
   };
@@ -85,8 +80,10 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
   };
 
   const getPaymentProgress = () => {
-    if (!invoice.amountPaid || invoice.amountPaid === 0) return 0;
-    return (invoice.amountPaid / invoice.totalAmount) * 100;
+    const total = invoice.totalAmount ?? invoice.total_amount ?? 0;
+    const paid = invoice.amountPaid ?? invoice.amount_paid ?? 0;
+    if (!total || total === 0) return 0;
+    return (paid / total) * 100;
   };
 
   const statusConfig = getStatusConfig(invoice.status);
@@ -105,13 +102,13 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
             </div>
             <div>
               <h3 className="font-semibold text-neutral-900">
-                {invoice.invoiceNumber}
+                {invoice.invoiceNumber ?? (invoice as any).invoice_number ?? '—'}
               </h3>
               <p className="text-sm text-neutral-600">
-                {invoice.matterTitle}
+                {invoice.matterTitle ?? (invoice as any).matter_title ?? '—'}
               </p>
               <p className="text-xs text-neutral-500">
-                {invoice.clientName}
+                {invoice.clientName ?? (invoice as any).client_name ?? '—'}
               </p>
             </div>
           </div>
@@ -140,7 +137,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
                     </button>
                   )}
                   
-                  {onSend && invoice.status === 'Draft' && (
+                  {onSend && invoice.status === InvoiceStatus.DRAFT && (
                     <button
                       onClick={() => onSend(invoice)}
                       className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
@@ -160,7 +157,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
                     </button>
                   )}
                   
-                  {onRecordPayment && invoice.status !== 'Paid' && (
+                  {onRecordPayment && invoice.status !== InvoiceStatus.PAID && (
                     <button
                       onClick={() => onRecordPayment(invoice)}
                       className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
@@ -179,9 +176,9 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
                         </p>
                       </div>
                       
-                      {invoice.status === 'Draft' && (
+                      {invoice.status === InvoiceStatus.DRAFT && (
                         <button
-                          onClick={() => onUpdateStatus('Sent')}
+                          onClick={() => onUpdateStatus(InvoiceStatus.SENT)}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
                         >
                           <Send className="w-4 h-4" />
@@ -189,9 +186,9 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
                         </button>
                       )}
                       
-                      {(invoice.status === 'Sent' || invoice.status === 'Unpaid') && (
+                      {(invoice.status === InvoiceStatus.SENT || invoice.status === InvoiceStatus.OVERDUE) && (
                         <button
-                          onClick={() => onUpdateStatus('Paid')}
+                          onClick={() => onUpdateStatus(InvoiceStatus.PAID)}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
                         >
                           <CheckCircle className="w-4 h-4" />
@@ -199,9 +196,9 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
                         </button>
                       )}
                       
-                      {invoice.status !== 'Overdue' && invoice.status !== 'Paid' && (
+                      {invoice.status !== InvoiceStatus.OVERDUE && invoice.status !== InvoiceStatus.PAID && (
                         <button
-                          onClick={() => onUpdateStatus('Overdue')}
+                          onClick={() => onUpdateStatus(InvoiceStatus.OVERDUE)}
                           className="w-full flex items-center gap-2 px-3 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
                         >
                           <AlertTriangle className="w-4 h-4" />
@@ -236,7 +233,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
           <div>
             <p className="text-xs text-neutral-500 mb-1">Total Amount</p>
             <p className="font-semibold text-neutral-900">
-              {formatRand(invoice.totalAmount)}
+              {formatRand(invoice.totalAmount ?? (invoice as any).total_amount ?? 0)}
             </p>
           </div>
           
@@ -265,9 +262,9 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
             <p className="text-xs text-neutral-500 mb-1">Bar</p>
             <div className="flex items-center gap-1">
               <div className={`w-2 h-2 rounded-full ${
-                invoice.bar === 'Johannesburg' ? 'bg-mpondo-gold-500' : 'bg-judicial-blue-500'
+                invoice.bar === BarAssociation.JOHANNESBURG ? 'bg-mpondo-gold-500' : 'bg-judicial-blue-500'
               }`}></div>
-              <p className="text-sm text-neutral-700">{invoice.bar}</p>
+              <p className="text-sm text-neutral-700">{invoice.bar === BarAssociation.JOHANNESBURG ? 'Johannesburg' : invoice.bar === BarAssociation.CAPE_TOWN ? 'Cape Town' : (typeof invoice.bar === 'string' ? invoice.bar : 'N/A')}</p>
             </div>
           </div>
         </div>
@@ -278,7 +275,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
             <div className="flex justify-between items-center mb-2">
               <p className="text-xs text-neutral-500">Payment Progress</p>
               <p className="text-xs text-neutral-600">
-                {formatRand(invoice.amountPaid || 0)} / {formatRand(invoice.totalAmount)}
+                {formatRand((invoice.amountPaid ?? invoice.amount_paid ?? 0))} / {formatRand((invoice.totalAmount ?? invoice.total_amount ?? 0))}
               </p>
             </div>
             <div className="w-full bg-neutral-200 rounded-full h-2">
@@ -307,7 +304,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
 
         {/* Quick Actions */}
         <div className="flex items-center gap-2 pt-4 border-t border-neutral-100">
-          {invoice.status === 'Draft' && onSend && (
+          {invoice.status === InvoiceStatus.DRAFT && onSend && (
             <button
               onClick={() => onSend(invoice)}
               className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-mpondo-gold-700 bg-mpondo-gold/10 rounded-lg hover:bg-mpondo-gold/20 transition-colors"
@@ -317,7 +314,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
             </button>
           )}
           
-          {invoice.status !== 'Paid' && onRecordPayment && (
+          {invoice.status !== InvoiceStatus.PAID && onRecordPayment && (
             <button
               onClick={() => onRecordPayment(invoice)}
               className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-success-700 bg-success/10 rounded-lg hover:bg-success/20 transition-colors"

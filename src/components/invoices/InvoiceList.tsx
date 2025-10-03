@@ -8,7 +8,9 @@ import { InvoiceDetailsModal } from './InvoiceDetailsModal';
 import { InvoiceService } from '@/services/api/invoices.service';
 import { formatRand } from '../../lib/currency';
 import { toast } from 'react-hot-toast';
-import type { Invoice, InvoiceStatus, Bar } from '@/types';
+import { formatCurrency } from '@/utils/formatters';
+import type { Invoice, BarAssociation } from '@/types';
+import { InvoiceStatus } from '@/types';
 
 interface InvoiceListProps {
   className?: string;
@@ -17,7 +19,7 @@ interface InvoiceListProps {
 interface InvoiceFilters {
   search: string;
   status: InvoiceStatus[];
-  bar: Bar[];
+  bar: BarAssociation[];
   dateRange: { start: string; end: string } | null;
 }
 
@@ -68,11 +70,16 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
     // Search filter
     if (filters.search) {
       const searchLower = filters.search.toLowerCase();
-      filtered = filtered.filter(invoice => 
-        invoice.invoiceNumber.toLowerCase().includes(searchLower) ||
-        invoice.clientName?.toLowerCase().includes(searchLower) ||
-        invoice.matterDescription?.toLowerCase().includes(searchLower)
-      );
+      filtered = filtered.filter(invoice => {
+        const invNum = (invoice.invoiceNumber ?? invoice.invoice_number ?? '').toLowerCase();
+        const clientName = (invoice.clientName ?? '').toLowerCase();
+        const feeNarrative = (invoice.feeNarrative ?? invoice.fee_narrative ?? '').toLowerCase();
+        return (
+          invNum.includes(searchLower) ||
+          clientName.includes(searchLower) ||
+          feeNarrative.includes(searchLower)
+        );
+      });
     }
 
     // Status filter
@@ -181,12 +188,12 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
     });
   };
 
-  // Calculate summary statistics
-  const totalAmount = filteredInvoices.reduce((sum, invoice) => sum + invoice.amount, 0);
+  // Summary statistics
+  const totalAmount = filteredInvoices.reduce((sum, inv) => sum + (inv.totalAmount ?? inv.total_amount ?? 0), 0);
   const paidAmount = filteredInvoices
-    .filter(invoice => invoice.status === 'Paid')
-    .reduce((sum, invoice) => sum + invoice.amount, 0);
-  const overdueCount = filteredInvoices.filter(invoice => invoice.status === 'Overdue').length;
+    .filter(inv => inv.status === InvoiceStatus.PAID)
+    .reduce((sum, inv) => sum + (inv.totalAmount ?? inv.total_amount ?? 0), 0);
+  const overdueCount = filteredInvoices.filter(inv => inv.status === InvoiceStatus.OVERDUE).length;
 
   if (loading) {
     return (
@@ -329,6 +336,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
 
       {showPaymentModal && selectedInvoice && (
         <PaymentModal
+          isOpen={showPaymentModal}
           invoice={selectedInvoice}
           onClose={() => {
             setShowPaymentModal(false);

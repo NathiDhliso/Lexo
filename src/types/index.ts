@@ -18,7 +18,8 @@ export type Page =
   | 'design-system'
   | 'matter-details'
   | 'pricing-management'
-  | 'profile';
+  | 'profile'
+  | 'academy';
 
 // Export integration types
 export * from './integrations';
@@ -370,6 +371,26 @@ export interface Invoice {
   deleted_at?: string;
   days_outstanding: number;
   is_overdue: boolean;
+  // --- Added camelCase fields used by UI/services ---
+  invoiceNumber?: string;
+  matterId?: string;
+  matterTitle?: string;
+  clientName?: string;
+  amount?: number;
+  vatAmount?: number;
+  totalAmount?: number;
+  // Removed duplicate dateIssued/dateDue since they already exist as required fields above
+  // Removed duplicate datePaid/status since they already exist above
+  amountPaid?: number;
+  paymentMethod?: PaymentMethod | string | null;
+  remindersSent?: number;
+  lastReminderDate?: string | null;
+  nextReminderDate?: string | null;
+  notes?: string | null;
+  feeNarrative?: string | null;
+  disbursements?: number;
+  sentAt?: string | null;
+  paymentReference?: string | null;
 }
 
 export interface TimeEntry {

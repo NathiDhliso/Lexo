@@ -1,16 +1,4 @@
 import type { TickerItem } from '../components/navigation/RealTimeTicker';
-import { 
-  Clock, 
-  AlertTriangle, 
-  FileText, 
-  Calendar, 
-  DollarSign,
-  Users,
-  Gavel,
-  TrendingUp,
-  Bell,
-  CheckCircle
-} from 'lucide-react';
 import { invoiceApiService } from './api/invoice-api.service';
 import { matterApiService } from './api';
 import { supabase } from '../lib/supabase';
@@ -262,7 +250,6 @@ class TickerDataService {
             amount: invoice.balance_due || invoice.total_amount,
             dueDate: dueDate || undefined,
             navigateTo: '/invoices',
-            icon: React.createElement(AlertTriangle, { className: 'w-4 h-4' })
           });
         }
       }
@@ -297,8 +284,7 @@ class TickerDataService {
               amount: invoice.balance_due || invoice.total_amount,
               dueDate: dueDate || undefined,
               navigateTo: '/invoices',
-              icon: React.createElement(DollarSign, { className: 'w-4 h-4' })
-            });
+              });
           }
         }
       }
@@ -322,8 +308,7 @@ class TickerDataService {
                 urgency: daysUntilCourt <= 1 ? 'urgent' : 'attention',
                 dueDate: courtDate,
                 navigateTo: '/matters',
-                icon: React.createElement(Gavel, { className: 'w-4 h-4' })
-              });
+                  });
             }
           }
 
@@ -340,8 +325,7 @@ class TickerDataService {
                 urgency: daysUntilDeadline <= 2 ? 'urgent' : 'attention',
                 dueDate: deadline,
                 navigateTo: '/matters',
-                icon: React.createElement(Clock, { className: 'w-4 h-4' })
-              });
+                  });
             }
           }
         });
@@ -363,7 +347,6 @@ class TickerDataService {
             description: `${matter.title} - ${matter.client_name}`,
             urgency: 'normal',
             navigateTo: '/matters',
-            icon: React.createElement(FileText, { className: 'w-4 h-4' })
           });
         });
       }
@@ -386,139 +369,8 @@ class TickerDataService {
       return sortedItems.slice(0, 10);
     } catch (error) {
       console.error('Error fetching real ticker data:', error);
-      return this.generateMockTickerData();
+      return [];
     }
-  }
-
-  /**
-   * Generate mock ticker data for development/testing
-   */
-  private async generateMockTickerData(): Promise<TickerItem[]> {
-    const now = new Date();
-    const tomorrow = new Date(now.getTime() + 24 * 60 * 60 * 1000);
-    const nextWeek = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
-    const yesterday = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-
-    // Simulate some randomness in the data
-    const randomItems: TickerItem[] = [
-      {
-        id: 'deadline-1',
-        type: 'deadline',
-        title: 'Constitutional Court Filing Due',
-        description: 'Smith v Jones - Application deadline in 2 hours',
-        urgency: 'urgent',
-        dueDate: new Date(now.getTime() + 2 * 60 * 60 * 1000),
-        navigateTo: '/matters',
-        icon: React.createElement(Gavel, { className: 'w-4 h-4' })
-      },
-      {
-        id: 'invoice-1',
-        type: 'invoice',
-        title: 'Overdue Invoice',
-        description: 'Van der Merwe Trust - R45,000 overdue 15 days',
-        urgency: 'urgent',
-        amount: 45000,
-        dueDate: yesterday,
-        navigateTo: '/finance',
-        icon: React.createElement(DollarSign, { className: 'w-4 h-4' })
-      },
-      {
-        id: 'court-1',
-        type: 'court_date',
-        title: 'High Court Appearance',
-        description: 'Johannesburg High Court - Tomorrow 9:00 AM',
-        urgency: 'attention',
-        dueDate: tomorrow,
-        navigateTo: '/matters',
-        icon: React.createElement(Calendar, { className: 'w-4 h-4' })
-      },
-      {
-        id: 'matter-1',
-        type: 'matter',
-        title: 'New Matter Assigned',
-        description: 'Corporate Merger - Urgent review required',
-        urgency: 'attention',
-        navigateTo: '/matters',
-        icon: React.createElement(FileText, { className: 'w-4 h-4' })
-      },
-      {
-        id: 'client-1',
-        type: 'client',
-        title: 'Client Meeting Reminder',
-        description: 'ABC Corporation - Strategy session in 1 hour',
-        urgency: 'normal',
-        dueDate: new Date(now.getTime() + 60 * 60 * 1000),
-        navigateTo: '/matters',
-        icon: React.createElement(Users, { className: 'w-4 h-4' })
-      },
-      {
-        id: 'payment-1',
-        type: 'payment',
-        title: 'Payment Received',
-        description: 'XYZ Ltd - R25,000 payment processed',
-        urgency: 'normal',
-        amount: 25000,
-        navigateTo: '/finance',
-        icon: React.createElement(CheckCircle, { className: 'w-4 h-4' })
-      },
-      {
-        id: 'deadline-2',
-        type: 'deadline',
-        title: 'Discovery Deadline',
-        description: 'Commercial Litigation - Document production due next week',
-        urgency: 'normal',
-        dueDate: nextWeek,
-        navigateTo: '/matters',
-        icon: React.createElement(Clock, { className: 'w-4 h-4' })
-      },
-      {
-        id: 'invoice-2',
-        type: 'invoice',
-        title: 'Invoice Due Soon',
-        description: 'Property Development Co - R12,500 due in 3 days',
-        urgency: 'attention',
-        amount: 12500,
-        dueDate: new Date(now.getTime() + 3 * 24 * 60 * 60 * 1000),
-        navigateTo: '/finance',
-        icon: React.createElement(DollarSign, { className: 'w-4 h-4' })
-      },
-      {
-        id: 'court-2',
-        type: 'court_date',
-        title: 'Labour Court Hearing',
-        description: 'CCMA Arbitration - Next Monday 10:00 AM',
-        urgency: 'normal',
-        dueDate: new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000),
-        navigateTo: '/matters',
-        icon: React.createElement(Gavel, { className: 'w-4 h-4' })
-      },
-      {
-        id: 'matter-2',
-        type: 'matter',
-        title: 'Contract Review',
-        description: 'Mining Rights Agreement - Final review pending',
-        urgency: 'attention',
-        navigateTo: '/matters',
-        icon: React.createElement(FileText, { className: 'w-4 h-4' })
-      }
-    ];
-
-    // Sort by urgency and due date
-    return randomItems.sort((a, b) => {
-      const urgencyOrder = { urgent: 0, attention: 1, normal: 2 };
-      const urgencyDiff = urgencyOrder[a.urgency] - urgencyOrder[b.urgency];
-      
-      if (urgencyDiff !== 0) {
-        return urgencyDiff;
-      }
-
-      // If same urgency, sort by due date
-      if (a.dueDate && b.dueDate) {
-        return a.dueDate.getTime() - b.dueDate.getTime();
-      }
-
-      return 0;
-    });
   }
 
   /**

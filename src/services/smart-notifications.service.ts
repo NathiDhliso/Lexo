@@ -378,117 +378,10 @@ class SmartNotificationsService {
   }
 
   /**
-   * Initialize with mock notifications
+   * Initialize notifications from database
    */
   private initializeNotifications(): void {
-    const now = new Date();
-    
-    this.notifications = [
-      {
-        id: 'notif_1',
-        type: 'urgent',
-        category: 'deadline',
-        title: 'Filing Deadline Approaching',
-        message: 'Constitutional Court application due in 2 hours',
-        timestamp: new Date(now.getTime() - 5 * 60 * 1000),
-        read: false,
-        actionable: true,
-        actions: [
-          {
-            id: 'view_matter',
-            label: 'View Matter',
-            action: 'navigate',
-            target: '/matters'
-          },
-          {
-            id: 'snooze',
-            label: 'Snooze 30min',
-            action: 'snooze',
-            parameters: { minutes: 30 }
-          }
-        ],
-        relatedPage: 'matters',
-        priority: 10
-      },
-      {
-        id: 'notif_2',
-        type: 'urgent',
-        category: 'invoice',
-        title: 'Overdue Payment',
-        message: 'Van der Merwe Trust invoice overdue by 15 days (R45,000)',
-        timestamp: new Date(now.getTime() - 15 * 60 * 1000),
-        read: false,
-        actionable: true,
-        actions: [
-          {
-            id: 'view_invoice',
-            label: 'View Invoice',
-            action: 'navigate',
-            target: '/finance'
-          },
-          {
-            id: 'send_reminder',
-            label: 'Send Reminder',
-            action: 'api_call',
-            target: '/api/invoices/send-reminder'
-          }
-        ],
-        relatedPage: 'finance',
-        priority: 9
-      },
-      {
-        id: 'notif_3',
-        type: 'attention',
-        category: 'court_date',
-        title: 'Court Appearance Tomorrow',
-        message: 'Johannesburg High Court at 9:00 AM',
-        timestamp: new Date(now.getTime() - 30 * 60 * 1000),
-        read: false,
-        actionable: true,
-        actions: [
-          {
-            id: 'view_matter',
-            label: 'View Matter',
-            action: 'navigate',
-            target: '/matters'
-          }
-        ],
-        relatedPage: 'matters',
-        priority: 8
-      },
-      {
-        id: 'notif_4',
-        type: 'info',
-        category: 'matter',
-        title: 'New Matter Assigned',
-        message: 'Corporate merger case requires urgent review',
-        timestamp: new Date(now.getTime() - 45 * 60 * 1000),
-        read: false,
-        actionable: true,
-        actions: [
-          {
-            id: 'view_matter',
-            label: 'View Matter',
-            action: 'navigate',
-            target: '/matters'
-          }
-        ],
-        relatedPage: 'matters',
-        priority: 6
-      },
-      {
-        id: 'notif_5',
-        type: 'success',
-        category: 'invoice',
-        title: 'Payment Received',
-        message: 'XYZ Ltd paid R25,000 invoice',
-        timestamp: new Date(now.getTime() - 60 * 60 * 1000),
-        read: false,
-        actionable: false,
-        relatedPage: 'finance',
-        priority: 3
-      }
-    ];
+    this.notifications = [];
   }
 
   /**
@@ -504,26 +397,9 @@ class SmartNotificationsService {
   }
 
   /**
-   * Generate new notifications (mock)
+   * Generate new notifications from database
    */
   private generateNewNotifications(): void {
-    // Randomly generate new notifications for demo
-    if (Math.random() < 0.1) { // 10% chance every 30 seconds
-      const types: SmartNotification['type'][] = ['info', 'attention', 'urgent'];
-      const categories: SmartNotification['category'][] = ['matter', 'client', 'invoice', 'deadline'];
-      
-      const type = types[Math.floor(Math.random() * types.length)];
-      const category = categories[Math.floor(Math.random() * categories.length)];
-      
-      this.addNotification({
-        type,
-        category,
-        title: `New ${category} notification`,
-        message: `This is a ${type} notification about ${category}`,
-        actionable: false,
-        priority: type === 'urgent' ? 8 : type === 'attention' ? 5 : 3
-      });
-    }
   }
 
   /**

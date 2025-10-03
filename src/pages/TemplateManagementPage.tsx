@@ -11,19 +11,12 @@ import {
   Search, 
   Filter, 
   Plus, 
-  Share2, 
-  Edit3, 
-  Trash2,
+  Share2,
   Users,
   Star,
-  Calendar,
-  TrendingUp,
   Grid,
-  List,
-  SortAsc,
-  SortDesc
+  List
 } from 'lucide-react';
-import { Icon } from '../design-system/components';
 import type { 
   MatterTemplateWithSharing, 
   TemplateCategory
@@ -67,6 +60,16 @@ export const TemplateManagementPage: React.FC = () => {
         matterTemplatesService.getCategories()
       ]);
 
+      if (templatesResult.error) {
+        toast.error(`Failed to load templates: ${templatesResult.error.message}`);
+        return;
+      }
+
+      if (categoriesResult.error) {
+        toast.error(`Failed to load categories: ${categoriesResult.error.message}`);
+        return;
+      }
+
       if (templatesResult.data) {
         setTemplates(templatesResult.data);
       }
@@ -76,7 +79,6 @@ export const TemplateManagementPage: React.FC = () => {
       }
     } catch (error) {
       toast.error('Failed to load templates');
-      console.error('Error loading templates:', error);
     } finally {
       setIsLoading(false);
     }
@@ -146,15 +148,14 @@ export const TemplateManagementPage: React.FC = () => {
   const handleTemplateDelete = async (templateId: string) => {
     try {
       const result = await matterTemplatesService.deleteTemplate(templateId);
-      if (result.success) {
+      if (result.error) {
+        toast.error(`Failed to delete template: ${result.error.message}`);
+      } else {
         setTemplates(prev => prev.filter(t => t.id !== templateId));
         toast.success('Template deleted successfully');
-      } else {
-        toast.error('Failed to delete template');
       }
     } catch (error) {
       toast.error('Failed to delete template');
-      console.error('Error deleting template:', error);
     }
   };
 

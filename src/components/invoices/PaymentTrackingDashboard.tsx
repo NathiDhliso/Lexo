@@ -14,6 +14,7 @@ import { ReminderService, type PaymentTrackingMetrics } from '../../services/rem
 import { InvoiceService } from '../../services/api/invoices.service';
 import { toast } from 'react-hot-toast';
 import type { Invoice } from '../../types';
+import { InvoiceStatus } from '../../types';
 
 interface PaymentTrackingDashboardProps {
   className?: string;
@@ -81,7 +82,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
 
   const markAsPaid = async (invoiceId: string) => {
     try {
-      await InvoiceService.updateInvoiceStatus(invoiceId, 'paid');
+      await InvoiceService.updateInvoiceStatus(invoiceId, InvoiceStatus.PAID);
       await loadDashboardData(); // Refresh data
       toast.success('Invoice marked as paid');
     } catch (err) {
@@ -90,13 +91,19 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Paid':
+  const getStatusColor = (status: InvoiceStatus | string) => {
+    const normalized = typeof status === 'string' ? status.toLowerCase() : String(status);
+    switch (normalized) {
+      case InvoiceStatus.PAID:
+      case 'paid':
         return 'text-success-600 bg-success-100';
-      case 'Overdue':
+      case InvoiceStatus.OVERDUE:
+      case 'overdue':
         return 'text-error-600 bg-error-100';
-      case 'Unpaid':
+      case InvoiceStatus.SENT:
+      case InvoiceStatus.VIEWED:
+      case InvoiceStatus.DRAFT:
+      case 'unpaid':
         return 'text-warning-600 bg-warning-100';
       default:
         return 'text-neutral-600 bg-neutral-100';
@@ -306,13 +313,13 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
                       <p className="font-medium text-neutral-900">{invoice.invoiceNumber}</p>
                       <p className="text-sm text-neutral-600">{invoice.clientName}</p>
                       <p className="text-xs text-neutral-500">
-                        Due: {invoice.dateDue ? format(new Date(invoice.dateDue), 'dd MMM yyyy') : 'N/A'}
+                        Due: {(invoice as any).dateDue || (invoice as any).due_date ? format(new Date((invoice as any).dateDue || (invoice as any).due_date), 'dd MMM yyyy') : 'N/A'}
                       </p>
                     </div>
                     <div className="flex items-center gap-3">
                       <div className="text-right">
                         <p className="font-semibold text-neutral-900">
-                          {formatRand(invoice.amount)}
+                          {formatRand((invoice as any).totalAmount ?? (invoice as any).total_amount ?? (invoice as any).amount ?? 0)}
                         </p>
                         <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(invoice.status)}`}>
                           {invoice.status}

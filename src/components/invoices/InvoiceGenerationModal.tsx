@@ -324,8 +324,7 @@ export const InvoiceGenerationModal: React.FC<InvoiceGenerationModalProps> = ({
     }
 
     try {
-      // Create a mock invoice object for PDF generation
-      const mockInvoice = {
+      const previewInvoice = {
         id: 'preview',
         invoiceNumber: 'PREVIEW',
         matterId: selectedMatter?.id || '',
@@ -348,12 +347,9 @@ export const InvoiceGenerationModal: React.FC<InvoiceGenerationModalProps> = ({
         ]
       };
 
-      const mockMatter = selectedMatter;
-      const mockAdvocate = user;
-
       const result = isProForma 
-        ? await InvoicePDFService.generateProFormaPDF(mockInvoice, mockMatter, mockAdvocate)
-        : await InvoicePDFService.generateInvoicePDF(mockInvoice, mockMatter, mockAdvocate);
+        ? await InvoicePDFService.generateProFormaPDF(previewInvoice, selectedMatter, user)
+        : await InvoicePDFService.generateInvoicePDF(previewInvoice, selectedMatter, user);
 
       if (result.success && result.blob) {
         InvoicePDFService.downloadPDF(result.blob, result.filename);

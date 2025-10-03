@@ -18,7 +18,8 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input } from '../..
 import { formatRand } from '../../lib/currency';
 import { InvoiceService } from '../../services/api/invoices.service';
 import { toast } from 'react-hot-toast';
-import type { Invoice, InvoiceStatus } from '../../types';
+import type { Invoice } from '../../types';
+import { InvoiceStatus } from '../../types';
 
 interface InvoiceDetailsModalProps {
   invoice: Invoice;
@@ -37,16 +38,16 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
 
   const getStatusConfig = (status: InvoiceStatus) => {
     switch (status) {
-      case 'draft':
+      case InvoiceStatus.DRAFT:
         return { color: 'bg-neutral-100 text-neutral-700', icon: FileText, label: 'Draft' };
-      case 'sent':
+      case InvoiceStatus.SENT:
         return { color: 'bg-judicial-blue-100 text-judicial-blue-700', icon: Send, label: 'Sent' };
-      case 'paid':
+      case InvoiceStatus.PAID:
         return { color: 'bg-status-success-100 text-status-success-700', icon: CheckCircle, label: 'Paid' };
-      case 'overdue':
+      case InvoiceStatus.OVERDUE:
         return { color: 'bg-status-error-100 text-status-error-700', icon: AlertTriangle, label: 'Overdue' };
       default:
-        return { color: 'bg-neutral-100 text-neutral-700', icon: FileText, label: status };
+        return { color: 'bg-neutral-100 text-neutral-700', icon: FileText, label: String(status) };
     }
   };
 
@@ -324,7 +325,7 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
             Download PDF
           </Button>
           
-          {invoice.status === 'draft' && (
+          {invoice.status === InvoiceStatus.DRAFT && (
             <Button
               variant="primary"
               onClick={handleSendInvoice}

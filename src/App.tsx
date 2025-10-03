@@ -10,7 +10,7 @@ import { Card, CardContent, Button } from './design-system/components';
 import { NavigationBar } from './components/navigation';
 
 // Auth
-import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 // Types
@@ -35,7 +35,6 @@ import { TemplateManagementPage } from './pages/TemplateManagementPage';
 import { PracticeGrowthPage } from './pages/PracticeGrowthPage';
 import { StrategicFinancePage } from './pages/StrategicFinancePage';
 import { InvoiceDesignerPage } from './pages/InvoiceDesignerPage';
-import { FeatureDiscoveryNotification } from './components/notifications/FeatureDiscoveryNotification';
 
 // Create Query Client with proper configuration
 const queryClient = new QueryClient({
@@ -131,21 +130,20 @@ const MainLayout: React.FC<{
   children: React.ReactNode;
   activePage: Page;
   onPageChange: (page: Page) => void;
-}> = ({ children, activePage, onPageChange }) => {
-  const { user } = useAuth();
-  
-  // Determine user tier based on user data (simplified for now)
-  const userTier: UserTier = UserTier.ADVOCATE_PRO; // This should come from user data/subscription
-  
+  sidebarOpen: boolean;
+  onToggleSidebar: () => void;
+}> = ({ children, activePage, onPageChange, sidebarOpen, onToggleSidebar }) => {
+  // Removed unused user from useAuth
+  const userTier: UserTier = UserTier.ADVOCATE_PRO;
   return (
     <div className="min-h-screen bg-neutral-50 flex flex-col">
       <NavigationBar
         activePage={activePage}
         onPageChange={onPageChange}
         userTier={userTier}
-        user={user}
+        onToggleSidebar={onToggleSidebar}
+        sidebarOpen={sidebarOpen}
       />
-
       {/* Main content area */}
       <main className="flex-1">
         <div className="px-3 sm:px-4 md:px-6 py-4 md:py-6">
@@ -169,72 +167,9 @@ const AppContent: React.FC = () => {
 
 
 
-  // Initialize feature system and set up redirect handler
-  useEffect(() => {
-    const initializeFeatureSystem = async () => {
-      try {
-        // Initialize services
-        const [
-          { featureGuardService },
-          { featureToggleService },
-          { userPreferencesService }
-        ] = await Promise.all([
-          import('./services/feature-guard.service'),
-          import('./services/feature-toggle.service'),
-          import('./services/api/user-preferences.service')
-        ]);
 
-        // Load user preferences and initialize feature toggle service
-        const preferencesResponse = await userPreferencesService.getCurrentUserPreferences();
-        
-        if (preferencesResponse.data) {
-          await featureToggleService.initialize(preferencesResponse.data);
-        } else if (!preferencesResponse.error) {
-          // Initialize with defaults for new users
-          await featureToggleService.initialize(null);
-        }
-
-        // Set up redirect handler
-        const unsubscribe = featureGuardService.onRedirect((redirectPage) => {
-          setAppState(prev => ({ ...prev, activePage: redirectPage as Page, currentPage: redirectPage as Page }));
-        });
-
-        return unsubscribe;
-      } catch (error) {
-        console.error('Error initializing feature system:', error);
-        return () => {};
-      }
-    };
-
-    let cleanup: (() => void) | undefined;
-    initializeFeatureSystem().then(unsubscribeFn => {
-      cleanup = unsubscribeFn;
-    });
-
-    return () => {
-      if (cleanup) {
-        cleanup();
-      }
-    };
-  }, []);
-
-  const handlePageChange = useCallback(async (page: Page) => {
-    // Validate access before changing page
-    try {
-      const { featureGuardService } = await import('./services/feature-guard.service');
-      
-      if (featureGuardService.validatePageAccess(page)) {
-        setAppState(prev => ({ ...prev, activePage: page, currentPage: page }));
-      }
-      // If validation fails, the guard service will handle the redirect
-    } catch (error) {
-      console.error('Error validating page access:', error);
-      // Fallback to direct navigation for core pages
-      const corePages = ['dashboard', 'matters', 'invoices', 'proforma', 'pricing-management', 'compliance', 'settings', 'profile', 'reports', 'ai-analytics', 'practice-growth', 'strategic-finance', 'workflow-integrations', 'matter-templates', 'academy'];
-      if (corePages.includes(page)) {
-        setAppState(prev => ({ ...prev, activePage: page, currentPage: page }));
-      }
-    }
+  const handlePageChange = useCallback((page: Page) => {
+    setAppState(prev => ({ ...prev, activePage: page, currentPage: page }));
   }, []);
 
 
@@ -255,13 +190,6 @@ const AppContent: React.FC = () => {
   }, [appState.sidebarOpen]);
 
   const renderPage = () => {
-    // Import AdvancedFeatureRoute dynamically to avoid circular dependencies
-    const AdvancedFeatureRoute = React.lazy(() => 
-      import('./components/features/AdvancedFeatureRoute').then(module => ({
-        default: module.AdvancedFeatureRoute
-      }))
-    );
-
     switch (appState.activePage) {
       case 'dashboard':
         return <DashboardPage onNavigate={handlePageChange} />;
@@ -287,57 +215,21 @@ const AppContent: React.FC = () => {
         return <InvoiceDesignerPage />;
       case 'academy':
         return (
-          <Suspense fallback={<LoadingSpinner />}>
-            <AdvancedFeatureRoute page="academy">
-              <div className="p-8">
-                <h1 className="text-2xl font-bold">Academy</h1>
-                <p>Coming soon</p>
-              </div>
-            </AdvancedFeatureRoute>
-          </Suspense>
+          <div className="p-8">
+            <h1 className="text-2xl font-bold">Academy</h1>
+            <p>Coming soon</p>
+          </div>
         );
-      
-      // Advanced feature pages with route guards
       case 'ai-analytics':
-        return (
-          <Suspense fallback={<LoadingSpinner />}>
-            <AdvancedFeatureRoute page="ai-analytics">
-              <AIAnalyticsDashboard />
-            </AdvancedFeatureRoute>
-          </Suspense>
-        );
+        return <AIAnalyticsDashboard />;
       case 'strategic-finance':
-        return (
-          <Suspense fallback={<LoadingSpinner />}>
-            <AdvancedFeatureRoute page="strategic-finance">
-              <StrategicFinancePage />
-            </AdvancedFeatureRoute>
-          </Suspense>
-        );
+        return <StrategicFinancePage />;
       case 'practice-growth':
-        return (
-          <Suspense fallback={<LoadingSpinner />}>
-            <AdvancedFeatureRoute page="practice-growth">
-              <PracticeGrowthPage />
-            </AdvancedFeatureRoute>
-          </Suspense>
-        );
+        return <PracticeGrowthPage />;
       case 'workflow-integrations':
-        return (
-          <Suspense fallback={<LoadingSpinner />}>
-            <AdvancedFeatureRoute page="workflow-integrations">
-              <WorkflowIntegrationsPage />
-            </AdvancedFeatureRoute>
-          </Suspense>
-        );
+        return <WorkflowIntegrationsPage />;
       case 'reports':
-        return (
-          <Suspense fallback={<LoadingSpinner />}>
-            <AdvancedFeatureRoute page="reports">
-              <ReportsPage />
-            </AdvancedFeatureRoute>
-          </Suspense>
-        );
+        return <ReportsPage />;
       
       default:
         return <DashboardPage onNavigate={handlePageChange} />;
@@ -350,18 +242,13 @@ const AppContent: React.FC = () => {
         <MainLayout
           activePage={appState.activePage}
           onPageChange={handlePageChange}
+          sidebarOpen={appState.sidebarOpen}
+          onToggleSidebar={() => setAppState(prev => ({ ...prev, sidebarOpen: !prev.sidebarOpen }))}
         >
           <Suspense fallback={<LoadingSpinner />}>
             {renderPage()}
           </Suspense>
         </MainLayout>
-        
-        {/* Feature Discovery Notification */}
-        <FeatureDiscoveryNotification 
-          onNavigateToSettings={() => {
-            setAppState(prev => ({ ...prev, activePage: 'settings' }));
-          }}
-        />
         
         <Toaster
           position="top-right"

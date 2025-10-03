@@ -7,6 +7,7 @@ import { formatRand } from '../../lib/currency';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from '../../design-system/components';
 import { InvoiceService } from '@/services/api/invoices.service';
 import type { Invoice } from '@/types';
+import { PaymentMethod } from '@/types';
 
 interface PaymentModalProps {
   isOpen: boolean;
@@ -16,10 +17,10 @@ interface PaymentModalProps {
 }
 
 const PAYMENT_METHODS = [
-  { value: 'EFT', label: 'Electronic Transfer (EFT)' },
-  { value: 'Cheque', label: 'Cheque' },
-  { value: 'Cash', label: 'Cash' },
-  { value: 'Card', label: 'Credit/Debit Card' }
+  { value: PaymentMethod.EFT, label: 'Electronic Transfer (EFT)' },
+  { value: PaymentMethod.CHEQUE, label: 'Cheque' },
+  { value: PaymentMethod.CASH, label: 'Cash' },
+  { value: PaymentMethod.CARD, label: 'Credit/Debit Card' }
 ] as const;
 
 export const PaymentModal: React.FC<PaymentModalProps> = ({
@@ -30,11 +31,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
 }) => {
   const [amount, setAmount] = useState<string>('');
   const [paymentDate, setPaymentDate] = useState(format(new Date(), 'yyyy-MM-dd'));
-  const [paymentMethod, setPaymentMethod] = useState<'EFT' | 'Cheque' | 'Cash' | 'Card'>('EFT');
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>(PaymentMethod.EFT);
   const [reference, setReference] = useState('');
   const [isRecording, setIsRecording] = useState(false);
 
-  const outstandingAmount = invoice.totalAmount - (invoice.amountPaid || 0);
+  const totalAmount = invoice.totalAmount ?? invoice.total_amount ?? 0;
+  const alreadyPaid = invoice.amountPaid ?? invoice.amount_paid ?? 0;
+  const outstandingAmount = totalAmount - alreadyPaid;
   const isPartialPayment = parseFloat(amount) < outstandingAmount;
   const isOverpayment = parseFloat(amount) > outstandingAmount;
 
@@ -84,7 +87,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
       await InvoiceService.recordPayment(invoice.id, {
         amount: paymentAmount,
         paymentDate,
-        paymentMethod,
+        paymentMethod: paymentMethod,
         reference: reference.trim() || undefined
       });
       
@@ -113,7 +116,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               Record Payment
             </h2>
             <p className="text-sm text-neutral-600">
-              {invoice.invoiceNumber}
+              {invoice.invoiceNumber ?? invoice.invoice_number ?? '—'}
             </p>
           </div>
         </div>
@@ -126,13 +129,13 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <div>
               <p className="text-neutral-500">Total Amount</p>
               <p className="font-semibold text-neutral-900">
-                {formatRand(invoice.totalAmount)}
+                {formatRand(totalAmount)}
               </p>
             </div>
             <div>
               <p className="text-neutral-500">Amount Paid</p>
               <p className="font-semibold text-neutral-900">
-                {formatRand(invoice.amountPaid || 0)}
+                {formatRand(alreadyPaid)}
               </p>
             </div>
             <div className="col-span-2">
@@ -214,7 +217,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
             <div className="relative">
               <select
                 value={paymentMethod}
-                onChange={(e) => setPaymentMethod(e.target.value as typeof paymentMethod)}
+                onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
                 className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-success-500 focus:border-transparent appearance-none"
               >
                 {PAYMENT_METHODS.map((method) => (

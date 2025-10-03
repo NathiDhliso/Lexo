@@ -65,7 +65,7 @@ export abstract class BaseApiService<T = unknown> {
   /**
    * Generate unique request ID for error tracking
    */
-  private generateRequestId(): string {
+  protected generateRequestId(): string {
     return `req_${Date.now()}_${Math.random().toString(36).substring(2)}`;
   }
 
