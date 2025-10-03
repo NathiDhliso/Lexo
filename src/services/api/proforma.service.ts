@@ -92,7 +92,7 @@ export class ProFormaService {
           disbursements_amount: 0,
           vat_rate: vatRate,
           bar: advocate.bar,
-          status: 'pro_forma',
+          status: 'draft',
           is_pro_forma: true,
           fee_narrative: data.fee_narrative,
           internal_notes: data.notes,
@@ -189,7 +189,7 @@ export class ProFormaService {
       await supabase
         .from('invoices')
         .update({
-          status: 'pro_forma_accepted',
+          status: 'converted_to_invoice',
           converted_to_invoice_id: invoice.id,
           pro_forma_accepted_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -223,8 +223,12 @@ export class ProFormaService {
       };
 
       // Add timestamp for specific status changes
-      if (status === 'pro_forma_accepted') {
+      if (status === 'pro_forma_accepted' || status === 'accepted') {
         updateData.pro_forma_accepted_at = new Date().toISOString();
+      } else if (status === 'sent' || status === 'awaiting_acceptance') {
+        updateData.sent_at = new Date().toISOString();
+      } else if (status === 'pro_forma_declined' || status === 'declined') {
+        updateData.pro_forma_declined_at = new Date().toISOString();
       }
 
       const { data: invoice, error } = await supabase
@@ -313,13 +317,22 @@ export class ProFormaService {
   private mapInvoiceStatusToProFormaStatus(status: string): ProFormaStatus {
     switch (status) {
       case 'pro_forma':
+      case 'draft':
         return ProFormaStatus.DRAFT;
       case 'sent':
         return ProFormaStatus.SENT;
+      case 'awaiting_acceptance':
+        return ProFormaStatus.AWAITING_ACCEPTANCE;
       case 'pro_forma_accepted':
+      case 'accepted':
         return ProFormaStatus.ACCEPTED;
       case 'pro_forma_declined':
+      case 'declined':
         return ProFormaStatus.DECLINED;
+      case 'expired':
+        return ProFormaStatus.EXPIRED;
+      case 'converted_to_invoice':
+        return ProFormaStatus.CONVERTED_TO_INVOICE;
       default:
         return ProFormaStatus.DRAFT;
     }
