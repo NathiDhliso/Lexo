@@ -117,12 +117,6 @@ export interface DocumentProcessingResult {
 }
 
 export class AdvancedOCRService {
-  private static readonly API_ENDPOINTS = {
-    // In production, these would be actual cloud service endpoints
-    AZURE_DOCUMENT_INTELLIGENCE: 'https://api.cognitive.microsoft.com/documentintelligence/v1.0',
-    GOOGLE_DOCUMENT_AI: 'https://documentai.googleapis.com/v1',
-    AWS_TEXTRACT: 'https://textract.amazonaws.com'
-  };
 
   private static readonly SUPPORTED_FORMATS = [
     'application/pdf',
@@ -203,7 +197,7 @@ export class AdvancedOCRService {
   /**
    * Extract text using advanced OCR
    */
-  private static async extractTextWithOCR(preprocessedData: Record<string, unknown>): Promise<OCRResult> {
+  private static async extractTextWithOCR(_preprocessedData: Record<string, unknown>): Promise<OCRResult> {
     // No mock OCR output. Return an empty result until a provider is configured.
       toast('OCR provider not configured. Returning empty extraction.', { icon: 'ℹ️' });
     return {
@@ -332,29 +326,6 @@ export class AdvancedOCRService {
       structureDetection: Math.min(0.9, 0.5 + (entityCount / 20) * 0.4),
       entityExtraction: Math.min(0.88, 0.6 + (entityCount / 15) * 0.28)
     };
-  }
-
-
-  /**
-   * Classify line type for OCR processing
-   */
-  private static classifyLineType(line: string): BoundingBox['type'] {
-    const trimmed = line.trim();
-    
-    if (trimmed === trimmed.toUpperCase() && trimmed.length > 10) {
-      return 'title';
-    }
-    if (/^(TO:|TAKE NOTICE|DATED)/.test(trimmed)) {
-      return 'header';
-    }
-    if (trimmed.length < 20) {
-      return 'word';
-    }
-    if (trimmed.length < 80) {
-      return 'line';
-    }
-    
-    return 'paragraph';
   }
 
   /**
