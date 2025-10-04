@@ -35,10 +35,20 @@ interface ProFormaRequest {
   requested_action?: 'matter' | 'pro_forma';
   matter_title?: string;
   client_name?: string;
+  client_email?: string;
+  client_phone?: string;
+  matter_type?: string;
+  urgency_level?: string;
+  // Pro Forma specific fields
+  fee_narrative?: string;
+  total_amount?: number;
+  valid_until?: string;
+  quote_date?: string;
   status: 'pending' | 'submitted' | 'processed' | 'declined';
   created_at: string;
   submitted_at?: string;
   processed_at?: string;
+  expires_at?: string;
 }
 
 interface PendingProFormaRequestsProps {
@@ -103,12 +113,15 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
       title: request.matter_title || `Matter for ${request.client_name || request.instructing_attorney_name}`,
       description: request.matter_description || '',
       client_name: request.client_name || '',
+      client_email: request.client_email || '',
+      client_phone: request.client_phone || '',
+      matter_type: request.matter_type || 'general',
       instructing_attorney: request.instructing_attorney_name || '',
       instructing_firm: request.instructing_attorney_firm || '',
       instructing_attorney_email: request.instructing_attorney_email || '',
       instructing_attorney_phone: request.instructing_attorney_phone || '',
-      estimated_value: 0,
-      additional_notes: ''
+      estimated_value: request.total_amount || 0,
+      additional_notes: request.fee_narrative || ''
     };
 
     setPrepopulationData(initialData);
@@ -123,6 +136,9 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
         title: initialData.title,
         description: initialData.description,
         client_name: initialData.client_name,
+        client_email: initialData.client_email,
+        client_phone: initialData.client_phone,
+        matter_type: initialData.matter_type,
         instructing_attorney: initialData.instructing_attorney,
         instructing_firm: initialData.instructing_firm,
         instructing_attorney_email: initialData.instructing_attorney_email,
@@ -132,7 +148,6 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         advocate_id: user?.id || '',
-        matter_type: 'Other',
         client_type: 'individual' as any,
         fee_type: 'hourly' as any,
         hourly_rate: 0,

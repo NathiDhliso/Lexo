@@ -20,6 +20,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
   const [matterDescription, setMatterDescription] = useState('');
   const [matterType, setMatterType] = useState('general');
   const [urgencyLevel, setUrgencyLevel] = useState<'low' | 'medium' | 'high'>('medium');
+  const [requestedAction, setRequestedAction] = useState<'matter' | 'pro_forma'>('matter');
   const [generatedLink, setGeneratedLink] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
   const [linkCopied, setLinkCopied] = useState(false);
@@ -83,7 +84,8 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
           matter_type: matterType,
           urgency_level: urgencyLevel,
           status: 'pending',
-          expires_at: expiryDate.toISOString()
+          expires_at: expiryDate.toISOString(),
+          requested_action: requestedAction
         });
 
       console.log('Insert result error:', error);
@@ -237,6 +239,26 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
                 <option value="medium">Medium - Priority processing</option>
                 <option value="high">High - Urgent processing</option>
               </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 mb-1">
+                Request Type
+              </label>
+              <select
+                value={requestedAction}
+                onChange={(e) => setRequestedAction(e.target.value as 'matter' | 'pro_forma')}
+                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent"
+              >
+                <option value="matter">Matter Creation - Client provides details to create a new matter</option>
+                <option value="pro_forma">Pro Forma Generation - Client provides details for immediate pro forma quote</option>
+              </select>
+              <p className="mt-1 text-xs text-neutral-500">
+                {requestedAction === 'matter' 
+                  ? 'The client will provide information to create a new matter in your system.'
+                  : 'The client will provide information to generate a pro forma invoice quote.'
+                }
+              </p>
             </div>
 
             <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">

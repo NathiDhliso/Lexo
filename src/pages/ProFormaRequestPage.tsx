@@ -29,6 +29,17 @@ interface FormData {
   matter_description: string;
   matter_type: string;
   urgency_level: string;
+  // New fields for Matter prepopulation
+  matter_title: string;
+  instructing_attorney_name: string;
+  instructing_attorney_firm: string;
+  instructing_attorney_email: string;
+  instructing_attorney_phone: string;
+  // Optional Pro Forma fields
+  fee_narrative: string;
+  total_amount: string;
+  valid_until: string;
+  quote_date: string;
 }
 
 interface ProFormaRequestPageProps {
@@ -44,7 +55,18 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
     client_phone: '',
     matter_description: '',
     matter_type: 'general',
-    urgency_level: 'medium'
+    urgency_level: 'medium',
+    // New fields for Matter prepopulation
+    matter_title: '',
+    instructing_attorney_name: '',
+    instructing_attorney_firm: '',
+    instructing_attorney_email: '',
+    instructing_attorney_phone: '',
+    // Optional Pro Forma fields
+    fee_narrative: '',
+    total_amount: '',
+    valid_until: '',
+    quote_date: new Date().toISOString().split('T')[0] // Default to today
   });
   const [requestStatus, setRequestStatus] = useState<'loading' | 'pending' | 'submitted' | 'processed' | 'declined' | 'not_found'>('loading');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -139,21 +161,45 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
     const requiredFields: (keyof FormData)[] = [
       'client_name',
       'client_email',
-      'matter_description'
+      'matter_description',
+      'matter_title',
+      'instructing_attorney_name'
     ];
 
     for (const field of requiredFields) {
       if (!formData[field].trim()) {
-        toast.error(`Please fill in ${field.replace(/_/g, ' ')}`);
+        const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        toast.error(`Please fill in ${fieldName}`);
         return false;
       }
     }
 
-    // Basic email validation
+    // Email validation for client email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(formData.client_email)) {
-      toast.error('Please enter a valid email address');
+      toast.error('Please enter a valid client email address');
       return false;
+    }
+
+    // Email validation for instructing attorney email (if provided)
+    if (formData.instructing_attorney_email && !emailRegex.test(formData.instructing_attorney_email)) {
+      toast.error('Please enter a valid attorney email address');
+      return false;
+    }
+
+    // Validate Pro Forma fields if any are provided
+    if (formData.total_amount && isNaN(Number(formData.total_amount))) {
+      toast.error('Please enter a valid total amount');
+      return false;
+    }
+
+    if (formData.valid_until && formData.quote_date) {
+      const validUntil = new Date(formData.valid_until);
+      const quoteDate = new Date(formData.quote_date);
+      if (validUntil <= quoteDate) {
+        toast.error('Valid until date must be after quote date');
+        return false;
+      }
     }
 
     return true;
@@ -359,6 +405,105 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                       <option value="employment">Employment Law</option>
                       <option value="other">Other</option>
                     </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* Matter Title */}
+              <div>
+                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Matter Title
+                </h3>
+                <Input
+                  label="Matter Title *"
+                  value={formData.matter_title}
+                  onChange={(e) => handleInputChange('matter_title', e.target.value)}
+                  placeholder="Enter a descriptive title for this matter"
+                  required
+                />
+              </div>
+
+              {/* Instructing Attorney Information */}
+              <div>
+                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
+                  <User className="w-4 h-4" />
+                  Instructing Attorney Information
+                </h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <Input
+                    label="Attorney Name *"
+                    value={formData.instructing_attorney_name}
+                    onChange={(e) => handleInputChange('instructing_attorney_name', e.target.value)}
+                    placeholder="Enter attorney name"
+                    required
+                  />
+                  <Input
+                    label="Law Firm"
+                    value={formData.instructing_attorney_firm}
+                    onChange={(e) => handleInputChange('instructing_attorney_firm', e.target.value)}
+                    placeholder="Enter law firm name"
+                  />
+                  <Input
+                    label="Attorney Email"
+                    type="email"
+                    value={formData.instructing_attorney_email}
+                    onChange={(e) => handleInputChange('instructing_attorney_email', e.target.value)}
+                    placeholder="Enter attorney email"
+                  />
+                  <Input
+                    label="Attorney Phone"
+                    type="tel"
+                    value={formData.instructing_attorney_phone}
+                    onChange={(e) => handleInputChange('instructing_attorney_phone', e.target.value)}
+                    placeholder="Enter attorney phone"
+                  />
+                </div>
+              </div>
+
+              {/* Optional Pro Forma Information */}
+              <div>
+                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
+                  <FileText className="w-4 h-4" />
+                  Pro Forma Information (Optional)
+                </h3>
+                <p className="text-sm text-neutral-600 mb-4">
+                  If you have specific fee information or requirements, please provide them below.
+                </p>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 mb-2">
+                      Fee Narrative
+                    </label>
+                    <textarea
+                      value={formData.fee_narrative}
+                      onChange={(e) => handleInputChange('fee_narrative', e.target.value)}
+                      placeholder="Describe the fee structure, services included, or any specific billing arrangements..."
+                      rows={4}
+                      className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:border-mpondo-gold-500 resize-vertical"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <Input
+                      label="Total Amount"
+                      type="number"
+                      step="0.01"
+                      value={formData.total_amount}
+                      onChange={(e) => handleInputChange('total_amount', e.target.value)}
+                      placeholder="0.00"
+                    />
+                    <Input
+                      label="Valid Until"
+                      type="date"
+                      value={formData.valid_until}
+                      onChange={(e) => handleInputChange('valid_until', e.target.value)}
+                    />
+                    <Input
+                      label="Quote Date"
+                      type="date"
+                      value={formData.quote_date}
+                      onChange={(e) => handleInputChange('quote_date', e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
