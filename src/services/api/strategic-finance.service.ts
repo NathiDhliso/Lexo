@@ -280,7 +280,6 @@ export class StrategicFinanceService {
         marketTrends: 'stable',
         competitionLevel: 'medium'
       };
-
       // Call AWS Bedrock for AI-powered recommendations
       const aiResult = await awsBedrockService.generateFeeOptimizationRecommendations(matterData, marketData);
 
@@ -288,7 +287,7 @@ export class StrategicFinanceService {
         // Transform AI response to our format and save to database
         const aiRecommendation = aiResult.data;
         
-        const { data: saved, error: saveError } = await supabase
+        const { error: saveError } = await supabase
           .from('fee_optimization_recommendations')
           .insert({
             advocate_id: user.id,
@@ -354,7 +353,7 @@ export class StrategicFinanceService {
 
         // Transform and save database recommendations
         const savedRecommendations = await Promise.all(
-          recommendations.map(async (rec: any) => {
+          recommendations.map(async (rec: Record<string, unknown>) => {
             const { data: saved } = await supabase
               .from('fee_optimization_recommendations')
               .insert({
@@ -541,7 +540,7 @@ export class StrategicFinanceService {
   }
 
   // Generate fallback cash flow optimization recommendations
-  private static generateFallbackCashFlowOptimization(data: any): any {
+  private static generateFallbackCashFlowOptimization(data: Record<string, unknown>): Record<string, unknown> {
     const strategies = [];
     const priorityActions = [];
 
@@ -981,7 +980,7 @@ export class StrategicFinanceService {
   }
 
   // Helper function to calculate metrics
-  private static calculateMetrics(invoices: any[], matters: any[], timeEntries: any[]) {
+  private static calculateMetrics(invoices: Record<string, unknown>[], matters: Record<string, unknown>[], timeEntries: Record<string, unknown>[]) {
     // Collection rate calculations
     const last30Days = new Date();
     last30Days.setDate(last30Days.getDate() - 30);
@@ -1032,7 +1031,7 @@ export class StrategicFinanceService {
   }
 
   // Mapping functions
-  private static mapFeeOptimizationRecommendation(record: any): FeeOptimizationRecommendation {
+  private static mapFeeOptimizationRecommendation(record: Record<string, unknown>): FeeOptimizationRecommendation {
     return {
       id: record.id,
       advocateId: record.advocate_id,
@@ -1053,7 +1052,7 @@ export class StrategicFinanceService {
     };
   }
 
-  private static mapCashFlowPrediction(record: any): CashFlowPrediction {
+  private static mapCashFlowPrediction(record: Record<string, unknown>): CashFlowPrediction {
     return {
       id: record.id,
       advocateId: record.advocate_id,
@@ -1078,7 +1077,7 @@ export class StrategicFinanceService {
     };
   }
 
-  private static mapFactoringOffer(record: any): FactoringOffer {
+  private static mapFactoringOffer(record: Record<string, unknown>): FactoringOffer {
     return {
       id: record.id,
       providerName: record.provider_name,
@@ -1096,7 +1095,7 @@ export class StrategicFinanceService {
     };
   }
 
-  private static mapFactoringApplication(record: any): FactoringApplication {
+  private static mapFactoringApplication(record: Record<string, unknown>): FactoringApplication {
     return {
       id: record.id,
       invoiceId: record.invoice_id,
@@ -1116,7 +1115,7 @@ export class StrategicFinanceService {
     };
   }
 
-  private static mapSuccessFeeScenario(record: any): SuccessFeeScenario {
+  private static mapSuccessFeeScenario(record: Record<string, unknown>): SuccessFeeScenario {
     return {
       id: record.id,
       matterId: record.matter_id,
@@ -1142,7 +1141,7 @@ export class StrategicFinanceService {
     };
   }
 
-  private static mapPracticeFinancialHealth(record: any): PracticeFinancialHealth {
+  private static mapPracticeFinancialHealth(record: Record<string, unknown>): PracticeFinancialHealth {
     return {
       id: record.id,
       advocateId: record.advocate_id,
