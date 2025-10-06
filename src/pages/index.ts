@@ -1,18 +1,11 @@
-// Centralized exports for all page components
+// Centralized exports for core page components
+// Core Features: Matters → Pro Forma → Invoices
+
 export { default as LoginPage } from './LoginPage';
+export { default as WelcomePage } from './WelcomePage';
 export { default as DashboardPage } from './DashboardPage';
 export { default as MattersPage } from './MattersPage';
-export { default as MatterWorkbenchPage } from './MatterWorkbenchPage';
-export { default as DocumentIntelligencePage } from './DocumentIntelligencePage';
-export { default as WorkflowIntegrationsPage } from './WorkflowIntegrationsPage';
-export { default as AcademyPage } from './AcademyPage';
-export { default as InvoicesPage } from './InvoicesPage';
-export { default as ReportsPage } from './ReportsPage';
-export { default as SettingsPage } from './SettingsPage';
-export { default as ProfilePage } from './ProfilePage';
-export { default as PricingManagementPage } from './PricingManagementPage';
 export { default as ProFormaPage } from './ProFormaPage';
-export { default as CompliancePage } from './CompliancePage';
 export { default as ProFormaRequestPage } from './ProFormaRequestPage';
-export { StrategicFinancePage } from './StrategicFinancePage';
-export { AIAnalyticsDashboard } from './AIAnalyticsDashboard';
+export { default as InvoicesPage } from './InvoicesPage';
+export { default as ProfilePage } from './ProfilePage';
