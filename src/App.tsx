@@ -19,22 +19,11 @@ import { UserTier } from './types';
 import {
   DashboardPage,
   MattersPage,
-  MatterWorkbenchPage,
   InvoicesPage,
-  ReportsPage,
-  SettingsPage,
   ProfilePage,
-  PricingManagementPage,
-  WorkflowIntegrationsPage,
-  AIAnalyticsDashboard,
   ProFormaPage,
-  CompliancePage,
   ProFormaRequestPage
 } from './pages';
-import { TemplateManagementPage } from './pages/TemplateManagementPage';
-import { PracticeGrowthPage } from './pages/PracticeGrowthPage';
-import { StrategicFinancePage } from './pages/StrategicFinancePage';
-import { InvoiceDesignerPage } from './pages/InvoiceDesignerPage';
 
 // Create Query Client with proper configuration
 const queryClient = new QueryClient({
@@ -195,41 +184,12 @@ const AppContent: React.FC = () => {
         return <DashboardPage onNavigate={handlePageChange} />;
       case 'matters':
         return <MattersPage onNavigate={handlePageChange} />;
-      case 'matter-workbench':
-        return <MatterWorkbenchPage onNavigateBack={() => handlePageChange('matters')} />;
-      case 'matter-templates':
-        return <TemplateManagementPage />;
       case 'invoices':
         return <InvoicesPage />;
       case 'proforma':
         return <ProFormaPage />;
       case 'profile':
         return <ProfilePage />;
-      case 'pricing-management':
-        return <PricingManagementPage />;
-      case 'compliance':
-        return <CompliancePage />;
-      case 'settings':
-        return <SettingsPage onNavigate={handlePageChange} />;
-      case 'invoice-designer':
-        return <InvoiceDesignerPage />;
-      case 'academy':
-        return (
-          <div className="p-8">
-            <h1 className="text-2xl font-bold">Academy</h1>
-            <p>Coming soon</p>
-          </div>
-        );
-      case 'ai-analytics':
-        return <AIAnalyticsDashboard />;
-      case 'strategic-finance':
-        return <StrategicFinancePage />;
-      case 'practice-growth':
-        return <PracticeGrowthPage />;
-      case 'workflow-integrations':
-        return <WorkflowIntegrationsPage />;
-      case 'reports':
-        return <ReportsPage />;
       
       default:
         return <DashboardPage onNavigate={handlePageChange} />;
