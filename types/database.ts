@@ -14,6 +14,69 @@ export type Database = {
   }
   public: {
     Tables: {
+      account_lockouts: {
+        Row: {
+          created_at: string
+          email: string
+          failed_attempts: number
+          id: string
+          locked_until: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          failed_attempts?: number
+          id?: string
+          locked_until: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          failed_attempts?: number
+          id?: string
+          locked_until?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      active_sessions: {
+        Row: {
+          created_at: string
+          device_fingerprint: string | null
+          expires_at: string
+          id: string
+          ip_address: string | null
+          last_activity: string
+          session_token: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_fingerprint?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: string | null
+          last_activity?: string
+          session_token: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_fingerprint?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: string | null
+          last_activity?: string
+          session_token?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       advocate_profiles: {
         Row: {
           accepting_overflow: boolean | null
@@ -151,12 +214,16 @@ export type Database = {
       }
       advocates: {
         Row: {
+          banking_details: Json | null
           bar: Database["public"]["Enums"]["bar_association"]
           chambers_address: string | null
           contingency_rate: number | null
           created_at: string | null
           deleted_at: string | null
           email: string
+          firm_logo_url: string | null
+          firm_name: string | null
+          firm_tagline: string | null
           full_name: string
           hourly_rate: number
           id: string
@@ -169,20 +236,28 @@ export type Database = {
           phone_number: string | null
           postal_address: string | null
           practice_number: string
+          role_assigned_at: string | null
+          role_assigned_by: string | null
           specialisations: string[] | null
           success_fee_rate: number | null
           total_collected_ytd: number | null
           total_outstanding: number | null
           updated_at: string | null
+          user_role: Database["public"]["Enums"]["user_role"] | null
+          vat_number: string | null
           year_admitted: number
         }
         Insert: {
+          banking_details?: Json | null
           bar: Database["public"]["Enums"]["bar_association"]
           chambers_address?: string | null
           contingency_rate?: number | null
           created_at?: string | null
           deleted_at?: string | null
           email: string
+          firm_logo_url?: string | null
+          firm_name?: string | null
+          firm_tagline?: string | null
           full_name: string
           hourly_rate: number
           id?: string
@@ -195,20 +270,28 @@ export type Database = {
           phone_number?: string | null
           postal_address?: string | null
           practice_number: string
+          role_assigned_at?: string | null
+          role_assigned_by?: string | null
           specialisations?: string[] | null
           success_fee_rate?: number | null
           total_collected_ytd?: number | null
           total_outstanding?: number | null
           updated_at?: string | null
+          user_role?: Database["public"]["Enums"]["user_role"] | null
+          vat_number?: string | null
           year_admitted: number
         }
         Update: {
+          banking_details?: Json | null
           bar?: Database["public"]["Enums"]["bar_association"]
           chambers_address?: string | null
           contingency_rate?: number | null
           created_at?: string | null
           deleted_at?: string | null
           email?: string
+          firm_logo_url?: string | null
+          firm_name?: string | null
+          firm_tagline?: string | null
           full_name?: string
           hourly_rate?: number
           id?: string
@@ -221,12 +304,64 @@ export type Database = {
           phone_number?: string | null
           postal_address?: string | null
           practice_number?: string
+          role_assigned_at?: string | null
+          role_assigned_by?: string | null
           specialisations?: string[] | null
           success_fee_rate?: number | null
           total_collected_ytd?: number | null
           total_outstanding?: number | null
           updated_at?: string | null
+          user_role?: Database["public"]["Enums"]["user_role"] | null
+          vat_number?: string | null
           year_admitted?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "advocates_role_assigned_by_fkey"
+            columns: ["role_assigned_by"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "advocates_role_assigned_by_fkey"
+            columns: ["role_assigned_by"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      api_configurations: {
+        Row: {
+          api_key: string
+          created_at: string | null
+          id: string
+          rate_limit: string
+          recent_activity: Json | null
+          updated_at: string | null
+          user_id: string
+          webhook_url: string | null
+        }
+        Insert: {
+          api_key: string
+          created_at?: string | null
+          id?: string
+          rate_limit?: string
+          recent_activity?: Json | null
+          updated_at?: string | null
+          user_id: string
+          webhook_url?: string | null
+        }
+        Update: {
+          api_key?: string
+          created_at?: string | null
+          id?: string
+          rate_limit?: string
+          recent_activity?: Json | null
+          updated_at?: string | null
+          user_id?: string
+          webhook_url?: string | null
         }
         Relationships: []
       }
@@ -326,6 +461,36 @@ export type Database = {
           },
         ]
       }
+      auth_attempts: {
+        Row: {
+          attempt_type: string
+          created_at: string
+          email: string
+          id: string
+          ip_address: string | null
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          attempt_type: string
+          created_at?: string
+          email: string
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          attempt_type?: string
+          created_at?: string
+          email?: string
+          id?: string
+          ip_address?: string | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       brief_applications: {
         Row: {
           advocate_id: string
@@ -396,6 +561,72 @@ export type Database = {
             columns: ["brief_id"]
             isOneToOne: false
             referencedRelation: "overflow_briefs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      calendar_events: {
+        Row: {
+          all_day: boolean | null
+          created_at: string | null
+          description: string | null
+          end_time: string
+          external_id: string | null
+          id: string
+          location: string | null
+          matter_id: string | null
+          metadata: Json | null
+          start_time: string
+          sync_source: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          all_day?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          end_time: string
+          external_id?: string | null
+          id?: string
+          location?: string | null
+          matter_id?: string | null
+          metadata?: Json | null
+          start_time: string
+          sync_source?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          all_day?: boolean | null
+          created_at?: string | null
+          description?: string | null
+          end_time?: string
+          external_id?: string | null
+          id?: string
+          location?: string | null
+          matter_id?: string | null
+          metadata?: Json | null
+          start_time?: string
+          sync_source?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "calendar_events_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "active_matters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "calendar_events_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "matters"
             referencedColumns: ["id"]
           },
         ]
@@ -549,6 +780,78 @@ export type Database = {
             columns: ["advocate_id"]
             isOneToOne: false
             referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      communications: {
+        Row: {
+          content: string | null
+          created_at: string | null
+          external_id: string | null
+          from_address: string | null
+          from_name: string | null
+          has_attachments: boolean | null
+          id: string
+          matter_id: string | null
+          metadata: Json | null
+          received_at: string | null
+          subject: string | null
+          sync_source: string | null
+          to_addresses: string[] | null
+          type: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          content?: string | null
+          created_at?: string | null
+          external_id?: string | null
+          from_address?: string | null
+          from_name?: string | null
+          has_attachments?: boolean | null
+          id?: string
+          matter_id?: string | null
+          metadata?: Json | null
+          received_at?: string | null
+          subject?: string | null
+          sync_source?: string | null
+          to_addresses?: string[] | null
+          type: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          content?: string | null
+          created_at?: string | null
+          external_id?: string | null
+          from_address?: string | null
+          from_name?: string | null
+          has_attachments?: boolean | null
+          id?: string
+          matter_id?: string | null
+          metadata?: Json | null
+          received_at?: string | null
+          subject?: string | null
+          sync_source?: string | null
+          to_addresses?: string[] | null
+          type?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "communications_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "active_matters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "communications_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "matters"
             referencedColumns: ["id"]
           },
         ]
@@ -798,6 +1101,60 @@ export type Database = {
           },
         ]
       }
+      courses: {
+        Row: {
+          category: string | null
+          content_url: string | null
+          cpd_credits: number | null
+          created_at: string | null
+          description: string | null
+          duration_hours: number | null
+          id: string
+          instructor: string | null
+          is_published: boolean | null
+          level: string | null
+          rating: number | null
+          student_count: number | null
+          thumbnail_url: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          category?: string | null
+          content_url?: string | null
+          cpd_credits?: number | null
+          created_at?: string | null
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          instructor?: string | null
+          is_published?: boolean | null
+          level?: string | null
+          rating?: number | null
+          student_count?: number | null
+          thumbnail_url?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          category?: string | null
+          content_url?: string | null
+          cpd_credits?: number | null
+          created_at?: string | null
+          description?: string | null
+          duration_hours?: number | null
+          id?: string
+          instructor?: string | null
+          is_published?: boolean | null
+          level?: string | null
+          rating?: number | null
+          student_count?: number | null
+          thumbnail_url?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       court_cases: {
         Row: {
           allocated_judge_id: string | null
@@ -1030,6 +1387,123 @@ export type Database = {
         }
         Relationships: []
       }
+      cpd_tracking: {
+        Row: {
+          activity_date: string
+          activity_id: string | null
+          activity_type: string | null
+          cpd_hours: number
+          created_at: string | null
+          description: string | null
+          id: string
+          title: string
+          updated_at: string | null
+          user_id: string
+          verification_status: string | null
+          verified_at: string | null
+          verified_by: string | null
+        }
+        Insert: {
+          activity_date: string
+          activity_id?: string | null
+          activity_type?: string | null
+          cpd_hours: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          title: string
+          updated_at?: string | null
+          user_id: string
+          verification_status?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Update: {
+          activity_date?: string
+          activity_id?: string | null
+          activity_type?: string | null
+          cpd_hours?: number
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+          verification_status?: string | null
+          verified_at?: string | null
+          verified_by?: string | null
+        }
+        Relationships: []
+      }
+      disbursements: {
+        Row: {
+          amount: number
+          billable: boolean | null
+          category: string | null
+          created_at: string | null
+          date: string
+          description: string
+          external_id: string | null
+          id: string
+          matter_id: string | null
+          metadata: Json | null
+          receipt_url: string | null
+          sync_source: string | null
+          updated_at: string | null
+          user_id: string
+          vendor_name: string | null
+        }
+        Insert: {
+          amount: number
+          billable?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          date: string
+          description: string
+          external_id?: string | null
+          id?: string
+          matter_id?: string | null
+          metadata?: Json | null
+          receipt_url?: string | null
+          sync_source?: string | null
+          updated_at?: string | null
+          user_id: string
+          vendor_name?: string | null
+        }
+        Update: {
+          amount?: number
+          billable?: boolean | null
+          category?: string | null
+          created_at?: string | null
+          date?: string
+          description?: string
+          external_id?: string | null
+          id?: string
+          matter_id?: string | null
+          metadata?: Json | null
+          receipt_url?: string | null
+          sync_source?: string | null
+          updated_at?: string | null
+          user_id?: string
+          vendor_name?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "disbursements_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "active_matters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "disbursements_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "matters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       document_analysis_queue: {
         Row: {
           advocate_id: string
@@ -1210,6 +1684,7 @@ export type Database = {
           deleted_at: string | null
           description: string | null
           document_type: Database["public"]["Enums"]["document_type"]
+          external_id: string | null
           filename: string
           id: string
           matter_id: string
@@ -1218,6 +1693,7 @@ export type Database = {
           parent_document_id: string | null
           size_bytes: number
           storage_path: string
+          sync_source: string | null
           tags: string[] | null
           updated_at: string | null
           uploaded_at: string | null
@@ -1230,6 +1706,7 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           document_type: Database["public"]["Enums"]["document_type"]
+          external_id?: string | null
           filename: string
           id?: string
           matter_id: string
@@ -1238,6 +1715,7 @@ export type Database = {
           parent_document_id?: string | null
           size_bytes: number
           storage_path: string
+          sync_source?: string | null
           tags?: string[] | null
           updated_at?: string | null
           uploaded_at?: string | null
@@ -1250,6 +1728,7 @@ export type Database = {
           deleted_at?: string | null
           description?: string | null
           document_type?: Database["public"]["Enums"]["document_type"]
+          external_id?: string | null
           filename?: string
           id?: string
           matter_id?: string
@@ -1258,6 +1737,7 @@ export type Database = {
           parent_document_id?: string | null
           size_bytes?: number
           storage_path?: string
+          sync_source?: string | null
           tags?: string[] | null
           updated_at?: string | null
           uploaded_at?: string | null
@@ -1297,6 +1777,101 @@ export type Database = {
             columns: ["parent_document_id"]
             isOneToOne: false
             referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_registrations: {
+        Row: {
+          attended: boolean | null
+          created_at: string | null
+          event_id: string
+          feedback_comment: string | null
+          feedback_rating: number | null
+          id: string
+          registration_status: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          attended?: boolean | null
+          created_at?: string | null
+          event_id: string
+          feedback_comment?: string | null
+          feedback_rating?: number | null
+          id?: string
+          registration_status?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          attended?: boolean | null
+          created_at?: string | null
+          event_id?: string
+          feedback_comment?: string | null
+          feedback_rating?: number | null
+          id?: string
+          registration_status?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_registrations_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "learning_events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      expenses: {
+        Row: {
+          amount: number
+          category: string | null
+          created_at: string | null
+          date: string
+          description: string
+          id: string
+          matter_id: string
+          receipt_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          amount: number
+          category?: string | null
+          created_at?: string | null
+          date: string
+          description: string
+          id?: string
+          matter_id: string
+          receipt_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          amount?: number
+          category?: string | null
+          created_at?: string | null
+          date?: string
+          description?: string
+          id?: string
+          matter_id?: string
+          receipt_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "expenses_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "active_matters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "expenses_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "matters"
             referencedColumns: ["id"]
           },
         ]
@@ -1793,6 +2368,129 @@ export type Database = {
           },
         ]
       }
+      integration_configs: {
+        Row: {
+          config: Json
+          created_at: string | null
+          credentials: Json | null
+          id: string
+          integration_id: string
+          settings: Json | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          config?: Json
+          created_at?: string | null
+          credentials?: Json | null
+          id?: string
+          integration_id: string
+          settings?: Json | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          config?: Json
+          created_at?: string | null
+          credentials?: Json | null
+          id?: string
+          integration_id?: string
+          settings?: Json | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      integration_metrics: {
+        Row: {
+          average_response_time: number | null
+          created_at: string | null
+          failed_requests: number | null
+          id: string
+          integration_id: string
+          last_request_time: string | null
+          rate_limit_remaining: number | null
+          successful_requests: number | null
+          total_requests: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          average_response_time?: number | null
+          created_at?: string | null
+          failed_requests?: number | null
+          id?: string
+          integration_id: string
+          last_request_time?: string | null
+          rate_limit_remaining?: number | null
+          successful_requests?: number | null
+          total_requests?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          average_response_time?: number | null
+          created_at?: string | null
+          failed_requests?: number | null
+          id?: string
+          integration_id?: string
+          last_request_time?: string | null
+          rate_limit_remaining?: number | null
+          successful_requests?: number | null
+          total_requests?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      integrations: {
+        Row: {
+          category: string
+          config_url: string | null
+          connected_at: string | null
+          created_at: string | null
+          description: string | null
+          disconnected_at: string | null
+          error_message: string | null
+          id: string
+          last_sync: string | null
+          name: string
+          status: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          category?: string
+          config_url?: string | null
+          connected_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          disconnected_at?: string | null
+          error_message?: string | null
+          id: string
+          last_sync?: string | null
+          name: string
+          status?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          category?: string
+          config_url?: string | null
+          connected_at?: string | null
+          created_at?: string | null
+          description?: string | null
+          disconnected_at?: string | null
+          error_message?: string | null
+          id?: string
+          last_sync?: string | null
+          name?: string
+          status?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       invoices: {
         Row: {
           advocate_id: string
@@ -1806,6 +2504,7 @@ export type Database = {
           deleted_at: string | null
           disbursements_amount: number | null
           due_date: string
+          external_id: string | null
           fee_narrative: string
           fees_amount: number
           id: string
@@ -1820,11 +2519,13 @@ export type Database = {
           payment_method: Database["public"]["Enums"]["payment_method"] | null
           payment_reference: string | null
           pro_forma_accepted_at: string | null
+          pro_forma_declined_at: string | null
           reminder_history: Json | null
           reminders_sent: number | null
           sent_at: string | null
           status: Database["public"]["Enums"]["invoice_status"] | null
           subtotal: number | null
+          sync_source: string | null
           total_amount: number | null
           updated_at: string | null
           vat_amount: number | null
@@ -1843,6 +2544,7 @@ export type Database = {
           deleted_at?: string | null
           disbursements_amount?: number | null
           due_date: string
+          external_id?: string | null
           fee_narrative: string
           fees_amount: number
           id?: string
@@ -1857,11 +2559,13 @@ export type Database = {
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
           payment_reference?: string | null
           pro_forma_accepted_at?: string | null
+          pro_forma_declined_at?: string | null
           reminder_history?: Json | null
           reminders_sent?: number | null
           sent_at?: string | null
           status?: Database["public"]["Enums"]["invoice_status"] | null
           subtotal?: number | null
+          sync_source?: string | null
           total_amount?: number | null
           updated_at?: string | null
           vat_amount?: number | null
@@ -1880,6 +2584,7 @@ export type Database = {
           deleted_at?: string | null
           disbursements_amount?: number | null
           due_date?: string
+          external_id?: string | null
           fee_narrative?: string
           fees_amount?: number
           id?: string
@@ -1894,11 +2599,13 @@ export type Database = {
           payment_method?: Database["public"]["Enums"]["payment_method"] | null
           payment_reference?: string | null
           pro_forma_accepted_at?: string | null
+          pro_forma_declined_at?: string | null
           reminder_history?: Json | null
           reminders_sent?: number | null
           sent_at?: string | null
           status?: Database["public"]["Enums"]["invoice_status"] | null
           subtotal?: number | null
+          sync_source?: string | null
           total_amount?: number | null
           updated_at?: string | null
           vat_amount?: number | null
@@ -2089,6 +2796,151 @@ export type Database = {
         }
         Relationships: []
       }
+      learning_events: {
+        Row: {
+          created_at: string | null
+          current_participants: number | null
+          description: string | null
+          duration_minutes: number | null
+          event_date: string
+          event_type: string | null
+          id: string
+          is_virtual: boolean | null
+          location: string | null
+          max_participants: number | null
+          meeting_link: string | null
+          mentor: string | null
+          title: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          current_participants?: number | null
+          description?: string | null
+          duration_minutes?: number | null
+          event_date: string
+          event_type?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          location?: string | null
+          max_participants?: number | null
+          meeting_link?: string | null
+          mentor?: string | null
+          title: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          current_participants?: number | null
+          description?: string | null
+          duration_minutes?: number | null
+          event_date?: string
+          event_type?: string | null
+          id?: string
+          is_virtual?: boolean | null
+          location?: string | null
+          max_participants?: number | null
+          meeting_link?: string | null
+          mentor?: string | null
+          title?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
+      matter_services: {
+        Row: {
+          matter_id: string
+          service_id: string
+        }
+        Insert: {
+          matter_id: string
+          service_id: string
+        }
+        Update: {
+          matter_id?: string
+          service_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matter_services_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "active_matters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matter_services_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "matters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matter_services_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      matter_templates: {
+        Row: {
+          advocate_id: string
+          category: string
+          created_at: string | null
+          description: string | null
+          id: string
+          is_default: boolean | null
+          is_shared: boolean | null
+          name: string
+          template_data: Json
+          updated_at: string | null
+          usage_count: number | null
+        }
+        Insert: {
+          advocate_id: string
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name: string
+          template_data: Json
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Update: {
+          advocate_id?: string
+          category?: string
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_default?: boolean | null
+          is_shared?: boolean | null
+          name?: string
+          template_data?: Json
+          updated_at?: string | null
+          usage_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "matter_templates_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "matter_templates_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       matters: {
         Row: {
           actual_fee: number | null
@@ -2102,7 +2954,11 @@ export type Database = {
           conflict_check_cleared: boolean | null
           conflict_check_completed: boolean | null
           conflict_check_date: string | null
+          conflict_check_notes: string | null
           conflict_notes: string | null
+          conflict_override_at: string | null
+          conflict_override_by: string | null
+          conflict_override_reason: string | null
           court_case_number: string | null
           created_at: string | null
           date_accepted: string | null
@@ -2125,14 +2981,17 @@ export type Database = {
           instructing_firm: string | null
           instructing_firm_ref: string | null
           is_overdue: boolean | null
+          manual_conflict_checks_performed: string | null
           matter_type: string
           next_court_date: string | null
+          opportunity_id: string | null
           prescription_date: string | null
           reference_number: string
           risk_level: Database["public"]["Enums"]["risk_level"] | null
           settlement_probability: number | null
           status: Database["public"]["Enums"]["matter_status"] | null
           tags: string[] | null
+          template_id: string | null
           title: string
           trust_balance: number | null
           updated_at: string | null
@@ -2151,7 +3010,11 @@ export type Database = {
           conflict_check_cleared?: boolean | null
           conflict_check_completed?: boolean | null
           conflict_check_date?: string | null
+          conflict_check_notes?: string | null
           conflict_notes?: string | null
+          conflict_override_at?: string | null
+          conflict_override_by?: string | null
+          conflict_override_reason?: string | null
           court_case_number?: string | null
           created_at?: string | null
           date_accepted?: string | null
@@ -2174,14 +3037,17 @@ export type Database = {
           instructing_firm?: string | null
           instructing_firm_ref?: string | null
           is_overdue?: boolean | null
+          manual_conflict_checks_performed?: string | null
           matter_type: string
           next_court_date?: string | null
+          opportunity_id?: string | null
           prescription_date?: string | null
           reference_number: string
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
           settlement_probability?: number | null
           status?: Database["public"]["Enums"]["matter_status"] | null
           tags?: string[] | null
+          template_id?: string | null
           title: string
           trust_balance?: number | null
           updated_at?: string | null
@@ -2200,7 +3066,11 @@ export type Database = {
           conflict_check_cleared?: boolean | null
           conflict_check_completed?: boolean | null
           conflict_check_date?: string | null
+          conflict_check_notes?: string | null
           conflict_notes?: string | null
+          conflict_override_at?: string | null
+          conflict_override_by?: string | null
+          conflict_override_reason?: string | null
           court_case_number?: string | null
           created_at?: string | null
           date_accepted?: string | null
@@ -2223,14 +3093,17 @@ export type Database = {
           instructing_firm?: string | null
           instructing_firm_ref?: string | null
           is_overdue?: boolean | null
+          manual_conflict_checks_performed?: string | null
           matter_type?: string
           next_court_date?: string | null
+          opportunity_id?: string | null
           prescription_date?: string | null
           reference_number?: string
           risk_level?: Database["public"]["Enums"]["risk_level"] | null
           settlement_probability?: number | null
           status?: Database["public"]["Enums"]["matter_status"] | null
           tags?: string[] | null
+          template_id?: string | null
           title?: string
           trust_balance?: number | null
           updated_at?: string | null
@@ -2250,6 +3123,100 @@ export type Database = {
             columns: ["advocate_id"]
             isOneToOne: false
             referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matters_conflict_override_by_fkey"
+            columns: ["conflict_override_by"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "matters_conflict_override_by_fkey"
+            columns: ["conflict_override_by"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matters_opportunity_id_fkey"
+            columns: ["opportunity_id"]
+            isOneToOne: false
+            referencedRelation: "opportunities"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "matters_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "matter_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      meetings: {
+        Row: {
+          created_at: string | null
+          duration: number
+          external_id: string | null
+          id: string
+          join_url: string | null
+          matter_id: string | null
+          metadata: Json | null
+          password: string | null
+          recording_url: string | null
+          start_time: string
+          sync_source: string | null
+          title: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration: number
+          external_id?: string | null
+          id?: string
+          join_url?: string | null
+          matter_id?: string | null
+          metadata?: Json | null
+          password?: string | null
+          recording_url?: string | null
+          start_time: string
+          sync_source?: string | null
+          title: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          duration?: number
+          external_id?: string | null
+          id?: string
+          join_url?: string | null
+          matter_id?: string | null
+          metadata?: Json | null
+          password?: string | null
+          recording_url?: string | null
+          start_time?: string
+          sync_source?: string | null
+          title?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "meetings_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "active_matters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "meetings_matter_id_fkey"
+            columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "matters"
             referencedColumns: ["id"]
           },
         ]
@@ -2313,6 +3280,104 @@ export type Database = {
           {
             foreignKeyName: "notes_matter_id_fkey"
             columns: ["matter_id"]
+            isOneToOne: false
+            referencedRelation: "matters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      opportunities: {
+        Row: {
+          advocate_id: string
+          client_email: string | null
+          client_name: string | null
+          client_phone: string | null
+          converted_at: string | null
+          converted_to_matter_id: string | null
+          created_at: string | null
+          description: string | null
+          estimated_value: number | null
+          expected_instruction_date: string | null
+          id: string
+          instructing_attorney: string | null
+          instructing_firm: string | null
+          name: string
+          notes: string | null
+          probability_percentage: number | null
+          source: string | null
+          status: string | null
+          tags: string[] | null
+          updated_at: string | null
+        }
+        Insert: {
+          advocate_id: string
+          client_email?: string | null
+          client_name?: string | null
+          client_phone?: string | null
+          converted_at?: string | null
+          converted_to_matter_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          estimated_value?: number | null
+          expected_instruction_date?: string | null
+          id?: string
+          instructing_attorney?: string | null
+          instructing_firm?: string | null
+          name: string
+          notes?: string | null
+          probability_percentage?: number | null
+          source?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Update: {
+          advocate_id?: string
+          client_email?: string | null
+          client_name?: string | null
+          client_phone?: string | null
+          converted_at?: string | null
+          converted_to_matter_id?: string | null
+          created_at?: string | null
+          description?: string | null
+          estimated_value?: number | null
+          expected_instruction_date?: string | null
+          id?: string
+          instructing_attorney?: string | null
+          instructing_firm?: string | null
+          name?: string
+          notes?: string | null
+          probability_percentage?: number | null
+          source?: string | null
+          status?: string | null
+          tags?: string[] | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "opportunities_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "opportunities_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_converted_to_matter_id_fkey"
+            columns: ["converted_to_matter_id"]
+            isOneToOne: false
+            referencedRelation: "active_matters"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "opportunities_converted_to_matter_id_fkey"
+            columns: ["converted_to_matter_id"]
             isOneToOne: false
             referencedRelation: "matters"
             referencedColumns: ["id"]
@@ -2447,12 +3512,34 @@ export type Database = {
           },
         ]
       }
+      password_history: {
+        Row: {
+          created_at: string
+          id: string
+          password_hash: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          password_hash: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          password_hash?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       payments: {
         Row: {
           advocate_id: string
           amount: number
           bank_reference: string | null
           created_at: string | null
+          external_id: string | null
           id: string
           invoice_id: string | null
           is_trust_deposit: boolean | null
@@ -2461,6 +3548,7 @@ export type Database = {
           reconciled: boolean | null
           reconciled_date: string | null
           reference: string | null
+          sync_source: string | null
           trust_transfer_date: string | null
         }
         Insert: {
@@ -2468,6 +3556,7 @@ export type Database = {
           amount: number
           bank_reference?: string | null
           created_at?: string | null
+          external_id?: string | null
           id?: string
           invoice_id?: string | null
           is_trust_deposit?: boolean | null
@@ -2476,6 +3565,7 @@ export type Database = {
           reconciled?: boolean | null
           reconciled_date?: string | null
           reference?: string | null
+          sync_source?: string | null
           trust_transfer_date?: string | null
         }
         Update: {
@@ -2483,6 +3573,7 @@ export type Database = {
           amount?: number
           bank_reference?: string | null
           created_at?: string | null
+          external_id?: string | null
           id?: string
           invoice_id?: string | null
           is_trust_deposit?: boolean | null
@@ -2491,6 +3582,7 @@ export type Database = {
           reconciled?: boolean | null
           reconciled_date?: string | null
           reference?: string | null
+          sync_source?: string | null
           trust_transfer_date?: string | null
         }
         Relationships: [
@@ -2845,6 +3937,143 @@ export type Database = {
           },
         ]
       }
+      pro_forma_requests: {
+        Row: {
+          action_taken: Database["public"]["Enums"]["pro_forma_action"] | null
+          additional_notes: string | null
+          advocate_id: string
+          client_email: string
+          client_name: string
+          client_phone: string | null
+          created_at: string | null
+          estimated_value: number | null
+          expires_at: string
+          fee_narrative: string | null
+          id: string
+          instructing_attorney_email: string | null
+          instructing_attorney_firm: string | null
+          instructing_attorney_name: string | null
+          instructing_attorney_phone: string | null
+          matter_description: string
+          matter_title: string | null
+          matter_type: string
+          preferred_contact_method: string | null
+          processed_at: string | null
+          processed_by: string | null
+          quote_date: string | null
+          rejection_reason: string | null
+          requested_action:
+            | Database["public"]["Enums"]["pro_forma_action"]
+            | null
+          status: Database["public"]["Enums"]["pro_forma_status"]
+          submitted_at: string | null
+          token: string
+          total_amount: number | null
+          updated_at: string | null
+          urgency_level: Database["public"]["Enums"]["urgency_level"]
+          valid_until: string | null
+        }
+        Insert: {
+          action_taken?: Database["public"]["Enums"]["pro_forma_action"] | null
+          additional_notes?: string | null
+          advocate_id: string
+          client_email: string
+          client_name: string
+          client_phone?: string | null
+          created_at?: string | null
+          estimated_value?: number | null
+          expires_at?: string
+          fee_narrative?: string | null
+          id?: string
+          instructing_attorney_email?: string | null
+          instructing_attorney_firm?: string | null
+          instructing_attorney_name?: string | null
+          instructing_attorney_phone?: string | null
+          matter_description: string
+          matter_title?: string | null
+          matter_type?: string
+          preferred_contact_method?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          quote_date?: string | null
+          rejection_reason?: string | null
+          requested_action?:
+            | Database["public"]["Enums"]["pro_forma_action"]
+            | null
+          status?: Database["public"]["Enums"]["pro_forma_status"]
+          submitted_at?: string | null
+          token?: string
+          total_amount?: number | null
+          updated_at?: string | null
+          urgency_level?: Database["public"]["Enums"]["urgency_level"]
+          valid_until?: string | null
+        }
+        Update: {
+          action_taken?: Database["public"]["Enums"]["pro_forma_action"] | null
+          additional_notes?: string | null
+          advocate_id?: string
+          client_email?: string
+          client_name?: string
+          client_phone?: string | null
+          created_at?: string | null
+          estimated_value?: number | null
+          expires_at?: string
+          fee_narrative?: string | null
+          id?: string
+          instructing_attorney_email?: string | null
+          instructing_attorney_firm?: string | null
+          instructing_attorney_name?: string | null
+          instructing_attorney_phone?: string | null
+          matter_description?: string
+          matter_title?: string | null
+          matter_type?: string
+          preferred_contact_method?: string | null
+          processed_at?: string | null
+          processed_by?: string | null
+          quote_date?: string | null
+          rejection_reason?: string | null
+          requested_action?:
+            | Database["public"]["Enums"]["pro_forma_action"]
+            | null
+          status?: Database["public"]["Enums"]["pro_forma_status"]
+          submitted_at?: string | null
+          token?: string
+          total_amount?: number | null
+          updated_at?: string | null
+          urgency_level?: Database["public"]["Enums"]["urgency_level"]
+          valid_until?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pro_forma_requests_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "pro_forma_requests_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "pro_forma_requests_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "pro_forma_requests_processed_by_fkey"
+            columns: ["processed_by"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       reconciliations: {
         Row: {
           bank_statement_data: Json | null
@@ -3108,6 +4337,112 @@ export type Database = {
         }
         Relationships: []
       }
+      role_permissions_log: {
+        Row: {
+          advocate_id: string
+          changed_by: string | null
+          created_at: string | null
+          id: string
+          new_role: Database["public"]["Enums"]["user_role"]
+          old_role: Database["public"]["Enums"]["user_role"] | null
+          reason: string | null
+        }
+        Insert: {
+          advocate_id: string
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          new_role: Database["public"]["Enums"]["user_role"]
+          old_role?: Database["public"]["Enums"]["user_role"] | null
+          reason?: string | null
+        }
+        Update: {
+          advocate_id?: string
+          changed_by?: string | null
+          created_at?: string | null
+          id?: string
+          new_role?: Database["public"]["Enums"]["user_role"]
+          old_role?: Database["public"]["Enums"]["user_role"] | null
+          reason?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "role_permissions_log_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "role_permissions_log_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "role_permissions_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "role_permissions_log_changed_by_fkey"
+            columns: ["changed_by"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      service_categories: {
+        Row: {
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
+      services: {
+        Row: {
+          category_id: string
+          description: string | null
+          id: string
+          name: string
+        }
+        Insert: {
+          category_id: string
+          description?: string | null
+          id?: string
+          name: string
+        }
+        Update: {
+          category_id?: string
+          description?: string | null
+          id?: string
+          name?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "services_category_id_fkey"
+            columns: ["category_id"]
+            isOneToOne: false
+            referencedRelation: "service_categories"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       success_fee_scenarios: {
         Row: {
           advocate_id: string
@@ -3215,6 +4550,96 @@ export type Database = {
           },
         ]
       }
+      template_categories: {
+        Row: {
+          color_code: string | null
+          created_at: string | null
+          description: string | null
+          id: string
+          name: string
+          sort_order: number | null
+        }
+        Insert: {
+          color_code?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name: string
+          sort_order?: number | null
+        }
+        Update: {
+          color_code?: string | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          name?: string
+          sort_order?: number | null
+        }
+        Relationships: []
+      }
+      template_shares: {
+        Row: {
+          id: string
+          permissions: string | null
+          shared_at: string | null
+          shared_by_advocate_id: string
+          shared_with_advocate_id: string
+          template_id: string
+        }
+        Insert: {
+          id?: string
+          permissions?: string | null
+          shared_at?: string | null
+          shared_by_advocate_id: string
+          shared_with_advocate_id: string
+          template_id: string
+        }
+        Update: {
+          id?: string
+          permissions?: string | null
+          shared_at?: string | null
+          shared_by_advocate_id?: string
+          shared_with_advocate_id?: string
+          template_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "template_shares_shared_by_advocate_id_fkey"
+            columns: ["shared_by_advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "template_shares_shared_by_advocate_id_fkey"
+            columns: ["shared_by_advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "template_shares_shared_with_advocate_id_fkey"
+            columns: ["shared_with_advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "template_shares_shared_with_advocate_id_fkey"
+            columns: ["shared_with_advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "template_shares_template_id_fkey"
+            columns: ["template_id"]
+            isOneToOne: false
+            referencedRelation: "matter_templates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       time_entries: {
         Row: {
           advocate_id: string
@@ -3227,6 +4652,7 @@ export type Database = {
           description: string
           duration_minutes: number
           end_time: string | null
+          external_id: string | null
           id: string
           invoice_id: string | null
           matter_id: string
@@ -3235,7 +4661,10 @@ export type Database = {
             | Database["public"]["Enums"]["time_entry_method"]
             | null
           start_time: string | null
+          sync_source: string | null
           updated_at: string | null
+          voice_recording_url: string | null
+          voice_transcription: string | null
           write_off: boolean | null
           write_off_reason: string | null
         }
@@ -3250,6 +4679,7 @@ export type Database = {
           description: string
           duration_minutes: number
           end_time?: string | null
+          external_id?: string | null
           id?: string
           invoice_id?: string | null
           matter_id: string
@@ -3258,7 +4688,10 @@ export type Database = {
             | Database["public"]["Enums"]["time_entry_method"]
             | null
           start_time?: string | null
+          sync_source?: string | null
           updated_at?: string | null
+          voice_recording_url?: string | null
+          voice_transcription?: string | null
           write_off?: boolean | null
           write_off_reason?: string | null
         }
@@ -3273,6 +4706,7 @@ export type Database = {
           description?: string
           duration_minutes?: number
           end_time?: string | null
+          external_id?: string | null
           id?: string
           invoice_id?: string | null
           matter_id?: string
@@ -3281,7 +4715,10 @@ export type Database = {
             | Database["public"]["Enums"]["time_entry_method"]
             | null
           start_time?: string | null
+          sync_source?: string | null
           updated_at?: string | null
+          voice_recording_url?: string | null
+          voice_transcription?: string | null
           write_off?: boolean | null
           write_off_reason?: string | null
         }
@@ -3330,7 +4767,6 @@ export type Database = {
           },
         ]
       }
-
       trust_accounts: {
         Row: {
           account_details: Json | null
@@ -3467,176 +4903,145 @@ export type Database = {
         }
         Relationships: []
       }
-
-
-
-      service_categories: {
+      user_progress: {
         Row: {
-          id: string
-          name: string
-          description: string | null
-        }
-        Insert: {
-          id?: string
-          name: string
-          description?: string | null
-        }
-        Update: {
-          id?: string
-          name?: string
-          description?: string | null
-        }
-        Relationships: []
-      }
-      services: {
-        Row: {
-          id: string
-          category_id: string
-          name: string
-          description: string | null
-        }
-        Insert: {
-          id?: string
-          category_id: string
-          name: string
-          description?: string | null
-        }
-        Update: {
-          id?: string
-          category_id?: string
-          name?: string
-          description?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "services_category_id_fkey"
-            columns: ["category_id"]
-            isOneToOne: false
-            referencedRelation: "service_categories"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      matter_services: {
-        Row: {
-          matter_id: string
-          service_id: string
-        }
-        Insert: {
-          matter_id: string
-          service_id: string
-        }
-        Update: {
-          matter_id?: string
-          service_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "matter_services_matter_id_fkey"
-            columns: ["matter_id"]
-            isOneToOne: false
-            referencedRelation: "matters"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "matter_services_matter_id_fkey"
-            columns: ["matter_id"]
-            isOneToOne: false
-            referencedRelation: "active_matters"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "matter_services_service_id_fkey"
-            columns: ["service_id"]
-            isOneToOne: false
-            referencedRelation: "services"
-            referencedColumns: ["id"]
-          }
-        ]
-      }
-      pro_forma_requests: {
-        Row: {
-          id: string
-          token: string
-          advocate_id: string
-          client_name: string
-          client_email: string
-          client_phone: string | null
-          matter_description: string
-          matter_type: string
-          urgency_level: Database["public"]["Enums"]["urgency_level"]
-          estimated_value: number | null
-          preferred_contact_method: string | null
-          additional_notes: string | null
-          status: Database["public"]["Enums"]["pro_forma_status"]
-          expires_at: string
+          completed: boolean | null
+          completed_at: string | null
+          course_id: string
           created_at: string | null
+          id: string
+          last_accessed_at: string | null
+          progress_percentage: number | null
           updated_at: string | null
-          processed_at: string | null
-          processed_by: string | null
-          action_taken: Database["public"]["Enums"]["pro_forma_action"] | null
-          rejection_reason: string | null
+          user_id: string
         }
         Insert: {
-          id?: string
-          token?: string
-          advocate_id: string
-          client_name: string
-          client_email: string
-          client_phone?: string | null
-          matter_description: string
-          matter_type: string
-          urgency_level: Database["public"]["Enums"]["urgency_level"]
-          estimated_value?: number | null
-          preferred_contact_method?: string | null
-          additional_notes?: string | null
-          status?: Database["public"]["Enums"]["pro_forma_status"]
-          expires_at?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          course_id: string
           created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          progress_percentage?: number | null
           updated_at?: string | null
-          processed_at?: string | null
-          processed_by?: string | null
-          action_taken?: Database["public"]["Enums"]["pro_forma_action"] | null
-          rejection_reason?: string | null
+          user_id: string
         }
         Update: {
-          id?: string
-          token?: string
-          advocate_id?: string
-          client_name?: string
-          client_email?: string
-          client_phone?: string | null
-          matter_description?: string
-          matter_type?: string
-          urgency_level?: Database["public"]["Enums"]["urgency_level"]
-          estimated_value?: number | null
-          preferred_contact_method?: string | null
-          additional_notes?: string | null
-          status?: Database["public"]["Enums"]["pro_forma_status"]
-          expires_at?: string
+          completed?: boolean | null
+          completed_at?: string | null
+          course_id?: string
           created_at?: string | null
+          id?: string
+          last_accessed_at?: string | null
+          progress_percentage?: number | null
           updated_at?: string | null
-          processed_at?: string | null
-          processed_by?: string | null
-          action_taken?: Database["public"]["Enums"]["pro_forma_action"] | null
-          rejection_reason?: string | null
+          user_id?: string
         }
         Relationships: [
           {
-            foreignKeyName: "pro_forma_requests_advocate_id_fkey"
+            foreignKeyName: "user_progress_course_id_fkey"
+            columns: ["course_id"]
+            isOneToOne: false
+            referencedRelation: "courses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      voice_queries: {
+        Row: {
+          advocate_id: string | null
+          confidence_score: number | null
+          created_at: string | null
+          extracted_entities: Json | null
+          id: string
+          intent: string | null
+          processing_time_ms: number | null
+          query_language: string | null
+          query_text: string
+          response_actions: Json | null
+          response_text: string | null
+        }
+        Insert: {
+          advocate_id?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          extracted_entities?: Json | null
+          id?: string
+          intent?: string | null
+          processing_time_ms?: number | null
+          query_language?: string | null
+          query_text: string
+          response_actions?: Json | null
+          response_text?: string | null
+        }
+        Update: {
+          advocate_id?: string | null
+          confidence_score?: number | null
+          created_at?: string | null
+          extracted_entities?: Json | null
+          id?: string
+          intent?: string | null
+          processing_time_ms?: number | null
+          query_language?: string | null
+          query_text?: string
+          response_actions?: Json | null
+          response_text?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "voice_queries_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocate_referral_stats"
+            referencedColumns: ["advocate_id"]
+          },
+          {
+            foreignKeyName: "voice_queries_advocate_id_fkey"
             columns: ["advocate_id"]
             isOneToOne: false
             referencedRelation: "advocates"
             referencedColumns: ["id"]
           },
-          {
-            foreignKeyName: "pro_forma_requests_processed_by_fkey"
-            columns: ["processed_by"]
-            isOneToOne: false
-            referencedRelation: "advocates"
-            referencedColumns: ["id"]
-          }
         ]
+      }
+      webhook_events: {
+        Row: {
+          attempts: number | null
+          created_at: string | null
+          delivered_at: string | null
+          error_message: string | null
+          event_type: string
+          id: string
+          last_attempt_at: string | null
+          payload: Json
+          status: string
+          user_id: string
+        }
+        Insert: {
+          attempts?: number | null
+          created_at?: string | null
+          delivered_at?: string | null
+          error_message?: string | null
+          event_type: string
+          id?: string
+          last_attempt_at?: string | null
+          payload: Json
+          status?: string
+          user_id: string
+        }
+        Update: {
+          attempts?: number | null
+          created_at?: string | null
+          delivered_at?: string | null
+          error_message?: string | null
+          event_type?: string
+          id?: string
+          last_attempt_at?: string | null
+          payload?: Json
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
       }
     }
     Views: {
@@ -4268,7 +5673,6 @@ export type Database = {
           },
         ]
       }
-
     }
     Functions: {
       analyze_brief_document: {
@@ -4299,6 +5703,14 @@ export type Database = {
         Args: { p_advocate_id: string; p_brief_id: string }
         Returns: boolean
       }
+      check_account_lockout: {
+        Args: { p_email: string }
+        Returns: {
+          attempts: number
+          is_locked: boolean
+          locked_until: string
+        }[]
+      }
       check_conflict: {
         Args: {
           p_advocate_id: string
@@ -4311,6 +5723,18 @@ export type Database = {
           has_conflict: boolean
         }[]
       }
+      cleanup_expired_data: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_old_webhook_events: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      convert_opportunity_to_matter: {
+        Args: { matter_data: Json; opportunity_uuid: string }
+        Returns: string
+      }
       create_audit_entry: {
         Args: {
           p_action_type: string
@@ -4319,6 +5743,17 @@ export type Database = {
           p_description: string
           p_entity_id: string
           p_entity_type: string
+          p_user_id: string
+        }
+        Returns: string
+      }
+      create_session: {
+        Args: {
+          p_device_fingerprint?: string
+          p_duration_hours?: number
+          p_ip_address?: string
+          p_session_token: string
+          p_user_agent?: string
           p_user_id: string
         }
         Returns: string
@@ -4335,15 +5770,100 @@ export type Database = {
         }
         Returns: string
       }
+      get_current_advocate_id: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_judge_analytics: {
         Args: { p_judge_id: string; p_period_months?: number }
         Returns: Json
+      }
+      get_matters_with_health_indicators: {
+        Args: { user_id: string }
+        Returns: {
+          client_name: string
+          days_since_last_entry: number
+          days_to_prescription: number
+          is_high_wip_inactive: boolean
+          is_prescription_warning: boolean
+          last_time_entry_date: string
+          matter_id: string
+          prescription_date: string
+          status: string
+          title: string
+          wip_value: number
+        }[]
+      }
+      get_opportunity_stats: {
+        Args: { user_id: string }
+        Returns: {
+          active_opportunities: number
+          average_conversion_time_days: number
+          conversion_rate_percentage: number
+          converted_opportunities: number
+          lost_opportunities: number
+          total_estimated_value: number
+          total_opportunities: number
+        }[]
+      }
+      get_practice_health_metrics: {
+        Args: { user_id: string }
+        Returns: {
+          avg_time_to_first_invoice_days: number
+          high_wip_inactive_matters: number
+          matters_with_prescription_warnings: number
+          total_wip: number
+          wip_0_30_days: number
+          wip_31_60_days: number
+          wip_61_90_days: number
+          wip_90_plus_days: number
+        }[]
+      }
+      get_user_sessions: {
+        Args: { p_user_id: string }
+        Returns: {
+          created_at: string
+          device_fingerprint: string
+          expires_at: string
+          id: string
+          ip_address: string
+          last_activity: string
+          user_agent: string
+        }[]
+      }
+      get_user_templates: {
+        Args: { user_id: string }
+        Returns: {
+          category: string
+          created_at: string
+          description: string
+          id: string
+          is_default: boolean
+          is_owner: boolean
+          is_shared: boolean
+          name: string
+          shared_by_name: string
+          template_data: Json
+          updated_at: string
+          usage_count: number
+        }[]
+      }
+      increment_template_usage: {
+        Args: { template_uuid: string }
+        Returns: undefined
       }
       predict_cash_flow: {
         Args: { p_advocate_id: string; p_months_ahead?: number }
         Returns: undefined
       }
-
+      process_voice_query: {
+        Args: {
+          p_advocate_id: string
+          p_language_code?: string
+          p_query_text: string
+        }
+        Returns: Json
+      }
       rate_precedent: {
         Args: {
           p_advocate_id: string
@@ -4352,6 +5872,34 @@ export type Database = {
           p_review?: string
         }
         Returns: undefined
+      }
+      record_auth_attempt: {
+        Args: {
+          p_attempt_type: string
+          p_email: string
+          p_ip_address?: string
+          p_success: boolean
+          p_user_agent?: string
+        }
+        Returns: Json
+      }
+      revoke_session: {
+        Args: { p_session_token: string; p_user_id: string }
+        Returns: boolean
+      }
+      suggest_templates_for_matter: {
+        Args: {
+          client_type_input?: string
+          description_input?: string
+          matter_type_input?: string
+          user_id: string
+        }
+        Returns: {
+          category: string
+          confidence_score: number
+          id: string
+          name: string
+        }[]
       }
       sync_court_diary: {
         Args: { p_advocate_id: string; p_court_registry_id: string }
@@ -4364,6 +5912,14 @@ export type Database = {
           p_referring_advocate_id: string
         }
         Returns: undefined
+      }
+      update_session_activity: {
+        Args: { p_session_token: string }
+        Returns: boolean
+      }
+      validate_password_strength: {
+        Args: { p_password: string }
+        Returns: Json
       }
     }
     Enums: {
@@ -4413,10 +5969,13 @@ export type Database = {
         | "pro_forma"
         | "pro_forma_accepted"
         | "pro_forma_declined"
+        | "awaiting_acceptance"
+        | "accepted"
+        | "declined"
+        | "expired"
+        | "converted_to_invoice"
       matter_status: "active" | "pending" | "settled" | "closed" | "on_hold"
       payment_method: "eft" | "cheque" | "cash" | "card" | "debit_order"
-      pro_forma_action: "create_matter" | "create_invoice" | "reject"
-      pro_forma_status: "pending" | "processed" | "expired"
       precedent_type:
         | "pleadings"
         | "notices"
@@ -4427,6 +5986,8 @@ export type Database = {
         | "correspondence"
         | "court_orders"
         | "other"
+      pro_forma_action: "matter" | "pro_forma" | "invoice"
+      pro_forma_status: "pending" | "submitted" | "processed" | "declined"
       referral_status: "pending" | "accepted" | "declined" | "completed"
       risk_level: "low" | "medium" | "high" | "critical"
       specialisation_category:
@@ -4448,7 +6009,8 @@ export type Database = {
         | "tax_law"
         | "other"
       time_entry_method: "manual" | "voice" | "timer" | "ai_suggested"
-      urgency_level: "low" | "medium" | "high" | "urgent"
+      urgency_level: "low" | "medium" | "high"
+      user_role: "junior_advocate" | "senior_counsel" | "chambers_admin"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -4626,6 +6188,11 @@ export const Constants = {
         "pro_forma",
         "pro_forma_accepted",
         "pro_forma_declined",
+        "awaiting_acceptance",
+        "accepted",
+        "declined",
+        "expired",
+        "converted_to_invoice",
       ],
       matter_status: ["active", "pending", "settled", "closed", "on_hold"],
       payment_method: ["eft", "cheque", "cash", "card", "debit_order"],
@@ -4640,8 +6207,8 @@ export const Constants = {
         "court_orders",
         "other",
       ],
-      pro_forma_action: ["create_matter", "create_invoice", "reject"],
-      pro_forma_status: ["pending", "processed", "expired"],
+      pro_forma_action: ["matter", "pro_forma", "invoice"],
+      pro_forma_status: ["pending", "submitted", "processed", "declined"],
       referral_status: ["pending", "accepted", "declined", "completed"],
       risk_level: ["low", "medium", "high", "critical"],
       specialisation_category: [
@@ -4664,7 +6231,8 @@ export const Constants = {
         "other",
       ],
       time_entry_method: ["manual", "voice", "timer", "ai_suggested"],
-      urgency_level: ["low", "medium", "high", "urgent"],
+      urgency_level: ["low", "medium", "high"],
+      user_role: ["junior_advocate", "senior_counsel", "chambers_admin"],
     },
   },
 } as const

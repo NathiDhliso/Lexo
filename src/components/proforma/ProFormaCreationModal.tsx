@@ -20,19 +20,30 @@ interface Service {
   category?: ServiceCategory;
 }
 
+export interface ProFormaInitialData {
+  matter_id?: string;
+  fee_narrative?: string;
+  total_amount?: number;
+  valid_until?: string;
+  quote_date?: string;
+  notes?: string;
+}
+
 interface ProFormaCreationModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSubmit: (data: ProFormaGenerationRequest) => Promise<void>;
   onProFormaCreated?: (data: ProFormaGenerationRequest) => Promise<void>;
   isLoading?: boolean;
+  initialData?: ProFormaInitialData;
 }
 
 export const ProFormaCreationModal: React.FC<ProFormaCreationModalProps> = ({
   isOpen,
   onClose,
   onSubmit,
-  isLoading = false
+  isLoading = false,
+  initialData
 }) => {
   const [formData, setFormData] = useState<ProFormaGenerationRequest>({
     matter_id: '',
@@ -53,24 +64,26 @@ export const ProFormaCreationModal: React.FC<ProFormaCreationModalProps> = ({
   const [selectedServices, setSelectedServices] = useState<string[]>([]);
   const [loadingServices, setLoadingServices] = useState(false);
 
-  // Load matters when modal opens
   useEffect(() => {
     if (isOpen) {
       loadMatters();
       loadServices();
-      // Reset form when modal opens
-      setFormData({
+      const defaultData = {
         matter_id: '',
         fee_narrative: '',
         total_amount: 0,
         valid_until: '',
         quote_date: new Date().toISOString().split('T')[0],
         notes: ''
+      };
+      setFormData({
+        ...defaultData,
+        ...initialData
       });
       setSelectedServices([]);
       setErrors({});
     }
-  }, [isOpen]);
+  }, [isOpen, initialData]);
 
   const loadMatters = async () => {
     setLoadingMatters(true);

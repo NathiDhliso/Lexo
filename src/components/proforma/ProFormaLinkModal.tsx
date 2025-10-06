@@ -73,24 +73,48 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
         expires_at: expiryDate.toISOString()
       });
 
-      const { error } = await supabase
-        .from('pro_forma_requests')
-        .insert({
-          token,
-          advocate_id: user?.id,
-          client_name: clientName.trim(),
-          client_email: clientEmail.trim(),
-          matter_description: matterDescription.trim(),
-          matter_type: matterType,
-          urgency_level: urgencyLevel,
-          status: 'pending',
-          expires_at: expiryDate.toISOString(),
-          requested_action: requestedAction
-        });
+      const insertData = {
+        token,
+        advocate_id: user?.id,
+        client_name: clientName.trim(),
+        client_email: clientEmail.trim(),
+        matter_description: matterDescription.trim(),
+        matter_type: matterType,
+        urgency_level: urgencyLevel,
+        status: 'pending',
+        expires_at: expiryDate.toISOString(),
+        requested_action: requestedAction
+      };
 
-      console.log('Insert result error:', error);
+      console.log('About to insert:', insertData);
+
+      const { data, error } = await supabase
+        .from('pro_forma_requests')
+        .insert(insertData)
+        .select()
+        .single();
+
+      console.log('Insert result:', { data, error });
 
       if (error) {
+        console.error('Detailed error:', {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+          fullError: JSON.stringify(error, null, 2)
+        });
+        
+        if (error.code === '23505') {
+          const detail = error.details || error.message || '';
+          console.error('UNIQUE CONSTRAINT VIOLATION:', detail);
+          toast.error(`Duplicate entry: ${detail}`);
+        } else if (error.code === '42703') {
+          console.error('COLUMN DOES NOT EXIST:', error.message);
+          toast.error('Database schema error: Missing column. Please contact support.');
+        } else {
+          toast.error(`Failed to generate link: ${error.message}`);
+        }
         throw error;
       }
 

@@ -213,12 +213,35 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
     setIsSubmitting(true);
 
     try {
+      const updateData: any = {
+        ...formData,
+        status: 'submitted' as ProFormaStatus,
+        submitted_at: new Date().toISOString()
+      };
+
+      if (updateData.total_amount === '' || updateData.total_amount === null) {
+        delete updateData.total_amount;
+      } else if (updateData.total_amount) {
+        updateData.total_amount = Number(updateData.total_amount);
+      }
+
+      if (updateData.estimated_value === '' || updateData.estimated_value === null) {
+        delete updateData.estimated_value;
+      } else if (updateData.estimated_value) {
+        updateData.estimated_value = Number(updateData.estimated_value);
+      }
+
+      if (updateData.valid_until === '' || updateData.valid_until === null) {
+        delete updateData.valid_until;
+      }
+
+      if (updateData.quote_date === '' || updateData.quote_date === null) {
+        delete updateData.quote_date;
+      }
+
       const { error } = await supabase
         .from('pro_forma_requests')
-        .update({ 
-          ...formData,
-          status: 'submitted' as ProFormaStatus
-        })
+        .update(updateData)
         .eq('token', token);
 
       if (error) {

@@ -45,10 +45,10 @@ CREATE POLICY "Users can insert own preferences" ON user_preferences
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 
 -- Create function to automatically create user preferences on user creation
-CREATE OR REPLACE FUNCTION create_user_preferences()
+CREATE OR REPLACE FUNCTION public.create_user_preferences()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO user_preferences (user_id, feature_discovery)
+  INSERT INTO public.user_preferences (user_id, feature_discovery)
   VALUES (
     NEW.id,
     jsonb_build_object(
@@ -56,17 +56,18 @@ BEGIN
       'notification_dismissed_at', null,
       'first_login_date', NOW()
     )
-  );
+  )
+  ON CONFLICT (user_id) DO NOTHING;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$ LANGUAGE plpgsql SECURITY DEFINER SET search_path = public;
 
 -- Create trigger to automatically create user preferences
 DROP TRIGGER IF EXISTS create_user_preferences_trigger ON auth.users;
 CREATE TRIGGER create_user_preferences_trigger
   AFTER INSERT ON auth.users
   FOR EACH ROW
-  EXECUTE FUNCTION create_user_preferences();
+  EXECUTE FUNCTION public.create_user_preferences();
 
 -- Create function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_user_preferences_updated_at()
@@ -85,7 +86,7 @@ CREATE TRIGGER update_user_preferences_updated_at_trigger
   EXECUTE FUNCTION update_user_preferences_updated_at();
 
 -- Insert default preferences for existing users (if any)
-INSERT INTO user_preferences (user_id, feature_discovery)
+INSERT INTO public.user_preferences (user_id, feature_discovery)
 SELECT 
   id,
   jsonb_build_object(
@@ -94,7 +95,7 @@ SELECT
     'first_login_date', COALESCE(created_at, NOW())
   )
 FROM auth.users
-WHERE id NOT IN (SELECT user_id FROM user_preferences)
+WHERE id NOT IN (SELECT user_id FROM public.user_preferences)
 ON CONFLICT (user_id) DO NOTHING;
 
 -- Add comments for documentation

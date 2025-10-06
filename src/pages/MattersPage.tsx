@@ -23,6 +23,8 @@ import { InvoiceGenerationModal } from '../components/invoices/InvoiceGeneration
 import { NewMatterModal } from '../components/matters/NewMatterModal';
 import { ProFormaLinkModal } from '../components/matters/ProFormaLinkModal';
 import { DocumentProcessingModal } from '../components/matters/DocumentProcessingModal';
+import { WorkflowPipeline } from '../components/workflow/WorkflowPipeline';
+import { useWorkflowCounts } from '../hooks/useWorkflowCounts';
 import { InvoiceService } from '../services/api/invoices.service';
 import { matterApiService } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
@@ -48,6 +50,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [matters, setMatters] = useState<Matter[]>([]);
   const [loadingMatters, setLoadingMatters] = useState(true);
   const { user, loading, isAuthenticated } = useAuth();
+  const workflowCounts = useWorkflowCounts();
 
   // Load matters from API based on current user
   React.useEffect(() => {
@@ -214,9 +217,17 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   };
 
   return (
-    <div className="w-full space-y-4 md:space-y-6">
-      {/* Header with Quick Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <>
+      <WorkflowPipeline
+        matterCount={workflowCounts.matterCount}
+        proFormaCount={workflowCounts.proFormaCount}
+        invoiceCount={workflowCounts.invoiceCount}
+        unpaidCount={workflowCounts.unpaidCount}
+      />
+      
+      <div className="w-full space-y-4 md:space-y-6">
+        {/* Header with Quick Actions */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900">Matters</h1>
           <p className="text-sm sm:text-base text-neutral-600 mt-1">Manage your cases with intelligence and insight</p>
@@ -517,7 +528,8 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           }}
         />
       )}
-    </div>
+      </div>
+    </>
   );
 };
 

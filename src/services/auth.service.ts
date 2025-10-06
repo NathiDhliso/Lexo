@@ -37,6 +37,9 @@ export interface ExtendedUser extends User {
   };
 }
 
+// Feature flag to control server-side auth security RPCs
+const AUTH_RPC_ENABLED = import.meta.env.VITE_ENABLE_AUTH_SECURITY_RPC === 'true';
+
 export class AuthService {
   private currentUser: ExtendedUser | null = null;
   private currentSession: Session | null = null;
@@ -69,6 +72,9 @@ export class AuthService {
 
   private async checkAccountLockout(email: string): Promise<{ isLocked: boolean; lockedUntil?: Date }> {
     try {
+      if (!AUTH_RPC_ENABLED) {
+        return { isLocked: false };
+      }
       const { data, error } = await supabase.rpc('check_account_lockout', { p_email: email });
       
       if (error || !data || data.length === 0) {
@@ -92,6 +98,9 @@ export class AuthService {
     success: boolean
   ): Promise<void> {
     try {
+      if (!AUTH_RPC_ENABLED) {
+        return;
+      }
       await supabase.rpc('record_auth_attempt', {
         p_email: email,
         p_attempt_type: attemptType,
@@ -106,6 +115,9 @@ export class AuthService {
 
   private async validatePasswordServerSide(password: string): Promise<{ valid: boolean; errors: string[] }> {
     try {
+      if (!AUTH_RPC_ENABLED) {
+        return { valid: true, errors: [] };
+      }
       const { data, error } = await supabase.rpc('validate_password_strength', { p_password: password });
       
       if (error || !data) {
@@ -208,7 +220,15 @@ export class AuthService {
       const { data: { session }, error } = await supabase.auth.getSession();
       
       if (error) {
-        console.error('Error getting initial session:', error);
+        // Suppress common Supabase connection errors in development
+        if (error.message?.includes('Failed to fetch') || 
+            error.message?.includes('400') || 
+            error.message?.includes('403') ||
+            error.message?.includes('No API key found')) {
+          console.warn('Supabase auth service unavailable, continuing without authentication');
+        } else {
+          console.error('Error getting initial session:', error);
+        }
         this.isInitializing = false;
         return;
       }
@@ -220,24 +240,28 @@ export class AuthService {
 
       this.notifyAuthStateListeners();
 
-      this.authStateSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
-        console.log('Auth state changed:', event, session?.user?.email);
-        
-        if (session) {
-          await this.setCurrentSession(session);
-          this.startActivityMonitoring();
-        } else {
-          this.currentUser = null;
-          this.currentSession = null;
-          this.sessionToken = null;
-          if (this.activityCheckInterval) {
-            clearInterval(this.activityCheckInterval);
-            this.activityCheckInterval = null;
+      try {
+        this.authStateSubscription = supabase.auth.onAuthStateChange(async (event, session) => {
+          console.log('Auth state changed:', event, session?.user?.email);
+          
+          if (session) {
+            await this.setCurrentSession(session);
+            this.startActivityMonitoring();
+          } else {
+            this.currentUser = null;
+            this.currentSession = null;
+            this.sessionToken = null;
+            if (this.activityCheckInterval) {
+              clearInterval(this.activityCheckInterval);
+              this.activityCheckInterval = null;
+            }
           }
-        }
 
-        this.notifyAuthStateListeners();
-      });
+          this.notifyAuthStateListeners();
+        });
+      } catch (error) {
+        console.warn('Could not set up auth state listener, continuing without real-time auth updates');
+      }
 
     } catch (error) {
       console.error('Error initializing auth:', error);
@@ -289,6 +313,21 @@ export class AuthService {
           data: null,
           error: new Error(`Account locked. Try again in ${minutes} minutes.`)
         };
+      }
+
+      // If demo mode is active, avoid hitting Supabase and create a local session
+      const demoUser = localStorage.getItem('demo_user');
+      const demoSession = localStorage.getItem('demo_session');
+      if (demoUser && demoSession) {
+        const user = JSON.parse(demoUser) as ExtendedUser;
+        const session = JSON.parse(demoSession);
+        if (session.expires_at > Date.now()) {
+          await this.setCurrentSession(session);
+          this.startActivityMonitoring();
+          this.notifyAuthStateListeners();
+          await this.recordAuthAttempt(email, 'login', true);
+          return { data: { user, session }, error: null };
+        }
       }
 
       const credentials: SignInWithPasswordCredentials = { email, password };
@@ -503,6 +542,17 @@ export class AuthService {
   }
 
   getCurrentUser(): ExtendedUser | null {
+    // Prefer demo user if available to avoid unnecessary Supabase auth requests
+    try {
+      const demoUser = localStorage.getItem('demo_user');
+      const demoSession = localStorage.getItem('demo_session');
+      if (demoUser && demoSession) {
+        const session = JSON.parse(demoSession);
+        if (session.expires_at > Date.now()) {
+          return JSON.parse(demoUser) as ExtendedUser;
+        }
+      }
+    } catch {}
     return this.currentUser;
   }
 

@@ -7,7 +7,6 @@ import {
   Phone, 
   FileText, 
   AlertTriangle,
-  CheckCircle,
   Eye,
   Plus,
   Calculator,
@@ -17,6 +16,7 @@ import {
 import { Card, CardContent, CardHeader, Button } from '../../design-system/components';
 import { NewMatterModal } from '../matters/NewMatterModal';
 import { InvoiceGenerationModal } from '../invoices/InvoiceGenerationModal';
+import { ConfirmDialog } from '../common/ConfirmDialog';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
@@ -61,6 +61,7 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
   const [isLoading, setIsLoading] = useState(true);
   const [showNewMatterModal, setShowNewMatterModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [prepopulationData, setPrepopulationData] = useState<any>(null);
   const [selectedRequest, setSelectedRequest] = useState<ProFormaRequest | null>(null);
 
@@ -108,7 +109,15 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
     }
   };
 
-  const handleProcessRequest = async (request: ProFormaRequest) => {
+  const handleProcessRequest = (request: ProFormaRequest) => {
+    setSelectedRequest(request);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmGenerate = async () => {
+    if (!selectedRequest) return;
+
+    const request = selectedRequest;
     const initialData = {
       title: request.matter_title || `Matter for ${request.client_name || request.instructing_attorney_name}`,
       description: request.matter_description || '',
@@ -125,13 +134,13 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
     };
 
     setPrepopulationData(initialData);
-    setSelectedRequest(request);
+    setShowConfirmDialog(false);
 
     if (request.requested_action === 'matter') {
       setShowNewMatterModal(true);
     } else {
       // For pro forma requests, create a temporary matter object
-      const tempMatterForInvoice: Matter = {
+      const tempMatterForInvoice: Partial<Matter> & { id: string } = {
         id: `temp-pro-forma-${request.id}`,
         title: initialData.title,
         description: initialData.description,
@@ -143,16 +152,15 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
         instructing_firm: initialData.instructing_firm,
         instructing_attorney_email: initialData.instructing_attorney_email,
         instructing_attorney_phone: initialData.instructing_attorney_phone,
-        estimated_value: initialData.estimated_value,
+        estimated_fee: initialData.estimated_value,
         status: 'active' as any,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
         advocate_id: user?.id || '',
         client_type: 'individual' as any,
         fee_type: 'hourly' as any,
-        hourly_rate: 0,
         risk_level: 'medium' as any,
-        bar_association: 'johannesburg' as any
+        bar: 'johannesburg' as any
       };
       setPrepopulationData(tempMatterForInvoice);
       setShowInvoiceModal(true);
@@ -340,7 +348,6 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
                           <h4 className="font-medium text-neutral-900 mb-1">{request.matter_title}</h4>
                         </div>
                       )}
-                      
                       <div className="text-sm text-neutral-600">
                         <p className="line-clamp-2">{request.matter_description}</p>
                       </div>
@@ -352,7 +359,17 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
                         </div>
                       )}
 
-
+                      {request.total_amount && request.total_amount > 0 && (
+                        <div className="flex items-center gap-2 p-3 bg-mpondo-gold-50 border border-mpondo-gold-200 rounded-lg">
+                          <Calculator className="h-5 w-5 text-mpondo-gold-600" />
+                          <div>
+                            <div className="text-xs text-neutral-600">Estimated Amount</div>
+                            <div className="text-lg font-bold text-mpondo-gold-700">
+                              R{request.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                            </div>
+                          </div>
+                        </div>
+                      )}
 
                       {/* Expiry Info */}
                       <div className="flex items-center gap-2 text-xs text-neutral-500">
@@ -368,6 +385,7 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
                       <Button
                         onClick={() => handleProcessRequest(request)}
                         size="sm"
+                        variant="primary"
                         className="flex items-center gap-2"
                       >
                         {request.requested_action === 'matter' ? (
@@ -388,8 +406,7 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
                         size="sm"
                         className="flex items-center gap-2"
                         onClick={() => {
-                          // TODO: Implement view details modal
-                          toast.info('View details functionality coming soon');
+                          toast.success('View details functionality coming soon');
                         }}
                       >
                         <Eye className="h-4 w-4" />
@@ -422,6 +439,55 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
           matter={prepopulationData}
           onInvoiceGenerated={handleInvoiceGenerated}
           defaultToProForma={true}
+        />
+      )}
+
+      {/* Confirmation Dialog */}
+      {selectedRequest && (
+        <ConfirmDialog
+          isOpen={showConfirmDialog}
+          onClose={() => setShowConfirmDialog(false)}
+          onConfirm={handleConfirmGenerate}
+          title={selectedRequest.requested_action === 'matter' ? 'Create Matter?' : 'Generate Pro Forma Invoice?'}
+          message={
+            <div className="space-y-3">
+              <p>
+                {selectedRequest.requested_action === 'matter' 
+                  ? 'You are about to create a new matter from this request:'
+                  : 'You are about to generate a pro forma invoice for:'}
+              </p>
+              <div className="bg-neutral-50 p-4 rounded-lg space-y-2">
+                <div className="flex justify-between">
+                  <span className="text-neutral-600">Client:</span>
+                  <span className="font-medium">{selectedRequest.client_name || 'N/A'}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-neutral-600">Matter:</span>
+                  <span className="font-medium">{selectedRequest.matter_title || 'N/A'}</span>
+                </div>
+                {selectedRequest.total_amount && (
+                  <div className="flex justify-between">
+                    <span className="text-neutral-600">Amount:</span>
+                    <span className="font-bold text-mpondo-gold-600">
+                      R{selectedRequest.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                    </span>
+                  </div>
+                )}
+                <div className="flex justify-between">
+                  <span className="text-neutral-600">Attorney:</span>
+                  <span className="font-medium">{selectedRequest.instructing_attorney_name || 'N/A'}</span>
+                </div>
+              </div>
+              <p className="text-sm text-neutral-600">
+                {selectedRequest.requested_action === 'matter'
+                  ? 'The matter will be created and the request will be marked as processed.'
+                  : 'The invoice will be saved as a draft and the request will be marked as processed.'}
+              </p>
+            </div>
+          }
+          confirmText={selectedRequest.requested_action === 'matter' ? 'Create Matter' : 'Generate Invoice'}
+          cancelText="Cancel"
+          variant="info"
         />
       )}
     </>

@@ -33,6 +33,7 @@ import {
   MessageSquare,
   Fingerprint
 } from 'lucide-react';
+import { generateUUID } from '../lib/utils';
 import lexoLogo from '../Public/Assets/lexo-logo.png';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
@@ -403,7 +404,7 @@ const LoginPage = () => {
     try {
       // Create demo user data
       const demoUser = {
-        id: `demo-${type}-${Date.now()}`,
+        id: generateUUID(),
         email: type === 'junior'
           ? (import.meta.env.VITE_DEMO_JUNIOR_EMAIL ?? 'demo.junior@lexo.co.za')
           : (import.meta.env.VITE_DEMO_SENIOR_EMAIL ?? 'demo.senior@lexo.co.za'),
@@ -427,8 +428,8 @@ const LoginPage = () => {
 
       // Create demo session (valid for 1 hour)
       const demoSession = {
-        access_token: `demo-token-${Date.now()}`,
-        refresh_token: `demo-refresh-${Date.now()}`,
+        access_token: `demo-token-${generateUUID()}`,
+        refresh_token: `demo-refresh-${generateUUID()}`,
         expires_at: Date.now() + (60 * 60 * 1000), // 1 hour from now
         user: demoUser
       };

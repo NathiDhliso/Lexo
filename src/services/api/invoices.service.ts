@@ -42,7 +42,10 @@ const InvoiceValidation = z.object({
 });
 
 const InvoiceGenerationValidation = z.object({
-  matterId: z.string().uuid('Invalid matter ID'),
+  matterId: z.string().refine(
+    (val) => val.startsWith('temp-pro-forma-') || z.string().uuid().safeParse(val).success,
+    'Invalid matter ID'
+  ),
   timeEntryIds: z.array(z.string().uuid()).optional(),
   customNarrative: z.string().optional(),
   includeUnbilledTime: z.boolean().default(true),
@@ -60,6 +63,16 @@ export class InvoiceService {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
         throw new Error('User not authenticated');
+      }
+      
+      const isTempProFormaMatter = matterId.startsWith('temp-pro-forma-');
+      
+      if (isTempProFormaMatter && !isProForma) {
+        throw new Error('Temporary matters can only generate pro forma invoices');
+      }
+      
+      if (isTempProFormaMatter) {
+        return this.generateProFormaForTempMatter(request, user);
       }
       
       // Fetch matter details
@@ -185,6 +198,86 @@ export class InvoiceService {
       toast.error(message);
       throw error;
     }
+  }
+
+  private static async generateProFormaForTempMatter(request: InvoiceGenerationRequest, user: any): Promise<Invoice> {
+    const { matterId, customNarrative } = request;
+    
+    const requestId = matterId.replace('temp-pro-forma-', '');
+    
+    const { data: proFormaRequest, error: requestError } = await supabase
+      .from('pro_forma_requests')
+      .select('*')
+      .eq('id', requestId)
+      .single();
+    
+    if (requestError || !proFormaRequest) {
+      throw new Error('Pro forma request not found');
+    }
+    
+    const { data: existingMatters } = await supabase
+      .from('matters')
+      .select('id')
+      .eq('advocate_id', user.id)
+      .limit(1);
+    
+    let tempMatterId: string;
+    
+    if (existingMatters && existingMatters.length > 0) {
+      tempMatterId = existingMatters[0].id;
+    } else {
+      tempMatterId = '00000000-0000-0000-0000-000000000000';
+    }
+    
+    const invoiceNumber = await this.generateInvoiceNumber('johannesburg');
+    const invoiceDate = new Date();
+    const dueDate = addDays(invoiceDate, 60);
+    
+    const narrative = customNarrative || `Pro forma invoice for: ${proFormaRequest.matter_title || 'Legal Services'}\n\n${proFormaRequest.matter_description || ''}`;
+    
+    const estimatedFees = proFormaRequest.total_amount || 0;
+    const vatAmount = estimatedFees * 0.15;
+    const totalAmount = estimatedFees + vatAmount;
+    
+    const { data: invoice, error: invoiceError } = await supabase
+      .from('invoices')
+      .insert({
+        matter_id: tempMatterId,
+        advocate_id: user.id,
+        invoice_number: invoiceNumber,
+        invoice_date: format(invoiceDate, 'yyyy-MM-dd'),
+        due_date: format(dueDate, 'yyyy-MM-dd'),
+        bar: 'johannesburg',
+        fees_amount: estimatedFees,
+        disbursements_amount: 0,
+        vat_rate: 0.15,
+        amount_paid: 0,
+        status: 'draft',
+        is_pro_forma: true,
+        internal_notes: `pro_forma_request:${requestId}`,
+        external_id: requestId,
+        fee_narrative: narrative,
+        reminders_sent: 0,
+        next_reminder_date: format(addDays(invoiceDate, 30), 'yyyy-MM-dd')
+      })
+      .select()
+      .single();
+    
+    if (invoiceError) {
+      console.error('Error creating pro forma invoice:', invoiceError);
+      throw new Error('Failed to create pro forma invoice');
+    }
+    
+    await supabase
+      .from('pro_forma_requests')
+      .update({
+        status: 'processed',
+        processed_at: new Date().toISOString()
+      })
+      .eq('id', requestId);
+    
+    toast.success('Pro forma invoice generated successfully');
+    return this.mapDatabaseToInvoice(invoice);
   }
 
   // Create a new invoice (legacy method)
@@ -330,6 +423,42 @@ export class InvoiceService {
       const message = error instanceof Error ? error.message : 'Failed to update invoice status';
       toast.error(message);
       throw error;
+    }
+  }
+
+  static async getProFormaInvoiceHistory(advocateId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('advocate_id', advocateId)
+        .eq('is_pro_forma', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      return (data || []).map(inv => this.mapDatabaseToInvoice(inv));
+    } catch (error) {
+      console.error('Error fetching pro forma invoice history:', error);
+      throw new Error('Failed to fetch pro forma invoice history');
+    }
+  }
+
+  static async getProFormaInvoicesByRequest(requestId: string) {
+    try {
+      const { data, error } = await supabase
+        .from('invoices')
+        .select('*')
+        .eq('external_id', requestId)
+        .eq('is_pro_forma', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      return (data || []).map(inv => this.mapDatabaseToInvoice(inv));
+    } catch (error) {
+      console.error('Error fetching pro forma invoices for request:', error);
+      throw new Error('Failed to fetch pro forma invoices');
     }
   }
 

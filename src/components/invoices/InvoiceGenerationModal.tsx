@@ -90,13 +90,18 @@ export const InvoiceGenerationModal: React.FC<InvoiceGenerationModalProps> = ({
       setIsLoading(true);
       if (!selectedMatter?.id) return;
       
+      if (selectedMatter.id.startsWith('temp-pro-forma-')) {
+        setTimeEntries([]);
+        setSelectedEntries([]);
+        return;
+      }
+      
       const response = await TimeEntryService.getTimeEntries({
         matterId: selectedMatter.id,
         billable: true,
         invoiced: false
       });
       setTimeEntries(response.data);
-      // Select all entries by default
       setSelectedEntries(response.data.map(e => e.id));
     } catch (error) {
       console.error('Error loading unbilled time entries:', error);
@@ -109,6 +114,12 @@ export const InvoiceGenerationModal: React.FC<InvoiceGenerationModalProps> = ({
   const loadUnbilledExpenses = useCallback(async () => {
     try {
       if (!selectedMatter?.id) return;
+      
+      if (selectedMatter.id.startsWith('temp-pro-forma-')) {
+        setExpenses([]);
+        setSelectedExpenses([]);
+        return;
+      }
       
       const expensesData = await ExpensesService.getMatterExpenses(selectedMatter.id);
       
@@ -275,7 +286,9 @@ export const InvoiceGenerationModal: React.FC<InvoiceGenerationModalProps> = ({
   };
 
   const handleGenerateInvoice = async () => {
-    if (selectedEntries.length === 0 && selectedExpenses.length === 0) {
+    const isTempProFormaMatter = selectedMatter?.id?.startsWith('temp-pro-forma-');
+    
+    if (!isTempProFormaMatter && selectedEntries.length === 0 && selectedExpenses.length === 0) {
       toast.error('Please select at least one time entry or expense');
       return;
     }
@@ -958,12 +971,22 @@ export const InvoiceGenerationModal: React.FC<InvoiceGenerationModalProps> = ({
               </div>
 
               {/* Warning for no selection */}
-              {selectedEntries.length === 0 && (
+              {selectedEntries.length === 0 && selectedExpenses.length === 0 && !selectedMatter?.id?.startsWith('temp-pro-forma-') && (
                 <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg">
                   <div className="flex items-start gap-2">
                     <AlertCircle className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" />
                     <p className="text-xs text-amber-700">
-                      Please select at least one time entry to generate an invoice
+                      Please select at least one time entry or expense to generate an invoice
+                    </p>
+                  </div>
+                </div>
+              )}
+              {selectedMatter?.id?.startsWith('temp-pro-forma-') && (
+                <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                    <p className="text-xs text-blue-700">
+                      This is a pro forma quote request. You can generate it without time entries.
                     </p>
                   </div>
                 </div>
@@ -974,7 +997,7 @@ export const InvoiceGenerationModal: React.FC<InvoiceGenerationModalProps> = ({
             <div className="mt-6 space-y-3">
               <button
                 onClick={handleGenerateInvoice}
-                disabled={selectedEntries.length === 0 || isGenerating}
+                disabled={(selectedEntries.length === 0 && selectedExpenses.length === 0 && !selectedMatter?.id?.startsWith('temp-pro-forma-')) || isGenerating}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-mpondo-gold-600 text-white rounded-lg hover:bg-mpondo-gold-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isGenerating ? (
@@ -992,7 +1015,7 @@ export const InvoiceGenerationModal: React.FC<InvoiceGenerationModalProps> = ({
 
               <button
                 onClick={handleDownloadPDF}
-                disabled={selectedEntries.length === 0}
+                disabled={selectedEntries.length === 0 && selectedExpenses.length === 0 && !selectedMatter?.id?.startsWith('temp-pro-forma-')}
                 className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-neutral-300 text-neutral-700 rounded-lg hover:bg-neutral-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Download className="w-4 h-4" />

@@ -1,0 +1,145 @@
+/**
+ * Document Type Color System
+ * Consistent color coding across the application
+ */
+
+/* Matter - Blue */
+.document-matter {
+  @apply border-l-4 border-l-judicial-blue-500;
+}
+
+.document-matter-badge {
+  @apply bg-judicial-blue-100 text-judicial-blue-700 border-judicial-blue-200;
+}
+
+.document-matter-accent {
+  @apply text-judicial-blue-600;
+}
+
+.document-matter-bg {
+  @apply bg-judicial-blue-50;
+}
+
+.document-matter-hover {
+  @apply hover:bg-judicial-blue-50 hover:border-judicial-blue-300;
+}
+
+/* Pro Forma - Gold */
+.document-proforma {
+  @apply border-l-4 border-l-mpondo-gold-500;
+}
+
+.document-proforma-badge {
+  @apply bg-mpondo-gold-100 text-mpondo-gold-700 border-mpondo-gold-200;
+}
+
+.document-proforma-accent {
+  @apply text-mpondo-gold-600;
+}
+
+.document-proforma-bg {
+  @apply bg-mpondo-gold-50;
+}
+
+.document-proforma-hover {
+  @apply hover:bg-mpondo-gold-50 hover:border-mpondo-gold-300;
+}
+
+/* Invoice - Green */
+.document-invoice {
+  @apply border-l-4 border-l-status-success-500;
+}
+
+.document-invoice-badge {
+  @apply bg-status-success-100 text-status-success-700 border-status-success-200;
+}
+
+.document-invoice-accent {
+  @apply text-status-success-600;
+}
+
+.document-invoice-bg {
+  @apply bg-status-success-50;
+}
+
+.document-invoice-hover {
+  @apply hover:bg-status-success-50 hover:border-status-success-300;
+}
+
+/* Status Colors */
+.status-active {
+  @apply bg-status-success-100 text-status-success-700 border-status-success-200;
+}
+
+.status-pending {
+  @apply bg-mpondo-gold-100 text-mpondo-gold-700 border-mpondo-gold-200;
+}
+
+.status-draft {
+  @apply bg-neutral-100 text-neutral-700 border-neutral-200;
+}
+
+.status-declined,
+.status-error,
+.status-overdue {
+  @apply bg-status-error-100 text-status-error-700 border-status-error-200;
+}
+
+.status-completed,
+.status-paid,
+.status-closed {
+  @apply bg-neutral-100 text-neutral-600 border-neutral-200;
+}
+
+/* Urgency Indicators */
+.urgency-high {
+  @apply bg-status-error-100 text-status-error-700 border-status-error-200;
+}
+
+.urgency-medium {
+  @apply bg-mpondo-gold-100 text-mpondo-gold-700 border-mpondo-gold-200;
+}
+
+.urgency-low {
+  @apply bg-judicial-blue-100 text-judicial-blue-700 border-judicial-blue-200;
+}
+
+/* Card Hover States */
+.card-hover {
+  @apply transition-all duration-200 hover:shadow-md hover:-translate-y-0.5;
+}
+
+/* Pipeline Colors */
+.pipeline-matter {
+  @apply bg-judicial-blue-500 border-judicial-blue-500;
+}
+
+.pipeline-proforma {
+  @apply bg-mpondo-gold-500 border-mpondo-gold-500;
+}
+
+.pipeline-invoice {
+  @apply bg-status-success-500 border-status-success-500;
+}
+
+/* Amount Highlights */
+.amount-highlight {
+  @apply text-lg font-bold text-mpondo-gold-700;
+}
+
+.amount-box {
+  @apply p-3 bg-mpondo-gold-50 border border-mpondo-gold-200 rounded-lg;
+}
+
+/* Document Icons */
+.icon-matter {
+  @apply text-judicial-blue-600;
+}
+
+.icon-proforma {
+  @apply text-mpondo-gold-600;
+}
+
+.icon-invoice {
+  @apply text-status-success-600;
+}
