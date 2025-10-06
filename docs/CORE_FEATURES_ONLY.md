@@ -13,8 +13,7 @@
 
 **Keep:**
 - ✅ `src/pages/MattersPage.tsx`
-- ✅ `src/components/matters/NewMatterModal.tsx`
-- ✅ `src/components/matters/NewMatterMultiStep.tsx`
+- ✅ `src/components/matters/NewMatterMultiStep.tsx` (multi-step matter creation)
 - ✅ `src/components/matters/ProFormaLinkModal.tsx`
 - ✅ `src/services/api/matters.service.ts` (if exists)
 - ✅ Matter CRUD operations
@@ -96,19 +95,20 @@
 
 ---
 
-### 7. Templates (KEEP - Basic Only)
-**Purpose:** Invoice and pro forma templates
+### 7. PDF Generation (KEEP - Basic Only)
+**Purpose:** Generate PDF invoices and pro formas
 
 **Keep:**
-- ✅ Basic invoice templates
-- ✅ Basic pro forma templates
-- ✅ PDF generation templates
-- ✅ Email templates for invoices
+- ✅ PDF generation for invoices
+- ✅ PDF generation for pro formas
+- ✅ Email templates for sending documents
+- ✅ Basic document formatting
 
-**Remove:**
-- ❌ Advanced template builder
-- ❌ Template marketplace
-- ❌ Template sharing features
+**Removed:**
+- ❌ Advanced template builder (deleted)
+- ❌ Template marketplace (deleted)
+- ❌ Template sharing features (deleted)
+- ❌ Matter templates system (deleted)
 
 ---
 
