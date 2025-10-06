@@ -47,21 +47,63 @@ const GlobalStyles = () => (
     @keyframes rotate {
       to { transform: rotate(360deg); }
     }
+    @keyframes modalSlideUp {
+      from {
+        opacity: 0;
+        transform: translateY(40px) scale(0.95);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+    @keyframes headerFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    @keyframes panelExpand {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    .modal-entrance {
+      animation: modalSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .header-entrance {
+      animation: headerFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    .panel-entrance {
+      animation: panelExpand 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
     .panel-ambient-light::before {
       content: '';
       position: absolute;
-      inset: -1px; /* Fit perfectly inside the border */
+      inset: -1px;
       background: conic-gradient(from 180deg at 50% 50%, transparent, var(--ambient-light-color, #ffffff), transparent);
       border-radius: inherit;
       opacity: 0;
       animation: rotate 6s linear infinite;
       transition: opacity 0.7s;
-      z-index: -1; /* Place it behind the panel content */
+      z-index: -1;
     }
     .panel-ambient-light:hover::before {
       opacity: 0.25;
     }
     @media (prefers-reduced-motion: reduce) {
+      .modal-entrance,
+      .header-entrance,
+      .panel-entrance,
       .panel-ambient-light::before,
       .transition-all,
       .duration-1000,
@@ -214,9 +256,9 @@ const AuthPanel: React.FC<AuthPanelProps> = ({ userType, title, subtitle, Icon, 
     return (
         <div ref={panelRef} onClick={() => setSelectedType(userType)}
             className={cn(
-                "relative p-1 sm:p-2 md:p-3 lg:p-4 cursor-pointer transition-all duration-700 ease-in-out panel-ambient-light",
-                isSelected ? "flex-[2] md:flex-[3] ring-1 ring-white/30" : "flex-1",
-                isAnotherSelected && "opacity-70 scale-98 hover:opacity-85 hover:scale-100 md:opacity-50",
+                "relative p-2 sm:p-3 md:p-4 lg:p-5 cursor-pointer transition-all duration-700 ease-in-out panel-ambient-light panel-entrance",
+                isSelected ? "flex-[2] md:flex-[3] ring-1 ring-white/20 shadow-lg" : "flex-1",
+                isAnotherSelected && "opacity-60 scale-[0.98] hover:opacity-80 hover:scale-100 md:opacity-40",
                 "flex flex-col min-h-0 overflow-x-hidden overflow-y-auto w-full"
             )}>
             <div className={`absolute inset-0 bg-gradient-to-br from-${color}-500/5 to-transparent opacity-40`}></div>
@@ -479,33 +521,33 @@ const LoginPage = () => {
       }}
     >
       <GlobalStyles />
-      <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-black/35 to-black/45"></div>
+      <div className="absolute inset-0 bg-gradient-to-b from-black/15 via-black/25 to-black/35"></div>
       
-      <div className="relative z-10 w-full h-full flex flex-col overflow-x-hidden overflow-y-auto px-1 sm:px-2 md:px-4 py-1 sm:py-2 md:py-4">
-        <header className="text-center mb-2 sm:mb-3 md:mb-6 animate-in fade-in slide-in-from-top-4 duration-1000 flex-shrink-0">
+      <div className="relative z-10 w-full h-full flex flex-col overflow-x-hidden overflow-y-auto px-2 sm:px-4 md:px-6 py-3 sm:py-4 md:py-6">
+        <header className="text-center mb-3 sm:mb-4 md:mb-8 header-entrance flex-shrink-0">
             <div className="flex items-center justify-center gap-2 md:gap-3 mb-1 sm:mb-2 md:mb-3 group">
-                <img src={lexoLogo} alt="LexoHub Logo" className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain transition-transform duration-500 group-hover:rotate-12 group-hover:scale-110 drop-shadow-lg" style={{ background: 'transparent' }} />
-                <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white tracking-wider drop-shadow-sm">lexo</h1>
+                <img src={lexoLogo} alt="LexoHub Logo" className="w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 drop-shadow-2xl" style={{ background: 'transparent' }} />
+                <h1 className="text-2xl sm:text-3xl md:text-5xl font-bold text-white tracking-wider drop-shadow-lg transition-all duration-300 group-hover:text-yellow-50">lexo</h1>
             </div>
             <p className="text-sm md:text-base text-slate-200 leading-tight px-2 font-medium hidden sm:block">Where Strategy Meets Practice.</p>
         </header>
 
-        <main className={cn("bg-black/25 backdrop-blur-lg rounded-lg sm:rounded-xl border border-white/30 shadow-2xl flex flex-col md:flex-row transition-all duration-700 ease-in-out flex-1 overflow-hidden w-full max-w-6xl mx-auto min-h-0")}
+        <main className={cn("bg-black/15 backdrop-blur-md rounded-xl sm:rounded-2xl border border-white/20 shadow-2xl flex flex-col md:flex-row transition-all duration-700 ease-in-out flex-1 overflow-hidden w-full max-w-5xl mx-auto min-h-0 modal-entrance")}
               onTouchStart={handleTouchStart} onTouchEnd={handleTouchEnd}>
             {!selectedType && (
                 <>
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 hidden md:flex">
-                        <div className="w-16 h-16 bg-yellow-500 rounded-full flex items-center justify-center shadow-lg animate-pulse"><p className="text-white font-bold text-lg">OR</p></div>
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-20 hidden md:flex panel-entrance">
+                        <div className="w-16 h-16 bg-gradient-to-br from-yellow-400 to-yellow-600 rounded-full flex items-center justify-center shadow-xl shadow-yellow-500/30 hover:scale-110 transition-transform duration-300"><p className="text-white font-bold text-lg">OR</p></div>
                     </div>
-                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 md:hidden">
-                        <div className="bg-black/50 backdrop-blur-sm rounded-full px-4 py-2 text-white text-sm animate-bounce">Choose your role to continue</div>
+                    <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 md:hidden panel-entrance">
+                        <div className="bg-black/40 backdrop-blur-md rounded-full px-5 py-2.5 text-white text-sm border border-white/20 shadow-lg">Choose your role to continue</div>
                     </div>
                 </>
             )}
             
             {selectedType && (
                 <div className="absolute top-4 left-1/2 transform -translate-x-1/2 z-20 md:hidden">
-                    <div className="bg-black/50 backdrop-blur-sm rounded-full px-3 py-1 text-white text-xs">Swipe or tap to switch</div>
+                    <div className="bg-black/40 backdrop-blur-md rounded-full px-4 py-1.5 text-white text-xs border border-white/20 shadow-md">Swipe or tap to switch</div>
                 </div>
             )}
         
@@ -513,7 +555,7 @@ const LoginPage = () => {
           badge={ <div className="flex items-center gap-2 p-2 bg-white/15 rounded-lg border border-white/30 w-fit mt-auto shadow-sm"><span className="text-white text-sm font-medium">South Africa</span></div> }
           color="blue" selectedType={selectedType} setSelectedType={setSelectedType}
         >
-          <div className="bg-white/5 rounded-lg border border-white/15 p-2 sm:p-3 md:p-4 shadow-lg overflow-visible">
+          <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/15 p-2 sm:p-3 md:p-4 shadow-xl overflow-visible transition-all duration-500 hover:bg-white/10 hover:border-white/25">
               <div className="flex bg-black/30 rounded-lg p-1 mb-2 sm:mb-3 relative">
                   <div
                     className={cn(
@@ -565,7 +607,7 @@ const LoginPage = () => {
                       </div>
                   )}
 
-                  <Button type="submit" disabled={isSubmitting || (showValidation && !isFormValid)} className={cn("w-full py-2.5 sm:py-3 text-sm font-medium text-white transition-all duration-300 group", isFormValid && !isSubmitting ? "bg-blue-600 hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-500/30" : "bg-blue-600/50 cursor-not-allowed")}> 
+                  <Button type="submit" disabled={isSubmitting || (showValidation && !isFormValid)} className={cn("w-full py-2.5 sm:py-3 text-sm font-medium text-white transition-all duration-300 group", isFormValid && !isSubmitting ? "bg-blue-600 hover:bg-blue-700 hover:shadow-xl hover:shadow-blue-500/40 hover:scale-[1.02] active:scale-[0.98]" : "bg-blue-600/50 cursor-not-allowed")}> 
                       {isSubmitting ? <><LoadingSpinner size="sm" className="mr-2" />{authMode === 'signin' ? 'Signing In...' : 'Creating...'}</> : <div className="flex items-center justify-center gap-2"><span>{authMode === 'signin' ? 'Sign In' : 'Create Account'}</span><ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" /></div>}
                   </Button>
                   {authMode === 'signin' && <div className="text-center"><button type="button" onClick={() => handleDemoLogin('junior')} disabled={isSubmitting} className={cn("text-xs transition-colors flex items-center justify-center gap-1 mx-auto", isSubmitting ? "text-blue-300/50 cursor-not-allowed" : "text-blue-300 hover:text-blue-200 hover:underline")}>{isSubmitting ? <><LoadingSpinner size="sm" className="w-3 h-3" /><span>Signing in...</span></> : 'Try Junior Demo Account'}</button></div>}
@@ -577,7 +619,7 @@ const LoginPage = () => {
           badge={ <div className="flex items-center gap-2 p-2 bg-white/15 rounded-lg border border-white/30 w-fit mt-auto shadow-sm"><Shield className="w-4 h-4 text-amber-300" /><span className="text-white text-sm font-medium">SC</span></div> }
           color="amber" selectedType={selectedType} setSelectedType={setSelectedType}
         >
-          <div className="bg-white/5 rounded-lg border border-white/15 p-2 sm:p-3 md:p-4 shadow-lg overflow-visible">
+          <div className="bg-white/5 backdrop-blur-sm rounded-lg border border-white/15 p-2 sm:p-3 md:p-4 shadow-xl overflow-visible transition-all duration-500 hover:bg-white/10 hover:border-white/25">
                <div className="flex bg-black/30 rounded-lg p-1 mb-2 sm:mb-3 relative">
                   <div
                     className={cn(
@@ -624,7 +666,7 @@ const LoginPage = () => {
                       </div>
                   )}
                   
-                  <Button type="submit" disabled={isSubmitting || (showValidation && !isFormValid)} className={cn("w-full py-2.5 sm:py-3 text-sm font-medium text-white transition-all duration-300 group", isFormValid && !isSubmitting ? "bg-amber-600 hover:bg-amber-700 hover:scale-[1.02] hover:shadow-lg" : "bg-amber-600/50 cursor-not-allowed")}>
+                  <Button type="submit" disabled={isSubmitting || (showValidation && !isFormValid)} className={cn("w-full py-2.5 sm:py-3 text-sm font-medium text-white transition-all duration-300 group", isFormValid && !isSubmitting ? "bg-amber-600 hover:bg-amber-700 hover:scale-[1.02] hover:shadow-xl hover:shadow-amber-500/40 active:scale-[0.98]" : "bg-amber-600/50 cursor-not-allowed")}>
                       {isSubmitting ? <><LoadingSpinner size="sm" className="mr-2" />{authMode === 'signin' ? 'Signing In...' : 'Creating...'}</> : <div className="flex items-center justify-center gap-2"><span>{authMode === 'signin' ? 'Sign In' : 'Create Account'}</span><ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" /></div>}
                   </Button>
                   {authMode === 'signin' && <div className="text-center"><button type="button" onClick={() => handleDemoLogin('senior')} disabled={isSubmitting} className={cn("text-xs transition-colors flex items-center justify-center gap-1 mx-auto", isSubmitting ? "text-amber-300/50 cursor-not-allowed" : "text-amber-300 hover:text-amber-200 hover:underline")}>{isSubmitting ? <><LoadingSpinner size="sm" className="w-3 h-3" /><span>Signing in...</span></> : 'Try Senior Demo Account'}</button></div>}
@@ -633,8 +675,8 @@ const LoginPage = () => {
         </AuthPanel>
         </main>
 
-        <footer className="text-center mt-1 sm:mt-2 space-y-2 flex-shrink-0 px-4">
-          <div className="flex items-center justify-center gap-4 text-slate-400">
+        <footer className="text-center mt-2 sm:mt-3 md:mt-4 space-y-2 flex-shrink-0 px-4 header-entrance">
+          <div className="flex items-center justify-center gap-4 text-slate-300/80">
              <div className="flex items-center gap-1.5">
                <Lock size={12} />
                <span className="text-xs">256-bit SSL Encryption</span>
@@ -659,7 +701,6 @@ const LoginPage = () => {
           </>
         )}
 
-        {/* Floating Chat/Support Button */}
         <button
           onClick={() => {
             const number = import.meta.env.VITE_WHATSAPP_SUPPORT_NUMBER;
@@ -676,7 +717,7 @@ const LoginPage = () => {
           }}
           aria-label="Open WhatsApp support"
           title="WhatsApp Support"
-          className="fixed bottom-4 right-4 bg-yellow-500 text-white p-3 rounded-full shadow-lg hover:bg-yellow-600 transition-all active:scale-95 z-30"
+          className="fixed bottom-4 right-4 bg-gradient-to-br from-yellow-400 to-yellow-600 text-white p-3 rounded-full shadow-xl shadow-yellow-500/30 hover:shadow-yellow-500/50 hover:scale-110 transition-all duration-300 active:scale-95 z-30 panel-entrance"
         >
             <MessageSquare size={24} />
         </button>

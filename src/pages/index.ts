@@ -12,3 +12,5 @@ export { default as ProFormaPage } from './ProFormaPage';
 export { default as ProFormaRequestPage } from './ProFormaRequestPage';
 export { default as InvoicesPage } from './InvoicesPage';
 export { default as ProfilePage } from './ProfilePage';
+export { default as SettingsPage } from './SettingsPage';
+export { default as PDFTemplatesPage } from './PDFTemplatesPage';

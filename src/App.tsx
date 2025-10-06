@@ -24,6 +24,8 @@ import {
   DocumentsPage,
   InvoicesPage,
   ProfilePage,
+  SettingsPage,
+  PDFTemplatesPage,
   ProFormaPage,
   ProFormaRequestPage
 } from './pages';
@@ -202,6 +204,10 @@ const AppContent: React.FC = () => {
         return <RateCardManager />;
       case 'profile':
         return <ProfilePage />;
+      case 'settings':
+        return <SettingsPage />;
+      case 'pdf-templates':
+        return <PDFTemplatesPage onNavigate={handlePageChange} />;
       
       default:
         return <DashboardPage onNavigate={handlePageChange} />;

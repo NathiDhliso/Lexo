@@ -731,10 +731,181 @@ const ProFormaPage: React.FC = () => {
         onClose={() => setState(prev => ({ ...prev, showDetailsModal: false, selectedProFormaId: null }))}
       >
         <ModalBody>
-          <div className="p-6">
-            <h3 className="text-lg font-semibold text-neutral-900">Pro Forma Details</h3>
-            {/* Pro forma details content will be implemented */}
-            <p className="text-neutral-600">Pro forma details will be displayed here.</p>
+          <div className="p-6 max-w-4xl">
+            {(() => {
+              const selectedProForma = state.proformas.find(p => p.id === state.selectedProFormaId);
+              const selectedMatter = selectedProForma ? state.matters.find(m => m.id === selectedProForma.matter_id) : null;
+              
+              if (!selectedProForma) {
+                return (
+                  <div className="text-center py-8">
+                    <p className="text-neutral-600">Pro forma not found.</p>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="space-y-6">
+                  {/* Header */}
+                  <div className="flex items-center justify-between border-b border-neutral-200 pb-4">
+                    <div>
+                      <h3 className="text-xl font-semibold text-neutral-900">Pro Forma Details</h3>
+                      <p className="text-sm text-neutral-600 mt-1">Quote #{selectedProForma.quote_number}</p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className={`px-3 py-1 rounded-full text-xs font-medium ${
+                        selectedProForma.status === ProFormaStatus.DRAFT ? 'bg-neutral-100 text-neutral-700' :
+                        selectedProForma.status === ProFormaStatus.SENT ? 'bg-blue-100 text-blue-700' :
+                        selectedProForma.status === ProFormaStatus.AWAITING_ACCEPTANCE ? 'bg-yellow-100 text-yellow-700' :
+                        selectedProForma.status === ProFormaStatus.ACCEPTED ? 'bg-green-100 text-green-700' :
+                        selectedProForma.status === ProFormaStatus.DECLINED ? 'bg-red-100 text-red-700' :
+                        selectedProForma.status === ProFormaStatus.EXPIRED ? 'bg-orange-100 text-orange-700' :
+                        selectedProForma.status === ProFormaStatus.CONVERTED_TO_INVOICE ? 'bg-purple-100 text-purple-700' :
+                        'bg-neutral-100 text-neutral-700'
+                      }`}>
+                        {selectedProForma.status.charAt(0).toUpperCase() + selectedProForma.status.slice(1).replace('_', ' ')}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Quote Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-neutral-900 border-b border-neutral-100 pb-2">Quote Information</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-neutral-600">Quote Number</label>
+                          <p className="text-neutral-900">{selectedProForma.quote_number}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-neutral-600">Quote Date</label>
+                          <p className="text-neutral-900">{new Date(selectedProForma.quote_date).toLocaleDateString('en-ZA')}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-neutral-600">Valid Until</label>
+                          <p className="text-neutral-900">{new Date(selectedProForma.valid_until).toLocaleDateString('en-ZA')}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-neutral-600">Total Amount</label>
+                          <p className="text-lg font-semibold text-neutral-900">R {selectedProForma.total_amount.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Matter Information */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-neutral-900 border-b border-neutral-100 pb-2">Matter Information</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-neutral-600">Matter Title</label>
+                          <p className="text-neutral-900">{selectedMatter?.title || 'Unknown Matter'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-neutral-600">Client Name</label>
+                          <p className="text-neutral-900">{selectedMatter?.client_name || 'Unknown Client'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-neutral-600">Matter Type</label>
+                          <p className="text-neutral-900">{selectedMatter?.matter_type || 'General'}</p>
+                        </div>
+                        <div>
+                          <label className="text-sm font-medium text-neutral-600">Reference Number</label>
+                          <p className="text-neutral-900">{selectedMatter?.reference_number || 'N/A'}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Status & Timestamps */}
+                    <div className="space-y-4">
+                      <h4 className="font-medium text-neutral-900 border-b border-neutral-100 pb-2">Status & Timeline</h4>
+                      <div className="space-y-3">
+                        <div>
+                          <label className="text-sm font-medium text-neutral-600">Created</label>
+                          <p className="text-neutral-900">{new Date(selectedProForma.created_at).toLocaleDateString('en-ZA')} at {new Date(selectedProForma.created_at).toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })}</p>
+                        </div>
+                        {selectedProForma.sent_at && (
+                          <div>
+                            <label className="text-sm font-medium text-neutral-600">Sent</label>
+                            <p className="text-neutral-900">{new Date(selectedProForma.sent_at).toLocaleDateString('en-ZA')} at {new Date(selectedProForma.sent_at).toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })}</p>
+                          </div>
+                        )}
+                        {selectedProForma.accepted_at && (
+                          <div>
+                            <label className="text-sm font-medium text-neutral-600">Accepted</label>
+                            <p className="text-neutral-900">{new Date(selectedProForma.accepted_at).toLocaleDateString('en-ZA')} at {new Date(selectedProForma.accepted_at).toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })}</p>
+                          </div>
+                        )}
+                        {selectedProForma.declined_at && (
+                          <div>
+                            <label className="text-sm font-medium text-neutral-600">Declined</label>
+                            <p className="text-neutral-900">{new Date(selectedProForma.declined_at).toLocaleDateString('en-ZA')} at {new Date(selectedProForma.declined_at).toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })}</p>
+                          </div>
+                        )}
+                        {selectedProForma.converted_at && (
+                          <div>
+                            <label className="text-sm font-medium text-neutral-600">Converted to Invoice</label>
+                            <p className="text-neutral-900">{new Date(selectedProForma.converted_at).toLocaleDateString('en-ZA')} at {new Date(selectedProForma.converted_at).toLocaleTimeString('en-ZA', { hour: '2-digit', minute: '2-digit' })}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Fee Narrative */}
+                  {selectedProForma.fee_narrative && (
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-neutral-900 border-b border-neutral-100 pb-2">Fee Narrative</h4>
+                      <div className="bg-neutral-50 rounded-lg p-4">
+                        <p className="text-neutral-700 whitespace-pre-wrap">{selectedProForma.fee_narrative}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Notes */}
+                  {selectedProForma.notes && (
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-neutral-900 border-b border-neutral-100 pb-2">Internal Notes</h4>
+                      <div className="bg-yellow-50 rounded-lg p-4">
+                        <p className="text-neutral-700 whitespace-pre-wrap">{selectedProForma.notes}</p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Contact Information */}
+                  {selectedMatter && (selectedMatter.client_email || selectedMatter.client_phone || selectedMatter.instructing_attorney) && (
+                    <div className="space-y-3">
+                      <h4 className="font-medium text-neutral-900 border-b border-neutral-100 pb-2">Contact Information</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {selectedMatter.client_email && (
+                          <div>
+                            <label className="text-sm font-medium text-neutral-600">Client Email</label>
+                            <p className="text-neutral-900">{selectedMatter.client_email}</p>
+                          </div>
+                        )}
+                        {selectedMatter.client_phone && (
+                          <div>
+                            <label className="text-sm font-medium text-neutral-600">Client Phone</label>
+                            <p className="text-neutral-900">{selectedMatter.client_phone}</p>
+                          </div>
+                        )}
+                        {selectedMatter.instructing_attorney && (
+                          <div>
+                            <label className="text-sm font-medium text-neutral-600">Instructing Attorney</label>
+                            <p className="text-neutral-900">{selectedMatter.instructing_attorney}</p>
+                          </div>
+                        )}
+                        {selectedMatter.instructing_firm && (
+                          <div>
+                            <label className="text-sm font-medium text-neutral-600">Instructing Firm</label>
+                            <p className="text-neutral-900">{selectedMatter.instructing_firm}</p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })()}
           </div>
         </ModalBody>
         <ModalFooter>

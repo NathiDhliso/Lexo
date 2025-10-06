@@ -12,10 +12,20 @@ import {
   User, 
   CheckCircle, 
   AlertCircle,
-  Scale
+  Scale,
+  Sparkles
 } from 'lucide-react';
-import { Button, Card, CardHeader, CardContent, Input } from '../design-system/components';
+import { 
+  Button, 
+  Card, 
+  CardHeader, 
+  CardContent, 
+  Input, 
+  Textarea,
+  Select
+} from '../design-system/components';
 import { LoadingSpinner } from '../components/design-system/components/LoadingSpinner';
+import { AttorneyServiceSelector } from '../components/proforma/AttorneyServiceSelector';
 import { supabase } from '../lib/supabase';
 import { toast } from 'react-hot-toast';
 
@@ -71,6 +81,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
   const [requestStatus, setRequestStatus] = useState<'loading' | 'pending' | 'submitted' | 'processed' | 'declined' | 'not_found'>('loading');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [advocateInfo, setAdvocateInfo] = useState<{ full_name: string; email: string } | null>(null);
+  const [advocateId, setAdvocateId] = useState<string | null>(null);
 
   useEffect(() => {
     const checkRequest = async () => {
@@ -118,6 +129,8 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
         }
 
         if (data.advocate_id) {
+          setAdvocateId(data.advocate_id);
+          
           const { data: advocateData } = await supabase
             .from('advocates')
             .select('full_name, email')
@@ -352,7 +365,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
     <div className="min-h-screen bg-neutral-50">
       {/* Header */}
       <div className="bg-white border-b border-neutral-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-mpondo-gold-100 rounded-lg flex items-center justify-center">
               <Scale className="w-5 h-5 text-mpondo-gold-600" />
@@ -370,23 +383,24 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
       </div>
 
       {/* Form */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card>
-          <CardHeader>
-            <h2 className="text-lg font-semibold text-neutral-900">Request Details</h2>
-            <p className="text-sm text-neutral-600">
-              Please provide the following information for your legal matter.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-6">
+          <h2 className="text-lg font-semibold text-neutral-900 mb-2">Request Details</h2>
+          <p className="text-sm text-neutral-600">
+            Please provide the following information for your legal matter.
+          </p>
+        </div>
+        
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
               {/* Client Information */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Client Information
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Card className="lg:col-span-1">
+                <CardHeader>
+                  <h3 className="text-base font-medium text-neutral-900 flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Client Information
+                  </h3>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <Input
                     label="Client Name *"
                     value={formData.client_name}
@@ -429,31 +443,37 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                       <option value="other">Other</option>
                     </select>
                   </div>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
               {/* Matter Title */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Matter Title
-                </h3>
-                <Input
-                  label="Matter Title *"
-                  value={formData.matter_title}
-                  onChange={(e) => handleInputChange('matter_title', e.target.value)}
-                  placeholder="Enter a descriptive title for this matter"
-                  required
-                />
-              </div>
+              <Card className="lg:col-span-1">
+                <CardHeader>
+                  <h3 className="text-base font-medium text-neutral-900 flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Matter Title
+                  </h3>
+                </CardHeader>
+                <CardContent>
+                  <Input
+                    label="Matter Title *"
+                    value={formData.matter_title}
+                    onChange={(e) => handleInputChange('matter_title', e.target.value)}
+                    placeholder="Enter a descriptive title for this matter"
+                    required
+                  />
+                </CardContent>
+              </Card>
 
               {/* Instructing Attorney Information */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Instructing Attorney Information
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Card className="lg:col-span-1">
+                <CardHeader>
+                  <h3 className="text-base font-medium text-neutral-900 flex items-center gap-2">
+                    <User className="w-4 h-4" />
+                    Instructing Attorney Information
+                  </h3>
+                </CardHeader>
+                <CardContent className="space-y-4">
                   <Input
                     label="Attorney Name *"
                     value={formData.instructing_attorney_name}
@@ -481,96 +501,77 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                     onChange={(e) => handleInputChange('instructing_attorney_phone', e.target.value)}
                     placeholder="Enter attorney phone"
                   />
-                </div>
-              </div>
+                </CardContent>
+              </Card>
 
-              {/* Optional Pro Forma Information */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Pro Forma Information (Optional)
-                </h3>
-                <p className="text-sm text-neutral-600 mb-4">
-                  If you have specific fee information or requirements, please provide them below.
-                </p>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Fee Narrative
-                    </label>
-                    <textarea
-                      value={formData.fee_narrative}
-                      onChange={(e) => handleInputChange('fee_narrative', e.target.value)}
-                      placeholder="Describe the fee structure, services included, or any specific billing arrangements..."
-                      rows={4}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:border-mpondo-gold-500 resize-vertical"
+              {/* Service Selection - NEW! */}
+              <Card className="lg:col-span-2 xl:col-span-3">
+                <CardHeader>
+                  <h3 className="text-base font-medium text-neutral-900 flex items-center gap-2">
+                    <Sparkles className="w-4 h-4 text-blue-600" />
+                    Select Services & See Pricing
+                  </h3>
+                  <p className="text-sm text-neutral-600">
+                    Choose from pre-configured packages or browse individual services. Pricing is estimated and may be adjusted by the advocate.
+                  </p>
+                </CardHeader>
+                <CardContent>
+                  {advocateId ? (
+                    <AttorneyServiceSelector
+                      matterType={formData.matter_type}
+                      advocateId={advocateId}
+                      onServicesSelected={(services, total, narrative) => {
+                        setFormData(prev => ({
+                          ...prev,
+                          fee_narrative: narrative,
+                          total_amount: total.toString()
+                        }));
+                        toast.success(`${services.length} services selected - R${total.toLocaleString()} estimated`);
+                      }}
                     />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <Input
-                      label="Total Amount"
-                      type="number"
-                      step="0.01"
-                      value={formData.total_amount}
-                      onChange={(e) => handleInputChange('total_amount', e.target.value)}
-                      placeholder="0.00"
-                    />
-                    <Input
-                      label="Valid Until"
-                      type="date"
-                      value={formData.valid_until}
-                      onChange={(e) => handleInputChange('valid_until', e.target.value)}
-                    />
-                    <Input
-                      label="Quote Date"
-                      type="date"
-                      value={formData.quote_date}
-                      onChange={(e) => handleInputChange('quote_date', e.target.value)}
-                    />
-                  </div>
-                </div>
-              </div>
+                  ) : (
+                    <div className="text-center py-8 text-gray-500">
+                      <p>Loading advocate's rate cards...</p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+
 
               {/* Matter Information */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Matter Information
-                </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Matter Description *
-                    </label>
-                    <textarea
-                      value={formData.matter_description}
-                      onChange={(e) => handleInputChange('matter_description', e.target.value)}
-                      placeholder="Provide detailed information about the matter, including key facts, issues, and any specific requirements..."
-                      rows={6}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:border-mpondo-gold-500 resize-vertical"
-                      required
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Urgency Level *
-                    </label>
-                    <select
-                      value={formData.urgency_level}
-                      onChange={(e) => handleInputChange('urgency_level', e.target.value)}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:border-mpondo-gold-500"
-                      required
-                    >
-                      <option value="low">Low - Standard processing</option>
-                      <option value="medium">Medium - Priority processing</option>
-                      <option value="high">High - Urgent processing</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+              <Card className="lg:col-span-2 xl:col-span-3">
+                <CardHeader>
+                  <h3 className="text-base font-medium text-neutral-900 flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Matter Information
+                  </h3>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <Textarea
+                    label="Matter Description *"
+                    value={formData.matter_description}
+                    onChange={(e) => handleInputChange('matter_description', e.target.value)}
+                    placeholder="Provide detailed information about the matter, including key facts, issues, and any specific requirements..."
+                    rows={4}
+                    required
+                  />
+                  <Select
+                    label="Urgency Level *"
+                    value={formData.urgency_level}
+                    onChange={(e) => handleInputChange('urgency_level', e.target.value)}
+                    required
+                  >
+                    <option value="">Select urgency level</option>
+                    <option value="low">Low - Standard processing</option>
+                    <option value="medium">Medium - Priority processing</option>
+                    <option value="high">High - Urgent processing</option>
+                  </Select>
+                </CardContent>
+              </Card>
 
               {/* Submit Button */}
-              <div className="flex justify-end pt-6 border-t border-neutral-200">
+              <div className="lg:col-span-2 xl:col-span-3 flex justify-end pt-6 border-t border-neutral-200">
                 <Button
                   type="submit"
                   variant="primary"
@@ -582,8 +583,6 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                 </Button>
               </div>
             </form>
-          </CardContent>
-        </Card>
 
         {/* Footer */}
         <div className="mt-8 text-center">

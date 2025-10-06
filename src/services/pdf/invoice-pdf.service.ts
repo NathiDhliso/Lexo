@@ -5,7 +5,7 @@
  */
 
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable';
 import type { 
   Invoice, 
   Matter, 
@@ -24,6 +24,9 @@ import type {
 declare module 'jspdf' {
   interface jsPDF {
     autoTable: (options: any) => jsPDF;
+    lastAutoTable?: {
+      finalY: number;
+    };
   }
 }
 
@@ -67,6 +70,10 @@ export class InvoicePDFService {
   ): Promise<PDFGenerationResult> {
     try {
       const doc = new jsPDF('portrait', 'mm', 'a4');
+      
+      // Initialize autoTable plugin properly
+      (doc as any).autoTable = autoTable;
+      
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -76,7 +83,7 @@ export class InvoicePDFService {
       let yPosition = this.MARGINS.top;
 
       // Header with firm branding
-      yPosition = this.addHeader(doc, 'PRO FORMA INVOICE', yPosition, pageWidth, advocate);
+      yPosition = this.addHeader(doc, 'PRO FORMA INVOICE', yPosition, pageWidth, advocate, options);
 
       // Firm details
       yPosition = this.addFirmDetails(doc, advocate, yPosition, pageWidth);
@@ -133,6 +140,10 @@ export class InvoicePDFService {
   ): Promise<PDFGenerationResult> {
     try {
       const doc = new jsPDF('portrait', 'mm', 'a4');
+      
+      // Initialize autoTable plugin properly
+      (doc as any).autoTable = autoTable;
+      
       const pageWidth = doc.internal.pageSize.getWidth();
       const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -142,7 +153,7 @@ export class InvoicePDFService {
       let yPosition = this.MARGINS.top;
 
       // Header with firm branding
-      yPosition = this.addHeader(doc, 'INVOICE', yPosition, pageWidth, advocate);
+      yPosition = this.addHeader(doc, 'INVOICE', yPosition, pageWidth, advocate, options);
 
       // Firm details
       yPosition = this.addFirmDetails(doc, advocate, yPosition, pageWidth);
@@ -204,18 +215,22 @@ export class InvoicePDFService {
   /**
    * Add header with firm branding
    */
-  private static addHeader(doc: jsPDF, title: string, yPosition: number, pageWidth: number, advocate?: Advocate): number {
+  private static addHeader(doc: jsPDF, title: string, yPosition: number, pageWidth: number, advocate?: Advocate, options?: PDFGenerationOptions): number {
     const centerX = pageWidth / 2;
     const startY = yPosition;
     
-    // Logo (if available)
-    if (advocate?.firm_logo_url) {
+    // Logo (if available) - prioritize options logoUrl over advocate firm_logo_url
+    const logoUrl = options?.logoUrl || advocate?.firm_logo_url;
+    if (logoUrl) {
       try {
         const logoSize = 25;
-        doc.addImage(advocate.firm_logo_url, 'PNG', centerX - logoSize / 2, yPosition, logoSize, logoSize);
+        // Support multiple image formats
+        const imageFormat = this.getImageFormat(logoUrl);
+        doc.addImage(logoUrl, imageFormat, centerX - logoSize / 2, yPosition, logoSize, logoSize);
         yPosition += logoSize + 3;
       } catch (error) {
         console.warn('Failed to add logo to PDF:', error);
+        // Continue without logo if it fails
       }
     }
     
@@ -469,7 +484,8 @@ export class InvoicePDFService {
       this.formatCurrency(item.amount || 0)
     ]);
 
-    doc.autoTable({
+    // Use autoTable with proper configuration
+    autoTable(doc, {
       startY: yPosition,
       head: [['#', 'Description', 'Qty', 'Amount']],
       body: tableData,
@@ -496,7 +512,8 @@ export class InvoicePDFService {
       margin: { left: this.MARGINS.left, right: this.MARGINS.right }
     });
 
-    return (doc as any).lastAutoTable.finalY + 10;
+    // Get the final Y position from the autoTable
+    return (doc as any).lastAutoTable?.finalY ? (doc as any).lastAutoTable.finalY + 10 : yPosition + 50;
   }
 
   /**
@@ -661,12 +678,33 @@ export class InvoicePDFService {
   /**
    * Format currency for South African Rand
    */
-  private static formatCurrency(amount: number): string {
+private static formatCurrency(amount: number): string {
     return new Intl.NumberFormat('en-ZA', {
       style: 'currency',
       currency: 'ZAR',
-      minimumFractionDigits: 2
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     }).format(amount);
+  }
+
+  /**
+   * Determine image format from URL or file extension
+   */
+  private static getImageFormat(url: string): string {
+    const extension = url.toLowerCase().split('.').pop() || '';
+    switch (extension) {
+      case 'jpg':
+      case 'jpeg':
+        return 'JPEG';
+      case 'png':
+        return 'PNG';
+      case 'gif':
+        return 'GIF';
+      case 'svg':
+        return 'SVG';
+      default:
+        return 'PNG'; // Default fallback
+    }
   }
 
   /**

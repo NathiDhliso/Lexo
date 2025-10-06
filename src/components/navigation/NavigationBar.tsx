@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, X, Search, Plus, ChevronDown, Bell } from 'lucide-react';
+import { Menu, X, Search, Plus, ChevronDown, Bell, User, LogOut, Settings } from 'lucide-react';
 import lexoLogo from '../../Public/Assets/lexo-logo.png';
 import { Button, Icon } from '../../design-system/components';
 import { MegaMenu } from './MegaMenu';
@@ -12,6 +12,7 @@ import AlertsDropdown from '../notifications/AlertsDropdown';
 import { navigationConfig, getFilteredNavigationConfig } from '../../config/navigation.config';
 import { useKeyboardShortcuts, useClickOutside } from '../../hooks';
 import { smartNotificationsService } from '../../services/smart-notifications.service';
+import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import type { 
   NavigationCategory, 
@@ -52,11 +53,15 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   const [quickActionsOpen, setQuickActionsOpen] = useState(false);
   const [notificationBadges, setNotificationBadges] = useState<NotificationBadge[]>([]);
   const [notifications, setNotifications] = useState<SmartNotification[]>([]);
+  const [userMenuOpen, setUserMenuOpen] = useState(false);
   
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const commandBarRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);
+  const userMenuRef = useRef<HTMLDivElement>(null);
+  
+  const { user, signOut } = useAuth();
 
   // Get filtered navigation config based on user tier
   const filteredConfig = getFilteredNavigationConfig(userTier);
@@ -185,10 +190,24 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     setQuickActionsOpen(!quickActionsOpen);
   };
 
+  // Handle sign out
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      toast.success('Signed out successfully');
+    } catch (error) {
+      toast.error('Failed to sign out');
+    }
+    setUserMenuOpen(false);
+  };
+
   // Alerts dropdown state
   const [alertsOpen, setAlertsOpen] = useState(false);
   const alertsRef = useRef<HTMLDivElement>(null);
   useClickOutside(alertsRef, () => setAlertsOpen(false));
+  
+  // User menu click outside
+  useClickOutside(userMenuRef, () => setUserMenuOpen(false));
 
 
 
@@ -417,6 +436,45 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                </Button>
                {alertsOpen && (
                  <AlertsDropdown onNavigate={handlePageNavigation} onClose={() => setAlertsOpen(false)} />
+               )}
+             </div>
+
+             {/* User Menu */}
+             <div className="relative" ref={userMenuRef}>
+               <Button
+                 variant="ghost"
+                 size="sm"
+                 className="flex items-center gap-2"
+                 aria-label="User menu"
+                 onClick={() => setUserMenuOpen((open) => !open)}
+               >
+                 <Icon icon={User} className="w-4 h-4" />
+                 <span className="hidden sm:inline">{user?.email?.split('@')[0] || 'User'}</span>
+                 <Icon icon={ChevronDown} className={`w-3 h-3 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
+               </Button>
+               {userMenuOpen && (
+                 <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg z-50">
+                   <div className="py-1">
+                     <button
+                       onClick={() => {
+                         onPageChange('settings');
+                         setUserMenuOpen(false);
+                       }}
+                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
+                     >
+                       <Icon icon={Settings} className="w-4 h-4" />
+                       Settings
+                     </button>
+                     <hr className="my-1 border-neutral-200" />
+                     <button
+                       onClick={handleSignOut}
+                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-status-error-600 hover:bg-status-error-50 transition-colors"
+                     >
+                       <Icon icon={LogOut} className="w-4 h-4" />
+                       Sign Out
+                     </button>
+                   </div>
+                 </div>
                )}
              </div>
 

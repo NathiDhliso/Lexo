@@ -1,6 +1,6 @@
 import type { NavigationConfig, NavigationItem, TypedNavigationItem, NavigationCategory } from '../types';
 import { UserTier } from '../types';
-import { BarChart3, Building2, Settings, FileText, Users, Calendar, FolderOpen, CreditCard, TrendingUp, DollarSign } from 'lucide-react';
+import { BarChart3, Building2, Settings, FileText, Users, Calendar, FolderOpen, CreditCard, TrendingUp, DollarSign, Layout } from 'lucide-react';
 
 // Navigation items
 const navigationItems: NavigationItem[] = [
@@ -76,6 +76,14 @@ const navigationItems: NavigationItem[] = [
     icon: Settings,
     description: 'Application settings and preferences',
   },
+  {
+    id: 'pdf-templates',
+    label: 'PDF Templates',
+    href: '/pdf-templates',
+    page: 'pdf-templates',
+    icon: Layout,
+    description: 'Customize PDF templates for invoices and pro formas',
+  },
 ];
 
 // Navigation configuration with categories
@@ -131,6 +139,7 @@ export const navigationConfig: NavigationConfig = {
           label: 'Configuration',
           items: [
             navigationItems.find(item => item.id === 'settings')!,
+            navigationItems.find(item => item.id === 'pdf-templates')!,
           ],
         },
       ],
