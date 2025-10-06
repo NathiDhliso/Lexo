@@ -20,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, Button, CardHeader, Icon } from '../design-system/components';
 import { InvoiceGenerationModal } from '../components/invoices/InvoiceGenerationModal';
-import { NewMatterModal } from '../components/matters/NewMatterModal';
+import { NewMatterMultiStep } from '../components/matters/NewMatterMultiStep';
 import { ProFormaLinkModal } from '../components/matters/ProFormaLinkModal';
 import { DocumentProcessingModal } from '../components/matters/DocumentProcessingModal';
 import { WorkflowPipeline } from '../components/workflow/WorkflowPipeline';
@@ -496,13 +496,19 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
       )}
 
       {/* New Matter Modal */}
-      <NewMatterModal
+      <NewMatterMultiStep
         isOpen={showNewMatterModal}
         onClose={() => setShowNewMatterModal(false)}
-        onMatterCreated={(newMatter) => {
-          setMatters(prev => [newMatter, ...prev]);
-          setShowNewMatterModal(false);
-          toast.success(`Matter "${newMatter.title}" created successfully`);
+        onComplete={async (data) => {
+          try {
+            const newMatter = await matterApiService.createMatter(data);
+            setMatters(prev => [newMatter, ...prev]);
+            setShowNewMatterModal(false);
+            toast.success(`Matter "${newMatter.title}" created successfully`);
+          } catch (error) {
+            console.error('Error creating matter:', error);
+            toast.error('Failed to create matter');
+          }
         }}
       />
 
