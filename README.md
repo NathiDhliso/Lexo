@@ -1,4 +1,8 @@
-# LexoHub
+# LexoHub - Streamlined Billing Workflow
+
+**Core Features:** Matters → Pro Forma → Invoices  
+**Status:** Production Ready  
+**Version:** 2.0 (Streamlined)
 
 A modern practice intelligence platform for legal professionals, built with React, TypeScript, and Tailwind CSS.
 
