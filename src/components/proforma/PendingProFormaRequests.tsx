@@ -11,17 +11,22 @@ import {
   Plus,
   Calculator,
   Calendar,
-  Zap
+  Zap,
+  CheckCircle
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, Button } from '../../design-system/components';
-import { NewMatterModal } from '../matters/NewMatterModal';
+import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
 import { InvoiceGenerationModal } from '../invoices/InvoiceGenerationModal';
 import { ConfirmDialog } from '../common/ConfirmDialog';
+import { ProFormaLinkModal } from './ProFormaLinkModal';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../contexts/AuthContext';
 import { toast } from 'react-hot-toast';
 import { formatDistanceToNow } from 'date-fns';
 import type { Matter } from '../../types';
+import { BarAssociation, MatterStatus, ClientType, FeeType, RiskLevel } from '../../types';
+import { proformaService } from '../../services/api/proforma.service';
+import { matterApiService } from '../../services/api/matter-api.service';
 
 interface ProFormaRequest {
   id: string;
@@ -62,6 +67,7 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
   const [showNewMatterModal, setShowNewMatterModal] = useState(false);
   const [showInvoiceModal, setShowInvoiceModal] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showProFormaLinkModal, setShowProFormaLinkModal] = useState(false);
   const [prepopulationData, setPrepopulationData] = useState<any>(null);
   const [selectedRequest, setSelectedRequest] = useState<ProFormaRequest | null>(null);
 
@@ -78,8 +84,8 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
         .from('pro_forma_requests')
         .select('*')
         .eq('advocate_id', user.id)
-        .eq('status', 'pending')
-        .order('created_at', { ascending: false });
+        .in('status', ['pending', 'submitted'])
+        .order('created_at', { ascending: false});
 
       if (error) {
         throw error;
@@ -118,52 +124,89 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
     if (!selectedRequest) return;
 
     const request = selectedRequest;
-    const initialData = {
-      title: request.matter_title || `Matter for ${request.client_name || request.instructing_attorney_name}`,
-      description: request.matter_description || '',
-      client_name: request.client_name || '',
-      client_email: request.client_email || '',
-      client_phone: request.client_phone || '',
-      matter_type: request.matter_type || 'general',
-      instructing_attorney: request.instructing_attorney_name || '',
-      instructing_firm: request.instructing_attorney_firm || '',
-      instructing_attorney_email: request.instructing_attorney_email || '',
-      instructing_attorney_phone: request.instructing_attorney_phone || '',
-      estimated_value: request.total_amount || 0,
-      additional_notes: request.fee_narrative || ''
-    };
-
-    setPrepopulationData(initialData);
     setShowConfirmDialog(false);
 
     if (request.requested_action === 'matter') {
+      const initialData = {
+        title: request.matter_title || `Matter for ${request.client_name || request.instructing_attorney_name}`,
+        description: request.matter_description || '',
+        client_name: request.client_name || '',
+        client_email: request.client_email || '',
+        client_phone: request.client_phone || '',
+        matter_type: request.matter_type || 'general',
+        instructing_attorney: request.instructing_attorney_name || '',
+        instructing_firm: request.instructing_attorney_firm || '',
+        instructing_attorney_email: request.instructing_attorney_email || '',
+        instructing_attorney_phone: request.instructing_attorney_phone || '',
+        estimated_value: request.total_amount || 0,
+        additional_notes: request.fee_narrative || ''
+      };
+      setPrepopulationData(initialData);
       setShowNewMatterModal(true);
     } else {
-      // For pro forma requests, create a temporary matter object
-      const tempMatterForInvoice: Partial<Matter> & { id: string } = {
-        id: `temp-pro-forma-${request.id}`,
-        title: initialData.title,
-        description: initialData.description,
-        client_name: initialData.client_name,
-        client_email: initialData.client_email,
-        client_phone: initialData.client_phone,
-        matter_type: initialData.matter_type,
-        instructing_attorney: initialData.instructing_attorney,
-        instructing_firm: initialData.instructing_firm,
-        instructing_attorney_email: initialData.instructing_attorney_email,
-        instructing_attorney_phone: initialData.instructing_attorney_phone,
-        estimated_fee: initialData.estimated_value,
-        status: 'active' as any,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        advocate_id: user?.id || '',
-        client_type: 'individual' as any,
-        fee_type: 'hourly' as any,
-        risk_level: 'medium' as any,
-        bar: 'johannesburg' as any
-      };
-      setPrepopulationData(tempMatterForInvoice);
-      setShowInvoiceModal(true);
+      try {
+        if (!user?.id) {
+          throw new Error('User not authenticated');
+        }
+
+        // Generate reference number using user's initials
+        const userInitials = user.user_metadata?.initials || user.advocate_profile?.initials || 'ADV';
+        const referenceNumber = await matterApiService.generateReferenceNumber(userInitials);
+
+        const matterData = {
+          advocate_id: user.id,
+          reference_number: referenceNumber,
+          title: request.matter_title || `Matter for ${request.client_name || request.instructing_attorney_name}`,
+          description: request.matter_description || '',
+          client_name: request.client_name || '',
+          client_email: request.client_email || '',
+          client_phone: request.client_phone || '',
+          matter_type: request.matter_type || 'general',
+          instructing_attorney: request.instructing_attorney_name || '',
+          instructing_firm: request.instructing_attorney_firm || '',
+          instructing_attorney_email: request.instructing_attorney_email || '',
+          instructing_attorney_phone: request.instructing_attorney_phone || '',
+          estimated_fee: request.total_amount || 0,
+          status: MatterStatus.ACTIVE,
+          client_type: ClientType.INDIVIDUAL,
+          fee_type: FeeType.STANDARD,
+          risk_level: RiskLevel.MEDIUM,
+          bar: BarAssociation.JOHANNESBURG,
+          conflict_check_completed: false
+        };
+
+        const { data: matter, error: matterError } = await supabase
+          .from('matters')
+          .insert(matterData)
+          .select()
+          .single();
+        
+        if (matterError || !matter) {
+          console.error('Matter creation error:', matterError);
+          throw new Error(matterError?.message || 'Failed to create matter');
+        }
+
+        const proFormaData = {
+          matter_id: matter.id,
+          quote_date: new Date().toISOString(),
+          valid_until: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          total_amount: request.total_amount || 0,
+          fee_narrative: request.fee_narrative || '',
+          notes: `Created from pro forma request for ${request.client_name || request.instructing_attorney_name}`
+        };
+
+        await proformaService.generateProForma(proFormaData);
+        await markRequestAsProcessed(request.id);
+        
+        toast.success('Pro forma created successfully!');
+        
+        if (onNavigate) {
+          onNavigate('proforma');
+        }
+      } catch (error) {
+        console.error('Error creating pro forma:', error);
+        toast.error('Failed to create pro forma. Please try again.');
+      }
     }
   };
 
@@ -205,12 +248,16 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
     toast.success(`Matter "${newMatter.title}" created successfully from pro forma request`);
   };
 
-  const handleInvoiceGenerated = () => {
+  const handleInvoiceGenerated = async () => {
     if (selectedRequest) {
-      markRequestAsProcessed(selectedRequest.id);
+      await markRequestAsProcessed(selectedRequest.id);
     }
     handleModalClose();
-    toast.success('Pro forma invoice generated successfully');
+    toast.success('Invoice created successfully');
+    
+    if (onNavigate) {
+      onNavigate('invoices');
+    }
   };
 
   if (isLoading) {
@@ -242,7 +289,7 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
               You don't have any pending pro forma requests at the moment.
             </p>
             <Button
-              onClick={() => onNavigate?.('matters')}
+              onClick={() => setShowProFormaLinkModal(true)}
               variant="outline"
               className="flex items-center gap-2"
             >
@@ -260,18 +307,34 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
       <Card>
         <CardHeader>
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-neutral-900">
-              Pending Pro Forma Requests ({requests.length})
-            </h3>
-            <Button
-              onClick={fetchPendingRequests}
-              variant="outline"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <Clock className="h-4 w-4" />
-              Refresh
-            </Button>
+            <div>
+              <h3 className="text-lg font-semibold text-neutral-900">
+                Pro Forma Requests ({requests.length})
+              </h3>
+              <p className="text-sm text-neutral-600 mt-1">
+                Requests awaiting your action
+              </p>
+            </div>
+            <div className="flex items-center gap-2">
+              <Button
+                onClick={() => setShowProFormaLinkModal(true)}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Plus className="h-4 w-4" />
+                Generate Link
+              </Button>
+              <Button
+                onClick={fetchPendingRequests}
+                variant="outline"
+                size="sm"
+                className="flex items-center gap-2"
+              >
+                <Clock className="h-4 w-4" />
+                Refresh
+              </Button>
+            </div>
           </div>
         </CardHeader>
         <CardContent className="p-0">
@@ -295,7 +358,19 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 space-y-3">
                       {/* Header */}
-                      <div className="flex items-center gap-3">
+                      <div className="flex items-center gap-3 flex-wrap">
+                        {request.status === 'submitted' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-status-success-100 text-status-success-700 border border-status-success-200">
+                            <CheckCircle className="h-3 w-3" />
+                            Submitted
+                          </span>
+                        )}
+                        {request.status === 'pending' && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 text-neutral-700 border border-neutral-200">
+                            <Clock className="h-3 w-3" />
+                            Awaiting Submission
+                          </span>
+                        )}
                         <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium border ${urgencyConfig.color}`}>
                           <UrgencyIcon className="h-3 w-3" />
                           {defaultUrgencyLevel.charAt(0).toUpperCase() + defaultUrgencyLevel.slice(1)}
@@ -386,7 +461,9 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
                         onClick={() => handleProcessRequest(request)}
                         size="sm"
                         variant="primary"
+                        disabled={request.status !== 'submitted'}
                         className="flex items-center gap-2"
+                        title={request.status === 'pending' ? 'Waiting for client to submit form' : 'Process this request'}
                       >
                         {request.requested_action === 'matter' ? (
                           <>
@@ -396,7 +473,7 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
                         ) : (
                           <>
                             <Calculator className="h-4 w-4" />
-                            Generate Pro Forma
+                            Create Pro Forma
                           </>
                         )}
                       </Button>
@@ -406,7 +483,17 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
                         size="sm"
                         className="flex items-center gap-2"
                         onClick={() => {
-                          toast.success('View details functionality coming soon');
+                          const details = [
+                            `Token: ${request.token}`,
+                            `Status: ${request.status}`,
+                            `Created: ${formatDistanceToNow(new Date(request.created_at), { addSuffix: true })}`,
+                            request.instructing_attorney_name ? `Attorney: ${request.instructing_attorney_name}` : '',
+                            request.client_name ? `Client: ${request.client_name}` : '',
+                            request.matter_title ? `Matter: ${request.matter_title}` : '',
+                            request.total_amount ? `Amount: R${request.total_amount.toLocaleString('en-ZA')}` : ''
+                          ].filter(Boolean).join('\n');
+                          
+                          alert(`Request Details:\n\n${details}`);
                         }}
                       >
                         <Eye className="h-4 w-4" />
@@ -423,10 +510,10 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
 
       {/* New Matter Modal */}
       {showNewMatterModal && prepopulationData && (
-        <NewMatterModal
+        <NewMatterMultiStep
           isOpen={showNewMatterModal}
           onClose={handleModalClose}
-          onMatterCreated={handleMatterCreated}
+          onComplete={handleMatterCreated}
           initialData={prepopulationData}
         />
       )}
@@ -448,13 +535,13 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
           isOpen={showConfirmDialog}
           onClose={() => setShowConfirmDialog(false)}
           onConfirm={handleConfirmGenerate}
-          title={selectedRequest.requested_action === 'matter' ? 'Create Matter?' : 'Generate Pro Forma Invoice?'}
+          title={selectedRequest.requested_action === 'matter' ? 'Create Matter?' : 'Create Pro Forma?'}
           message={
             <div className="space-y-3">
               <p>
                 {selectedRequest.requested_action === 'matter' 
                   ? 'You are about to create a new matter from this request:'
-                  : 'You are about to generate a pro forma invoice for:'}
+                  : 'You are about to create a pro forma from this request:'}
               </p>
               <div className="bg-neutral-50 p-4 rounded-lg space-y-2">
                 <div className="flex justify-between">
@@ -481,15 +568,21 @@ export const PendingProFormaRequests: React.FC<PendingProFormaRequestsProps> = (
               <p className="text-sm text-neutral-600">
                 {selectedRequest.requested_action === 'matter'
                   ? 'The matter will be created and the request will be marked as processed.'
-                  : 'The invoice will be saved as a draft and the request will be marked as processed.'}
+                  : 'A matter and pro forma will be created. The pro forma will appear in the Pro Forma page.'}
               </p>
             </div>
           }
-          confirmText={selectedRequest.requested_action === 'matter' ? 'Create Matter' : 'Generate Invoice'}
+          confirmText={selectedRequest.requested_action === 'matter' ? 'Create Matter' : 'Create Pro Forma'}
           cancelText="Cancel"
           variant="info"
         />
       )}
+
+      {/* Pro Forma Link Modal */}
+      <ProFormaLinkModal
+        isOpen={showProFormaLinkModal}
+        onClose={() => setShowProFormaLinkModal(false)}
+      />
     </>
   );
 };

@@ -99,6 +99,19 @@ export class MatterApiService extends BaseApiService<Matter> {
   }
 
   /**
+   * Create new matter with simple select (no joins) to avoid RLS issues
+   */
+  async createSimple(data: Partial<Matter>): Promise<ApiResponse<Matter>> {
+    return this.executeQuery(async () => {
+      return supabase
+        .from(this.tableName)
+        .insert(data)
+        .select('*') // Simple select without joins
+        .single();
+    });
+  }
+
+  /**
    * Create new matter from form data
   */
   async createFromForm(formData: NewMatterForm): Promise<ApiResponse<Matter>> {

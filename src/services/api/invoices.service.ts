@@ -233,11 +233,75 @@ export class InvoiceService {
     const invoiceDate = new Date();
     const dueDate = addDays(invoiceDate, 60);
     
-    const narrative = customNarrative || `Pro forma invoice for: ${proFormaRequest.matter_title || 'Legal Services'}\n\n${proFormaRequest.matter_description || ''}`;
+    // Import rate card service for pricing
+    const { rateCardService } = await import('../rate-card.service');
     
-    const estimatedFees = proFormaRequest.total_amount || 0;
-    const vatAmount = estimatedFees * 0.15;
-    const totalAmount = estimatedFees + vatAmount;
+    // Get advocate's hourly rate
+    const { data: advocate } = await supabase
+      .from('advocates')
+      .select('hourly_rate')
+      .eq('id', user.id)
+      .single();
+    
+    const advocateHourlyRate = advocate?.hourly_rate || 2500;
+    
+    // Determine matter type from request
+    const matterType = proFormaRequest.matter_type || 'general';
+    
+    // Generate pro forma estimate using rate card system
+    let proFormaEstimate;
+    try {
+      proFormaEstimate = await rateCardService.generateProFormaEstimate(
+        matterType,
+        undefined, // Use default services
+        advocateHourlyRate
+      );
+    } catch (error) {
+      console.warn('Failed to generate rate card estimate, using fallback:', error);
+      // Fallback to original logic if rate card system fails
+      const estimatedFees = proFormaRequest.total_amount || advocateHourlyRate * 2; // 2 hours default
+      proFormaEstimate = {
+        line_items: [
+          {
+            service_name: 'Legal Consultation',
+            description: 'Initial consultation and case assessment',
+            quantity: 1,
+            unit_price: advocateHourlyRate,
+            total_amount: advocateHourlyRate,
+            service_category: 'consultation' as const,
+            estimated_hours: 1
+          },
+          {
+            service_name: 'Legal Research',
+            description: 'Research and analysis of applicable law',
+            quantity: 1,
+            unit_price: advocateHourlyRate,
+            total_amount: advocateHourlyRate,
+            service_category: 'research' as const,
+            estimated_hours: 1
+          }
+        ],
+        subtotal: estimatedFees,
+        vat_amount: estimatedFees * 0.15,
+        total_amount: estimatedFees * 1.15,
+        estimated_total_hours: 2,
+        matter_type: matterType
+      };
+    }
+    
+    // Build detailed narrative with line items
+    const lineItemsNarrative = proFormaEstimate.line_items
+      .map(item => `${item.service_name}: ${item.description} - R${item.total_amount.toFixed(2)}`)
+      .join('\n');
+    
+    const detailedNarrative = customNarrative || 
+      `Pro forma invoice for: ${proFormaRequest.matter_title || 'Legal Services'}\n\n` +
+      `Matter Description: ${proFormaRequest.matter_description || ''}\n\n` +
+      `SERVICES BREAKDOWN:\n${lineItemsNarrative}\n\n` +
+      `Estimated Total Hours: ${proFormaEstimate.estimated_total_hours}\n` +
+      `Subtotal: R${proFormaEstimate.subtotal.toFixed(2)}\n` +
+      `VAT (15%): R${proFormaEstimate.vat_amount.toFixed(2)}\n` +
+      `Total Amount: R${proFormaEstimate.total_amount.toFixed(2)}`;
     
     const { data: invoice, error: invoiceError } = await supabase
       .from('invoices')
@@ -248,7 +312,7 @@ export class InvoiceService {
         invoice_date: format(invoiceDate, 'yyyy-MM-dd'),
         due_date: format(dueDate, 'yyyy-MM-dd'),
         bar: 'johannesburg',
-        fees_amount: estimatedFees,
+        fees_amount: proFormaEstimate.subtotal,
         disbursements_amount: 0,
         vat_rate: 0.15,
         amount_paid: 0,
@@ -256,7 +320,7 @@ export class InvoiceService {
         is_pro_forma: true,
         internal_notes: `pro_forma_request:${requestId}`,
         external_id: requestId,
-        fee_narrative: narrative,
+        fee_narrative: detailedNarrative,
         reminders_sent: 0,
         next_reminder_date: format(addDays(invoiceDate, 30), 'yyyy-MM-dd')
       })

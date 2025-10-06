@@ -5,6 +5,9 @@ export type Page =
   | 'matters'
   | 'matter-templates'
   | 'matter-workbench'
+  | 'clients'
+  | 'calendar'
+  | 'documents'
   | 'invoices'
   | 'invoice-designer'
   | 'proforma'
@@ -18,12 +21,12 @@ export type Page =
   | 'design-system'
   | 'matter-details'
   | 'pricing-management'
+  | 'rate-cards'
   | 'profile'
   | 'academy';
 
 // Export integration types
 export * from './integrations';
-
 export type ModalType =
   | 'new-brief'
   | 'edit-matter'

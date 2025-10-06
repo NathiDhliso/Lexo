@@ -19,11 +19,15 @@ import { UserTier } from './types';
 import {
   DashboardPage,
   MattersPage,
+  ClientsPage,
+  CalendarPage,
+  DocumentsPage,
   InvoicesPage,
   ProfilePage,
   ProFormaPage,
   ProFormaRequestPage
 } from './pages';
+import RateCardManager from './components/pricing/RateCardManager';
 
 // Create Query Client with proper configuration
 const queryClient = new QueryClient({
@@ -184,10 +188,18 @@ const AppContent: React.FC = () => {
         return <DashboardPage onNavigate={handlePageChange} />;
       case 'matters':
         return <MattersPage onNavigate={handlePageChange} />;
+      case 'clients':
+        return <ClientsPage onNavigate={handlePageChange} />;
+      case 'calendar':
+        return <CalendarPage onNavigate={handlePageChange} />;
+      case 'documents':
+        return <DocumentsPage onNavigate={handlePageChange} />;
       case 'invoices':
-        return <InvoicesPage />;
+        return <InvoicesPage onNavigate={handlePageChange} />;
       case 'proforma':
         return <ProFormaPage />;
+      case 'rate-cards':
+        return <RateCardManager />;
       case 'profile':
         return <ProfilePage />;
       

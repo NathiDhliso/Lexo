@@ -13,7 +13,7 @@ import {
   Activity
 } from 'lucide-react';
 import { Card, CardHeader, CardContent, Button, Icon } from '../design-system/components';
-import { NewMatterModal } from '../components/matters/NewMatterModal';
+import { NewMatterMultiStep } from '../components/matters/NewMatterMultiStep';
 import { PendingProFormaRequests } from '../components/proforma';
 import { PracticeHealthDashboard } from '../components/dashboard/PracticeHealthDashboard';
 import { InvoiceService } from '../services/api/invoices.service';
@@ -352,39 +352,31 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       {/* Tab Content */}
       {activeTab === 'overview' && (
         <>
-          {/* Quick Actions */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          {/* Quick Actions - Streamlined */}
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Button 
           variant="outline" 
-          onClick={() => handleQuickAction('new-invoice')}
-          className="h-16 flex flex-col items-center justify-center"
+          onClick={handleViewAllMatters}
+          className="h-16 flex flex-col items-center justify-center hover:border-mpondo-gold-500 hover:bg-mpondo-gold-50"
         >
-          <Icon icon={FileText} className="w-6 h-6 mb-1" noGradient />
-          <span className="text-sm font-medium">Generate Invoice</span>
+          <Icon icon={Briefcase} className="w-6 h-6 mb-1" noGradient />
+          <span className="text-sm font-medium">View Matters</span>
         </Button>
         <Button 
           variant="outline" 
           onClick={() => onNavigate?.('proforma')}
-          className="h-16 flex flex-col items-center justify-center"
+          className="h-16 flex flex-col items-center justify-center hover:border-judicial-blue-500 hover:bg-judicial-blue-50"
         >
           <Icon icon={Calculator} className="w-6 h-6 mb-1" noGradient />
-          <span className="text-sm font-medium">Create Pro Forma</span>
+          <span className="text-sm font-medium">Pro Formas</span>
         </Button>
         <Button 
           variant="outline" 
-          onClick={() => handleQuickAction('time-entry')}
-          className="h-16 flex flex-col items-center justify-center"
+          onClick={() => onNavigate?.('invoices')}
+          className="h-16 flex flex-col items-center justify-center hover:border-status-success-500 hover:bg-status-success-50"
         >
-          <Icon icon={Clock} className="w-6 h-6 mb-1" noGradient />
-          <span className="text-sm font-medium">Quick Time Entry</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={handleViewAllMatters}
-          className="h-16 flex flex-col items-center justify-center"
-        >
-          <Icon icon={Briefcase} className="w-6 h-6 mb-1" noGradient />
-          <span className="text-sm font-medium">View All Matters</span>
+          <Icon icon={FileText} className="w-6 h-6 mb-1" noGradient />
+          <span className="text-sm font-medium">Invoices</span>
         </Button>
     </div>
 
@@ -664,10 +656,10 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       {/* Modal Components */}
       
       {/* New Matter Modal */}
-      <NewMatterModal
+      <NewMatterMultiStep
         isOpen={quickActions.newMatterModal}
         onClose={() => setQuickActions(prev => ({ ...prev, newMatterModal: false }))}
-        onMatterCreated={(newMatter) => {
+        onComplete={(newMatter) => {
           setQuickActions(prev => ({ ...prev, newMatterModal: false }));
           toast.success(`Matter "${newMatter.title}" created successfully`);
           if (onNavigate) onNavigate('matters');

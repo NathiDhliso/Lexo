@@ -1,15 +1,12 @@
 import React, { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { Button, Icon } from '../design-system/components';
+import { Button } from '../design-system/components';
 import { InvoiceList } from '../components/invoices/InvoiceList';
 import { PaymentTrackingDashboard } from '../components/invoices/PaymentTrackingDashboard';
-import { WorkflowPipeline } from '../components/workflow/WorkflowPipeline';
-import { useWorkflowCounts } from '../hooks/useWorkflowCounts';
 
 const InvoicesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'invoices' | 'tracking'>('invoices');
   const [refreshKey, setRefreshKey] = useState(0);
-  const workflowCounts = useWorkflowCounts();
 
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1);
@@ -17,13 +14,6 @@ const InvoicesPage: React.FC = () => {
 
   return (
     <>
-      <WorkflowPipeline
-        matterCount={workflowCounts.matterCount}
-        proFormaCount={workflowCounts.proFormaCount}
-        invoiceCount={workflowCounts.invoiceCount}
-        unpaidCount={workflowCounts.unpaidCount}
-      />
-      
       <div className="w-full space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>

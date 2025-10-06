@@ -14,5 +14,11 @@ export type { InputProps } from './Input';
 export { Icon } from './Icon';
 export type { IconProps } from './Icon';
 
+export { default as Select } from './Select';
+export type { SelectProps } from './Select';
+
+export { default as Textarea } from './Textarea';
+export type { TextareaProps } from './Textarea';
+
 // Removed Storybook type re-exports to avoid Vite transform errors in runtime builds
 // export type { Meta, StoryObj } from '@storybook/react';

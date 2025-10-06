@@ -223,6 +223,8 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         proFormaCount={workflowCounts.proFormaCount}
         invoiceCount={workflowCounts.invoiceCount}
         unpaidCount={workflowCounts.unpaidCount}
+        currentPage="matters"
+        onNavigate={onNavigate}
       />
       
       <div className="w-full space-y-4 md:space-y-6">
