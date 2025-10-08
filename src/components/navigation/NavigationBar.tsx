@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Menu, X, Search, Plus, ChevronDown, Bell, User, LogOut, Settings } from 'lucide-react';
 import lexoLogo from '../../Public/Assets/lexo-logo.png';
-import { Button, Icon } from '../../design-system/components';
+import { Button, Icon } from '../design-system/components';
 import { MegaMenu } from './MegaMenu';
 import { MobileMegaMenu } from './MobileMegaMenu';
 import GlobalCommandBar from './GlobalCommandBar';
@@ -12,8 +12,9 @@ import AlertsDropdown from '../notifications/AlertsDropdown';
 import { navigationConfig, getFilteredNavigationConfig } from '../../config/navigation.config';
 import { useKeyboardShortcuts, useClickOutside } from '../../hooks';
 import { smartNotificationsService } from '../../services/smart-notifications.service';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
+import { ThemeToggle } from '../common/ThemeToggle';
 import type { 
   NavigationCategory, 
   NavigationState, 
@@ -313,7 +314,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   return (
     <nav 
-      className={`bg-white border-b border-neutral-200 sticky top-0 z-50 ${className}`}
+      className={`bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700 sticky top-0 z-50 transition-colors duration-300 ${className}`}
       role="navigation"
       aria-label="Main navigation"
     >
@@ -327,7 +328,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           <div className="flex items-center gap-8">
             <div className="flex items-center gap-2">
               <img src={lexoLogo} alt="LexoHub Logo" className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain" style={{ background: 'transparent' }} />
-              <span className="text-lg sm:text-xl font-bold text-neutral-900">LexoHub</span>
+              <span className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">LexoHub</span>
             </div>
 
             {/* Desktop Navigation Categories */}
@@ -352,10 +353,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                       onKeyDown={(e) => handleKeyDown(e, category.id)}
                       className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
                         isActive
-                          ? 'text-mpondo-gold-600 font-semibold'
+                          ? 'text-mpondo-gold-600 dark:text-mpondo-gold-400 font-semibold'
                           : isHovered
-                          ? 'bg-neutral-100 text-neutral-900'
-                          : 'text-neutral-700 hover:bg-neutral-100 hover:text-neutral-900'
+                          ? 'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100'
+                          : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 hover:text-neutral-900 dark:hover:text-neutral-100'
                       }`}
                       aria-label={a11yProps.ariaLabel}
                       aria-expanded={a11yProps.ariaExpanded}
@@ -398,6 +399,9 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3">
+            {/* Theme Toggle */}
+            <ThemeToggle />
+
             {/* Global Command Bar */}
             <div ref={commandBarRef}>
               <GlobalCommandBar
@@ -453,22 +457,22 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                  <Icon icon={ChevronDown} className={`w-3 h-3 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                </Button>
                {userMenuOpen && (
-                 <div className="absolute right-0 top-full mt-2 w-48 bg-white border border-neutral-200 rounded-lg shadow-lg z-50">
+                 <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg z-50">
                    <div className="py-1">
                      <button
                        onClick={() => {
                          onPageChange('settings');
                          setUserMenuOpen(false);
                        }}
-                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-100 transition-colors"
+                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-700 transition-colors"
                      >
                        <Icon icon={Settings} className="w-4 h-4" />
                        Settings
                      </button>
-                     <hr className="my-1 border-neutral-200" />
+                     <hr className="my-1 border-neutral-200 dark:border-metallic-gray-700" />
                      <button
                        onClick={handleSignOut}
-                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-status-error-600 hover:bg-status-error-50 transition-colors"
+                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-status-error-600 dark:text-status-error-400 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 transition-colors"
                      >
                        <Icon icon={LogOut} className="w-4 h-4" />
                        Sign Out
@@ -519,7 +523,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           ref={megaMenuRef}
           onMouseEnter={handleMegaMenuHover}
           onMouseLeave={handleMegaMenuLeave}
-          className="absolute top-full left-0 w-full bg-white border-b border-neutral-200 shadow-soft z-40"
+          className="absolute top-full left-0 w-full bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700 shadow-soft z-40"
         >
           <MegaMenu
             category={filteredConfig.categories.find(c => c.id === navigationState.activeCategory)!}

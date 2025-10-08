@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Star, Zap, Crown, Lock } from 'lucide-react';
-import { Button } from '../../design-system/components';
+import { Button } from '../design-system/components';
 import { getAccessibleNavigationItems } from '../../config/navigation.config';
 import type { 
   NavigationCategory, 
@@ -56,7 +56,7 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
     <div
       className={`group relative p-2.5 rounded-lg transition-all duration-200 min-h-[44px] flex items-center ${
         isAccessible
-          ? 'hover:bg-neutral-50 active:bg-neutral-100 cursor-pointer touch-manipulation'
+          ? 'hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 active:bg-neutral-100 dark:active:bg-metallic-gray-700 cursor-pointer touch-manipulation'
           : 'opacity-60 cursor-not-allowed'
       }`}
       onClick={handleClick}
@@ -69,8 +69,8 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
         {/* Icon */}
         <div className={`flex-shrink-0 w-8 h-8 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center ${
           isAccessible 
-            ? 'bg-mpondo-gold-100 text-mpondo-gold-600 group-hover:bg-mpondo-gold-200' 
-            : 'bg-neutral-100 text-neutral-400'
+            ? 'bg-mpondo-gold-100 dark:bg-mpondo-gold-900/30 text-mpondo-gold-600 dark:text-mpondo-gold-400 group-hover:bg-mpondo-gold-200 dark:group-hover:bg-mpondo-gold-900/50' 
+            : 'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-400 dark:text-neutral-600'
         }`}>
           {Icon ? <Icon className="w-4 h-4" /> : null}
         </div>
@@ -79,7 +79,7 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
         <div className="flex-1 min-w-0">
           <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
             <h4 className={`font-medium text-sm ${
-              isAccessible ? 'text-neutral-900' : 'text-neutral-500'
+              isAccessible ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-600'
             }`}>
               {item.label}
             </h4>
@@ -87,17 +87,17 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
             {/* Badges */}
             <div className="flex items-center gap-1 flex-wrap">
               {item.isNew && (
-                <span className="px-1.5 py-0.5 text-xs bg-status-success-100 text-status-success-800 rounded-full">
+                <span className="px-1.5 py-0.5 text-xs bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300 rounded-full">
                   New
                 </span>
               )}
               {item.badge && (
-                <span className="px-1.5 py-0.5 text-xs bg-judicial-blue-100 text-judicial-blue-800 rounded-full">
+                <span className="px-1.5 py-0.5 text-xs bg-judicial-blue-100 dark:bg-judicial-blue-900/30 text-judicial-blue-800 dark:text-judicial-blue-300 rounded-full">
                   {item.badge}
                 </span>
               )}
               {item.isComingSoon && (
-                <span className="px-1.5 py-0.5 text-xs bg-neutral-100 text-neutral-600 rounded-full">
+                <span className="px-1.5 py-0.5 text-xs bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-600 dark:text-neutral-400 rounded-full">
                   Soon
                 </span>
               )}
@@ -109,7 +109,7 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
           
           {item.description && (
             <p className={`text-xs mt-1 line-clamp-2 ${
-              isAccessible ? 'text-neutral-600' : 'text-neutral-400'
+              isAccessible ? 'text-neutral-600 dark:text-neutral-400' : 'text-neutral-400 dark:text-neutral-600'
             }`}>
               {item.description}
             </p>
@@ -118,13 +118,13 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
 
         {/* Arrow indicator for accessible items */}
         {isAccessible && item.page && (
-          <ArrowRight className="w-4 h-4 text-neutral-400 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0" />
+          <ArrowRight className="w-4 h-4 text-neutral-400 dark:text-neutral-500 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0" />
         )}
       </div>
 
       {/* Upgrade prompt for inaccessible items */}
       {!isAccessible && item.requiresUpgrade && (
-        <div className="absolute inset-0 bg-white/90 rounded-lg flex items-center justify-center">
+        <div className="absolute inset-0 bg-white/90 dark:bg-metallic-gray-900/90 rounded-lg flex items-center justify-center">
           <Button
             variant="outline"
             size="sm"
@@ -156,8 +156,8 @@ const MegaMenuSection: React.FC<MegaMenuSectionProps> = ({
   }
 
   return (
-    <div className="space-y-1 bg-white rounded-lg border border-neutral-100 p-4">
-      <h3 className="text-xs font-semibold text-judicial-blue-600 uppercase tracking-wider mb-3">
+    <div className="space-y-1 bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-100 dark:border-metallic-gray-700 p-4">
+      <h3 className="text-xs font-semibold text-judicial-blue-600 dark:text-judicial-blue-400 uppercase tracking-wider mb-3">
         {section.title}
       </h3>
       <div className="space-y-1">
@@ -187,10 +187,10 @@ const FeaturedItems: React.FC<{
   }
 
   return (
-    <div className="bg-gradient-to-br from-mpondo-gold-50 to-judicial-blue-50 rounded-lg p-4 border border-mpondo-gold-200">
+    <div className="bg-gradient-to-br from-mpondo-gold-50 to-judicial-blue-50 dark:from-mpondo-gold-950/20 dark:to-judicial-blue-950/20 rounded-lg p-4 border border-mpondo-gold-200 dark:border-mpondo-gold-800">
       <div className="flex items-center gap-2 mb-3">
-        <Star className="w-4 h-4 text-mpondo-gold-600" />
-        <h3 className="text-sm font-semibold text-neutral-900">Featured Workflow</h3>
+        <Star className="w-4 h-4 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
+        <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Featured Workflow</h3>
       </div>
       <div className="space-y-1 sm:space-y-2">
         {accessibleItems.map((item) => {
@@ -203,7 +203,7 @@ const FeaturedItems: React.FC<{
               key={item.id}
               className={`flex items-center gap-3 p-2 sm:p-2 rounded-lg transition-colors min-h-[44px] ${
                 isAccessible
-                  ? 'hover:bg-white/60 active:bg-white/80 cursor-pointer touch-manipulation'
+                  ? 'hover:bg-white/60 dark:hover:bg-metallic-gray-900/60 active:bg-white/80 dark:active:bg-metallic-gray-900/80 cursor-pointer touch-manipulation'
                   : 'opacity-60 cursor-not-allowed'
               }`}
               onClick={() => isAccessible && item.page && onItemClick(item.page)}
@@ -211,21 +211,21 @@ const FeaturedItems: React.FC<{
               tabIndex={isAccessible ? 0 : -1}
             >
               {Icon && (
-                <div className="w-6 h-6 rounded bg-white/80 flex items-center justify-center">
-                  <Icon className="w-3 h-3 text-mpondo-gold-600" />
+                <div className="w-6 h-6 rounded bg-white/80 dark:bg-metallic-gray-800/80 flex items-center justify-center">
+                  <Icon className="w-3 h-3 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
                 </div>
               )}
               <div className="flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium text-neutral-900">
+                  <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                     {item.label}
                   </span>
                   {item.isNew && (
-                    <Zap className="w-3 h-3 text-status-success-600" />
+                    <Zap className="w-3 h-3 text-status-success-600 dark:text-status-success-400" />
                   )}
                 </div>
                 {item.description && (
-                  <p className="text-xs text-neutral-600">{item.description}</p>
+                  <p className="text-xs text-neutral-600 dark:text-neutral-400">{item.description}</p>
                 )}
               </div>
             </div>
@@ -288,13 +288,13 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
       {/* Category Header */}
       <div className="mb-6">
         <div className="flex items-center gap-3 mb-2">
-          <category.icon className="w-6 h-6 text-mpondo-gold-600" />
-          <h2 className="text-lg font-semibold text-neutral-900">
+          <category.icon className="w-6 h-6 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
+          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
             {category.label}
           </h2>
         </div>
         {category.description && (
-          <p className="text-sm text-neutral-600">{category.description}</p>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400">{category.description}</p>
         )}
       </div>
 
@@ -321,8 +321,8 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
       </div>
 
       {/* Footer Actions */}
-      <div className="mt-8 pt-6 border-t border-neutral-200">
-        <div className="text-xs text-neutral-500">
+      <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-metallic-gray-700">
+        <div className="text-xs text-neutral-500 dark:text-neutral-400">
           Explore all {category.label.toLowerCase()} features
         </div>
       </div>

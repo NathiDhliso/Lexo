@@ -1,29 +1,12 @@
 // Navigation Types
 export type Page =
   | 'dashboard'
-  | 'ai-analytics'
+  | 'proforma-requests'
   | 'matters'
-  | 'matter-templates'
   | 'matter-workbench'
-  | 'clients'
-  | 'calendar'
-  | 'documents'
   | 'invoices'
-  | 'invoice-designer'
-  | 'proforma'
-  | 'reports'
-  | 'practice-growth'
-  | 'strategic-finance'
-  | 'workflow-integrations'
-  | 'api-integrations'
-  | 'compliance'
-  | 'settings'
-  | 'design-system'
-  | 'matter-details'
-  | 'pricing-management'
-  | 'rate-cards'
   | 'profile'
-  | 'academy';
+  | 'settings';
 
 // Export integration types
 export * from './integrations';

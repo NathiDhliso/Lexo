@@ -38,11 +38,11 @@ export {
   type UserPreferencesUpdate
 } from './user-preferences.service';
 
-export {
-  academyService,
-  type AcademyCourse,
-  type AcademyEvent
-} from './academy.service';
+export { proformaRequestService } from './proforma-request.service';
+export { matterConversionService } from './matter-conversion.service';
+export { InvoiceService } from './invoices.service';
+export { TimeEntryService } from './time-entries.service';
+export { ExpensesService } from './expenses.service';
 
 // Re-export commonly used types from the main types file
 export type {

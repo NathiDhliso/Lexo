@@ -12,7 +12,7 @@ import {
   Trash2
 } from 'lucide-react';
 import { format, differenceInDays, isAfter } from 'date-fns';
-import { Card, CardHeader, CardContent, Button } from '../../design-system/components';
+import { Card, CardHeader, CardContent, Button } from '../design-system/components';
 import { RandIcon } from '../icons/RandIcon';
 import { formatRand } from '../../lib/currency';
 import type { Invoice } from '@/types';

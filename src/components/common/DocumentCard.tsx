@@ -1,6 +1,6 @@
 import React from 'react';
 import { MoreVertical, ExternalLink } from 'lucide-react';
-import { Card, CardContent, Button } from '../../design-system/components';
+import { Card, CardContent, Button } from '../design-system/components';
 
 export type DocumentType = 'matter' | 'proforma' | 'invoice';
 
@@ -23,21 +23,21 @@ const getDocumentTypeStyles = (type: DocumentType) => {
   switch (type) {
     case 'matter':
       return {
-        borderColor: 'border-l-judicial-blue-500',
-        badgeColor: 'bg-judicial-blue-100 text-judicial-blue-700',
-        accentColor: 'text-judicial-blue-600'
+        borderColor: 'border-l-judicial-blue-500 dark:border-l-judicial-blue-400',
+        badgeColor: 'bg-judicial-blue-100 text-judicial-blue-700 dark:bg-judicial-blue-900/30 dark:text-judicial-blue-300',
+        accentColor: 'text-judicial-blue-600 dark:text-judicial-blue-400'
       };
     case 'proforma':
       return {
-        borderColor: 'border-l-mpondo-gold-500',
-        badgeColor: 'bg-mpondo-gold-100 text-mpondo-gold-700',
-        accentColor: 'text-mpondo-gold-600'
+        borderColor: 'border-l-mpondo-gold-500 dark:border-l-mpondo-gold-400',
+        badgeColor: 'bg-mpondo-gold-100 text-mpondo-gold-700 dark:bg-mpondo-gold-900/30 dark:text-mpondo-gold-300',
+        accentColor: 'text-mpondo-gold-600 dark:text-mpondo-gold-400'
       };
     case 'invoice':
       return {
-        borderColor: 'border-l-status-success-500',
-        badgeColor: 'bg-status-success-100 text-status-success-700',
-        accentColor: 'text-status-success-600'
+        borderColor: 'border-l-status-success-500 dark:border-l-status-success-400',
+        badgeColor: 'bg-status-success-100 text-status-success-700 dark:bg-status-success-900/30 dark:text-status-success-300',
+        accentColor: 'text-status-success-600 dark:text-status-success-400'
       };
   }
 };
@@ -46,19 +46,19 @@ const getStatusBadgeColor = (status: string) => {
   const statusLower = status.toLowerCase();
   
   if (statusLower.includes('active') || statusLower.includes('sent') || statusLower.includes('accepted')) {
-    return 'bg-status-success-100 text-status-success-700 border-status-success-200';
+    return 'bg-status-success-100 text-status-success-700 border-status-success-200 dark:bg-status-success-900/30 dark:text-status-success-300 dark:border-status-success-700';
   }
   if (statusLower.includes('pending') || statusLower.includes('draft')) {
-    return 'bg-mpondo-gold-100 text-mpondo-gold-700 border-mpondo-gold-200';
+    return 'bg-mpondo-gold-100 text-mpondo-gold-700 border-mpondo-gold-200 dark:bg-mpondo-gold-900/30 dark:text-mpondo-gold-300 dark:border-mpondo-gold-700';
   }
   if (statusLower.includes('declined') || statusLower.includes('overdue') || statusLower.includes('expired')) {
-    return 'bg-status-error-100 text-status-error-700 border-status-error-200';
+    return 'bg-status-error-100 text-status-error-700 border-status-error-200 dark:bg-status-error-900/30 dark:text-status-error-300 dark:border-status-error-700';
   }
   if (statusLower.includes('paid') || statusLower.includes('completed') || statusLower.includes('closed')) {
-    return 'bg-neutral-100 text-neutral-700 border-neutral-200';
+    return 'bg-neutral-100 text-neutral-700 border-neutral-200 dark:bg-metallic-gray-800 dark:text-metallic-gray-400 dark:border-metallic-gray-700';
   }
   
-  return 'bg-neutral-100 text-neutral-600 border-neutral-200';
+  return 'bg-neutral-100 text-neutral-600 border-neutral-200 dark:bg-metallic-gray-800 dark:text-metallic-gray-400 dark:border-metallic-gray-700';
 };
 
 export const DocumentCard: React.FC<DocumentCardProps> = ({

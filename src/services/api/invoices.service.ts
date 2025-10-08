@@ -92,8 +92,7 @@ export class InvoiceService {
         .from('time_entries')
         .select('*')
         .eq('matter_id', matterId)
-        .eq('billed', false)
-        .is('deleted_at', null);
+        .eq('billed', false);
       
       if (timeEntryIds && timeEntryIds.length > 0) {
         timeEntriesQuery = timeEntriesQuery.in('id', timeEntryIds);
@@ -552,8 +551,7 @@ export class InvoiceService {
         .select(`
           *,
           matters!inner(title, client_name)
-        `, { count: 'exact' })
-        .is('deleted_at', null);
+        `, { count: 'exact' });
       
       // Apply filters
       if (status && status.length > 0) {

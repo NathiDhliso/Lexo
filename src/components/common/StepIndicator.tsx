@@ -34,10 +34,10 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
                 <div
                   className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
                     isCompleted
-                      ? 'bg-mpondo-gold-500 border-mpondo-gold-500 text-white'
+                      ? 'bg-mpondo-gold-500 dark:bg-mpondo-gold-600 border-mpondo-gold-500 dark:border-mpondo-gold-600 text-white'
                       : isCurrent
-                      ? 'bg-white border-mpondo-gold-500 text-mpondo-gold-600'
-                      : 'bg-white border-neutral-300 text-neutral-400'
+                      ? 'bg-white dark:bg-metallic-gray-800 border-mpondo-gold-500 dark:border-mpondo-gold-400 text-mpondo-gold-600 dark:text-mpondo-gold-400'
+                      : 'bg-white dark:bg-metallic-gray-800 border-neutral-300 dark:border-metallic-gray-600 text-neutral-400 dark:text-neutral-500'
                   }`}
                 >
                   {isCompleted ? (
@@ -52,16 +52,16 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
                   <p
                     className={`text-sm font-medium ${
                       isCurrent
-                        ? 'text-mpondo-gold-600'
+                        ? 'text-mpondo-gold-600 dark:text-mpondo-gold-400'
                         : isCompleted
-                        ? 'text-neutral-900'
-                        : 'text-neutral-400'
+                        ? 'text-neutral-900 dark:text-neutral-100'
+                        : 'text-neutral-400 dark:text-neutral-500'
                     }`}
                   >
                     {step.title}
                   </p>
                   {step.description && (
-                    <p className="text-xs text-neutral-500 mt-1 hidden sm:block">
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1 hidden sm:block">
                       {step.description}
                     </p>
                   )}
@@ -72,8 +72,8 @@ export const StepIndicator: React.FC<StepIndicatorProps> = ({
                 <div
                   className={`flex-1 h-0.5 mx-2 transition-all ${
                     index < currentStep
-                      ? 'bg-mpondo-gold-500'
-                      : 'bg-neutral-300'
+                      ? 'bg-mpondo-gold-500 dark:bg-mpondo-gold-400'
+                      : 'bg-neutral-300 dark:bg-metallic-gray-700'
                   }`}
                   style={{ maxWidth: '80px' }}
                 />

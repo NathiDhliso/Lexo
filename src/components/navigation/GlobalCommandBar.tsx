@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, Clock, ArrowRight, FileText, Users, Receipt, Zap } from 'lucide-react';
 import { SearchResult, SearchCategory, SearchState, KeyboardShortcut } from '../../types';
-import { Button } from '../../design-system/components';
+import { Button } from '../design-system/components';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 import { useFuzzySearch } from '../../hooks/useFuzzySearch';
 
@@ -201,7 +201,7 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
       {/* Search Input */}
       <div className="relative">
         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-4 w-4 text-neutral-400" />
+          <Search className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
         </div>
         <input
           ref={searchInputRef}
@@ -211,7 +211,7 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
           onChange={(e) => handleSearch(e.target.value)}
           onKeyDown={handleKeyDown}
           onFocus={() => setSearchState(prev => ({ ...prev, isOpen: true }))}
-          className="w-full pl-10 pr-12 py-2 bg-white border border-neutral-200 rounded-lg text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-judicial-blue-500 focus:border-transparent transition-all duration-200"
+          className="w-full pl-10 pr-12 py-2 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-judicial-blue-500 focus:border-transparent transition-all duration-200"
           aria-label="Global search"
           aria-expanded={searchState.isOpen}
           aria-haspopup="listbox"
@@ -221,11 +221,11 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
 
       {/* Search Dropdown */}
       {searchState.isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white border border-neutral-200 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
           {searchState.query === '' ? (
             /* Empty State - Recent Searches */
             <div className="p-4">
-              <div className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-3">
+              <div className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
                 <Clock className="h-4 w-4" />
                 Recent Searches
               </div>
@@ -235,36 +235,36 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                     <button
                       key={index}
                       onClick={() => handleSearch(search)}
-                      className="w-full text-left px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-50 rounded-md transition-colors"
+                      className="w-full text-left px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 rounded-md transition-colors"
                     >
                       {search}
                     </button>
                   ))}
                 </div>
               ) : (
-                <p className="text-sm text-neutral-500">No recent searches</p>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400">No recent searches</p>
               )}
               
               {/* Quick Actions */}
               <div className="mt-6">
-                <div className="flex items-center gap-2 text-sm font-medium text-neutral-700 mb-3">
+                <div className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-3">
                   <Zap className="h-4 w-4" />
                   Quick Actions
                 </div>
                 <div className="space-y-1">
                   <button
                     onClick={() => onAction('new-matter')}
-                    className="w-full text-left px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-50 rounded-md transition-colors flex items-center justify-between"
+                    className="w-full text-left px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 rounded-md transition-colors flex items-center justify-between"
                   >
                     <span>Add New Matter</span>
-                    <span className="text-xs text-neutral-400">Ctrl+Shift+M</span>
+                    <span className="text-xs text-neutral-400 dark:text-neutral-500">Ctrl+Shift+M</span>
                   </button>
                   <button
                     onClick={() => onAction('create-invoice')}
-                    className="w-full text-left px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-50 rounded-md transition-colors flex items-center justify-between"
+                    className="w-full text-left px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 rounded-md transition-colors flex items-center justify-between"
                   >
                     <span>Create Invoice</span>
-                    <span className="text-xs text-neutral-400">Ctrl+Shift+I</span>
+                    <span className="text-xs text-neutral-400 dark:text-neutral-500">Ctrl+Shift+I</span>
                   </button>
                 </div>
               </div>
@@ -280,7 +280,7 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                 <div className="space-y-4">
                   {Object.entries(groupedResults).map(([category, results]) => (
                     <div key={category}>
-                      <div className="flex items-center gap-2 px-2 py-1 text-xs font-medium text-neutral-500 uppercase tracking-wide">
+                      <div className="flex items-center gap-2 px-2 py-1 text-xs font-medium text-neutral-500 dark:text-neutral-400 uppercase tracking-wide">
                         {React.createElement(getCategoryIcon(category as SearchCategory), { className: "h-3 w-3" })}
                         {getCategoryLabel(category as SearchCategory)}
                       </div>
@@ -294,25 +294,25 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                               onClick={() => handleSelectResult(result)}
                               className={`w-full text-left px-3 py-2 rounded-md transition-colors flex items-center justify-between group ${
                                 isSelected
-                                  ? 'bg-judicial-blue-50 text-judicial-blue-900'
-                                  : 'hover:bg-neutral-50'
+                                  ? 'bg-judicial-blue-50 dark:bg-judicial-blue-900/30 text-judicial-blue-900 dark:text-judicial-blue-300'
+                                  : 'hover:bg-neutral-50 dark:hover:bg-metallic-gray-800'
                               }`}
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 {result.icon && (
                                   <result.icon className={`h-4 w-4 flex-shrink-0 ${
-                                    isSelected ? 'text-judicial-blue-600' : 'text-neutral-400'
+                                    isSelected ? 'text-judicial-blue-600 dark:text-judicial-blue-400' : 'text-neutral-400 dark:text-neutral-500'
                                   }`} />
                                 )}
                                 <div className="min-w-0">
                                   <div className={`text-sm font-medium truncate ${
-                                    isSelected ? 'text-judicial-blue-900' : 'text-neutral-900'
+                                    isSelected ? 'text-judicial-blue-900' : 'text-neutral-900 dark:text-neutral-100'
                                   }`}>
                                     {result.title}
                                   </div>
                                   {result.description && (
                                     <div className={`text-xs truncate ${
-                                      isSelected ? 'text-judicial-blue-700' : 'text-neutral-500'
+                                      isSelected ? 'text-judicial-blue-700 dark:text-judicial-blue-400' : 'text-neutral-500 dark:text-neutral-400'
                                     }`}>
                                       {result.description}
                                     </div>
@@ -320,7 +320,7 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                                 </div>
                               </div>
                               <ArrowRight className={`h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ${
-                                isSelected ? 'text-judicial-blue-600' : 'text-neutral-400'
+                                isSelected ? 'text-judicial-blue-600 dark:text-judicial-blue-400' : 'text-neutral-400 dark:text-neutral-500'
                               }`} />
                             </button>
                           );
@@ -331,9 +331,9 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                 </div>
               ) : (
                 <div className="flex flex-col items-center justify-center py-8 text-center">
-                  <Search className="h-8 w-8 text-neutral-300 mb-2" />
-                  <p className="text-sm text-neutral-500">No results found</p>
-                  <p className="text-xs text-neutral-400 mt-1">
+                  <Search className="h-8 w-8 text-neutral-300 dark:text-neutral-600 mb-2" />
+                  <p className="text-sm text-neutral-500 dark:text-neutral-400">No results found</p>
+                  <p className="text-xs text-neutral-400 dark:text-neutral-500 mt-1">
                     Try searching for matters, clients, or invoices
                   </p>
                 </div>

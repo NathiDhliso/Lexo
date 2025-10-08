@@ -177,7 +177,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
   return (
     <div 
       className={cn(
-        "relative overflow-hidden border-b border-neutral-200 bg-white transition-all duration-300",
+        "relative overflow-hidden border-b border-neutral-200 dark:border-metallic-gray-700 bg-white dark:bg-metallic-gray-900 transition-all duration-300",
         isMinimized ? "h-3" : "h-12",
         className
       )}
@@ -193,13 +193,13 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
           e.stopPropagation();
           toggleMinimized();
         }}
-        className="absolute top-1 right-2 z-10 p-1 rounded hover:bg-neutral-100 transition-colors"
+        className="absolute top-1 right-2 z-10 p-1 rounded hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 transition-colors"
         title={isMinimized ? "Expand ticker" : "Minimize ticker"}
       >
         {isMinimized ? (
-          <Plus className="w-3 h-3 text-neutral-500" />
+          <Plus className="w-3 h-3 text-neutral-500 dark:text-neutral-400" />
         ) : (
-          <Minus className="w-3 h-3 text-neutral-500" />
+          <Minus className="w-3 h-3 text-neutral-500 dark:text-neutral-400" />
         )}
       </button>
 
@@ -226,7 +226,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
           {/* Ticker content */}
           <div 
             ref={tickerRef}
-            className="flex items-center h-full px-4 cursor-pointer transition-all duration-300 hover:bg-neutral-50"
+            className="flex items-center h-full px-4 cursor-pointer transition-all duration-300 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800"
             onClick={() => handleItemClick(currentItem)}
           >
             {/* Icon */}
@@ -246,7 +246,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
                 )}
               </div>
               
-              <div className="flex items-center gap-4 text-xs text-neutral-600">
+              <div className="flex items-center gap-4 text-xs text-neutral-600 dark:text-neutral-400">
                 <span className="truncate">{currentItem.description}</span>
                 
                 {currentItem.amount && (
@@ -265,7 +265,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
             </div>
 
             {/* Navigation arrow */}
-            <ChevronRight className="w-4 h-4 text-neutral-400 flex-shrink-0 ml-2 mr-6" />
+            <ChevronRight className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0 ml-2 mr-6" />
           </div>
 
           {/* Progress indicators */}
@@ -285,15 +285,15 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
 
           {/* Hover overlay with all items */}
           {isHovered && (
-            <div className="absolute top-full left-0 right-0 bg-white border border-neutral-200 shadow-lg z-50 max-h-64 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 shadow-lg z-50 max-h-64 overflow-y-auto">
               {tickerItems.map((item, index) => {
                 const itemStyles = getUrgencyStyles(item.urgency);
                 return (
                   <div
                     key={item.id}
                     className={cn(
-                      "flex items-center p-3 border-b border-neutral-100 cursor-pointer transition-colors hover:bg-neutral-50",
-                      index === currentIndex && "bg-neutral-50"
+                      "flex items-center p-3 border-b border-neutral-100 dark:border-metallic-gray-800 cursor-pointer transition-colors hover:bg-neutral-50 dark:hover:bg-metallic-gray-800",
+                      index === currentIndex && "bg-neutral-50 dark:bg-metallic-gray-800"
                     )}
                     onClick={() => handleItemClick(item)}
                   >
@@ -310,12 +310,12 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
                           <AlertTriangle className="w-4 h-4 text-red-500" />
                         )}
                       </div>
-                      <p className="text-xs text-neutral-600 truncate">
+                      <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate">
                         {item.description}
                       </p>
                     </div>
                     
-                    <div className="flex items-center gap-2 text-xs text-neutral-500">
+                    <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
                       {item.amount && (
                         <span className="font-medium text-mpondo-gold-600">
                           {formatAmount(item.amount)}

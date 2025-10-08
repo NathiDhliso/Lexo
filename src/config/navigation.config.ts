@@ -1,6 +1,6 @@
 import type { NavigationConfig, NavigationItem, TypedNavigationItem, NavigationCategory } from '../types';
 import { UserTier } from '../types';
-import { BarChart3, Building2, Settings, FileText, Users, Calendar, FolderOpen, CreditCard, TrendingUp, DollarSign, Layout } from 'lucide-react';
+import { BarChart3, Building2, Settings, FileText, Users, Calendar, FolderOpen, CreditCard, TrendingUp, DollarSign, Layout, FileCheck } from 'lucide-react';
 
 // Navigation items
 const navigationItems: NavigationItem[] = [
@@ -13,6 +13,15 @@ const navigationItems: NavigationItem[] = [
     description: 'Overview of your practice',
   },
   {
+    id: 'proforma-requests',
+    label: 'Pro Forma',
+    href: '/proforma-requests',
+    page: 'proforma-requests',
+    icon: FileCheck,
+    description: 'Manage quotes and estimates',
+    isNew: true,
+  },
+  {
     id: 'matters',
     label: 'Matters',
     href: '/matters',
@@ -21,52 +30,20 @@ const navigationItems: NavigationItem[] = [
     description: 'Manage your cases and matters',
   },
   {
-    id: 'clients',
-    label: 'Clients',
-    href: '/clients',
-    page: 'clients',
-    icon: Users,
-    description: 'Client management and relationships',
-  },
-  {
-    id: 'calendar',
-    label: 'Calendar',
-    href: '/calendar',
-    page: 'calendar',
-    icon: Calendar,
-    description: 'Schedule and appointments',
-  },
-  {
-    id: 'documents',
-    label: 'Documents',
-    href: '/documents',
-    page: 'documents',
-    icon: FolderOpen,
-    description: 'Document management system',
-  },
-  {
-    id: 'billing',
-    label: 'Billing',
-    href: '/billing',
-    page: 'billing',
+    id: 'invoices',
+    label: 'Invoices',
+    href: '/invoices',
+    page: 'invoices',
     icon: CreditCard,
-    description: 'Invoicing and financial management',
+    description: 'Invoicing and billing',
   },
   {
-    id: 'rate-cards',
-    label: 'Rate Cards',
-    href: '/rate-cards',
-    page: 'rate-cards',
-    icon: DollarSign,
-    description: 'Manage pricing and rate structures',
-  },
-  {
-    id: 'reports',
-    label: 'Reports',
-    href: '/reports',
-    page: 'reports',
-    icon: TrendingUp,
-    description: 'Analytics and reporting',
+    id: 'profile',
+    label: 'Profile',
+    href: '/profile',
+    page: 'profile',
+    icon: Users,
+    description: 'Your profile and preferences',
   },
   {
     id: 'settings',
@@ -74,15 +51,7 @@ const navigationItems: NavigationItem[] = [
     href: '/settings',
     page: 'settings',
     icon: Settings,
-    description: 'Application settings and preferences',
-  },
-  {
-    id: 'pdf-templates',
-    label: 'PDF Templates',
-    href: '/pdf-templates',
-    page: 'pdf-templates',
-    icon: Layout,
-    description: 'Customize PDF templates for invoices and pro formas',
+    description: 'Application settings',
   },
 ];
 
@@ -96,50 +65,20 @@ export const navigationConfig: NavigationConfig = {
       sections: [
         {
           id: 'main',
-          label: 'Main',
+          title: 'Workflow',
           items: [
             navigationItems.find(item => item.id === 'dashboard')!,
+            navigationItems.find(item => item.id === 'proforma-requests')!,
             navigationItems.find(item => item.id === 'matters')!,
-            navigationItems.find(item => item.id === 'clients')!,
+            navigationItems.find(item => item.id === 'invoices')!,
           ],
         },
         {
-          id: 'productivity',
-          label: 'Productivity',
+          id: 'system',
+          title: 'System',
           items: [
-            navigationItems.find(item => item.id === 'calendar')!,
-            navigationItems.find(item => item.id === 'documents')!,
-          ],
-        },
-      ],
-    },
-    {
-      id: 'business',
-      label: 'Business Management',
-      icon: Building2,
-      sections: [
-        {
-          id: 'financial',
-          label: 'Financial',
-          items: [
-            navigationItems.find(item => item.id === 'billing')!,
-            navigationItems.find(item => item.id === 'rate-cards')!,
-            navigationItems.find(item => item.id === 'reports')!,
-          ],
-        },
-      ],
-    },
-    {
-      id: 'system',
-      label: 'System',
-      icon: Settings,
-      sections: [
-        {
-          id: 'configuration',
-          label: 'Configuration',
-          items: [
+            navigationItems.find(item => item.id === 'profile')!,
             navigationItems.find(item => item.id === 'settings')!,
-            navigationItems.find(item => item.id === 'pdf-templates')!,
           ],
         },
       ],

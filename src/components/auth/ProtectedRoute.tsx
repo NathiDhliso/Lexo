@@ -4,10 +4,9 @@
  */
 
 import React, { ReactNode } from 'react';
-import { useAuth } from '../../contexts/AuthContext';
-import { LoadingSpinner } from '../design-system/components/LoadingSpinner';
+import { useAuth } from '../../hooks/useAuth';
+import { LoadingSpinner } from '../design-system/components';
 import LoginPage from '../../pages/LoginPage';
-import WelcomePage from '../../pages/WelcomePage';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -32,10 +31,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
     );
   }
 
-  // Public route for post-confirmation landing
-  if (pathname === '/welcome') {
-    return <WelcomePage />;
-  }
+  // No welcome page - users go directly to the main app after authentication
 
   // Redirect to login if not authenticated after initialization completes
   if (!isAuthenticated || !user) {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { FormAssistant } from './FormAssistant';
-import { Button, Card, CardHeader, CardContent } from '../../design-system/components';
+import { Button, Card, CardHeader, CardContent } from '../design-system/components';
 import type { FormField, FormContext } from '../../services/ai/form-assistant.service';
 
 export function FormAssistantExample() {

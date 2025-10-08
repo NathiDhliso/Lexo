@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { Button } from '../../design-system/components';
+import { Button } from '../design-system/components';
 import { StepIndicator } from './StepIndicator';
 
 export interface Step {

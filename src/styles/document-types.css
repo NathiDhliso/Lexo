@@ -143,3 +143,71 @@
 .icon-invoice {
   @apply text-status-success-600;
 }
+
+.dark .document-matter-badge {
+  @apply bg-judicial-blue-900/30 text-judicial-blue-300 border-judicial-blue-700;
+}
+
+.dark .document-matter-bg {
+  @apply bg-judicial-blue-950/20;
+}
+
+.dark .document-matter-hover {
+  @apply hover:bg-judicial-blue-950/30 hover:border-judicial-blue-600;
+}
+
+.dark .document-proforma-badge {
+  @apply bg-mpondo-gold-900/30 text-mpondo-gold-300 border-mpondo-gold-700;
+}
+
+.dark .document-proforma-bg {
+  @apply bg-mpondo-gold-950/20;
+}
+
+.dark .document-proforma-hover {
+  @apply hover:bg-mpondo-gold-950/30 hover:border-mpondo-gold-600;
+}
+
+.dark .document-invoice-badge {
+  @apply bg-status-success-900/30 text-status-success-300 border-status-success-700;
+}
+
+.dark .document-invoice-bg {
+  @apply bg-status-success-950/20;
+}
+
+.dark .document-invoice-hover {
+  @apply hover:bg-status-success-950/30 hover:border-status-success-600;
+}
+
+.dark .status-active {
+  @apply bg-status-success-900/30 text-status-success-300 border-status-success-700;
+}
+
+.dark .status-pending {
+  @apply bg-mpondo-gold-900/30 text-mpondo-gold-300 border-mpondo-gold-700;
+}
+
+.dark .status-draft {
+  @apply bg-metallic-gray-800 text-metallic-gray-300 border-metallic-gray-700;
+}
+
+.dark .status-declined,
+.dark .status-error,
+.dark .status-overdue {
+  @apply bg-status-error-900/30 text-status-error-300 border-status-error-700;
+}
+
+.dark .status-completed,
+.dark .status-paid,
+.dark .status-closed {
+  @apply bg-metallic-gray-800 text-metallic-gray-400 border-metallic-gray-700;
+}
+
+.dark .amount-highlight {
+  @apply text-mpondo-gold-400;
+}
+
+.dark .amount-box {
+  @apply bg-mpondo-gold-950/20 border-mpondo-gold-800;
+}

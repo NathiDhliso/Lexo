@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ChevronDown, ChevronRight, ArrowRight, Star, Zap, Crown, Lock } from 'lucide-react';
-import { Button } from '../../design-system/components';
+import { Button } from '../design-system/components';
 import { getAccessibleNavigationItems } from '../../config/navigation.config';
 import type { 
   NavigationCategory, 

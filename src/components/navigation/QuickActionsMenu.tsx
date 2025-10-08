@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Plus, FileText, FolderPlus, Brain, Receipt, Zap, Clock } from 'lucide-react';
 import { QuickAction, QuickActionsState, UserTier } from '../../types';
-import { Button, Icon } from '../../design-system/components';
+import { Button, Icon } from '../design-system/components';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 
 interface QuickActionsMenuProps {

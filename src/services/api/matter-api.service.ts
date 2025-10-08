@@ -47,9 +47,7 @@ export class MatterApiService extends BaseApiService<Matter> {
       *,
       advocate:advocates!advocate_id(full_name, practice_number),
       time_entries(count),
-      invoices(count),
-      documents(count),
-      notes(count)
+      invoices(count)
     `);
   }
 
@@ -65,14 +63,13 @@ export class MatterApiService extends BaseApiService<Matter> {
   ): Promise<ApiResponse<Matter[]>> {
     const filters: MatterFilters = {
       ...options.filters,
-      advocate_id: advocateId,
-      deleted_at: null // Only get non-deleted matters
+      advocate_id: advocateId
     };
 
     return this.getAll({
       filters,
       pagination: options.pagination,
-      sort: { column: 'date_instructed', ascending: false }
+      sort: { column: 'created_at', ascending: false }
     });
   }
 

@@ -1,6 +1,6 @@
 import React, { useState, useCallback } from 'react';
 import { Upload, FileText, X, Loader2 } from 'lucide-react';
-import { Button } from '../../design-system/components';
+import { Button } from '../design-system/components';
 import { ProcessingProgressTracker } from './ProcessingProgressTracker';
 import { toast } from 'react-hot-toast';
 import { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';

@@ -1,24 +1,24 @@
 import React, { useState } from 'react';
 import { RefreshCw } from 'lucide-react';
-import { Button } from '../design-system/components';
+import { Button } from '../components/design-system/components';
 import { InvoiceList } from '../components/invoices/InvoiceList';
 import { PaymentTrackingDashboard } from '../components/invoices/PaymentTrackingDashboard';
 
 const InvoicesPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'invoices' | 'tracking'>('invoices');
   const [refreshKey, setRefreshKey] = useState(0);
-
+  
   const handleRefresh = () => {
     setRefreshKey(prev => prev + 1);
   };
 
   return (
     <>
-      <div className="w-full space-y-6">
+      <div className="w-full space-y-6 min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900">Invoices</h1>
-          <p className="text-sm sm:text-base text-neutral-600 mt-1">Manage your invoices and payment tracking</p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900 dark:text-neutral-100">Invoices</h1>
+          <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mt-1">Manage your invoices and payment tracking</p>
         </div>
         <Button 
           variant="outline" 
@@ -31,14 +31,14 @@ const InvoicesPage: React.FC = () => {
         </Button>
       </div>
       {/* Tab Navigation */}
-      <div className="border-b border-neutral-200">
+      <div className="border-b border-neutral-200 dark:border-metallic-gray-700">
         <nav className="-mb-px flex space-x-8">
           <button
             onClick={() => setActiveTab('invoices')}
             className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === 'invoices'
-                ? 'border-mpondo-gold-500 text-mpondo-gold-600'
-                : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
+                ? 'border-mpondo-gold-500 dark:border-mpondo-gold-400 text-mpondo-gold-600 dark:text-mpondo-gold-400'
+                : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:border-neutral-300 dark:hover:border-metallic-gray-600'
             }`}
             data-testid="invoices-tab"
           >
@@ -48,8 +48,8 @@ const InvoicesPage: React.FC = () => {
             onClick={() => setActiveTab('tracking')}
             className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
               activeTab === 'tracking'
-                ? 'border-mpondo-gold-500 text-mpondo-gold-600'
-                : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
+                ? 'border-mpondo-gold-500 dark:border-mpondo-gold-400 text-mpondo-gold-600 dark:text-mpondo-gold-400'
+                : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:border-neutral-300 dark:hover:border-metallic-gray-600'
             }`}
             data-testid="tracking-tab"
           >

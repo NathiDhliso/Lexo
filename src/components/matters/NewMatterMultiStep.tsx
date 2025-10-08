@@ -1,14 +1,19 @@
-import React from 'react';
-import { FileText, User, Briefcase, DollarSign, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { FileText, User, Briefcase, DollarSign, CheckCircle, Upload } from 'lucide-react';
 import { MultiStepForm, Step } from '../common/MultiStepForm';
-import { Input, Select, Textarea } from '../../design-system/components';
+import { Input, Select, Textarea } from '../design-system/components';
+import FileUpload from '../common/FileUpload';
+import { awsDocumentProcessingService } from '../../services/aws-document-processing.service';
 import type { NewMatterForm } from '../../types';
+import type { DocumentProcessingResult } from '../../services/aws-document-processing.service';
 
 interface NewMatterMultiStepProps {
   isOpen: boolean;
   onClose: () => void;
   onComplete: (data: NewMatterForm) => void;
   initialData?: Partial<NewMatterForm>;
+  sourceProFormaId?: string;
+  isPrepopulated?: boolean;
 }
 
 const MATTER_TYPES = [
@@ -26,6 +31,13 @@ const MATTER_TYPES = [
 ];
 
 const MATTER_STEPS: Step[] = [
+  {
+    id: 'document',
+    title: 'Document',
+    description: 'Upload brief (optional)',
+    icon: Upload,
+    fields: []
+  },
   {
     id: 'basics',
     title: 'Basic Info',
@@ -69,13 +81,52 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
   onComplete,
   initialData = {}
 }) => {
+  // File upload state
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isProcessingDocument, setIsProcessingDocument] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [documentProcessingError, setDocumentProcessingError] = useState<string | null>(null);
+  const [extractedData, setExtractedData] = useState<DocumentProcessingResult | null>(null);
+  const [showExtractedDataPreview, setShowExtractedDataPreview] = useState(false);
+
+  // File upload handlers
+  const handleFileSelect = async (file: File) => {
+    setUploadedFile(file);
+    setDocumentProcessingError(null);
+    setIsProcessingDocument(true);
+    setProcessingProgress(0);
+
+    try {
+      const result = await awsDocumentProcessingService.processDocument(
+        file,
+        (progress) => setProcessingProgress(progress)
+      );
+      
+      setExtractedData(result);
+      setShowExtractedDataPreview(true);
+      setIsProcessingDocument(false);
+    } catch (error) {
+      console.error('Document processing failed:', error);
+      setDocumentProcessingError(error instanceof Error ? error.message : 'Processing failed');
+      setIsProcessingDocument(false);
+    }
+  };
+
+  const handleFileRemove = () => {
+    setUploadedFile(null);
+    setExtractedData(null);
+    setShowExtractedDataPreview(false);
+    setDocumentProcessingError(null);
+    setProcessingProgress(0);
+  };
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
-          <h2 className="text-2xl font-bold text-neutral-900 mb-6">Create New Matter</h2>
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Create New Matter</h2>
           
           <MultiStepForm
             steps={MATTER_STEPS}
@@ -83,9 +134,119 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
             onComplete={onComplete}
             onCancel={onClose}
           >
-            {(currentStep, data, updateData) => (
-              <div className="space-y-4">
-                {currentStep.id === 'basics' && (
+            {(currentStep, data, updateData) => {
+              // Auto-population function
+              const applyExtractedData = () => {
+                if (!extractedData) return;
+                
+                const extracted = extractedData.extractedData;
+                
+                // Apply extracted data to form
+                if (extracted.clientName) updateData('client_name', extracted.clientName);
+                if (extracted.clientEmail) updateData('client_email', extracted.clientEmail);
+                if (extracted.clientPhone) updateData('client_phone', extracted.clientPhone);
+                if (extracted.lawFirm) updateData('instructing_firm', extracted.lawFirm);
+                if (extracted.description) updateData('description', extracted.description);
+                if (extracted.caseNumber) updateData('court_case_number', extracted.caseNumber);
+                
+                setShowExtractedDataPreview(false);
+              };
+
+              return (
+                <div className="space-y-4">
+                  {currentStep.id === 'document' && (
+                    <>
+                      <div className="text-center mb-6">
+                        <h3 className="text-lg font-medium text-gray-900 mb-2">Upload Attorney's Brief (Optional)</h3>
+                        <p className="text-gray-600">Upload the attorney's soft copy to automatically extract client and case details</p>
+                      </div>
+                      
+                      <FileUpload
+                        onFileSelect={handleFileSelect}
+                        onFileRemove={handleFileRemove}
+                        currentFile={uploadedFile}
+                        isProcessing={isProcessingDocument}
+                        processingProgress={processingProgress}
+                        error={documentProcessingError}
+                        label="Upload Legal Document"
+                        description="Upload a PDF or Word document to automatically extract case details and populate the form"
+                        acceptedTypes={awsDocumentProcessingService.getSupportedFileTypes()}
+                        maxSizeInMB={awsDocumentProcessingService.getMaxFileSizeInMB()}
+                      />
+
+                      {/* Extracted Data Preview */}
+                      {showExtractedDataPreview && extractedData && (
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                          <div className="flex items-start justify-between mb-3">
+                            <div>
+                              <h4 className="font-medium text-blue-900">Extracted Information</h4>
+                              <p className="text-sm text-blue-700">
+                                Confidence: {extractedData.confidence}% • Processing time: {(extractedData.processingTime / 1000).toFixed(1)}s
+                              </p>
+                            </div>
+                            <div className="flex gap-2">
+                              <button
+                                type="button"
+                                onClick={applyExtractedData}
+                                className="px-3 py-1 bg-blue-600 text-white text-sm rounded hover:bg-blue-700"
+                              >
+                                Apply to Form
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setShowExtractedDataPreview(false)}
+                                className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+                              >
+                                Dismiss
+                              </button>
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+                            {extractedData.extractedData.clientName && (
+                              <div>
+                                <span className="font-medium text-blue-900">Name:</span>
+                                <span className="ml-2 text-blue-800">{extractedData.extractedData.clientName}</span>
+                              </div>
+                            )}
+                            {extractedData.extractedData.clientEmail && (
+                              <div>
+                                <span className="font-medium text-blue-900">Email:</span>
+                                <span className="ml-2 text-blue-800">{extractedData.extractedData.clientEmail}</span>
+                              </div>
+                            )}
+                            {extractedData.extractedData.clientPhone && (
+                              <div>
+                                <span className="font-medium text-blue-900">Phone:</span>
+                                <span className="ml-2 text-blue-800">{extractedData.extractedData.clientPhone}</span>
+                              </div>
+                            )}
+                            {extractedData.extractedData.lawFirm && (
+                              <div>
+                                <span className="font-medium text-blue-900">Law Firm:</span>
+                                <span className="ml-2 text-blue-800">{extractedData.extractedData.lawFirm}</span>
+                              </div>
+                            )}
+                            {extractedData.extractedData.caseNumber && (
+                              <div>
+                                <span className="font-medium text-blue-900">Case Number:</span>
+                                <span className="ml-2 text-blue-800">{extractedData.extractedData.caseNumber}</span>
+                              </div>
+                            )}
+                          </div>
+                          
+                          {extractedData.extractedData.description && (
+                            <div className="mt-3 pt-3 border-t border-blue-200">
+                              <span className="font-medium text-blue-900">Description:</span>
+                              <p className="mt-1 text-blue-800 text-sm">{extractedData.extractedData.description}</p>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {currentStep.id === 'basics' && (
                   <>
                     <Input
                       label="Matter Title"
@@ -332,8 +493,9 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
                     </div>
                   </div>
                 )}
-              </div>
-            )}
+                </div>
+              );
+            }}
           </MultiStepForm>
         </div>
       </div>

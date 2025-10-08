@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import { Sparkles, Loader2, Check, X, AlertCircle } from 'lucide-react';
-import { Button } from '../../design-system/components';
-import { Icon } from '../../design-system/components';
+import { Button } from '../design-system/components';
+import { Icon } from '../design-system/components';
 import FormAssistantService, {
   FormField,
   FormContext,

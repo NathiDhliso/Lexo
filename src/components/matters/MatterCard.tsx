@@ -12,7 +12,7 @@ import {
   FileText,
   MoreVertical
 } from 'lucide-react';
-import { Card, CardContent, Button } from '../../design-system/components';
+import { Card, CardContent, Button } from '../design-system/components';
 import { formatRand } from '../../lib/currency';
 import { format } from 'date-fns';
 import type { Matter } from '../../types';

@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 const config = {
+  darkMode: 'class',
   content: [
     './index.html',
     './src/**/*.{js,ts,jsx,tsx}',
@@ -7,6 +8,19 @@ const config = {
   theme: {
     extend: {
       colors: {
+        'metallic-gray': {
+          50: '#f8f9fa',
+          100: '#e9ecef',
+          200: '#dee2e6',
+          300: '#ced4da',
+          400: '#adb5bd',
+          500: '#6c757d',
+          600: '#495057',
+          700: '#343a40',
+          800: '#212529',
+          900: '#1a1d20',
+          950: '#0d0f11',
+        },
         // Primary Brand Color - Mpondo Gold
         'mpondo-gold': {
           50: '#fdfbf4',

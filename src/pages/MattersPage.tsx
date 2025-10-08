@@ -6,12 +6,14 @@ import {
   AlertTriangle,
   Eye,
   Search,
-  Edit
+  Edit,
+  Undo2
 } from 'lucide-react';
-import { Card, CardContent, Button, CardHeader } from '../design-system/components';
-import { NewMatterMultiStep } from '../components/matters/NewMatterMultiStep';
+import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
+
 import { matterApiService } from '../services/api';
-import { useAuth } from '../contexts/AuthContext';
+import { matterConversionService } from '../services/api/matter-conversion.service';
+import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
 import type { Matter, Page } from '../types';
@@ -24,7 +26,7 @@ interface MattersPageProps {
 const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [activeTab, setActiveTab] = useState<'active' | 'all'>('active');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showNewMatterModal, setShowNewMatterModal] = useState(false);
+
   const [matters, setMatters] = useState<Matter[]>([]);
   const [loadingMatters, setLoadingMatters] = useState(true);
   const { user, loading, isAuthenticated } = useAuth();
@@ -123,28 +125,52 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     if (onNavigate) {
       onNavigate('matter-workbench');
     } else {
-      // Fallback to modal if navigation is not available
-      setShowNewMatterModal(true);
+      console.warn('Navigation function not available');
     }
   };
 
   const handleViewMatter = (matter: Matter) => {
-    // Navigate to matter details or show details modal
-    toast.info(`Viewing details for ${matter.title}`);
+    toast(`Viewing details for ${matter.title}`);
   };
 
   const handleEditMatter = (matter: Matter) => {
-    // Navigate to matter edit or show edit modal
-    toast.info(`Editing ${matter.title}`);
+    toast(`Editing ${matter.title}`);
+  };
+
+  const handleReverseConversion = async (matter: Matter) => {
+    if (!(matter as any).source_proforma_id) {
+      toast.error('This matter was not created from a pro forma conversion');
+      return;
+    }
+
+    const confirmed = window.confirm(
+      `Are you sure you want to reverse the conversion for "${matter.title}"?\n\n` +
+      'This will:\n' +
+      '• Delete this matter permanently\n' +
+      '• Restore the original pro forma request to "accepted" status\n' +
+      '• Allow the pro forma to be converted again\n\n' +
+      'This action cannot be undone.'
+    );
+
+    if (!confirmed) return;
+
+    try {
+      await matterConversionService.reverseConversion(matter.id);
+      // Remove the matter from the local state
+      setMatters(prev => prev.filter(m => m.id !== matter.id));
+    } catch (error) {
+      console.error('Error reversing conversion:', error);
+      // Error is already handled in the service with toast
+    }
   };
 
   return (
-    <div className="w-full space-y-6">
+    <div className="w-full space-y-6 min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 p-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-900">Matters</h1>
-          <p className="text-neutral-600 mt-1">Manage your legal matters and cases</p>
+          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">Matters</h1>
+          <p className="text-neutral-600 dark:text-neutral-400 mt-1">Manage your legal matters and cases</p>
         </div>
         
         <Button 
@@ -159,26 +185,26 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
 
       {/* Search */}
       <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 w-4 h-4" />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
         <input
           type="text"
           placeholder="Search matters, clients, or attorneys..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-900 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent"
         />
       </div>
 
       {/* Tabs */}
-      <div className="flex space-x-1 bg-neutral-100 rounded-lg p-1 w-fit">
+      <div className="flex space-x-1 bg-neutral-100 dark:bg-metallic-gray-800 rounded-lg p-1 w-fit">
         {(['active', 'all'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === tab
-                ? 'bg-white text-neutral-900 shadow-sm'
-                : 'text-neutral-600 hover:text-neutral-900'
+                ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+                : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
             }`}
           >
             {tab === 'active' ? 'Active Matters' : 'All Matters'}
@@ -192,15 +218,15 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           <Card>
             <CardContent className="text-center py-12">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mpondo-gold-500 mx-auto mb-4"></div>
-              <p className="text-neutral-600">Loading matters...</p>
+              <p className="text-neutral-600 dark:text-neutral-400">Loading matters...</p>
             </CardContent>
           </Card>
         ) : filteredMatters.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
-              <Briefcase className="w-12 h-12 text-neutral-400 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-neutral-900 mb-2">No Matters Found</h3>
-              <p className="text-neutral-600 mb-4">
+              <Briefcase className="w-12 h-12 text-neutral-400 dark:text-neutral-500 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">No Matters Found</h3>
+              <p className="text-neutral-600 dark:text-neutral-400 mb-4">
                 {activeTab === 'active' ? 'No active matters' : 'No matters match your search criteria'}
               </p>
               <Button onClick={handleNewMatterClick} variant="primary">
@@ -216,12 +242,12 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
-                      <h3 className="text-lg font-semibold text-neutral-900">{matter.title}</h3>
+                      <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{matter.title}</h3>
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                        matter.status === MatterStatus.ACTIVE ? 'bg-green-100 text-green-800' :
-                        matter.status === MatterStatus.PENDING ? 'bg-yellow-100 text-yellow-800' :
-                        matter.status === MatterStatus.SETTLED ? 'bg-blue-100 text-blue-800' :
-                        'bg-neutral-100 text-neutral-800'
+                        matter.status === MatterStatus.ACTIVE ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
+                        matter.status === MatterStatus.PENDING ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
+                        matter.status === MatterStatus.SETTLED ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
+                        'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300'
                       }`}>
                         {matter.status}
                       </span>
@@ -235,7 +261,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                               title="High WIP Inactive Matter"
                             />
                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
-                              <div className="text-sm font-medium text-amber-800">High WIP Inactive</div>
+                              <div className="text-sm font-medium text-amber-800 dark:text-amber-300">High WIP Inactive</div>
                               <div className="text-xs text-amber-700">
                                 WIP: R{(matter.wip_value || 0).toLocaleString()} • No recent activity
                               </div>
@@ -250,7 +276,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                               title="Approaching Prescription"
                             />
                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
-                              <div className="text-sm font-medium text-amber-800">Prescription Warning</div>
+                              <div className="text-sm font-medium text-amber-800 dark:text-amber-300">Prescription Warning</div>
                               <div className="text-xs text-amber-700">
                                 Matter approaching 3-year prescription period
                               </div>
@@ -262,28 +288,28 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                     
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                       <div>
-                        <span className="text-neutral-600">Client:</span>
-                        <span className="ml-2 font-medium text-neutral-900">{matter.client_name}</span>
+                        <span className="text-neutral-600 dark:text-neutral-400">Client:</span>
+                        <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">{matter.client_name}</span>
                       </div>
                       <div>
-                        <span className="text-neutral-600">Attorney:</span>
-                        <span className="ml-2 font-medium text-neutral-900">{matter.instructing_attorney}</span>
+                        <span className="text-neutral-600 dark:text-neutral-400">Attorney:</span>
+                        <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">{matter.instructing_attorney}</span>
                       </div>
                       <div>
-                        <span className="text-neutral-600">Type:</span>
-                        <span className="ml-2 font-medium text-neutral-900">{matter.brief_type}</span>
+                        <span className="text-neutral-600 dark:text-neutral-400">Type:</span>
+                        <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">{(matter as any).brief_type}</span>
                       </div>
                     </div>
                     
                     {/* Associated Services */}
                     {(matter as any).associatedServices && (matter as any).associatedServices.length > 0 && (
-                      <div className="mt-3 pt-3 border-t border-neutral-200">
-                        <span className="text-sm font-medium text-neutral-700">Services:</span>
+                      <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-metallic-gray-700">
+                        <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Services:</span>
                         <div className="mt-2 flex flex-wrap gap-1">
                           {(matter as any).associatedServices.map((service: any, index: number) => (
                             <span
                               key={service.id || index}
-                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300"
                               title={service.description || service.name}
                             >
                               {service.name}
@@ -299,12 +325,12 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
               <CardContent className="pt-0">
                 {/* Basic Financial Info */}
                 {matter.wip_value && matter.wip_value > 0 && (
-                  <div className="mb-4 p-3 bg-neutral-50 rounded-lg">
+                  <div className="mb-4 p-3 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
                     <div className="text-center">
-                      <div className="text-lg font-semibold text-neutral-900">
+                      <div className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
                         R{(matter.wip_value || 0).toLocaleString()}
                       </div>
-                      <div className="text-xs text-neutral-600">Work in Progress</div>
+                      <div className="text-xs text-neutral-600 dark:text-neutral-400">Work in Progress</div>
                     </div>
                   </div>
                 )}
@@ -330,6 +356,20 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                     <Edit className="w-4 h-4" />
                     Edit
                   </Button>
+
+                  {/* Reverse Conversion Button - only show for matters converted from pro forma */}
+                  {(matter as any).source_proforma_id && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleReverseConversion(matter)}
+                      className="flex items-center gap-2 text-amber-600 dark:text-amber-400 border-amber-300 dark:border-amber-700 hover:bg-amber-50 dark:hover:bg-amber-950/30 hover:border-amber-400 dark:hover:border-amber-600"
+                      title="Reverse conversion back to pro forma"
+                    >
+                      <Undo2 className="w-4 h-4" />
+                      Reverse
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -337,22 +377,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         )}
       </div>
 
-      {/* New Matter Modal */}
-      <NewMatterMultiStep
-        isOpen={showNewMatterModal}
-        onClose={() => setShowNewMatterModal(false)}
-        onComplete={async (data) => {
-          try {
-            const newMatter = await matterApiService.createMatter(data);
-            setMatters(prev => [newMatter, ...prev]);
-            setShowNewMatterModal(false);
-            toast.success(`Matter "${newMatter.title}" created successfully`);
-          } catch (error) {
-            console.error('Error creating matter:', error);
-            toast.error('Failed to create matter');
-          }
-        }}
-      />
+
     </div>
   );
 };

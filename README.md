@@ -1,57 +1,145 @@
-# LexoHub - Streamlined Billing Workflow
+# LexoHub - Legal Practice Management System
 
-**Core Features:** Matters → Pro Forma → Invoices  
-**Status:** Production Ready  
-**Version:** 2.0 (Streamlined)
+## 🎯 The 3-Step Workflow
 
-A modern practice intelligence platform for legal professionals, built with React, TypeScript, and Tailwind CSS.
+```
+Step 1: PRO FORMA (Quote) → Step 2: MATTER (Conversion) → Step 3: INVOICE (Billing)
+```
 
-## Development
+**The workflow ALWAYS starts with Pro Forma. You cannot create matters directly.**
 
-### Development Constitution
+---
 
-Before contributing to this codebase, please read and follow the [LexoHub Development Constitution](./LEXO_CONSTITUTION.md). This document contains essential guidelines for maintaining code quality, consistency, and architectural integrity.
+## 📚 Documentation
 
-### Key Principles
+### ⭐ SYSTEM_PROMPT.md - **USE THIS ONLY**
 
-- **Consistency**: Follow established patterns and design tokens
-- **Scalability**: Build reusable, composable components
-- **Robustness**: Implement proper error handling and accessibility
-- **Type Safety**: Leverage TypeScript for better developer experience
+**This is your ONLY system prompt document.**
 
-### Getting Started
+Use `SYSTEM_PROMPT.md` for:
+- ✅ All AI interactions
+- ✅ Feature validation
+- ✅ Code reviews
+- ✅ Enhancement requests
+- ✅ Architecture decisions
 
-1. Install dependencies:
-   ```bash
-   npm install
-   ```
+**Do not create or use any other system prompt documents.**
 
-2. Start the development server:
-   ```bash
-   npm run dev
-   ```
+---
 
-3. Review the constitution before making changes:
-   - [LEXO_CONSTITUTION.md](./LEXO_CONSTITUTION.md)
+## 🗄️ Database Setup
 
-### Environment Variables
+### Step 1: Wipe Database
+Run `WIPE_AND_RESET_DATABASE.sql` in Supabase SQL Editor
 
-Configure a `.env` file based on `.env.example`.
+### Step 2: Apply Fresh Schema
+Run `supabase/migrations/20250101000000_fresh_core_schema.sql` in Supabase SQL Editor
 
-- `VITE_DEMO_JUNIOR_EMAIL` and `VITE_DEMO_SENIOR_EMAIL` for demo users
-- `VITE_AUTH_SIGNIN_MAX_ATTEMPTS` and `VITE_AUTH_SIGNIN_WINDOW_MS` to tune sign-in rate limiting
-- `VITE_AUTH_SIGNUP_MAX_ATTEMPTS` and `VITE_AUTH_SIGNUP_WINDOW_MS` to tune sign-up rate limiting
+### Step 3: Regenerate Types
+```bash
+supabase gen types typescript --project-id ecaamkrcsjrcjmcjshlu > types/database.ts
+```
 
-### Authentication
+### Step 4: Start Development
+```bash
+npm run dev
+```
 
-- Supports standard email/password and passwordless “magic link” sign-in
-- Error messages are mapped to user-friendly text for common scenarios
+---
 
-### Architecture Overview
+## 🚀 Quick Start
 
-- **Components**: All UI components are defined in `src/App.tsx`
-- **Types**: Data models and interfaces in `src/types/index.ts`
-- **Styling**: Design system tokens in `tailwind.config.js`
-- **State**: React Query for server state, React hooks for local state
+1. Create Pro Forma (quote)
+2. Send to attorney
+3. When accepted, convert to Matter
+4. Log time and expenses
+5. Generate Invoice from WIP
+6. Record payments
 
-For detailed architectural guidelines and development standards, see the [Development Constitution](./LEXO_CONSTITUTION.md).
+---
+
+## 🛡️ Rules
+
+1. **Pro Forma ALWAYS comes first** - No creating matters directly
+2. **Only 3 core features** - Pro Forma, Matter, Invoice
+3. **Remote database only** - No local databases
+4. **Validate against SYSTEM_PROMPT.md** - For all changes
+
+---
+
+## 📁 Core Structure
+
+- **Services:** 12 files (see SYSTEM_PROMPT.md)
+- **Pages:** 7 files (see SYSTEM_PROMPT.md)
+- **Database:** 11 tables (see SYSTEM_PROMPT.md)
+  - Core: 8 tables (advocates, proforma_requests, matters, time_entries, expenses, invoices, payments, user_preferences)
+  - Rate Cards: 3 tables (rate_cards, standard_service_templates, service_categories)
+
+---
+
+## 💰 Rate Cards Feature
+
+Rate Cards enhance the 3-step workflow with standardized pricing:
+
+### Integration Points
+1. **Pro Forma (Step 1):** Auto-populate service prices when creating quotes
+2. **Matter (Step 2):** Consistent hourly rates for time tracking
+3. **Invoice (Step 3):** Standardized pricing for billing
+
+### Key Features
+- Pre-configured South African legal service templates
+- Custom rate card creation
+- Service categorization (consultation, research, drafting, court appearance, etc.)
+- Hourly and fixed-fee pricing options
+- Matter-type specific pricing
+
+### Database Tables
+- `rate_cards` - Advocate-specific pricing templates
+- `standard_service_templates` - Pre-configured legal service templates
+- `service_categories` - Service category definitions
+
+---
+
+## 🎨 Theme System
+
+LexoHub features a centralized theme management system with dynamic light/dark mode support:
+
+### Features
+- **CSS Variables-Based:** All colors use CSS custom properties for instant theme switching
+- **No Hard-Coded Colors:** Flexible system supports future theme additions
+- **Automatic Adaptation:** All UI components (cards, buttons, menus, etc.) dynamically respond to theme changes
+- **System Preference Detection:** Respects user's OS theme preference
+- **Persistent Selection:** Theme choice saved in localStorage
+
+### Theme Files
+- `src/styles/theme-variables.css` - Centralized color definitions
+- `src/styles/theme-components.css` - Reusable themed component classes
+- `src/contexts/ThemeContext.tsx` - Theme state management
+- `src/hooks/useThemeClasses.ts` - Theme utility hook
+
+### Usage
+```tsx
+import { useTheme } from './contexts/ThemeContext';
+import { useThemeClasses } from './hooks/useThemeClasses';
+
+// Toggle theme
+const { theme, setTheme, toggleTheme } = useTheme();
+
+// Use theme classes
+const { themeClasses } = useThemeClasses();
+<div className={themeClasses.card}>Content</div>
+```
+
+### Documentation
+- **Implementation Guide:** `DARK_MODE_IMPLEMENTATION.md`
+- **Verification Report:** `DARK_MODE_VERIFICATION.md`
+
+---
+
+## 🔗 Links
+
+- **Supabase Dashboard:** https://supabase.com/dashboard/project/ecaamkrcsjrcjmcjshlu
+- **System Prompt:** `SYSTEM_PROMPT.md`
+- **Database Wipe:** `WIPE_AND_RESET_DATABASE.sql`
+- **Fresh Schema:** `supabase/migrations/20250101000000_fresh_core_schema.sql`
+- **Rate Cards Migration:** `supabase/migrations/20250107000005_add_rate_cards_tables.sql`

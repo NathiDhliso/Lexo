@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Briefcase, FileText, Receipt, Eye, ExternalLink } from 'lucide-react';
-import { Button } from '../../design-system/components';
+import { Button } from '../design-system/components';
 
 export interface RelatedDocument {
   id: string;

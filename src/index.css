@@ -1,3 +1,6 @@
+@import './styles/theme-variables.css';
+@import './styles/theme-components.css';
+@import './styles/dark-mode.css';
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&family=Libre+Baskerville:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @tailwind base;
 @tailwind components;
@@ -14,10 +17,12 @@
     --animation-timing: cubic-bezier(0.4, 0, 0.2, 1);
   }
 
-  /* Dark Mode Variables (prepare for future) */
   [data-theme='dark'] {
     --color-primary: theme('colors.mpondo-gold.400');
     --color-secondary: theme('colors.judicial-blue.400');
+    --bg-gradient-start: #1a1d20;
+    --bg-gradient-mid: #2d3236;
+    --bg-gradient-end: #1a1d20;
   }
 
   /* Base Typography & Colors */
@@ -43,6 +48,12 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  .dark body {
+    @apply text-neutral-100 antialiased;
+    background: linear-gradient(135deg, var(--bg-gradient-start) 0%, var(--bg-gradient-mid) 50%, var(--bg-gradient-end) 100%);
+    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -93,7 +104,6 @@
     }
   }
 
-  /* Scrollbar Styling */
   ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -109,6 +119,18 @@
 
   ::-webkit-scrollbar-thumb:hover {
     @apply bg-neutral-500;
+  }
+
+  .dark ::-webkit-scrollbar-track {
+    @apply bg-metallic-gray-900;
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    @apply bg-metallic-gray-600 rounded;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    @apply bg-metallic-gray-500;
   }
 
   /* Form Input Defaults */
@@ -178,6 +200,10 @@
   .card {
     @apply bg-white rounded-lg border border-neutral-200 shadow-soft p-4 sm:p-5
            hover:shadow-md transition-shadow duration-200;
+  }
+
+  .dark .card {
+    @apply bg-metallic-gray-800 border-metallic-gray-700 shadow-lg;
   }
 
   .badge {

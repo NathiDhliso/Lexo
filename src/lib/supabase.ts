@@ -34,27 +34,41 @@ export const supabase = createClient(resolvedUrl, supabaseAnonKey, {
       let finalUrl = url;
       try {
         const u = new URL(url);
-        // Do not modify URL query params; rely on headers for auth
         finalUrl = url;
       } catch {
         finalUrl = url;
       }
 
-      // Preserve original headers (including Content-Type) and add ours
-      const headers = new Headers(init?.headers || {});
-      headers.set('x-application-name', 'lexo');
+      // Merge headers from Request object (if provided) and init.headers to avoid dropping Authorization
+      const req = typeof input !== 'string' && (input as any) instanceof Request ? (input as Request) : undefined;
+      const mergedHeaders = new Headers();
+      if (req) {
+        req.headers.forEach((value, key) => mergedHeaders.set(key, value));
+      }
+      if (init?.headers) {
+        new Headers(init.headers as any).forEach((value, key) => mergedHeaders.set(key, value));
+      }
 
-      // Only inject the apikey header for Supabase domains
+      // Add our custom headers (preserving existing ones like Authorization)
+      mergedHeaders.set('x-application-name', 'lexo');
       try {
         const h = new URL(finalUrl).hostname;
         if (h.endsWith('.supabase.co')) {
-          headers.set('apikey', supabaseAnonKey);
+          mergedHeaders.set('apikey', supabaseAnonKey);
         }
       } catch {
         // ignore hostname parsing errors
       }
 
-      const response = await fetch(finalUrl, { ...init, headers });
+      // Debug: do NOT log secrets; just indicate presence of critical headers
+      const hasAuthorization = mergedHeaders.has('authorization') || mergedHeaders.has('Authorization');
+      const hasApiKey = mergedHeaders.has('apikey');
+      console.debug('[Supabase] Header presence', { url: finalUrl, hasAuthorization, hasApiKey });
+
+      // Build final Request to preserve method/body/credentials where applicable
+      const finalRequest = new Request(req ?? finalUrl, { ...init, headers: mergedHeaders });
+
+      const response = await fetch(finalRequest);
       try {
         const u2 = new URL(finalUrl);
         const isSupabaseDomain = /.supabase\.co$/i.test(u2.hostname);
@@ -194,49 +208,4 @@ export type Inserts<T extends keyof Database['public']['Tables']> =
 export type Updates<T extends keyof Database['public']['Tables']> = 
   Database['public']['Tables'][T]['Update'];
 
-// Ensure our custom fetch only touches Supabase HTTP(S) URLs, and avoid printing noisy logs
-const isSupabaseUrl = (url: string) => {
-  try {
-    const u = new URL(url, window.location.origin);
-    return /\.supabase\.co$/i.test(u.hostname);
-  } catch {
-    return false;
-  }
-};
-
-const originalFetch = window.fetch.bind(window);
-window.fetch = async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
-  try {
-    const url = typeof input === 'string' ? input : (input instanceof URL ? input.toString() : (input as Request).url);
-    if (!isSupabaseUrl(url)) {
-      return originalFetch(input, init);
-    }
-
-    const headers = new Headers(init?.headers || {});
-    const apiKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-    if (apiKey && !headers.has('apikey')) {
-      headers.set('apikey', apiKey);
-    }
-    if (!headers.has('x-application-name')) {
-      headers.set('x-application-name', 'LexoHub');
-    }
-
-    const modifiedInit: RequestInit = { ...init, headers };
-
-    // Do not append apikey as query param; rely on headers only
-    const u = new URL(url);
-    const isAuthEndpoint = /\/auth\/v1\//.test(u.pathname);
-
-    const resp = await originalFetch(u.toString(), modifiedInit);
-    if (isAuthEndpoint && !resp.ok) {
-      let bodyText = '';
-      try { bodyText = await resp.clone().text(); } catch {}
-      console.warn('[Supabase auth] Request failed', { status: resp.status, path: u.pathname, message: bodyText?.slice(0, 500) });
-    }
-    return resp;
-  } catch (err) {
-    // Fail open so non-supabase or unexpected inputs still work
-    return originalFetch(input, init);
-  }
-};
+// Global window.fetch override removed — Supabase client configuration handles headers correctly

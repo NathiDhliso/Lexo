@@ -14,7 +14,7 @@ import {
   X
 } from 'lucide-react';
 import { format } from 'date-fns';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input } from '../../design-system/components';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input } from '../design-system/components';
 import { formatRand } from '../../lib/currency';
 import { InvoiceService } from '../../services/api/invoices.service';
 import { toast } from 'react-hot-toast';

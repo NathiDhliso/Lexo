@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, FileText, Clock, Calculator, AlertCircle, Sparkles, Eye, Plus, Trash2, Download, Timer, Receipt, Settings, DollarSign, Percent } from 'lucide-react';
+import { X, FileText, Clock, Calculator, AlertCircle, Sparkles, Eye, Plus, Trash2, Download, Timer, Receipt, Settings, DollarSign, Percent, CreditCard } from 'lucide-react';
+import RateCardSelector, { SelectedService } from '../pricing/RateCardSelector';
+import { rateCardService, ProFormaEstimate } from '../../services/rate-card.service';
+import { PricingCalculator, ServiceItem, TimeEntry, Expense, DiscountConfig } from '../../utils/PricingCalculator';
 
 interface TimeEntry {
   id: string;
@@ -26,6 +29,7 @@ interface Matter {
   bar: string;
   wipValue: number;
   disbursements: number;
+  matterType?: string;
 }
 
 interface InvoiceGenerationModalProps {
@@ -69,6 +73,12 @@ export function InvoiceGenerationModal({
     category: 'other',
     date: new Date().toISOString().split('T')[0]
   });
+  
+  // Rate card related state
+  const [selectedServices, setSelectedServices] = useState<SelectedService[]>([]);
+  const [rateCardEstimate, setRateCardEstimate] = useState<ProFormaEstimate | null>(null);
+  const [useRateCards, setUseRateCards] = useState(false);
+  const [loadingRateCards, setLoadingRateCards] = useState(false);
 
   const handleEntryToggle = (entryId) => {
     setSelectedEntries(prev => 
@@ -113,12 +123,42 @@ export function InvoiceGenerationModal({
     setShowExpenseForm(false);
   };
 
+  // Rate card services handlers
+  const handleServicesChange = async (services: SelectedService[]) => {
+    setSelectedServices(services);
+    
+    if (services.length > 0 && matter.matterType) {
+      setLoadingRateCards(true);
+      try {
+        const estimate = await rateCardService.generateProFormaEstimate(
+          matter.matterType,
+          services.map(s => s.id)
+        );
+        setRateCardEstimate(estimate);
+      } catch (error) {
+        console.error('Failed to generate rate card estimate:', error);
+        setRateCardEstimate(null);
+      } finally {
+        setLoadingRateCards(false);
+      }
+    } else {
+      setRateCardEstimate(null);
+    }
+  };
+
+  const toggleRateCards = () => {
+    setUseRateCards(!useRateCards);
+    if (!useRateCards && selectedServices.length === 0) {
+      setActiveTab('services');
+    }
+  };
+
   const handleRemoveExpense = (expenseId) => {
     setExpenses(prev => prev.filter(e => e.id !== expenseId));
     setSelectedExpenses(prev => prev.filter(id => id !== expenseId));
   };
 
-  const calculateTotals = () => {
+  const calculateTotals = useCallback(() => {
     const selectedTimeEntries = timeEntries.filter(entry => 
       selectedEntries.includes(entry.id)
     );
@@ -127,42 +167,70 @@ export function InvoiceGenerationModal({
       selectedExpenses.includes(expense.id)
     );
     
+    // Convert data to PricingCalculator format
+    const services: ServiceItem[] = useRateCards && rateCardEstimate 
+      ? rateCardEstimate.lineItems.map(item => ({
+          id: item.id,
+          name: item.serviceName,
+          pricing_type: item.pricingType as 'hourly' | 'fixed' | 'contingency',
+          hourly_rate: item.hourlyRate,
+          fixed_fee: item.fixedFee,
+          estimated_hours: item.estimatedHours,
+          quantity: item.quantity,
+          description: item.description,
+        }))
+      : [];
+
+    const timeEntriesForCalc: TimeEntry[] = selectedTimeEntries.map(entry => ({
+      id: entry.id,
+      hours: entry.duration / 60,
+      rate: hourlyRateOverride ? parseFloat(hourlyRateOverride) : entry.rate,
+      description: entry.description,
+      date: entry.date,
+    }));
+
+    const expenseItems: Expense[] = selectedExpenseItems.map(expense => ({
+      id: expense.id,
+      amount: expense.amount,
+      description: expense.description,
+      category: expense.category || 'general',
+      vat_applicable: true,
+    }));
+
+    const discountValue = discountType === 'percentage' ? discountPercentage : discountAmount;
+    const discount: DiscountConfig | undefined = discountValue > 0 ? {
+      type: discountType as 'percentage' | 'fixed',
+      value: discountValue,
+      description: 'Invoice discount',
+    } : undefined;
+
+    // Calculate using PricingCalculator
+    const result = PricingCalculator.calculate(
+      services,
+      timeEntriesForCalc,
+      expenseItems,
+      discount
+    );
+
     const totalHours = selectedTimeEntries.reduce((sum, entry) => 
       sum + (entry.duration / 60), 0
     );
     
-    const rate = hourlyRateOverride ? parseFloat(hourlyRateOverride) : 3500;
-    const totalFees = selectedTimeEntries.reduce((sum, entry) => 
-      sum + ((entry.duration / 60) * rate), 0
-    );
-    
-    const totalExpenses = selectedExpenseItems.reduce((sum, expense) => 
-      sum + expense.amount, 0
-    );
-    
-    let discountValue = 0;
-    if (discountType === 'percentage') {
-      discountValue = totalFees * (discountPercentage / 100);
-    } else {
-      discountValue = discountAmount;
-    }
-    
-    const discountedFees = Math.max(0, totalFees - discountValue);
     const disbursements = matter.disbursements || 0;
-    const vatAmount = discountedFees * 0.15;
-    const totalAmount = discountedFees + vatAmount + disbursements + totalExpenses;
+    const totalAmount = result.total + disbursements;
 
     return {
       totalHours,
-      totalFees,
-      totalExpenses,
-      discountValue,
-      discountedFees,
+      totalFees: result.timeEntriesTotal,
+      totalExpenses: result.expensesTotal,
+      rateCardTotal: result.servicesTotal,
+      discountValue: result.discountAmount,
+      discountedFees: result.timeEntriesTotal + result.servicesTotal - result.discountAmount,
       disbursements,
-      vatAmount,
+      vatAmount: result.vatAmount,
       totalAmount
     };
-  };
+  }, [timeEntries, selectedEntries, expenses, selectedExpenses, discountAmount, discountPercentage, discountType, hourlyRateOverride, matter.disbursements, useRateCards, rateCardEstimate]);
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -209,6 +277,7 @@ export function InvoiceGenerationModal({
                   {[
                     { id: 'time', label: 'Time Entries', icon: Timer, color: 'blue' },
                     { id: 'expenses', label: 'Expenses', icon: Receipt, color: 'green' },
+                    { id: 'services', label: 'Services', icon: CreditCard, color: 'indigo' },
                     { id: 'settings', label: 'Settings', icon: Settings, color: 'purple' }
                   ].map(({ id, label, icon: Icon, color }) => (
                     <button
@@ -424,6 +493,81 @@ export function InvoiceGenerationModal({
               </div>
             )}
 
+            {/* Services Tab */}
+            {activeTab === 'services' && (
+              <div className="space-y-4">
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <CreditCard className="w-5 h-5 text-indigo-600" />
+                    <div>
+                      <h3 className="font-semibold text-indigo-900">Rate Card Services</h3>
+                      <p className="text-sm text-indigo-700">Add standardized services from rate cards</p>
+                    </div>
+                  </div>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={useRateCards}
+                      onChange={toggleRateCards}
+                      className="rounded text-amber-600 focus:ring-amber-500"
+                    />
+                    <span className="text-sm font-medium text-gray-700">
+                      Include rate card services
+                    </span>
+                  </label>
+                </div>
+
+                {useRateCards ? (
+                  <div className="space-y-4">
+                    <RateCardSelector
+                      matterType={matter.matterType || 'general'}
+                      onServicesChange={handleServicesChange}
+                      selectedServices={selectedServices}
+                    />
+                    
+                    {loadingRateCards && (
+                      <div className="text-center py-4">
+                        <div className="inline-flex items-center">
+                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-amber-600 mr-2"></div>
+                          <span className="text-sm text-gray-600">Calculating estimate...</span>
+                        </div>
+                      </div>
+                    )}
+
+                    {rateCardEstimate && (
+                      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                        <h4 className="font-medium text-indigo-900 mb-3">Rate Card Estimate</h4>
+                        <div className="space-y-2">
+                          {rateCardEstimate.lineItems.map((item, index) => (
+                            <div key={index} className="flex justify-between items-center text-sm">
+                              <span className="text-indigo-800">{item.description}</span>
+                              <span className="font-medium text-indigo-900">
+                                {formatRand(item.totalAmount)}
+                              </span>
+                            </div>
+                          ))}
+                          <div className="border-t border-indigo-200 pt-2 mt-2">
+                            <div className="flex justify-between items-center font-medium">
+                              <span className="text-indigo-900">Total Services</span>
+                              <span className="text-indigo-900">
+                                {formatRand(rateCardEstimate.totalAmount)}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="text-center py-8 text-gray-500">
+                    <CreditCard className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                    <p className="text-lg font-medium">Rate card services not included</p>
+                    <p className="text-sm">Enable the checkbox above to add standardized services</p>
+                  </div>
+                )}
+              </div>
+            )}
+
             {/* Settings Tab */}
             {activeTab === 'settings' && (
               <div className="space-y-6">
@@ -581,6 +725,12 @@ export function InvoiceGenerationModal({
                   <div className="flex justify-between">
                     <span className="text-gray-600">Expenses:</span>
                     <span className="font-medium">{formatRand(totals.totalExpenses)}</span>
+                  </div>
+                )}
+                {useRateCards && totals.rateCardTotal > 0 && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Rate Card Services:</span>
+                    <span className="font-medium">{formatRand(totals.rateCardTotal)}</span>
                   </div>
                 )}
                 {totals.discountValue > 0 && (

@@ -1,4 +1,9 @@
-import { BaseApiService } from "./api/base-api.service";
+/**
+ * Rate Card Service - Full implementation with database integration
+ */
+
+import { supabase } from '../lib/supabase';
+import { toast } from 'react-hot-toast';
 
 export interface RateCard {
   id: string;
@@ -26,7 +31,7 @@ export interface StandardServiceTemplate {
   template_name: string;
   template_description?: string;
   service_category: ServiceCategory;
-  matter_types: string[];
+  matter_types?: string[];
   default_hourly_rate?: number;
   default_fixed_fee?: number;
   estimated_hours?: number;
@@ -37,15 +42,15 @@ export interface StandardServiceTemplate {
 }
 
 export type ServiceCategory = 
-  | 'consultation'
-  | 'research'
-  | 'drafting'
-  | 'court_appearance'
+  | 'consultation' 
+  | 'research' 
+  | 'drafting' 
+  | 'court_appearance' 
   | 'negotiation'
-  | 'document_review'
-  | 'correspondence'
-  | 'filing'
-  | 'travel'
+  | 'document_review' 
+  | 'correspondence' 
+  | 'filing' 
+  | 'travel' 
   | 'other';
 
 export type PricingType = 'hourly' | 'fixed' | 'per_item' | 'percentage';
@@ -66,8 +71,12 @@ export interface CreateRateCardRequest {
   requires_approval?: boolean;
 }
 
-export interface UpdateRateCardRequest extends Partial<CreateRateCardRequest> {
-  is_active?: boolean;
+export interface ProFormaEstimate {
+  line_items: ProFormaLineItem[];
+  subtotal: number;
+  vat_amount: number;
+  total_amount: number;
+  estimated_hours: number;
 }
 
 export interface ProFormaLineItem {
@@ -80,190 +89,189 @@ export interface ProFormaLineItem {
   estimated_hours?: number;
 }
 
-export interface ProFormaEstimate {
-  line_items: ProFormaLineItem[];
-  subtotal: number;
-  vat_amount: number;
-  total_amount: number;
-  estimated_total_hours: number;
+export interface RateCardFilters {
+  service_category?: ServiceCategory;
   matter_type?: string;
+  pricing_type?: PricingType;
+  is_active?: boolean;
+  is_default?: boolean;
 }
 
-class RateCardService extends BaseApiService<RateCard> {
-  constructor() {
-    super('rate_cards');
-  }
-
+class RateCardService {
   /**
-   * Get all rate cards for the current advocate
+   * Get rate cards for the current advocate with optional filters
    */
-  async getRateCards(filters?: {
-    service_category?: ServiceCategory;
-    matter_type?: string;
-    is_active?: boolean;
-  }): Promise<RateCard[]> {
-    // Get current user
-    const { data: { user }, error: userError } = await this.supabase.auth.getUser();
-    
-    if (userError || !user?.id) {
-      console.error('Authentication error:', userError);
-      throw new Error('User not authenticated');
-    }
+  async getRateCards(filters?: RateCardFilters): Promise<RateCard[]> {
+    try {
+      let query = supabase
+        .from('rate_cards')
+        .select('*')
+        .order('service_name');
 
-    let query = this.supabase
-      .from(this.tableName)
-      .select('*')
-      .eq('advocate_id', user.id)
-      .order('service_category', { ascending: true })
-      .order('service_name', { ascending: true });
+      // Apply filters
+      if (filters?.service_category) {
+        query = query.eq('service_category', filters.service_category);
+      }
+      if (filters?.matter_type) {
+        query = query.eq('matter_type', filters.matter_type);
+      }
+      if (filters?.pricing_type) {
+        query = query.eq('pricing_type', filters.pricing_type);
+      }
+      if (filters?.is_active !== undefined) {
+        query = query.eq('is_active', filters.is_active);
+      }
+      if (filters?.is_default !== undefined) {
+        query = query.eq('is_default', filters.is_default);
+      }
 
-    if (filters?.service_category) {
-      query = query.eq('service_category', filters.service_category);
-    }
+      const { data, error } = await query;
 
-    if (filters?.matter_type) {
-      query = query.eq('matter_type', filters.matter_type);
-    }
-
-    if (filters?.is_active !== undefined) {
-      query = query.eq('is_active', filters.is_active);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
       console.error('Error fetching rate cards:', error);
-      throw new Error(`Failed to fetch rate cards: ${error.message}`);
+      toast.error('Failed to load rate cards');
+      return [];
     }
-
-    return data || [];
   }
 
   /**
-   * Get standard service templates
+   * Get standard service templates with optional filters
    */
-  async getStandardServiceTemplates(filters?: {
+  async getStandardServiceTemplates(filters?: { 
     service_category?: ServiceCategory;
     matter_type?: string;
     bar_association?: string;
   }): Promise<StandardServiceTemplate[]> {
-    let query = this.supabase
-      .from('standard_service_templates')
-      .select('*')
-      .order('service_category', { ascending: true })
-      .order('template_name', { ascending: true });
+    try {
+      let query = supabase
+        .from('standard_service_templates')
+        .select('*')
+        .order('template_name');
 
-    if (filters?.service_category) {
-      query = query.eq('service_category', filters.service_category);
+      if (filters?.service_category) {
+        query = query.eq('service_category', filters.service_category);
+      }
+      if (filters?.matter_type) {
+        query = query.contains('matter_types', [filters.matter_type]);
+      }
+      if (filters?.bar_association) {
+        query = query.or(`bar_association.eq.${filters.bar_association},bar_association.is.null`);
+      }
+
+      const { data, error } = await query;
+
+      if (error) throw error;
+      return data || [];
+    } catch (error) {
+      console.error('Error fetching service templates:', error);
+      toast.error('Failed to load service templates');
+      return [];
     }
-
-    if (filters?.matter_type) {
-      query = query.contains('matter_types', [filters.matter_type]);
-    }
-
-    if (filters?.bar_association) {
-      query = query.or(`bar_association.eq.${filters.bar_association},bar_association.is.null`);
-    }
-
-    const { data, error } = await query;
-
-    if (error) {
-      console.error('Error fetching standard service templates:', error);
-      throw new Error(`Failed to fetch standard service templates: ${error.message}`);
-    }
-
-    return data || [];
   }
 
   /**
    * Create a new rate card
    */
-  async createRateCard(rateCardData: CreateRateCardRequest): Promise<RateCard> {
-    // Get current user
-    const { data: { user }, error: userError } = await this.supabase.auth.getUser();
-    
-    if (userError || !user?.id) {
-      console.error('Authentication error:', userError);
-      throw new Error('User not authenticated');
-    }
+  async createRateCard(request: CreateRateCardRequest): Promise<RateCard> {
+    try {
+      const { data: user } = await supabase.auth.getUser();
+      if (!user.user) throw new Error('User not authenticated');
 
-    // Add advocate_id to the rate card data
-    const rateCardWithAdvocate = {
-      ...rateCardData,
-      advocate_id: user.id
-    };
+      const { data, error } = await supabase
+        .from('rate_cards')
+        .insert({
+          advocate_id: user.user.id,
+          ...request,
+          is_active: true
+        })
+        .select()
+        .single();
 
-    const { data, error } = await this.supabase
-      .from(this.tableName)
-      .insert([rateCardWithAdvocate])
-      .select()
-      .single();
-
-    if (error) {
+      if (error) throw error;
+      toast.success('Rate card created successfully');
+      return data;
+    } catch (error) {
       console.error('Error creating rate card:', error);
-      throw new Error(`Failed to create rate card: ${error.message}`);
+      const message = error instanceof Error ? error.message : 'Failed to create rate card';
+      toast.error(message);
+      throw error;
     }
-
-    return data;
-  }
-
-  /**
-   * Update an existing rate card
-   */
-  async updateRateCard(id: string, updates: UpdateRateCardRequest): Promise<RateCard> {
-    // Get current user
-    const { data: { user }, error: userError } = await this.supabase.auth.getUser();
-    
-    if (userError || !user?.id) {
-      console.error('Authentication error:', userError);
-      throw new Error('User not authenticated');
-    }
-
-    const { data, error } = await this.supabase
-      .from(this.tableName)
-      .update(updates)
-      .eq('id', id)
-      .eq('advocate_id', user.id)
-      .select()
-      .single();
-
-    if (error) {
-      console.error('Error updating rate card:', error);
-      throw new Error(`Failed to update rate card: ${error.message}`);
-    }
-
-    return data;
   }
 
   /**
    * Create rate card from template
    */
-  async createFromTemplate(templateId: string, overrides?: Partial<CreateRateCardRequest>): Promise<RateCard> {
-    // Get the template
-    const { data: template, error: templateError } = await this.supabase
-      .from('standard_service_templates')
-      .select('*')
-      .eq('id', templateId)
-      .single();
+  async createFromTemplate(templateId: string): Promise<RateCard> {
+    try {
+      const template = await this.getTemplateById(templateId);
+      if (!template) throw new Error('Template not found');
 
-    if (templateError || !template) {
-      throw new Error('Template not found');
+      const rateCardData: CreateRateCardRequest = {
+        service_name: template.template_name,
+        service_description: template.template_description,
+        service_category: template.service_category,
+        pricing_type: template.default_hourly_rate ? 'hourly' : 'fixed',
+        hourly_rate: template.default_hourly_rate,
+        fixed_fee: template.default_fixed_fee,
+        estimated_hours_min: template.estimated_hours,
+        estimated_hours_max: template.estimated_hours,
+        is_default: false,
+        requires_approval: false
+      };
+
+      return await this.createRateCard(rateCardData);
+    } catch (error) {
+      console.error('Error creating rate card from template:', error);
+      throw error;
     }
+  }
 
-    // Create rate card from template
-    const rateCardData: CreateRateCardRequest = {
-      service_name: template.template_name,
-      service_description: template.template_description || undefined,
-      service_category: template.service_category,
-      pricing_type: template.default_fixed_fee ? 'fixed' : 'hourly',
-      hourly_rate: template.default_hourly_rate || undefined,
-      fixed_fee: template.default_fixed_fee || undefined,
-      estimated_hours_min: template.estimated_hours || undefined,
-      estimated_hours_max: template.estimated_hours || undefined,
-      ...overrides
-    };
+  /**
+   * Update an existing rate card
+   */
+  async updateRateCard(id: string, updates: Partial<CreateRateCardRequest>): Promise<RateCard> {
+    try {
+      const { data, error } = await supabase
+        .from('rate_cards')
+        .update({
+          ...updates,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', id)
+        .select()
+        .single();
 
-    return this.createRateCard(rateCardData);
+      if (error) throw error;
+      toast.success('Rate card updated successfully');
+      return data;
+    } catch (error) {
+      console.error('Error updating rate card:', error);
+      const message = error instanceof Error ? error.message : 'Failed to update rate card';
+      toast.error(message);
+      throw error;
+    }
+  }
+
+  /**
+   * Delete a rate card
+   */
+  async delete(id: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('rate_cards')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      toast.success('Rate card deleted successfully');
+    } catch (error) {
+      console.error('Error deleting rate card:', error);
+      const message = error instanceof Error ? error.message : 'Failed to delete rate card';
+      toast.error(message);
+      throw error;
+    }
   }
 
   /**
@@ -272,166 +280,167 @@ class RateCardService extends BaseApiService<RateCard> {
   async generateProFormaEstimate(
     matterType: string,
     selectedServices?: string[],
-    advocateHourlyRate?: number
+    fallbackHourlyRate: number = 2500
   ): Promise<ProFormaEstimate> {
-    // Get advocate's rate cards
-    const rateCards = await this.getRateCards({ 
-      is_active: true,
-      matter_type: matterType 
-    });
-
-    // Get standard templates if no custom rate cards
-    let servicesToInclude: (RateCard | StandardServiceTemplate)[] = rateCards;
-    
-    if (rateCards.length === 0) {
-      const templates = await this.getStandardServiceTemplates({ 
+    try {
+      // Get relevant rate cards for the matter type
+      const rateCards = await this.getRateCards({ 
+        is_active: true,
         matter_type: matterType 
       });
-      servicesToInclude = templates;
-    }
 
-    // Filter by selected services if provided
-    if (selectedServices && selectedServices.length > 0) {
-      servicesToInclude = servicesToInclude.filter(service => 
-        selectedServices.includes('template_name' in service ? service.template_name : service.service_name)
-      );
-    }
+      // If no specific rate cards, get general ones
+      const generalCards = rateCards.length === 0 
+        ? await this.getRateCards({ is_active: true })
+        : rateCards;
 
-    // If no specific services selected, include default consultation and research
-    if (!selectedServices || selectedServices.length === 0) {
-      const defaultCategories: ServiceCategory[] = ['consultation', 'research'];
-      servicesToInclude = servicesToInclude.filter(service => 
-        defaultCategories.includes(service.service_category)
-      );
-    }
+      // Default service categories for pro forma
+      const defaultCategories: ServiceCategory[] = [
+        'consultation',
+        'research', 
+        'drafting',
+        'court_appearance'
+      ];
 
-    const lineItems: ProFormaLineItem[] = [];
-    let totalHours = 0;
+      const lineItems: ProFormaLineItem[] = [];
+      let totalHours = 0;
 
-    for (const service of servicesToInclude) {
-      const isTemplate = 'template_name' in service;
-      const serviceName = isTemplate ? service.template_name : service.service_name;
-      const description = isTemplate ? service.template_description : service.service_description;
-      
-      let unitPrice = 0;
-      let estimatedHours = 0;
+      for (const category of defaultCategories) {
+        // Find rate card for this category
+        const rateCard = generalCards.find(card => 
+          card.service_category === category && 
+          (!selectedServices || selectedServices.includes(card.id))
+        );
 
-      if (isTemplate) {
-        // Use template defaults
-        unitPrice = service.default_fixed_fee || (service.default_hourly_rate || advocateHourlyRate || 2500);
-        estimatedHours = service.estimated_hours || 1;
-      } else {
-        // Use rate card
-        if (service.pricing_type === 'fixed' && service.fixed_fee) {
-          unitPrice = service.fixed_fee;
-        } else if (service.hourly_rate) {
-          unitPrice = service.hourly_rate;
+        if (rateCard) {
+          const hours = rateCard.estimated_hours_min || 1;
+          const rate = rateCard.hourly_rate || rateCard.fixed_fee || fallbackHourlyRate;
+          const amount = rateCard.pricing_type === 'hourly' ? rate * hours : rate;
+
+          lineItems.push({
+            service_name: rateCard.service_name,
+            description: rateCard.service_description || `${category.replace('_', ' ')} services`,
+            quantity: rateCard.pricing_type === 'hourly' ? hours : 1,
+            unit_price: rate,
+            total_amount: amount,
+            service_category: category,
+            estimated_hours: hours
+          });
+
+          totalHours += hours;
         } else {
-          unitPrice = advocateHourlyRate || 2500;
+          // Fallback for missing rate cards
+          const hours = this.getDefaultHours(category);
+          const amount = fallbackHourlyRate * hours;
+
+          lineItems.push({
+            service_name: this.getDefaultServiceName(category),
+            description: `${category.replace('_', ' ')} services`,
+            quantity: hours,
+            unit_price: fallbackHourlyRate,
+            total_amount: amount,
+            service_category: category,
+            estimated_hours: hours
+          });
+
+          totalHours += hours;
         }
-        estimatedHours = service.estimated_hours_min || 1;
       }
 
-      // For hourly services, calculate total based on estimated hours
-      const quantity = service.service_category === 'court_appearance' ? 1 : estimatedHours;
-      const totalAmount = service.service_category === 'court_appearance' || 
-                         (service as RateCard).pricing_type === 'fixed' 
-                         ? unitPrice 
-                         : unitPrice * estimatedHours;
+      const subtotal = lineItems.reduce((sum, item) => sum + item.total_amount, 0);
+      const vatAmount = subtotal * 0.15;
+      const totalAmount = subtotal + vatAmount;
 
-      lineItems.push({
-        service_name: serviceName,
-        description: description || `${serviceName} services`,
-        quantity,
-        unit_price: unitPrice,
+      return {
+        line_items: lineItems,
+        subtotal,
+        vat_amount: vatAmount,
         total_amount: totalAmount,
-        service_category: service.service_category,
-        estimated_hours: estimatedHours
-      });
-
-      totalHours += estimatedHours;
+        estimated_hours: totalHours
+      };
+    } catch (error) {
+      console.error('Error generating pro forma estimate:', error);
+      throw error;
     }
+  }
 
-    const subtotal = lineItems.reduce((sum, item) => sum + item.total_amount, 0);
-    const vatAmount = subtotal * 0.15; // 15% VAT
-    const totalAmount = subtotal + vatAmount;
+  /**
+   * Get rate cards by service category
+   */
+  async getRateCardsByCategory(category: ServiceCategory): Promise<RateCard[]> {
+    return this.getRateCards({ service_category: category, is_active: true });
+  }
 
-    return {
-      line_items: lineItems,
-      subtotal,
-      vat_amount: vatAmount,
-      total_amount: totalAmount,
-      estimated_total_hours: totalHours,
-      matter_type: matterType
+  /**
+   * Get default rate card for a service category
+   */
+  async getDefaultRateCard(category: ServiceCategory): Promise<RateCard | null> {
+    try {
+      const { data, error } = await supabase
+        .from('rate_cards')
+        .select('*')
+        .eq('service_category', category)
+        .eq('is_default', true)
+        .eq('is_active', true)
+        .single();
+
+      if (error && error.code !== 'PGRST116') throw error;
+      return data || null;
+    } catch (error) {
+      console.error('Error fetching default rate card:', error);
+      return null;
+    }
+  }
+
+  /**
+   * Private helper methods
+   */
+  private async getTemplateById(id: string): Promise<StandardServiceTemplate | null> {
+    try {
+      const { data, error } = await supabase
+        .from('standard_service_templates')
+        .select('*')
+        .eq('id', id)
+        .single();
+
+      if (error) throw error;
+      return data;
+    } catch (error) {
+      console.error('Error fetching template:', error);
+      return null;
+    }
+  }
+
+  private getDefaultHours(category: ServiceCategory): number {
+    const defaultHours: Record<ServiceCategory, number> = {
+      consultation: 1,
+      research: 3,
+      drafting: 4,
+      court_appearance: 4,
+      negotiation: 2,
+      document_review: 2,
+      correspondence: 0.5,
+      filing: 1,
+      travel: 2,
+      other: 1
     };
+    return defaultHours[category] || 1;
   }
 
-  /**
-   * Get service categories with counts
-   */
-  async getServiceCategorySummary(): Promise<Array<{
-    category: ServiceCategory;
-    count: number;
-    avg_hourly_rate?: number;
-  }>> {
-    const { data, error } = await this.supabase
-      .from(this.tableName)
-      .select('service_category, hourly_rate')
-      .eq('is_active', true);
-
-    if (error) {
-      console.error('Error fetching service category summary:', error);
-      throw new Error(`Failed to fetch service category summary: ${error.message}`);
-    }
-
-    // Group by category and calculate averages
-    const summary = new Map<ServiceCategory, { count: number; rates: number[] }>();
-    
-    data?.forEach(item => {
-      const category = item.service_category as ServiceCategory;
-      if (!summary.has(category)) {
-        summary.set(category, { count: 0, rates: [] });
-      }
-      
-      const categoryData = summary.get(category)!;
-      categoryData.count++;
-      
-      if (item.hourly_rate) {
-        categoryData.rates.push(item.hourly_rate);
-      }
-    });
-
-    return Array.from(summary.entries()).map(([category, data]) => ({
-      category,
-      count: data.count,
-      avg_hourly_rate: data.rates.length > 0 
-        ? data.rates.reduce((sum, rate) => sum + rate, 0) / data.rates.length 
-        : undefined
-    }));
-  }
-
-  /**
-   * Delete a rate card (with authentication)
-   */
-  async delete(id: string): Promise<void> {
-    // Get current user
-    const { data: { user }, error: userError } = await this.supabase.auth.getUser();
-    
-    if (userError || !user?.id) {
-      console.error('Authentication error:', userError);
-      throw new Error('User not authenticated');
-    }
-
-    const { error } = await this.supabase
-      .from(this.tableName)
-      .delete()
-      .eq('id', id)
-      .eq('advocate_id', user.id);
-
-    if (error) {
-      console.error('Error deleting rate card:', error);
-      throw new Error(`Failed to delete rate card: ${error.message}`);
-    }
+  private getDefaultServiceName(category: ServiceCategory): string {
+    const defaultNames: Record<ServiceCategory, string> = {
+      consultation: 'Legal Consultation',
+      research: 'Legal Research',
+      drafting: 'Document Drafting',
+      court_appearance: 'Court Appearance',
+      negotiation: 'Negotiation Services',
+      document_review: 'Document Review',
+      correspondence: 'Legal Correspondence',
+      filing: 'Court Filing',
+      travel: 'Travel Time',
+      other: 'Other Legal Services'
+    };
+    return defaultNames[category] || 'Legal Services';
   }
 }
 

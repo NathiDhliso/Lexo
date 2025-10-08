@@ -5,6 +5,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import React from 'react';
 import { authService, type ExtendedUser, type UserMetadata } from '../services/auth.service';
+import { advocateService } from '../services/advocate.service';
 import type { AuthError } from '@supabase/supabase-js';
 
 export interface AuthContextType {
@@ -32,13 +33,13 @@ export interface AuthContextType {
   hasPermission: (permission: string) => boolean;
 }
 
-export const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
   children: ReactNode;
 }
 
-export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
+const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<ExtendedUser | null>(null);
   const [loading, setLoading] = useState(true);
   const [operationLoading, setOperationLoading] = useState({
@@ -52,13 +53,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize auth with retry logic
   const initializeAuth = useCallback(async () => {
+    // Clear any demo sessions from localStorage
+    localStorage.removeItem('demo_user');
+    localStorage.removeItem('demo_session');
+    
     const maxRetries = 3;
     let retryCount = 0;
     let mounted = true;
 
     while (retryCount < maxRetries && mounted) {
       try {
-        const currentUser = authService.getCurrentUser();
+        const currentUser = await authService.getCurrentUser();
         if (mounted) {
           setUser(currentUser);
           setSessionError(null);
@@ -97,6 +102,15 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       setSessionError(error as Error);
     } finally {
       setLoading(false);
+    }
+  }, []);
+
+  // Ensure advocate profile exists
+  const ensureAdvocateProfile = useCallback(async (user: ExtendedUser) => {
+    try {
+      await advocateService.ensureAdvocateProfile(user);
+    } catch (error) {
+      console.error('Failed to ensure advocate profile:', error);
     }
   }, []);
 
@@ -140,15 +154,23 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const cleanup = await initializeAuth();
         
         if (mounted) {
-          const currentUser = authService.getCurrentUser();
+          const currentUser = await authService.getCurrentUser();
           setUser(currentUser);
+          if (currentUser) {
+            // Ensure advocate profile exists for current user
+            await ensureAdvocateProfile(currentUser);
+          }
           isInitialized = true;
           setLoading(false);
           setIsInitializing(false);
           
-          unsubscribe = authService.onAuthStateChange((user) => {
+          unsubscribe = authService.onAuthStateChange(async (user) => {
             if (mounted) {
               setUser(user);
+              if (user) {
+                // Ensure advocate profile exists for authenticated users
+                await ensureAdvocateProfile(user);
+              }
               if (isInitialized) {
                 setLoading(false);
               }
@@ -184,7 +206,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       unsubscribe?.();
       clearInterval(refreshInterval);
     };
-  }, [initializeAuth, refreshSession]);
+  }, [initializeAuth, refreshSession, ensureAdvocateProfile]);
 
   const signIn = async (email: string, password: string) => {
     setOperationLoading(prev => ({ ...prev, signIn: true }));
@@ -280,24 +302,5 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   );
 };
 
-// Export hooks as function declarations for Fast Refresh compatibility
-export function useAuth(): AuthContextType {
-  const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAuth must be used within an AuthProvider');
-  }
-  return context;
-}
-
-export function useRequireAuth() {
-  const { user, loading } = useAuth();
-  
-  useEffect(() => {
-    if (!loading && !user) {
-      // Redirect to login page
-      window.location.href = '/login';
-    }
-  }, [user, loading]);
-
-  return { user, loading };
-}
+// Export components and context for Fast Refresh compatibility
+export { AuthProvider, AuthContext };
