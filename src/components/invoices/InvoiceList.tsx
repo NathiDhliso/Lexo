@@ -271,9 +271,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
 
   // Summary statistics
   const totalAmount = filteredInvoices.reduce((sum, inv) => sum + (inv.totalAmount ?? inv.total_amount ?? 0), 0);
-  const paidAmount = filteredInvoices
-    .filter(inv => inv.status === InvoiceStatus.PAID)
-    .reduce((sum, inv) => sum + (inv.totalAmount ?? inv.total_amount ?? 0), 0);
+  const paidAmount = filteredInvoices.reduce((sum, inv) => sum + (inv.amountPaid ?? inv.amount_paid ?? 0), 0);
   const overdueCount = filteredInvoices.filter(inv => inv.status === InvoiceStatus.OVERDUE).length;
 
   if (loading) {
