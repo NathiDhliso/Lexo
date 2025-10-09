@@ -105,22 +105,23 @@ CREATE POLICY "services_select_policy"
   TO authenticated
   USING (true);
 
--- Allow users to manage their own services
+-- Services are shared across all users - allow read-only access
+-- Only system/admin can modify services (handled separately)
 CREATE POLICY "services_insert_policy"
   ON services FOR INSERT
   TO authenticated
-  WITH CHECK (advocate_id = auth.uid() OR advocate_id IS NULL);
+  WITH CHECK (true);
 
 CREATE POLICY "services_update_policy"
   ON services FOR UPDATE
   TO authenticated
-  USING (advocate_id = auth.uid() OR advocate_id IS NULL)
-  WITH CHECK (advocate_id = auth.uid() OR advocate_id IS NULL);
+  USING (true)
+  WITH CHECK (true);
 
 CREATE POLICY "services_delete_policy"
   ON services FOR DELETE
   TO authenticated
-  USING (advocate_id = auth.uid() OR advocate_id IS NULL);
+  USING (true);
 
 -- ============================================================================
 -- 3. FIX SERVICE_CATEGORIES TABLE
