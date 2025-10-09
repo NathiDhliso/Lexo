@@ -578,6 +578,62 @@ export type Database = {
           },
         ]
       }
+      pdf_templates: {
+        Row: {
+          advocate_id: string
+          color_scheme: Json
+          created_at: string | null
+          description: string | null
+          footer: Json
+          header: Json
+          id: string
+          is_default: boolean | null
+          name: string
+          page_margins: Json
+          sections: Json
+          table: Json
+          updated_at: string | null
+        }
+        Insert: {
+          advocate_id: string
+          color_scheme: Json
+          created_at?: string | null
+          description?: string | null
+          footer: Json
+          header: Json
+          id?: string
+          is_default?: boolean | null
+          name: string
+          page_margins: Json
+          sections: Json
+          table: Json
+          updated_at?: string | null
+        }
+        Update: {
+          advocate_id?: string
+          color_scheme?: Json
+          created_at?: string | null
+          description?: string | null
+          footer?: Json
+          header?: Json
+          id?: string
+          is_default?: boolean | null
+          name?: string
+          page_margins?: Json
+          sections?: Json
+          table?: Json
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pdf_templates_advocate_id_fkey"
+            columns: ["advocate_id"]
+            isOneToOne: false
+            referencedRelation: "advocates"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       proforma_requests: {
         Row: {
           advocate_id: string
