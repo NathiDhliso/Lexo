@@ -363,27 +363,35 @@ export class InvoiceService {
         throw new Error('User not authenticated');
       }
 
-      // Get matter details for bar and validation
+      // Get matter details and advocate bar for validation
       const { data: matter, error: matterError } = await supabase
         .from('matters')
-        .select('bar, title, client_name, advocate_id')
+        .select('title, client_name, advocate_id, advocates(bar)')
         .eq('id', validated.matterId)
         .single();
 
-      if (matterError || !matter) {
+      if (matterError) {
+        console.error('Matter lookup error:', matterError);
+        throw new Error(`Matter not found: ${matterError.message}`);
+      }
+
+      if (!matter) {
         throw new Error('Matter not found');
       }
 
       if (matter.advocate_id !== user.id) {
         throw new Error('Unauthorized: You can only create invoices for your own matters');
       }
+
+      // Extract bar from advocate
+      const bar = (matter.advocates as any)?.bar || 'johannesburg';
       
       // Generate invoice number
-      const invoiceNumber = await this.generateInvoiceNumber(matter.bar);
+      const invoiceNumber = await this.generateInvoiceNumber(bar);
       
       // Calculate due date based on bar rules
       const invoiceDate = new Date();
-      const dueDate = this.calculateDueDate(invoiceDate, matter.bar);
+      const dueDate = this.calculateDueDate(invoiceDate, bar);
       
       // Create the invoice
       const { data: invoice, error } = await supabase
@@ -394,7 +402,7 @@ export class InvoiceService {
           invoice_number: invoiceNumber,
           invoice_date: invoiceDate.toISOString().split('T')[0],
           due_date: dueDate.toISOString().split('T')[0],
-          bar: matter.bar,
+          bar: bar,
           fees_amount: validated.feesAmount,
           disbursements_amount: validated.disbursementsAmount || 0,
           vat_rate: validated.vatRate || 0.15,
