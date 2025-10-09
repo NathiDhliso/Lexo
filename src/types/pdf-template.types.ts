@@ -20,20 +20,19 @@ export interface PDFTextStyle {
 }
 
 export type LogoPlacement = 'left' | 'center' | 'right' | 'watermark';
-
 export interface PDFHeaderConfig {
   showLogo: boolean;
   logoUrl?: string;
   logoWidth?: number;
   logoHeight?: number;
+  logoOpacity?: number;
+  logoRotation?: number;
   logoPlacement: LogoPlacement;
-  logoOpacity: number;
-  logoRotation: number;
-  secondaryBrandingUrl?: string;
   showQRCode: boolean;
   qrCodeContent?: string;
   title: string;
   titleStyle: PDFTextStyle;
+  titleOrientation?: 'horizontal' | 'vertical';
   subtitle?: string;
   subtitleStyle?: PDFTextStyle;
   showBorder: boolean;
@@ -120,6 +119,7 @@ export interface PDFTemplate {
     bottom: number;
     left: number;
   };
+  sectionLayout?: 'horizontal' | 'vertical';
   created_at?: string;
   updated_at?: string;
   is_default?: boolean;

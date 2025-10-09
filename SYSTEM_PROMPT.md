@@ -118,16 +118,26 @@ Invoice ← Auto-imports all data from Matter
 **Core Files:**
 - `src/services/api/invoices.service.ts`
 - `src/services/api/invoice-api.service.ts`
-- `src/services/invoice-pdf.service.ts` - PDF generation for invoices
+- `src/services/invoice-pdf.service.ts` - PDF generation with custom templates
 - `src/services/pdf-template.service.ts` - PDF template management
 - `src/components/invoices/MatterSelectionModal.tsx` - Select matter for invoice
 - `src/components/invoices/UnifiedInvoiceWizard.tsx` - Auto-importing invoice generator
+- `src/components/invoices/InvoiceCard.tsx` - Invoice display with PDF download
 - `src/components/invoices/ProFormaInvoiceList.tsx` - Pro forma management
 - `src/components/invoices/MatterTimeEntriesView.tsx` - Time entry overview
 - `src/components/settings/PDFTemplateEditor.tsx` - Advanced PDF customization
 - `src/pages/InvoicesPage.tsx` - Unified invoice interface (4 tabs)
 - `src/pages/SettingsPage.tsx` - Includes PDF Templates tab
-- Database: `invoices`, `payments`, `pdf_templates` tables
+- Database: `invoices`, `payments`, `pdf_templates`, `matter_services` tables
+
+**PDF Features:**
+- Custom color schemes and branding
+- Vertical/horizontal title orientation
+- Section layout (horizontal/vertical for FROM/BILL TO)
+- Bank details in footer
+- Services, time entries, and expenses display
+- Template-based styling (fonts, colors, margins)
+- Professional South African invoice formatting
 
 **Invoice Page Tabs:**
 1. **Invoices** - Final invoice management
@@ -329,6 +339,7 @@ These features directly support the 3-step workflow:
 12. **pdf_templates** - PDF template customization (colors, layouts, branding)
 13. **document_uploads** - Document upload tracking and metadata
 14. **services** - Service definitions and catalog
+15. **matter_services** - Links matters to services for billing and invoicing
 
 ### Storage Buckets
 - **pdf-assets** - Logo uploads and branding images for PDF templates
@@ -594,11 +605,25 @@ Pro Forma → Matter → Invoice. No shortcuts. No skipping steps. No creating m
 ---
 
 ## Document Version
-Version: 1.2  
-Last Updated: 2025-01-09  
+Version: 1.3  
+Last Updated: 2025-10-09  
 Status: **ACTIVE - ENFORCE STRICTLY**
 
-**Recent Updates (v1.2):**
+**Recent Updates (v1.3 - October 2025):**
+
+**Invoice PDF Features:**
+- ✅ Services section in invoice PDFs (displays matter services from rate cards)
+- ✅ Vertical title orientation support (90-degree rotated text)
+- ✅ Bank details display in footer (account name, number, branch code, SWIFT)
+- ✅ Section layout toggle (horizontal/vertical for FROM/BILL TO sections)
+- ✅ PDF download button on invoice cards
+
+**Database Schema:**
+- ✅ `matter_services` table - Links matters to services for billing
+- ✅ Invoice tracking columns: `bar`, `reminders_sent`, `reminder_history`
+- ✅ Migration: `20251009000001_add_invoices_bar_reminders.sql`
+
+**Previous Updates (v1.2 - January 2025):**
 
 **PDF Customization System:**
 - ✅ Complete PDF Template Customization System (2100+ lines)

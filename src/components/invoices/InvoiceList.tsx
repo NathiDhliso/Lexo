@@ -213,11 +213,27 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
         .select('*')
         .eq('invoice_id', invoice.id);
 
+      const { data: services } = await supabase
+        .from('matter_services')
+        .select(`
+          *,
+          services (
+            service_name,
+            description,
+            service_category,
+            pricing_type,
+            unit_price,
+            estimated_hours
+          )
+        `)
+        .eq('matter_id', invoice.matterId || (invoice as any).matter_id);
+
       const invoiceWithDetails = {
         ...invoice,
         matter: matter || undefined,
         time_entries: timeEntries || [],
         expenses: expenses || [],
+        services: services || [],
       };
 
       await invoicePDFService.downloadInvoicePDF(invoiceWithDetails as any, {
@@ -225,6 +241,7 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
         practice_number: advocate.practice_number,
         email: advocate.email || undefined,
         phone: advocate.phone_number || undefined,
+        advocate_id: user.id,
       });
 
       toast.success('Invoice PDF downloaded successfully');

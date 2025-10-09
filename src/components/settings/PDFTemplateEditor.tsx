@@ -665,6 +665,40 @@ export const PDFTemplateEditor: React.FC = () => {
                 </div>
               </div>
 
+              {/* Section Layout */}
+              <div className="p-4 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg">
+                <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Section Layout</h4>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
+                  Choose how FROM and BILL TO sections are arranged
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <button
+                    onClick={() => setTemplate({ ...template, sectionLayout: 'horizontal' })}
+                    className={`p-4 border-2 rounded-lg transition-all ${
+                      template.sectionLayout === 'horizontal' || !template.sectionLayout
+                        ? 'border-blue-500 dark:border-mpondo-gold-500 bg-blue-50 dark:bg-mpondo-gold-900/20'
+                        : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-blue-400 dark:hover:border-mpondo-gold-400'
+                    }`}
+                  >
+                    <div className="text-2xl mb-2">↔️</div>
+                    <div className="font-medium text-neutral-900 dark:text-neutral-100">Horizontal</div>
+                    <div className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">Side by side</div>
+                  </button>
+                  <button
+                    onClick={() => setTemplate({ ...template, sectionLayout: 'vertical' })}
+                    className={`p-4 border-2 rounded-lg transition-all ${
+                      template.sectionLayout === 'vertical'
+                        ? 'border-blue-500 dark:border-mpondo-gold-500 bg-blue-50 dark:bg-mpondo-gold-900/20'
+                        : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-blue-400 dark:hover:border-mpondo-gold-400'
+                    }`}
+                  >
+                    <div className="text-2xl mb-2">↕️</div>
+                    <div className="font-medium text-neutral-900 dark:text-neutral-100">Vertical</div>
+                    <div className="text-xs text-neutral-600 dark:text-neutral-400 mt-1">Stacked</div>
+                  </button>
+                </div>
+              </div>
+
               {/* Page Margins */}
               <div className="p-4 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg">
                 <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Page Margins</h4>

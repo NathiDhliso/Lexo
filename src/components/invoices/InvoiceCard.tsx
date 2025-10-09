@@ -333,6 +333,16 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
             </button>
           )}
           
+          {onDownload && (
+            <button
+              onClick={() => onDownload(invoice)}
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-judicial-blue-700 dark:text-judicial-blue-400 bg-judicial-blue/10 dark:bg-judicial-blue-900/30 rounded-lg hover:bg-judicial-blue/20 dark:hover:bg-judicial-blue-900/50 transition-colors"
+            >
+              <Download className="w-3 h-3" />
+              PDF
+            </button>
+          )}
+          
           <div className="flex-1"></div>
           
           {invoice.datePaid && (

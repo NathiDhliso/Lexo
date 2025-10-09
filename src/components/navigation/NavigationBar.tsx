@@ -482,22 +482,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                )}
              </div>
 
-             {/* Sidebar Toggle Button */}
-             <Button
-               variant="ghost"
-               size="sm"
-               onClick={onToggleSidebar}
-               className="lg:hidden"
-               aria-label="Open sidebar"
-               aria-expanded={Boolean(sidebarOpen)}
-             >
-               {sidebarOpen ? (
-                 <Icon icon={X} className="w-5 h-5" noGradient />
-               ) : (
-                 <Icon icon={Menu} className="w-5 h-5" noGradient />
-               )}
-             </Button>
-
              {/* Mobile Menu Toggle */}
              <Button
                variant="ghost"

@@ -366,7 +366,7 @@ export class InvoiceService {
       // Get matter details and advocate bar for validation
       const { data: matter, error: matterError } = await supabase
         .from('matters')
-        .select('title, client_name, advocate_id, advocates(bar)')
+        .select('title, client_name, advocate_id, advocates!matters_advocate_id_fkey(bar)')
         .eq('id', validated.matterId)
         .single();
 
