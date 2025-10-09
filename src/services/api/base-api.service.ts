@@ -56,6 +56,7 @@ export interface SortOptions {
 export abstract class BaseApiService<T = unknown> {
   protected tableName: string;
   protected selectFields: string;
+  protected supabase = supabase;
 
   constructor(tableName: string, selectFields: string = '*') {
     this.tableName = tableName;
@@ -312,7 +313,17 @@ export abstract class BaseApiService<T = unknown> {
       if (filters) {
         Object.entries(filters).forEach(([key, value]) => {
           if (value !== undefined && value !== null) {
-            query = query.eq(key, value);
+            // Handle date range filters
+            if (key.endsWith('_from')) {
+              const column = key.replace('_from', '');
+              query = query.gte(column, value);
+            } else if (key.endsWith('_to')) {
+              const column = key.replace('_to', '');
+              query = query.lte(column, value);
+            } else {
+              // Handle regular equality filters
+              query = query.eq(key, value);
+            }
           }
         });
       }

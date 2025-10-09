@@ -1,46 +1,18 @@
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
+import { FileText, Clock, AlertCircle, CheckCircle, Building, User, Mail, Phone, Upload, Edit3 } from 'lucide-react';
+import { proformaRequestService } from '../services/api/proforma-request.service';
+import { LoadingSpinner } from '../components/design-system/components';
+import { Database } from '../../types/database';
+import FileUpload from '../components/common/FileUpload';
+import { awsDocumentProcessingService, DocumentProcessingResult } from '../services/aws-document-processing.service';
+
 /**
- * ProFormaRequestPage Component
- * 
- * Public-facing page for instructing attorneys to submit pro forma requests.
+ * Public-facing pro forma request page for attorneys.
  * Accessible via /pro-forma-request/:token without authentication.
  */
 
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { 
-  FileText, 
-  User, 
-  CheckCircle, 
-  AlertCircle,
-  Scale
-} from 'lucide-react';
-import { Button, Card, CardHeader, CardContent, Input } from '../design-system/components';
-import { LoadingSpinner } from '../components/design-system/components/LoadingSpinner';
-import { supabase } from '../lib/supabase';
-import { toast } from 'react-hot-toast';
-
-// Using actual schema from migration instead of outdated types
-type ProFormaStatus = 'pending' | 'submitted' | 'processed' | 'declined';
-
-interface FormData {
-  client_name: string;
-  client_email: string;
-  client_phone: string;
-  matter_description: string;
-  matter_type: string;
-  urgency_level: string;
-  // New fields for Matter prepopulation
-  matter_title: string;
-  instructing_attorney_name: string;
-  instructing_attorney_firm: string;
-  instructing_attorney_email: string;
-  instructing_attorney_phone: string;
-  // Optional Pro Forma fields
-  fee_narrative: string;
-  total_amount: string;
-  valid_until: string;
-  quote_date: string;
-}
+type ProFormaRequest = Database['public']['Tables']['proforma_requests']['Row'];
 
 interface ProFormaRequestPageProps {
   token?: string;
@@ -49,547 +21,493 @@ interface ProFormaRequestPageProps {
 const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenProp }) => {
   const params = useParams<{ token: string }>();
   const token = tokenProp || params.token;
-  const [formData, setFormData] = useState<FormData>({
-    client_name: '',
-    client_email: '',
-    client_phone: '',
-    matter_description: '',
-    matter_type: 'general',
-    urgency_level: 'medium',
-    // New fields for Matter prepopulation
-    matter_title: '',
+
+  const [request, setRequest] = useState<ProFormaRequest | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  const [formData, setFormData] = useState({
     instructing_attorney_name: '',
-    instructing_attorney_firm: '',
     instructing_attorney_email: '',
     instructing_attorney_phone: '',
-    // Optional Pro Forma fields
-    fee_narrative: '',
-    total_amount: '',
-    valid_until: '',
-    quote_date: new Date().toISOString().split('T')[0] // Default to today
+    instructing_firm: '',
+    work_description: '',
   });
-  const [requestStatus, setRequestStatus] = useState<'loading' | 'pending' | 'submitted' | 'processed' | 'declined' | 'not_found'>('loading');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [advocateInfo, setAdvocateInfo] = useState<{ full_name: string; email: string } | null>(null);
+
+  // File upload state
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  const [isProcessingDocument, setIsProcessingDocument] = useState(false);
+  const [processingProgress, setProcessingProgress] = useState(0);
+  const [documentProcessingError, setDocumentProcessingError] = useState<string | null>(null);
+  const [extractedData, setExtractedData] = useState<DocumentProcessingResult | null>(null);
+  const [inputMode, setInputMode] = useState<'manual' | 'upload'>('manual');
 
   useEffect(() => {
-    const checkRequest = async () => {
+    const loadRequest = async () => {
       if (!token) {
         console.log('No token provided');
-        setRequestStatus('not_found');
+        setError('Invalid or missing token');
+        setLoading(false);
         return;
       }
 
       console.log('Checking pro forma request with token:', token);
+      setLoading(true);
+      setError(null);
 
       try {
-        const startTime = Date.now();
-        const { data, error } = await supabase
-          .from('pro_forma_requests')
-          .select(`
-            status,
-            advocate_id,
-            expires_at
-          `)
-          .eq('token', token)
-          .maybeSingle();
-          
-        const endTime = Date.now();
-        console.log('Query completed in:', endTime - startTime, 'ms');
-        console.log('Query result:', { data, error });
-          
-        if (error) {
-          console.error('Query error:', error);
-          setRequestStatus('not_found');
-          return;
-        }
+        const data = await proformaRequestService.getByToken(token);
         
         if (!data) {
           console.log('No data returned for token');
-          setRequestStatus('not_found');
+          setError('This pro forma request link is invalid or has expired.');
           return;
         }
 
-        const expiresAt = new Date(data.expires_at);
-        if (expiresAt < new Date()) {
-          console.log('Request has expired');
-          setRequestStatus('not_found');
-          return;
+        console.log('Pro forma request loaded:', data);
+        setRequest(data);
+
+        // Pre-fill form if data exists
+        if (data.instructing_attorney_name) {
+          setFormData({
+            instructing_attorney_name: data.instructing_attorney_name || '',
+            instructing_attorney_email: data.instructing_attorney_email || '',
+            instructing_attorney_phone: data.instructing_attorney_phone || '',
+            instructing_firm: data.instructing_firm || '',
+            work_description: data.work_description || '',
+          });
         }
 
-        if (data.advocate_id) {
-          const { data: advocateData } = await supabase
-            .from('advocates')
-            .select('full_name, email')
-            .eq('id', data.advocate_id)
-            .single();
-            
-          if (advocateData) {
-            setAdvocateInfo({
-              full_name: advocateData.full_name,
-              email: advocateData.email
-            });
-          }
+        // Check if already submitted
+        if (data.status === 'sent' || data.status === 'accepted') {
+          setSubmitted(true);
         }
-        
-        if (data.status === 'processed') {
-          setRequestStatus('processed');
-        } else if (data.status === 'declined') {
-          setRequestStatus('declined');
-        } else if (data.status === 'submitted') {
-          setRequestStatus('submitted');
-        } else if (data.status === 'pending') {
-          setRequestStatus('pending');
-        }
+
       } catch (error) {
-        console.error('Exception during request check:', error);
-        setRequestStatus('not_found');
+        console.error('Error loading pro forma request:', error);
+        setError('Failed to load pro forma request. Please try again.');
+      } finally {
+        setLoading(false);
       }
     };
 
-    checkRequest();
+    loadRequest();
   }, [token]);
 
-  const handleInputChange = (field: keyof FormData, value: string) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
+  // File upload handlers
+  const handleFileSelect = async (file: File) => {
+    setUploadedFile(file);
+    setDocumentProcessingError(null);
+    setIsProcessingDocument(true);
+    setProcessingProgress(0);
+
+    try {
+      const result = await awsDocumentProcessingService.processDocument(
+        file,
+        (progress) => {
+          setProcessingProgress(progress.percentage);
+        }
+      );
+
+      setExtractedData(result);
+      setIsProcessingDocument(false);
+
+      if (result.extractedData) {
+        setFormData(prev => ({
+          ...prev,
+          instructing_attorney_name: result.extractedData.clientName || prev.instructing_attorney_name,
+          instructing_attorney_email: result.extractedData.clientEmail || prev.instructing_attorney_email,
+          instructing_attorney_phone: result.extractedData.clientPhone || prev.instructing_attorney_phone,
+          instructing_firm: result.extractedData.lawFirm || prev.instructing_firm,
+          work_description: result.extractedData.description || prev.work_description,
+        }));
+      }
+
+    } catch (error) {
+      console.error('Document processing failed:', error);
+      setDocumentProcessingError(error instanceof Error ? error.message : 'Failed to process document');
+      setIsProcessingDocument(false);
+    }
   };
 
-  const validateForm = (): boolean => {
-    const requiredFields: (keyof FormData)[] = [
-      'client_name',
-      'client_email',
-      'matter_description',
-      'matter_title',
-      'instructing_attorney_name'
-    ];
+  const handleFileRemove = () => {
+    setUploadedFile(null);
+    setExtractedData(null);
+    setDocumentProcessingError(null);
+    setProcessingProgress(0);
+  };
 
-    for (const field of requiredFields) {
-      if (!formData[field].trim()) {
-        const fieldName = field.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        toast.error(`Please fill in ${fieldName}`);
-        return false;
-      }
+  const handleModeSwitch = (mode: 'manual' | 'upload') => {
+    setInputMode(mode);
+    if (mode === 'manual') {
+      setUploadedFile(null);
+      setExtractedData(null);
+      setDocumentProcessingError(null);
+      setProcessingProgress(0);
     }
-
-    // Email validation for client email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.client_email)) {
-      toast.error('Please enter a valid client email address');
-      return false;
-    }
-
-    // Email validation for instructing attorney email (if provided)
-    if (formData.instructing_attorney_email && !emailRegex.test(formData.instructing_attorney_email)) {
-      toast.error('Please enter a valid attorney email address');
-      return false;
-    }
-
-    // Validate Pro Forma fields if any are provided
-    if (formData.total_amount && isNaN(Number(formData.total_amount))) {
-      toast.error('Please enter a valid total amount');
-      return false;
-    }
-
-    if (formData.valid_until && formData.quote_date) {
-      const validUntil = new Date(formData.valid_until);
-      const quoteDate = new Date(formData.quote_date);
-      if (validUntil <= quoteDate) {
-        toast.error('Valid until date must be after quote date');
-        return false;
-      }
-    }
-
-    return true;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (!validateForm()) return;
-    
-    setIsSubmitting(true);
+    if (!token || !request) return;
+
+    setSubmitting(true);
+    setError(null);
 
     try {
-      const updateData: any = {
-        ...formData,
-        status: 'submitted' as ProFormaStatus,
-        submitted_at: new Date().toISOString()
-      };
-
-      if (updateData.total_amount === '' || updateData.total_amount === null) {
-        delete updateData.total_amount;
-      } else if (updateData.total_amount) {
-        updateData.total_amount = Number(updateData.total_amount);
-      }
-
-      if (updateData.estimated_value === '' || updateData.estimated_value === null) {
-        delete updateData.estimated_value;
-      } else if (updateData.estimated_value) {
-        updateData.estimated_value = Number(updateData.estimated_value);
-      }
-
-      if (updateData.valid_until === '' || updateData.valid_until === null) {
-        delete updateData.valid_until;
-      }
-
-      if (updateData.quote_date === '' || updateData.quote_date === null) {
-        delete updateData.quote_date;
-      }
-
-      const { error } = await supabase
-        .from('pro_forma_requests')
-        .update(updateData)
-        .eq('token', token);
-
-      if (error) {
-        throw error;
-      }
-
-      setRequestStatus('submitted');
-      toast.success('Your request has been submitted successfully!');
+      await proformaRequestService.submitByToken(token, formData);
+      setSubmitted(true);
     } catch (error) {
       console.error('Error submitting request:', error);
-      toast.error('Failed to submit request. Please try again.');
+      setError('Failed to submit request. Please try again.');
     } finally {
-      setIsSubmitting(false);
+      setSubmitting(false);
     }
   };
 
-  // Loading state
-  if (requestStatus === 'loading') {
+  const formatCurrency = (amount: number) => {
+    return `R ${amount.toLocaleString('en-ZA', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    })}`;
+  };
+
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-ZA', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  };
+
+  if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
+      <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center">
         <LoadingSpinner />
       </div>
     );
   }
 
-  // Error states
-  if (requestStatus === 'not_found') {
+  if (error) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <Card className="max-w-md mx-auto">
-          <CardContent className="text-center py-8">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h1 className="text-xl font-semibold text-neutral-900 mb-2">Request Not Found</h1>
-            <p className="text-neutral-600">
-              This pro forma request link is invalid or has expired.
-            </p>
-          </CardContent>
-        </Card>
+      <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center">
+        <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg shadow-lg p-8 text-center">
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Access Error</h1>
+          <p className="text-neutral-600 dark:text-neutral-300 mb-6">{error}</p>
+          <p className="text-sm text-neutral-500 dark:text-neutral-400">
+            This pro forma request link is invalid or has expired.
+          </p>
+        </div>
       </div>
     );
   }
 
-  if (requestStatus === 'submitted') {
+  if (submitted) {
     return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <Card className="max-w-md mx-auto">
-          <CardContent className="text-center py-8">
-            <CheckCircle className="w-12 h-12 text-green-500 mx-auto mb-4" />
-            <h1 className="text-xl font-semibold text-neutral-900 mb-2">Request Submitted</h1>
-            <p className="text-neutral-600 mb-4">
-              Your pro forma request has been submitted successfully. The advocate will review your request and respond accordingly.
+      <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center">
+        <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg shadow-lg p-8 text-center">
+          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Request Submitted</h1>
+          <p className="text-neutral-600 dark:text-neutral-300 mb-6">
+            Your pro forma request has been submitted successfully. The advocate will review your details and respond accordingly.
+          </p>
+          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
+            <p className="text-sm text-green-700 dark:text-green-300">
+              <strong>Work Title:</strong> {request?.work_title}
             </p>
-            {advocateInfo && (
-              <p className="text-sm text-neutral-500">
-                You can expect to hear from {advocateInfo.full_name} at {advocateInfo.email}
+            {request?.estimated_amount && (
+              <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                <strong>Estimated Amount:</strong> {formatCurrency(request.estimated_amount)}
               </p>
             )}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (requestStatus === 'processed') {
-    return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <Card className="max-w-md mx-auto">
-          <CardContent className="text-center py-8">
-            <CheckCircle className="w-12 h-12 text-blue-500 mx-auto mb-4" />
-            <h1 className="text-xl font-semibold text-neutral-900 mb-2">Request Processed</h1>
-            <p className="text-neutral-600 mb-4">
-              Your pro forma request has been processed by the advocate. You should receive further communication shortly.
-            </p>
-            {advocateInfo && (
-              <p className="text-sm text-neutral-500">
-                Processed by {advocateInfo.full_name} at {advocateInfo.email}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (requestStatus === 'declined') {
-    return (
-      <div className="min-h-screen bg-neutral-50 flex items-center justify-center">
-        <Card className="max-w-md mx-auto">
-          <CardContent className="text-center py-8">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <h1 className="text-xl font-semibold text-neutral-900 mb-2">Request Declined</h1>
-            <p className="text-neutral-600">
-              This pro forma request has been declined. Please contact the advocate directly for more information.
-            </p>
-            {advocateInfo && (
-              <p className="text-sm text-neutral-500">
-                Contact {advocateInfo.full_name} at {advocateInfo.email}
-              </p>
-            )}
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  // Main form
-  return (
-    <div className="min-h-screen bg-neutral-50">
-      {/* Header */}
-      <div className="bg-white border-b border-neutral-200">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-mpondo-gold-100 rounded-lg flex items-center justify-center">
-              <Scale className="w-5 h-5 text-mpondo-gold-600" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-neutral-900">Pro Forma Request</h1>
-              {advocateInfo && (
-                <p className="text-sm text-neutral-600">
-                  Request from {advocateInfo.full_name}
-                </p>
-              )}
-            </div>
           </div>
         </div>
       </div>
+    );
+  }
 
-      {/* Form */}
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card>
-          <CardHeader>
-            <h2 className="text-lg font-semibold text-neutral-900">Request Details</h2>
-            <p className="text-sm text-neutral-600">
-              Please provide the following information for your legal matter.
-            </p>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Client Information */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Client Information
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Input
-                    label="Client Name *"
-                    value={formData.client_name}
-                    onChange={(e) => handleInputChange('client_name', e.target.value)}
-                    placeholder="Enter client name"
-                    required
-                  />
-                  <Input
-                    label="Client Email *"
-                    type="email"
-                    value={formData.client_email}
-                    onChange={(e) => handleInputChange('client_email', e.target.value)}
-                    placeholder="Enter client email address"
-                    required
-                  />
-                  <Input
-                    label="Client Phone"
-                    type="tel"
-                    value={formData.client_phone}
-                    onChange={(e) => handleInputChange('client_phone', e.target.value)}
-                    placeholder="Enter client phone number"
-                  />
+  return (
+    <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 py-8">
+      <div className="max-w-4xl mx-auto px-4">
+        {/* Header */}
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-6 mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+            <div>
+              <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Pro Forma Request</h1>
+              <p className="text-neutral-600 dark:text-neutral-300">Please provide your details for this legal matter</p>
+            </div>
+          </div>
+
+          {request?.expires_at && (
+            <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <Clock className="w-4 h-4" />
+              <span>This link expires on {formatDate(request.expires_at)}</span>
+            </div>
+          )}
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          {/* Request Details */}
+          <div className="lg:col-span-1">
+            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-6">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Request Details</h2>
+              
+              <div className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Work Title</label>
+                  <p className="text-neutral-900 dark:text-neutral-100 font-medium">{request?.work_title}</p>
+                </div>
+
+                {request?.estimated_amount && (
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Matter Type *
-                    </label>
-                    <select
-                      value={formData.matter_type}
-                      onChange={(e) => handleInputChange('matter_type', e.target.value)}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:border-mpondo-gold-500"
-                      required
-                    >
-                      <option value="general">General Legal Matter</option>
-                      <option value="litigation">Litigation</option>
-                      <option value="corporate">Corporate Law</option>
-                      <option value="property">Property Law</option>
-                      <option value="family">Family Law</option>
-                      <option value="criminal">Criminal Law</option>
-                      <option value="employment">Employment Law</option>
-                      <option value="other">Other</option>
-                    </select>
+                    <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Estimated Amount</label>
+                    <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                      {formatCurrency(request.estimated_amount)}
+                    </p>
                   </div>
+                )}
+
+                {request?.urgency && (
+                  <div>
+                    <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Urgency</label>
+                    <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
+                      request.urgency === 'high' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' :
+                      request.urgency === 'medium' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
+                      'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                    }`}>
+                      {request.urgency.charAt(0).toUpperCase() + request.urgency.slice(1)}
+                    </span>
+                  </div>
+                )}
+
+                <div>
+                  <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Quote Number</label>
+                  <p className="text-neutral-600 dark:text-neutral-400 font-mono text-sm">{request?.quote_number}</p>
                 </div>
               </div>
+            </div>
+          </div>
 
-              {/* Matter Title */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Matter Title
-                </h3>
-                <Input
-                  label="Matter Title *"
-                  value={formData.matter_title}
-                  onChange={(e) => handleInputChange('matter_title', e.target.value)}
-                  placeholder="Enter a descriptive title for this matter"
-                  required
-                />
-              </div>
+          {/* Submission Form */}
+          <div className="lg:col-span-2">
+            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-6">
+              <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-6">Your Information</h2>
 
-              {/* Instructing Attorney Information */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <User className="w-4 h-4" />
-                  Instructing Attorney Information
-                </h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <Input
-                    label="Attorney Name *"
-                    value={formData.instructing_attorney_name}
-                    onChange={(e) => handleInputChange('instructing_attorney_name', e.target.value)}
-                    placeholder="Enter attorney name"
-                    required
-                  />
-                  <Input
-                    label="Law Firm"
-                    value={formData.instructing_attorney_firm}
-                    onChange={(e) => handleInputChange('instructing_attorney_firm', e.target.value)}
-                    placeholder="Enter law firm name"
-                  />
-                  <Input
-                    label="Attorney Email"
-                    type="email"
-                    value={formData.instructing_attorney_email}
-                    onChange={(e) => handleInputChange('instructing_attorney_email', e.target.value)}
-                    placeholder="Enter attorney email"
-                  />
-                  <Input
-                    label="Attorney Phone"
-                    type="tel"
-                    value={formData.instructing_attorney_phone}
-                    onChange={(e) => handleInputChange('instructing_attorney_phone', e.target.value)}
-                    placeholder="Enter attorney phone"
-                  />
+              <div className="mb-6">
+                <div className="flex items-center gap-4 p-1 bg-neutral-100 dark:bg-metallic-gray-700 rounded-lg">
+                  <button
+                    type="button"
+                    onClick={() => handleModeSwitch('manual')}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-all ${
+                      inputMode === 'manual'
+                        ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 shadow-sm'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
+                    }`}
+                  >
+                    <Edit3 className="w-4 h-4" />
+                    Manual Entry
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => handleModeSwitch('upload')}
+                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-all ${
+                      inputMode === 'upload'
+                        ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 shadow-sm'
+                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
+                    }`}
+                  >
+                    <Upload className="w-4 h-4" />
+                    Upload Document
+                  </button>
                 </div>
-              </div>
-
-              {/* Optional Pro Forma Information */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Pro Forma Information (Optional)
-                </h3>
-                <p className="text-sm text-neutral-600 mb-4">
-                  If you have specific fee information or requirements, please provide them below.
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2 text-center">
+                  {inputMode === 'manual'
+                    ? 'Enter your details manually in the form below'
+                    : 'Upload a legal document to automatically extract and populate your details'}
                 </p>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Fee Narrative
-                    </label>
-                    <textarea
-                      value={formData.fee_narrative}
-                      onChange={(e) => handleInputChange('fee_narrative', e.target.value)}
-                      placeholder="Describe the fee structure, services included, or any specific billing arrangements..."
-                      rows={4}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:border-mpondo-gold-500 resize-vertical"
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <Input
-                      label="Total Amount"
-                      type="number"
-                      step="0.01"
-                      value={formData.total_amount}
-                      onChange={(e) => handleInputChange('total_amount', e.target.value)}
-                      placeholder="0.00"
-                    />
-                    <Input
-                      label="Valid Until"
-                      type="date"
-                      value={formData.valid_until}
-                      onChange={(e) => handleInputChange('valid_until', e.target.value)}
-                    />
-                    <Input
-                      label="Quote Date"
-                      type="date"
-                      value={formData.quote_date}
-                      onChange={(e) => handleInputChange('quote_date', e.target.value)}
-                    />
-                  </div>
-                </div>
               </div>
 
-              {/* Matter Information */}
-              <div>
-                <h3 className="text-base font-medium text-neutral-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Matter Information
-                </h3>
-                <div className="space-y-4">
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {inputMode === 'upload' && (
+                  <div className="space-y-4">
+                    <h3 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                      <Upload className="w-4 h-4" />
+                      Document Upload
+                    </h3>
+                    
+                    <FileUpload
+                      onFileSelect={handleFileSelect}
+                      onFileRemove={handleFileRemove}
+                      currentFile={uploadedFile}
+                      isProcessing={isProcessingDocument}
+                      processingProgress={processingProgress}
+                      error={documentProcessingError}
+                      label="Upload Legal Document"
+                      description="Upload a PDF or Word document to automatically extract case details and populate the form"
+                      acceptedTypes={awsDocumentProcessingService.getSupportedFileTypes()}
+                      maxSizeInMB={awsDocumentProcessingService.getMaxFileSizeInMB()}
+                    />
+
+                    {extractedData && uploadedFile && (
+                      <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-4">
+                        <div className="flex items-center gap-2 text-green-700 dark:text-green-300 mb-2">
+                          <CheckCircle className="w-4 h-4" />
+                          <span className="font-medium">Document uploaded successfully. Ready for processing.</span>
+                        </div>
+                        <p className="text-sm text-green-600 dark:text-green-400">
+                          Confidence: {extractedData.confidence}% • Processing time: {(extractedData.processingTime / 1000).toFixed(1)}s
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {(inputMode === 'manual' || (inputMode === 'upload' && extractedData && uploadedFile)) && (
+                  <>
+                    {/* Attorney Information */}
+                    <div className="space-y-4">
+                      <h3 className="font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        Attorney Details
+                        {inputMode === 'upload' && extractedData && (
+                          <span className="ml-auto text-xs text-neutral-500 dark:text-neutral-400 font-normal">
+                            You can edit the auto-populated fields below
+                          </span>
+                        )}
+                      </h3>
+                  
                   <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Matter Description *
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      required
+                      value={formData.instructing_attorney_name}
+                      onChange={(e) =>
+                        setFormData({ ...formData, instructing_attorney_name: e.target.value })
+                      }
+                      className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Enter your full name"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                        Email Address *
+                      </label>
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+                        <input
+                          type="email"
+                          required
+                          value={formData.instructing_attorney_email}
+                          onChange={(e) =>
+                            setFormData({ ...formData, instructing_attorney_email: e.target.value })
+                          }
+                          className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="your.email@example.com"
+                        />
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                        Phone Number
+                      </label>
+                      <div className="relative">
+                        <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+                        <input
+                          type="tel"
+                          value={formData.instructing_attorney_phone}
+                          onChange={(e) =>
+                            setFormData({ ...formData, instructing_attorney_phone: e.target.value })
+                          }
+                          className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          placeholder="+27 11 123 4567"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                      Law Firm / Organization
+                    </label>
+                    <div className="relative">
+                      <Building className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
+                      <input
+                        type="text"
+                        value={formData.instructing_firm}
+                        onChange={(e) =>
+                          setFormData({ ...formData, instructing_firm: e.target.value })
+                        }
+                        className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        placeholder="Your law firm or organization"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Case Information */}
+                <div className="space-y-4">
+                  <h3 className="font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                    <FileText className="w-4 h-4" />
+                    Case Details
+                  </h3>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                      Detailed Description of Work Required
                     </label>
                     <textarea
-                      value={formData.matter_description}
-                      onChange={(e) => handleInputChange('matter_description', e.target.value)}
-                      placeholder="Provide detailed information about the matter, including key facts, issues, and any specific requirements..."
+                      value={formData.work_description}
+                      onChange={(e) =>
+                        setFormData({ ...formData, work_description: e.target.value })
+                      }
                       rows={6}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:border-mpondo-gold-500 resize-vertical"
-                      required
+                      className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      placeholder="Please provide a detailed description of the legal work required, including any relevant background information, deadlines, and specific requirements..."
                     />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-neutral-700 mb-2">
-                      Urgency Level *
-                    </label>
-                    <select
-                      value={formData.urgency_level}
-                      onChange={(e) => handleInputChange('urgency_level', e.target.value)}
-                      className="w-full px-3 py-2 border border-neutral-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:border-mpondo-gold-500"
-                      required
-                    >
-                      <option value="low">Low - Standard processing</option>
-                      <option value="medium">Medium - Priority processing</option>
-                      <option value="high">High - Urgent processing</option>
-                    </select>
+                    <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                      The more detail you provide, the better the advocate can prepare your quote.
+                    </p>
                   </div>
                 </div>
-              </div>
-
-              {/* Submit Button */}
-              <div className="flex justify-end pt-6 border-t border-neutral-200">
-                <Button
-                  type="submit"
-                  variant="primary"
-                  size="lg"
-                  loading={isSubmitting}
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? 'Submitting Request...' : 'Submit Request'}
-                </Button>
-              </div>
-            </form>
-          </CardContent>
-        </Card>
-
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-neutral-500">
-            This form is secure and your information will only be shared with the requesting advocate.
-          </p>
+                    {/* Submit Button */}
+                    <div className="pt-4 border-t border-neutral-200 dark:border-metallic-gray-700">
+                      <button
+                        type="submit"
+                        disabled={submitting}
+                        className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2"
+                      >
+                        {submitting ? (
+                          <>
+                            <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                            Submitting...
+                          </>
+                        ) : (
+                          <>
+                            <CheckCircle className="w-4 h-4" />
+                            Submit Pro Forma Request
+                          </>
+                        )}
+                      </button>
+                      
+                      <p className="text-xs text-neutral-500 dark:text-neutral-400 text-center mt-2">
+                        By submitting this form, you agree to receive communication regarding this legal matter.
+                      </p>
+                    </div>
+                  </>
+                )}
+              </form>
+            </div>
+          </div>
         </div>
       </div>
     </div>

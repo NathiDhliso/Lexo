@@ -5,7 +5,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { X, Zap, ArrowRight, Settings } from 'lucide-react';
-import { Card, CardContent, Button } from '../../design-system/components';
+import { Card, CardContent, Button } from '../design-system/components';
 import { userPreferencesService } from '../../services/api/user-preferences.service';
 import { toast } from 'react-hot-toast';
 

@@ -65,8 +65,7 @@ export class InvoiceApiService extends BaseApiService<Invoice> {
   ): Promise<ApiResponse<Invoice[]>> {
     const filters: InvoiceFilters = {
       ...options.filters,
-      advocate_id: advocateId,
-      deleted_at: null
+      advocate_id: advocateId
     };
 
     return this.getAll({

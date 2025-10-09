@@ -1,29 +1,15 @@
 // Navigation Types
 export type Page =
   | 'dashboard'
-  | 'ai-analytics'
+  | 'proforma-requests'
   | 'matters'
-  | 'matter-templates'
   | 'matter-workbench'
   | 'invoices'
-  | 'invoice-designer'
-  | 'proforma'
-  | 'reports'
-  | 'practice-growth'
-  | 'strategic-finance'
-  | 'workflow-integrations'
-  | 'api-integrations'
-  | 'compliance'
-  | 'settings'
-  | 'design-system'
-  | 'matter-details'
-  | 'pricing-management'
   | 'profile'
-  | 'academy';
+  | 'settings';
 
 // Export integration types
 export * from './integrations';
-
 export type ModalType =
   | 'new-brief'
   | 'edit-matter'
@@ -397,22 +383,15 @@ export interface TimeEntry {
   id: string;
   matter_id: string;
   advocate_id: string;
-  invoice_id?: string;
-  date: string;
-  start_time?: string;
-  end_time?: string;
-  duration_minutes: number;
+  invoice_id?: string | null;
+  entry_date: string;
+  hours: number;
+  hourly_rate: number;
+  amount: number | null;
   description: string;
-  billable: boolean;
-  rate: number;
-  amount: number;
-  recording_method: TimeEntryMethod;
-  billed: boolean;
-  write_off: boolean;
-  write_off_reason?: string;
-  created_at: string;
-  updated_at: string;
-  deleted_at?: string;
+  is_billed: boolean | null;
+  created_at: string | null;
+  updated_at: string | null;
 }
 
 // Pro Forma Types
@@ -672,7 +651,6 @@ export interface NewMatterForm {
   instructing_firm?: string;
   instructingFirmRef?: string;
   instructing_firm_ref?: string;
-  bar: BarAssociation;
   feeType: FeeType;
   fee_type: FeeType;
   estimatedFee?: number;
@@ -717,6 +695,13 @@ export interface MonthlyBilling {
   amount: number;
   invoiceCount: number;
   collectionRate: number;
+}
+
+export interface WorkTypeDistribution {
+  workType: string;
+  count: number;
+  totalAmount: number;
+  percentage: number;
 }
 
 // Additional types for Phase 3 implementation

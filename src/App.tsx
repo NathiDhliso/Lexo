@@ -3,14 +3,15 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 
 // UI Components
-import { LoadingSpinner } from './components/design-system/components/LoadingSpinner';
-import { Card, CardContent, Button } from './design-system/components';
+import { LoadingSpinner } from './components/design-system/components';
+import { Card, CardContent, Button } from './components/design-system/components';
 
 // Navigation Components
 import { NavigationBar } from './components/navigation';
 
 // Auth
 import { AuthProvider } from './contexts/AuthContext';
+import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 
 // Types
@@ -19,22 +20,13 @@ import { UserTier } from './types';
 import {
   DashboardPage,
   MattersPage,
-  MatterWorkbenchPage,
   InvoicesPage,
-  ReportsPage,
-  SettingsPage,
   ProfilePage,
-  PricingManagementPage,
-  WorkflowIntegrationsPage,
-  AIAnalyticsDashboard,
-  ProFormaPage,
-  CompliancePage,
-  ProFormaRequestPage
+  SettingsPage,
+  ProFormaRequestsPage
 } from './pages';
-import { TemplateManagementPage } from './pages/TemplateManagementPage';
-import { PracticeGrowthPage } from './pages/PracticeGrowthPage';
-import { StrategicFinancePage } from './pages/StrategicFinancePage';
-import { InvoiceDesignerPage } from './pages/InvoiceDesignerPage';
+import ProFormaRequestPage from './pages/ProFormaRequestPage';
+import MatterWorkbenchPage from './pages/MatterWorkbenchPage';
 
 // Create Query Client with proper configuration
 const queryClient = new QueryClient({
@@ -133,10 +125,9 @@ const MainLayout: React.FC<{
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
 }> = ({ children, activePage, onPageChange, sidebarOpen, onToggleSidebar }) => {
-  // Removed unused user from useAuth
   const userTier: UserTier = UserTier.ADVOCATE_PRO;
   return (
-    <div className="min-h-screen bg-neutral-50 flex flex-col">
+    <div className="min-h-screen bg-neutral-50 dark:bg-gradient-to-br dark:from-metallic-gray-900 dark:via-metallic-gray-800 dark:to-metallic-gray-900 flex flex-col transition-colors duration-300">
       <NavigationBar
         activePage={activePage}
         onPageChange={onPageChange}
@@ -144,7 +135,6 @@ const MainLayout: React.FC<{
         onToggleSidebar={onToggleSidebar}
         sidebarOpen={sidebarOpen}
       />
-      {/* Main content area */}
       <main className="flex-1">
         <div className="px-3 sm:px-4 md:px-6 py-4 md:py-6">
           {children}
@@ -193,43 +183,18 @@ const AppContent: React.FC = () => {
     switch (appState.activePage) {
       case 'dashboard':
         return <DashboardPage onNavigate={handlePageChange} />;
+      case 'proforma-requests':
+        return <ProFormaRequestsPage onNavigate={handlePageChange} />;
       case 'matters':
         return <MattersPage onNavigate={handlePageChange} />;
       case 'matter-workbench':
-        return <MatterWorkbenchPage onNavigateBack={() => handlePageChange('matters')} />;
-      case 'matter-templates':
-        return <TemplateManagementPage />;
+        return <MatterWorkbenchPage onNavigate={handlePageChange} />;
       case 'invoices':
-        return <InvoicesPage />;
-      case 'proforma':
-        return <ProFormaPage />;
+        return <InvoicesPage onNavigate={handlePageChange} />;
       case 'profile':
         return <ProfilePage />;
-      case 'pricing-management':
-        return <PricingManagementPage />;
-      case 'compliance':
-        return <CompliancePage />;
       case 'settings':
-        return <SettingsPage onNavigate={handlePageChange} />;
-      case 'invoice-designer':
-        return <InvoiceDesignerPage />;
-      case 'academy':
-        return (
-          <div className="p-8">
-            <h1 className="text-2xl font-bold">Academy</h1>
-            <p>Coming soon</p>
-          </div>
-        );
-      case 'ai-analytics':
-        return <AIAnalyticsDashboard />;
-      case 'strategic-finance':
-        return <StrategicFinancePage />;
-      case 'practice-growth':
-        return <PracticeGrowthPage />;
-      case 'workflow-integrations':
-        return <WorkflowIntegrationsPage />;
-      case 'reports':
-        return <ReportsPage />;
+        return <SettingsPage />;
       
       default:
         return <DashboardPage onNavigate={handlePageChange} />;
@@ -267,44 +232,60 @@ const AppContent: React.FC = () => {
 
 // Main App Component
 function App() {
-  // Check for public routes that don't require authentication
-  const pathname = window.location.pathname;
-  const isProFormaRequestRoute = pathname.startsWith('/pro-forma-request/');
+  // Check if this is a public pro forma request route
+  const isPublicProFormaRoute = () => {
+    const hash = window.location.hash;
+    const pathname = window.location.pathname;
+    
+    // Check for hash-based route: #/pro-forma-request/token
+    if (hash.startsWith('#/pro-forma-request/')) {
+      return hash.substring(2); // Remove '#/' prefix
+    }
+    
+    // Check for pathname-based route: /pro-forma-request/token
+    if (pathname.startsWith('/pro-forma-request/')) {
+      return pathname;
+    }
+    
+    return null;
+  };
+
+  const publicRoute = isPublicProFormaRoute();
   
-  // Handle public pro forma request route
-  if (isProFormaRequestRoute) {
-    const token = pathname.split('/pro-forma-request/')[1];
+  if (publicRoute) {
+    const token = publicRoute.split('/').pop();
     return (
       <QueryClientProvider client={queryClient}>
-        <ErrorBoundary>
-          <div className="min-h-screen bg-neutral-50">
-            <Suspense fallback={<LoadingSpinner />}>
+        <ThemeProvider>
+          <ErrorBoundary>
+            <div className="App">
               <ProFormaRequestPage token={token} />
-            </Suspense>
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                },
-              }}
-            />
-          </div>
-        </ErrorBoundary>
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                  },
+                }}
+              />
+            </div>
+          </ErrorBoundary>
+        </ThemeProvider>
       </QueryClientProvider>
     );
   }
 
-  // Default authenticated app
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ErrorBoundary>
-          <AppContent />
-        </ErrorBoundary>
-      </AuthProvider>
+      <ThemeProvider>
+        <AuthProvider>
+          <ErrorBoundary>
+            <AppContent />
+          </ErrorBoundary>
+        </AuthProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

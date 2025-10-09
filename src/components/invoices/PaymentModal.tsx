@@ -4,7 +4,7 @@ import { format } from 'date-fns';
 import { toast } from 'react-hot-toast';
 import { RandIcon } from '../icons/RandIcon';
 import { formatRand } from '../../lib/currency';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from '../../design-system/components';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Input, Button } from '../design-system/components';
 import { InvoiceService } from '@/services/api/invoices.service';
 import type { Invoice } from '@/types';
 import { PaymentMethod } from '@/types';

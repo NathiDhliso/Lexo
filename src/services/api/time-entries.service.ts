@@ -54,22 +54,17 @@ export class TimeEntryService {
         throw new Error('Unauthorized: You can only add time entries to your own matters');
       }
       
-      // Create the time entry
+      const hours = validated.durationMinutes / 60;
+      
       const { data: timeEntry, error } = await supabase
         .from('time_entries')
         .insert({
           matter_id: validated.matterId,
           advocate_id: user.id,
-          date: validated.date,
-          duration_minutes: validated.durationMinutes,
+          entry_date: validated.date,
+          hours: hours,
           description: validated.description,
-          rate: validated.rate,
-          billable: validated.billable ?? true,
-          recording_method: validated.recordingMethod || 'manual',
-          start_time: validated.startTime || null,
-          end_time: validated.endTime || null,
-          billed: false,
-          write_off: false
+          hourly_rate: validated.rate
         })
         .select()
         .single();
@@ -116,21 +111,25 @@ export class TimeEntryService {
         throw new Error('Time entry not found');
       }
 
-      // Check if already billed
-      if (currentEntry.billed) {
-        throw new Error('Cannot update billed time entries');
-      }
+      // Skip billed check since column doesn't exist
+      // if (currentEntry.billed) {
+      //   throw new Error('Cannot update billed time entries');
+      // }
 
       // Prepare update data
-      const updateData: Record<string, unknown> = {
-        updated_at: new Date().toISOString()
-      };
+      const updateData: Record<string, unknown> = {};
 
-      if (updates.date) updateData.date = updates.date;
-      if (updates.durationMinutes) updateData.duration_minutes = updates.durationMinutes;
+      if (updates.date) updateData.entry_date = updates.date;
+      if (updates.durationMinutes) {
+        updateData.hours = updates.durationMinutes / 60;
+        if (updates.rate) {
+          updateData.hourly_rate = updates.rate;
+        }
+      }
       if (updates.description) updateData.description = updates.description;
-      if (updates.rate) updateData.rate = updates.rate;
-      if (updates.billable !== undefined) updateData.billable = updates.billable;
+      if (updates.rate && !updates.durationMinutes) {
+        updateData.hourly_rate = updates.rate;
+      }
 
       const { data: updatedEntry, error } = await supabase
         .from('time_entries')
@@ -172,10 +171,9 @@ export class TimeEntryService {
       page = 1,
       pageSize = 50,
       matterId,
-      billed,
       dateFrom,
       dateTo,
-      sortBy = 'date',
+      sortBy = 'entry_date',
       sortOrder = 'desc'
     } = options;
     
@@ -185,24 +183,24 @@ export class TimeEntryService {
         .select(`
           *,
           matters!inner(title, client_name)
-        `, { count: 'exact' })
-        .is('deleted_at', null);
+        `, { count: 'exact' });
       
       // Apply filters
       if (matterId) {
         query = query.eq('matter_id', matterId);
       }
 
-      if (billed !== undefined) {
-        query = query.eq('billed', billed);
-      }
+      // Skip billed filter since column doesn't exist
+      // if (billed !== undefined) {
+      //   query = query.eq('billed', billed);
+      // }
 
       if (dateFrom) {
-        query = query.gte('date', dateFrom);
+        query = query.gte('entry_date', dateFrom);
       }
 
       if (dateTo) {
-        query = query.lte('date', dateTo);
+        query = query.lte('entry_date', dateTo);
       }
       
       // Apply sorting
@@ -250,14 +248,15 @@ export class TimeEntryService {
         throw new Error('Time entry not found');
       }
 
-      // Check if already billed
-      if (currentEntry.billed) {
-        throw new Error('Cannot delete billed time entries');
-      }
+      // Skip billed check since column doesn't exist
+      // if (currentEntry.billed) {
+      //   throw new Error('Cannot delete billed time entries');
+      // }
 
+      // Hard delete since deleted_at column doesn't exist
       const { error } = await supabase
         .from('time_entries')
-        .update({ deleted_at: new Date().toISOString() })
+        .delete()
         .eq('id', timeEntryId);
 
       if (error) {
@@ -283,10 +282,7 @@ export class TimeEntryService {
         .from('time_entries')
         .select('*')
         .eq('matter_id', matterId)
-        .eq('billed', false)
-        .eq('billable', true)
-        .is('deleted_at', null)
-        .order('date', { ascending: true });
+        .order('entry_date', { ascending: true });
 
       if (error) {
         throw new Error(`Failed to fetch unbilled time entries: ${error.message}`);
@@ -306,10 +302,7 @@ export class TimeEntryService {
       const { data: timeEntries, error } = await supabase
         .from('time_entries')
         .select('amount')
-        .eq('matter_id', matterId)
-        .eq('billed', false)
-        .eq('billable', true)
-        .is('deleted_at', null);
+        .eq('matter_id', matterId);
 
       if (error) {
         console.error('Error calculating WIP:', error);

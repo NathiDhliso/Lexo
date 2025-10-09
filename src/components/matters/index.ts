@@ -1,3 +1,3 @@
-export { NewMatterModal } from './NewMatterModal';
+export { NewMatterMultiStep } from './NewMatterMultiStep';
 export { MatterCard } from './MatterCard';
-export type { MatterPrepopulationData } from './NewMatterModal';
+export type { NewMatterForm } from '../../types';

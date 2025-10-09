@@ -1,386 +1,300 @@
 import React, { useState } from 'react';
-import { X, Link, Copy, Check, AlertCircle } from 'lucide-react';
-import { Button, Input, Modal, ModalBody, ModalFooter } from '../../design-system/components';
-import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../contexts/AuthContext';
+import { X, Copy, ExternalLink, Clock, CheckCircle, Calculator } from 'lucide-react';
+import { proformaRequestService } from '../../services/api/proforma-request.service';
+import RateCardSelector from '../pricing/RateCardSelector';
+import { PricingCalculator, ServiceItem } from '../../utils/PricingCalculator';
 import { toast } from 'react-hot-toast';
 
 interface ProFormaLinkModalProps {
   isOpen: boolean;
   onClose: () => void;
+  proformaId: string;
+  workTitle: string;
 }
 
 export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
   isOpen,
-  onClose
+  onClose,
+  proformaId,
+  workTitle,
 }) => {
-  const { user } = useAuth();
-  const [clientName, setClientName] = useState('');
-  const [clientEmail, setClientEmail] = useState('');
-  const [matterDescription, setMatterDescription] = useState('');
-  const [matterType, setMatterType] = useState('general');
-  const [urgencyLevel, setUrgencyLevel] = useState<'low' | 'medium' | 'high'>('medium');
-  const [requestedAction, setRequestedAction] = useState<'matter' | 'pro_forma'>('matter');
-  const [generatedLink, setGeneratedLink] = useState('');
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [linkCopied, setLinkCopied] = useState(false);
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(false);
+  const [generatedLink, setGeneratedLink] = useState<string | null>(null);
+  const [expiresAt, setExpiresAt] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [includeRateCards, setIncludeRateCards] = useState(false);
+  const [selectedServices, setSelectedServices] = useState<any[]>([]);
+  const [estimatedAmount, setEstimatedAmount] = useState<number>(0);
+  const [matterType, setMatterType] = useState<string>('');
 
-  const validateForm = () => {
-    const newErrors: Record<string, string> = {};
-    
-    if (!clientName.trim()) {
-      newErrors.clientName = 'Client name is required';
-    }
-    
-    if (!clientEmail.trim()) {
-      newErrors.clientEmail = 'Client email is required';
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail)) {
-      newErrors.clientEmail = 'Please enter a valid email address';
-    }
-    
-    if (!matterDescription.trim()) {
-      newErrors.matterDescription = 'Matter description is required';
-    }
-    
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const generateProFormaLink = async () => {
-    if (!validateForm()) {
-      toast.error('Please fix the form errors before generating the link');
-      return;
-    }
-
+  const generateLink = async () => {
+    setLoading(true);
     try {
-      setIsGenerating(true);
-      
-      const token = crypto.randomUUID();
-      
-      const expiryDate = new Date();
-      expiryDate.setDate(expiryDate.getDate() + 7);
-      
-      console.log('Inserting pro forma request with data:', {
-        token,
-        advocate_id: user?.id,
-        client_name: clientName.trim(),
-        client_email: clientEmail.trim(),
-        matter_description: matterDescription.trim(),
-        matter_type: matterType,
-        urgency_level: urgencyLevel,
-        status: 'pending',
-        expires_at: expiryDate.toISOString()
-      });
-
-      const insertData = {
-        token,
-        advocate_id: user?.id,
-        client_name: clientName.trim(),
-        client_email: clientEmail.trim(),
-        matter_description: matterDescription.trim(),
-        matter_type: matterType,
-        urgency_level: urgencyLevel,
-        status: 'pending',
-        expires_at: expiryDate.toISOString(),
-        requested_action: requestedAction
-      };
-
-      console.log('About to insert:', insertData);
-
-      const { data, error } = await supabase
-        .from('pro_forma_requests')
-        .insert(insertData)
-        .select()
-        .single();
-
-      console.log('Insert result:', { data, error });
-
-      if (error) {
-        console.error('Detailed error:', {
-          message: error.message,
-          details: error.details,
-          hint: error.hint,
-          code: error.code,
-          fullError: JSON.stringify(error, null, 2)
+      if (includeRateCards && selectedServices.length > 0) {
+        await proformaRequestService.update(proformaId, {
+          estimated_amount: estimatedAmount,
+          metadata: {
+            matter_type: matterType,
+            services: selectedServices,
+          },
         });
-        
-        if (error.code === '23505') {
-          const detail = error.details || error.message || '';
-          console.error('UNIQUE CONSTRAINT VIOLATION:', detail);
-          toast.error(`Duplicate entry: ${detail}`);
-        } else if (error.code === '42703') {
-          console.error('COLUMN DOES NOT EXIST:', error.message);
-          toast.error('Database schema error: Missing column. Please contact support.');
-        } else {
-          toast.error(`Failed to generate link: ${error.message}`);
-        }
-        throw error;
       }
 
-      // Generate the public link
+      const { token, expiresAt: expiry } = await proformaRequestService.generateToken(proformaId);
       const baseUrl = window.location.origin;
       const link = `${baseUrl}/pro-forma-request/${token}`;
       setGeneratedLink(link);
-      
-      toast.success('Pro forma request link generated successfully!');
+      setExpiresAt(expiry);
     } catch (error) {
-      console.error('Error generating pro forma link:', error);
-      toast.error('Failed to generate pro forma link. Please try again.');
+      console.error('Failed to generate link:', error);
+      toast.error('Failed to generate link. Please try again.');
     } finally {
-      setIsGenerating(false);
+      setLoading(false);
     }
   };
 
   const copyToClipboard = async () => {
+    if (!generatedLink) return;
+    
     try {
       await navigator.clipboard.writeText(generatedLink);
-      setLinkCopied(true);
-      toast.success('Link copied to clipboard!');
-      
-      // Reset the copied state after 2 seconds
-      setTimeout(() => setLinkCopied(false), 2000);
+      setCopied(true);
+      toast.success('Link copied to clipboard');
+      setTimeout(() => setCopied(false), 2000);
     } catch (error) {
-      console.error('Error copying to clipboard:', error);
-      toast.error('Failed to copy link to clipboard');
+      console.error('Failed to copy to clipboard:', error);
+      toast.error('Failed to copy link');
+    }
+  };
+
+  const openInNewTab = () => {
+    if (!generatedLink) return;
+    window.open(generatedLink, '_blank');
+  };
+
+  const formatExpiryDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleDateString('en-ZA', {
+      weekday: 'long',
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  const handleServicesChange = async (services: any[]) => {
+    setSelectedServices(services);
+    
+    if (services.length > 0 && matterType) {
+      try {
+        const serviceItems: ServiceItem[] = services.map(service => ({
+          id: service.id,
+          name: service.name,
+          pricing_type: service.pricing_type,
+          hourly_rate: service.hourly_rate,
+          fixed_fee: service.fixed_fee,
+          estimated_hours: service.estimated_hours || PricingCalculator.estimateHours(matterType, 'medium'),
+          quantity: service.quantity || 1,
+          description: service.description,
+        }));
+
+        const result = PricingCalculator.calculate(serviceItems, [], []);
+        setEstimatedAmount(result.total);
+      } catch (error) {
+        console.error('Error generating estimate:', error);
+        setEstimatedAmount(0);
+      }
+    } else {
+      setEstimatedAmount(0);
     }
   };
 
   const handleClose = () => {
-    setClientName('');
-    setClientEmail('');
-    setMatterDescription('');
-    setMatterType('general');
-    setUrgencyLevel('medium');
-    setGeneratedLink('');
-    setErrors({});
-    setLinkCopied(false);
+    setGeneratedLink(null);
+    setExpiresAt(null);
+    setCopied(false);
+    setIncludeRateCards(false);
+    setSelectedServices([]);
+    setEstimatedAmount(0);
+    setMatterType('');
     onClose();
   };
 
   if (!isOpen) return null;
 
   return (
-    <Modal isOpen={isOpen} onClose={handleClose} size="lg">
-      <ModalBody>
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-3">
-            <div className="p-2 bg-mpondo-gold/10 rounded-lg">
-              <Link className="w-5 h-5 text-mpondo-gold-600" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-neutral-900">
-                Generate Pro Forma Request Link
-              </h2>
-              <p className="text-sm text-neutral-600">
-                Create a secure link for clients to request pro forma invoices
-              </p>
-            </div>
-          </div>
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4">
+        <div className="border-b border-neutral-200 dark:border-metallic-gray-700 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+            Generate Pro Forma Link
+          </h2>
           <button
             onClick={handleClose}
-            className="p-2 hover:bg-neutral-100 rounded-lg transition-colors"
+            className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
           >
-            <X className="w-5 h-5 text-neutral-500" />
+            <X className="w-5 h-5" />
           </button>
         </div>
 
-        {!generatedLink ? (
-          <div className="space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Client Name *
-              </label>
-              <Input
-                value={clientName}
-                onChange={(e) => setClientName(e.target.value)}
-                placeholder="Enter client name"
-                error={errors.clientName}
-              />
-            </div>
+        <div className="p-6">
+          <div className="mb-6">
+            <h3 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">Work Title</h3>
+            <p className="text-neutral-600 dark:text-neutral-400 bg-neutral-50 dark:bg-metallic-gray-900 p-3 rounded-lg">{workTitle}</p>
+          </div>
 
+          {!generatedLink ? (
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Client Email *
-              </label>
-              <Input
-                type="email"
-                value={clientEmail}
-                onChange={(e) => setClientEmail(e.target.value)}
-                placeholder="Enter client email address"
-                error={errors.clientEmail}
-              />
-            </div>
+              <div className="text-center mb-6">
+                <ExternalLink className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+                <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
+                  Generate Attorney Link
+                </h3>
+                <p className="text-neutral-600 dark:text-neutral-400">
+                  Create a secure link that attorneys can use to submit their pro forma request details.
+                </p>
+              </div>
 
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Matter Type
-              </label>
-              <select
-                value={matterType}
-                onChange={(e) => setMatterType(e.target.value)}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent"
+              <div className="mb-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <input
+                    type="checkbox"
+                    id="includeRateCards"
+                    checked={includeRateCards}
+                    onChange={(e) => setIncludeRateCards(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                  />
+                  <label htmlFor="includeRateCards" className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
+                    <Calculator className="w-4 h-4" />
+                    Include pricing estimation with rate cards
+                  </label>
+                </div>
+                
+                {includeRateCards && (
+                  <div className="border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-4 bg-neutral-50 dark:bg-metallic-gray-900">
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                        Matter Type
+                      </label>
+                      <select
+                        value={matterType}
+                        onChange={(e) => setMatterType(e.target.value)}
+                        className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      >
+                        <option value="">Select type...</option>
+                        <option value="civil_litigation">Civil Litigation</option>
+                        <option value="commercial_law">Commercial Law</option>
+                        <option value="criminal_law">Criminal Law</option>
+                        <option value="family_law">Family Law</option>
+                        <option value="property_law">Property Law</option>
+                        <option value="labour_law">Labour Law</option>
+                        <option value="constitutional_law">Constitutional Law</option>
+                        <option value="administrative_law">Administrative Law</option>
+                      </select>
+                    </div>
+
+                    {matterType && (
+                      <RateCardSelector
+                        matterType={matterType}
+                        onServicesChange={handleServicesChange}
+                        compact={true}
+                      />
+                    )}
+
+                    {estimatedAmount > 0 && (
+                      <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
+                        <p className="text-sm font-medium text-green-800 dark:text-green-300">
+                          Estimated Amount: R {estimatedAmount.toLocaleString('en-ZA', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </p>
+                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                          This estimate will be shown to the attorney when they access the link.
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+
+              <button
+                onClick={generateLink}
+                disabled={loading || (includeRateCards && (!matterType || selectedServices.length === 0))}
+                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
-                <option value="general">General Legal Matter</option>
-                <option value="litigation">Litigation</option>
-                <option value="corporate">Corporate Law</option>
-                <option value="property">Property Law</option>
-                <option value="family">Family Law</option>
-                <option value="criminal">Criminal Law</option>
-                <option value="employment">Employment Law</option>
-                <option value="other">Other</option>
-              </select>
+                {loading ? 'Generating...' : 'Generate Link'}
+              </button>
             </div>
-
+          ) : (
             <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Matter Description *
-              </label>
-              <textarea
-                value={matterDescription}
-                onChange={(e) => setMatterDescription(e.target.value)}
-                placeholder="Brief description of the legal matter"
-                rows={3}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent resize-none ${
-                  errors.matterDescription ? 'border-red-300' : 'border-neutral-300'
-                }`}
-              />
-              {errors.matterDescription && (
-                <p className="mt-1 text-sm text-red-600">{errors.matterDescription}</p>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Urgency Level
-              </label>
-              <select
-                value={urgencyLevel}
-                onChange={(e) => setUrgencyLevel(e.target.value as 'low' | 'medium' | 'high')}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent"
-              >
-                <option value="low">Low - Standard processing</option>
-                <option value="medium">Medium - Priority processing</option>
-                <option value="high">High - Urgent processing</option>
-              </select>
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-1">
-                Request Type
-              </label>
-              <select
-                value={requestedAction}
-                onChange={(e) => setRequestedAction(e.target.value as 'matter' | 'pro_forma')}
-                className="w-full px-3 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent"
-              >
-                <option value="matter">Matter Creation - Client provides details to create a new matter</option>
-                <option value="pro_forma">Pro Forma Generation - Client provides details for immediate pro forma quote</option>
-              </select>
-              <p className="mt-1 text-xs text-neutral-500">
-                {requestedAction === 'matter' 
-                  ? 'The client will provide information to create a new matter in your system.'
-                  : 'The client will provide information to generate a pro forma invoice quote.'
-                }
-              </p>
-            </div>
-
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-              <div className="flex items-start gap-2">
-                <AlertCircle className="w-5 h-5 text-blue-600 mt-0.5 flex-shrink-0" />
-                <div className="text-sm text-blue-800">
-                  <p className="font-medium mb-1">How it works:</p>
-                  <ul className="space-y-1 text-xs">
-                    <li>• A secure link will be generated for your client</li>
-                    <li>• The client can access the form without logging in</li>
-                    <li>• You'll receive the request in your dashboard</li>
-                    <li>• Process the request to create a matter or invoice</li>
-                  </ul>
+              <div className="mb-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <h3 className="font-medium text-neutral-900 dark:text-neutral-100">Link Generated Successfully</h3>
+                </div>
+                
+                <div className="bg-neutral-50 dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-4">
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="flex-1 font-mono text-sm text-neutral-700 dark:text-neutral-300 bg-white dark:bg-metallic-gray-800 p-2 rounded border border-neutral-200 dark:border-metallic-gray-700 break-all">
+                      {generatedLink}
+                    </div>
+                    <button
+                      onClick={copyToClipboard}
+                      className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 whitespace-nowrap"
+                    >
+                      {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
+                      {copied ? 'Copied!' : 'Copy'}
+                    </button>
+                    <button
+                      onClick={openInNewTab}
+                      className="flex items-center gap-2 px-3 py-2 bg-neutral-600 dark:bg-metallic-gray-600 text-white rounded hover:bg-neutral-700 dark:hover:bg-metallic-gray-500 whitespace-nowrap"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                      Open
+                    </button>
+                  </div>
+                  
+                  {expiresAt && (
+                    <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
+                      <Clock className="w-4 h-4" />
+                      <span>Expires: {formatExpiryDate(expiresAt)}</span>
+                    </div>
+                  )}
                 </div>
               </div>
-            </div>
-          </div>
-        ) : (
-          <div className="space-y-4">
-            <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-              <div className="flex items-center gap-2 mb-2">
-                <Check className="w-5 h-5 text-green-600" />
-                <span className="font-medium text-green-800">Link Generated Successfully!</span>
-              </div>
-              <p className="text-sm text-green-700">
-                Share this secure link with {clientName} to request a pro forma invoice.
-              </p>
-            </div>
 
-            <div>
-              <label className="block text-sm font-medium text-neutral-700 mb-2">
-                Pro Forma Request Link
-              </label>
-              <div className="flex gap-2">
-                <Input
-                  value={generatedLink}
-                  readOnly
-                  className="flex-1 bg-neutral-50"
-                />
-                <Button
-                  variant="outline"
-                  onClick={copyToClipboard}
-                  className="flex items-center gap-2"
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                <h4 className="font-medium text-amber-800 mb-2">Instructions for Attorney</h4>
+                <ul className="text-sm text-amber-700 space-y-1">
+                  <li>• Share this link with the instructing attorney</li>
+                  <li>• The attorney can access the form without creating an account</li>
+                  <li>• The link expires in 7 days for security</li>
+                  <li>• Once submitted, you'll receive the pro forma request details</li>
+                </ul>
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                <button
+                  onClick={generateLink}
+                  disabled={loading}
+                  className="flex-1 px-4 py-2 bg-neutral-100 dark:bg-metallic-gray-700 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-200 dark:hover:bg-metallic-gray-600 disabled:opacity-50"
                 >
-                  {linkCopied ? (
-                    <>
-                      <Check className="w-4 h-4" />
-                      Copied
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="w-4 h-4" />
-                      Copy
-                    </>
-                  )}
-                </Button>
+                  Generate New Link
+                </button>
+                <button
+                  onClick={handleClose}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                >
+                  Done
+                </button>
               </div>
             </div>
-
-            <div className="p-4 bg-neutral-50 border border-neutral-200 rounded-lg">
-              <h4 className="font-medium text-neutral-900 mb-2">Next Steps:</h4>
-              <ul className="text-sm text-neutral-600 space-y-1">
-                <li>1. Share this link with your client via email or messaging</li>
-                <li>2. Monitor incoming requests in your Dashboard</li>
-                <li>3. Process requests to create matters or generate invoices</li>
-              </ul>
-            </div>
-          </div>
-        )}
-      </ModalBody>
-
-      <ModalFooter>
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={handleClose}>
-            {generatedLink ? 'Close' : 'Cancel'}
-          </Button>
-          {!generatedLink && (
-            <Button
-              variant="primary"
-              onClick={generateProFormaLink}
-              disabled={isGenerating}
-              className="flex items-center gap-2"
-            >
-              {isGenerating ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-                  Generating...
-                </>
-              ) : (
-                <>
-                  <Link className="w-4 h-4" />
-                  Generate Link
-                </>
-              )}
-            </Button>
           )}
         </div>
-      </ModalFooter>
-    </Modal>
+      </div>
+    </div>
   );
 };

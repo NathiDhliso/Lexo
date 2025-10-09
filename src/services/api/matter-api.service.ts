@@ -47,9 +47,7 @@ export class MatterApiService extends BaseApiService<Matter> {
       *,
       advocate:advocates!advocate_id(full_name, practice_number),
       time_entries(count),
-      invoices(count),
-      documents(count),
-      notes(count)
+      invoices(count)
     `);
   }
 
@@ -65,14 +63,13 @@ export class MatterApiService extends BaseApiService<Matter> {
   ): Promise<ApiResponse<Matter[]>> {
     const filters: MatterFilters = {
       ...options.filters,
-      advocate_id: advocateId,
-      deleted_at: null // Only get non-deleted matters
+      advocate_id: advocateId
     };
 
     return this.getAll({
       filters,
       pagination: options.pagination,
-      sort: { column: 'date_instructed', ascending: false }
+      sort: { column: 'created_at', ascending: false }
     });
   }
 
@@ -99,6 +96,19 @@ export class MatterApiService extends BaseApiService<Matter> {
   }
 
   /**
+   * Create new matter with simple select (no joins) to avoid RLS issues
+   */
+  async createSimple(data: Partial<Matter>): Promise<ApiResponse<Matter>> {
+    return this.executeQuery(async () => {
+      return supabase
+        .from(this.tableName)
+        .insert(data)
+        .select('*') // Simple select without joins
+        .single();
+    });
+  }
+
+  /**
    * Create new matter from form data
   */
   async createFromForm(formData: NewMatterForm): Promise<ApiResponse<Matter>> {
@@ -116,39 +126,36 @@ export class MatterApiService extends BaseApiService<Matter> {
       };
     }
 
-    const matterData: Partial<Matter> = {
+    // Only include fields that exist in the database
+    const matterData: any = {
       advocate_id: user.id,
-      reference_number: formData.referenceNumber,
       title: formData.title,
       description: formData.description,
-      matter_type: formData.matterType,
-      court_case_number: formData.courtCaseNumber,
-      bar: formData.bar,
-      client_name: formData.clientName,
-      client_email: formData.clientEmail,
-      client_phone: formData.clientPhone,
-      client_address: formData.clientAddress,
-      client_type: formData.clientType,
-      instructing_attorney: formData.instructingAttorney,
-      instructing_attorney_email: formData.instructingAttorneyEmail,
-      instructing_attorney_phone: formData.instructingAttorneyPhone,
-      instructing_firm: formData.instructingFirm,
-      instructing_firm_ref: formData.instructingFirmRef,
-      fee_type: formData.feeType,
-      estimated_fee: formData.estimatedFee,
-      fee_cap: formData.feeCap,
-      vat_exempt: formData.vatExempt || false,
-      expected_completion_date: formData.expectedCompletionDate,
-      tags: formData.tags || [],
-      // Set defaults
-      status: 'active',
-      risk_level: formData.riskLevel || 'medium',
-      wip_value: 0,
-      trust_balance: 0,
-      disbursements: 0,
-      conflict_check_completed: false,
-      date_instructed: new Date().toISOString().split('T')[0]
+      matter_type: formData.matterType || formData.matter_type,
+      client_name: formData.clientName || formData.client_name,
+      client_email: formData.clientEmail || formData.client_email,
+      client_phone: formData.clientPhone || formData.client_phone,
+      instructing_attorney: formData.instructingAttorney || formData.instructing_attorney,
+      instructing_firm: formData.instructingFirm || formData.instructing_firm,
+      status: 'active'
     };
+
+    // Add optional fields only if they have values
+    if (formData.courtCaseNumber) {
+      matterData.court_case_number = formData.courtCaseNumber;
+    }
+    if (formData.clientAddress || formData.client_address) {
+      matterData.client_address = formData.clientAddress || formData.client_address;
+    }
+    if (formData.instructingAttorneyEmail || formData.instructing_attorney_email) {
+      matterData.instructing_attorney_email = formData.instructingAttorneyEmail || formData.instructing_attorney_email;
+    }
+    if (formData.instructingAttorneyPhone || formData.instructing_attorney_phone) {
+      matterData.instructing_attorney_phone = formData.instructingAttorneyPhone || formData.instructing_attorney_phone;
+    }
+    if (formData.estimatedFee || formData.estimated_fee) {
+      matterData.estimated_fee = formData.estimatedFee || formData.estimated_fee;
+    }
 
     const result = await this.create(matterData);
     

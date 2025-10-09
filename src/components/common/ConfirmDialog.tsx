@@ -1,6 +1,6 @@
 import React from 'react';
 import { AlertTriangle, CheckCircle, Info, X } from 'lucide-react';
-import { Button, Modal, ModalBody, ModalFooter } from '../../design-system/components';
+import { Button, Modal, ModalBody, ModalFooter } from '../design-system/components';
 
 interface ConfirmDialogProps {
   isOpen: boolean;

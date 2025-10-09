@@ -1,12 +1,12 @@
 import React from 'react';
 import { Briefcase, FileText, Receipt, DollarSign, ChevronRight } from 'lucide-react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import type { Page } from '../../types';
 
 interface PipelineStep {
   id: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
-  path: string;
+  page: Page;
   count?: number;
 }
 
@@ -15,52 +15,53 @@ interface WorkflowPipelineProps {
   proFormaCount?: number;
   invoiceCount?: number;
   unpaidCount?: number;
+  currentPage?: Page;
+  onNavigate?: (page: Page) => void;
 }
 
 export const WorkflowPipeline: React.FC<WorkflowPipelineProps> = ({
   matterCount = 0,
   proFormaCount = 0,
   invoiceCount = 0,
-  unpaidCount = 0
+  unpaidCount = 0,
+  currentPage = 'dashboard',
+  onNavigate
 }) => {
-  const navigate = useNavigate();
-  const location = useLocation();
 
   const steps: PipelineStep[] = [
     {
       id: 'matters',
       label: 'Matters',
       icon: Briefcase,
-      path: '/matters',
+      page: 'matters',
       count: matterCount
     },
     {
       id: 'proforma',
       label: 'Pro Forma',
       icon: FileText,
-      path: '/pro-forma',
+      page: 'proforma',
       count: proFormaCount
     },
     {
       id: 'invoices',
       label: 'Invoices',
       icon: Receipt,
-      path: '/invoices',
+      page: 'invoices',
       count: invoiceCount
     },
     {
       id: 'payments',
       label: 'Payments',
       icon: DollarSign,
-      path: '/invoices?tab=tracking',
+      page: 'invoices', // Note: payments uses invoices page
       count: unpaidCount
     }
   ];
 
   const isStepActive = (step: PipelineStep) => {
-    return location.pathname === step.path || 
-           (step.id === 'proforma' && location.pathname.startsWith('/pro-forma')) ||
-           (step.id === 'payments' && location.pathname === '/invoices' && location.search.includes('tab=tracking'));
+    return currentPage === step.page || 
+           (step.id === 'payments' && currentPage === 'invoices');
   };
 
   const getStepStatus = (step: PipelineStep) => {
@@ -83,7 +84,7 @@ export const WorkflowPipeline: React.FC<WorkflowPipelineProps> = ({
               return (
                 <React.Fragment key={step.id}>
                   <button
-                    onClick={() => navigate(step.path)}
+                    onClick={() => onNavigate?.(step.page)}
                     className={`
                       flex items-center gap-2 px-3 py-2 rounded-lg transition-all
                       ${isActive 

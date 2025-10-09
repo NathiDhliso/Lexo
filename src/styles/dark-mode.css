@@ -1,0 +1,140 @@
+.dark {
+  color-scheme: dark;
+}
+
+.dark h1,
+.dark h2,
+.dark h3,
+.dark h4,
+.dark h5,
+.dark h6 {
+  @apply text-neutral-100;
+}
+
+.dark p {
+  @apply text-neutral-300;
+}
+
+.dark a {
+  @apply text-mpondo-gold-400 hover:text-mpondo-gold-300;
+}
+
+.dark hr {
+  @apply border-metallic-gray-700;
+}
+
+.dark .text-muted {
+  @apply text-neutral-400;
+}
+
+.dark .bg-muted {
+  @apply bg-metallic-gray-800;
+}
+
+.dark table {
+  @apply border-metallic-gray-700;
+}
+
+.dark th {
+  @apply bg-metallic-gray-800 text-neutral-200 border-metallic-gray-700;
+}
+
+.dark td {
+  @apply border-metallic-gray-700 text-neutral-300;
+}
+
+.dark tbody tr:hover {
+  @apply bg-metallic-gray-800/50;
+}
+
+/* Removed dark shadow utility overrides to avoid Tailwind circular dependency errors */
+
+.dark .ring-offset-white {
+  --tw-ring-offset-color: #1a1d20;
+}
+
+.dark code {
+  @apply bg-metallic-gray-900 text-mpondo-gold-400 border-metallic-gray-700;
+}
+
+.dark pre {
+  @apply bg-metallic-gray-900 border-metallic-gray-700;
+}
+
+.dark blockquote {
+  @apply border-l-metallic-gray-600 text-neutral-300;
+}
+
+.dark .prose {
+  @apply text-neutral-300;
+}
+
+.dark .prose h1,
+.dark .prose h2,
+.dark .prose h3,
+.dark .prose h4 {
+  @apply text-neutral-100;
+}
+
+.dark .prose a {
+  @apply text-mpondo-gold-400;
+}
+
+.dark .prose strong {
+  @apply text-neutral-200;
+}
+
+.dark .prose code {
+  @apply text-mpondo-gold-400;
+}
+
+.dark .gradient-metallic {
+  background: linear-gradient(135deg, #1a1d20 0%, #2d3236 50%, #1a1d20 100%);
+}
+
+.dark .gradient-metallic-subtle {
+  background: linear-gradient(135deg, rgba(26, 29, 32, 0.5) 0%, rgba(45, 50, 54, 0.5) 50%, rgba(26, 29, 32, 0.5) 100%);
+}
+
+.dark .text-gradient-gold {
+  background: linear-gradient(135deg, #D4AF37 0%, #e2bd64 50%, #D4AF37 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.dark .border-gradient {
+  border-image: linear-gradient(135deg, #495057 0%, #6c757d 50%, #495057 100%) 1;
+}
+
+.dark .hover-glow:hover {
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+}
+
+.dark .focus-glow:focus {
+  box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.3);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  @apply text-neutral-500;
+}
+
+.dark select option {
+  @apply bg-metallic-gray-900 text-neutral-200;
+}
+
+.dark .disabled\:opacity-50:disabled {
+  @apply opacity-40;
+}
+
+.dark [type='checkbox']:checked,
+.dark [type='radio']:checked {
+  background-color: #D4AF37;
+  border-color: #D4AF37;
+}
+
+.dark [type='checkbox']:focus,
+.dark [type='radio']:focus {
+  --tw-ring-color: rgba(212, 175, 55, 0.5);
+}
