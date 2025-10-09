@@ -1,14 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  Bell, 
-  Shield, 
-  Palette, 
-  Globe, 
   Download, 
   Trash2, 
   Eye,
   Edit3,
-  CreditCard,
   FileText,
   AlertCircle,
   Briefcase,
@@ -24,6 +19,7 @@ import { Card, CardContent, Button, Modal, ModalHeader, ModalBody, ModalFooter, 
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import { rateCardService, RateCard, StandardServiceTemplate, ServiceCategory, PricingType, CreateRateCardRequest } from '../services/rate-card.service';
+import { PDFTemplateEditor } from '../components/settings/PDFTemplateEditor';
 
 interface UserPreferences {
   theme: 'light' | 'dark' | 'system';
@@ -66,7 +62,7 @@ interface UserPreferences {
 }
 
 const SettingsPage: React.FC = () => {
-  const { user } = useAuth();
+  const { } = useAuth();
   const [activeTab, setActiveTab] = useState('workflow');
   const [preferences, setPreferences] = useState<UserPreferences>({
     theme: 'light',
@@ -114,7 +110,6 @@ const SettingsPage: React.FC = () => {
   const [standardTemplates, setStandardTemplates] = useState<StandardServiceTemplate[]>([]);
   const [isLoadingRateCards, setIsLoadingRateCards] = useState(false);
   const [showCreateRateCardModal, setShowCreateRateCardModal] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState<StandardServiceTemplate | null>(null);
   const [showRateCards, setShowRateCards] = useState(true); // Toggle between rate cards and templates
   const [viewMode, setViewMode] = useState<'cards' | 'list'>('cards'); // Toggle between cards and list view
 
@@ -150,24 +145,24 @@ const SettingsPage: React.FC = () => {
   const tabs = [
     { id: 'workflow', label: 'Workflow Settings', icon: Workflow },
     { id: 'ratecards', label: 'Rate Cards', icon: DollarSign },
-    { id: 'notifications', label: 'Notifications', icon: Bell },
-    { id: 'integrations', label: 'Integrations', icon: Globe },
-    { id: 'privacy', label: 'Privacy & Security', icon: Shield },
-    { id: 'appearance', label: 'Appearance', icon: Palette },
-    { id: 'billing', label: 'Billing', icon: CreditCard },
     { id: 'templates', label: 'PDF Templates', icon: FileText },
-    { id: 'data', label: 'Data & Export', icon: Download },
   ];
 
 
   const handlePreferenceChange = (section: keyof UserPreferences, key: string, value: any) => {
-    setPreferences(prev => ({
-      ...prev,
-      [section]: {
-        ...prev[section],
-        [key]: value,
-      },
-    }));
+    setPreferences(prev => {
+      const sectionData = prev[section];
+      if (typeof sectionData === 'object' && sectionData !== null) {
+        return {
+          ...prev,
+          [section]: {
+            ...sectionData,
+            [key]: value,
+          },
+        };
+      }
+      return prev;
+    });
   };
 
   const handleSavePreferences = () => {
@@ -1056,15 +1051,19 @@ const SettingsPage: React.FC = () => {
                   
                   <Button 
                     onClick={() => {
-                      setSelectedTemplate(template);
                       setCreateRateCardForm({
                         service_name: template.template_name,
-                        description: template.template_description,
-                        category: template.service_category,
-                        pricing_type: 'hourly',
+                        service_description: template.template_description,
+                        service_category: template.service_category,
+                        matter_type: template.matter_types?.[0] || '',
+                        pricing_type: 'hourly' as PricingType,
                         hourly_rate: template.default_hourly_rate,
-                        estimated_hours: template.estimated_hours,
-                        matter_types: template.matter_types,
+                        fixed_fee: 0,
+                        minimum_fee: undefined,
+                        maximum_fee: undefined,
+                        estimated_hours_min: template.estimated_hours || 1,
+                        estimated_hours_max: template.estimated_hours || 1,
+                        is_default: false,
                         requires_approval: false
                       });
                       setShowCreateRateCardModal(true);
@@ -1462,16 +1461,8 @@ const SettingsPage: React.FC = () => {
         return renderWorkflowTab();
       case 'ratecards':
         return renderRateCardsTab();
-      case 'notifications':
-        return renderNotificationsTab();
-      case 'privacy':
-        return renderPrivacyTab();
-      case 'appearance':
-        return renderAppearanceTab();
-      case 'billing':
-        return renderBillingTab();
-      case 'data':
-        return renderDataTab();
+      case 'templates':
+        return <PDFTemplateEditor />;
       default:
         return renderWorkflowTab();
     }

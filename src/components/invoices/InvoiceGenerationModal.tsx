@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { X, FileText, Clock, Calculator, AlertCircle, Sparkles, Eye, Plus, Trash2, Download, Timer, Receipt, Settings, DollarSign, Percent, CreditCard } from 'lucide-react';
+import { X, FileText, Clock, Calculator, AlertCircle, Sparkles, Eye, Plus, Trash2, Download, Timer, Receipt, Settings, DollarSign, Percent, CreditCard, ChevronRight, CheckCircle2, Search, Filter } from 'lucide-react';
 import RateCardSelector, { SelectedService } from '../pricing/RateCardSelector';
 import { rateCardService, ProFormaEstimate } from '../../services/rate-card.service';
 import { PricingCalculator, ServiceItem, TimeEntry, Expense, DiscountConfig } from '../../utils/PricingCalculator';
@@ -54,6 +54,7 @@ export function InvoiceGenerationModal({
   onClose,
   onGenerate
 }: InvoiceGenerationModalProps) {
+  const [currentStep, setCurrentStep] = useState(1);
   const [timeEntries] = useState(initialTimeEntries);
   const [selectedEntries, setSelectedEntries] = useState(initialTimeEntries.map(e => e.id));
   const [expenses, setExpenses] = useState(initialExpenses);
@@ -61,12 +62,13 @@ export function InvoiceGenerationModal({
   const [customNarrative, setCustomNarrative] = useState('');
   const [useAINarrative, setUseAINarrative] = useState(true);
   const [isProForma, setIsProForma] = useState(false);
-  const [activeTab, setActiveTab] = useState('time');
   const [discountAmount, setDiscountAmount] = useState(0);
   const [discountPercentage, setDiscountPercentage] = useState(0);
   const [discountType, setDiscountType] = useState('amount');
   const [hourlyRateOverride, setHourlyRateOverride] = useState('');
   const [showExpenseForm, setShowExpenseForm] = useState(false);
+  const [timeEntrySearch, setTimeEntrySearch] = useState('');
+  const [expenseSearch, setExpenseSearch] = useState('');
   const [newExpense, setNewExpense] = useState({
     description: '',
     amount: 0,
@@ -74,7 +76,6 @@ export function InvoiceGenerationModal({
     date: new Date().toISOString().split('T')[0]
   });
   
-  // Rate card related state
   const [selectedServices, setSelectedServices] = useState<SelectedService[]>([]);
   const [rateCardEstimate, setRateCardEstimate] = useState<ProFormaEstimate | null>(null);
   const [useRateCards, setUseRateCards] = useState(false);
@@ -244,26 +245,26 @@ export function InvoiceGenerationModal({
   const totals = calculateTotals();
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center p-4">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-xl shadow-2xl max-w-7xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gradient-to-r from-amber-50 to-yellow-50">
+        <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-metallic-gray-700 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20">
           <div className="flex items-center gap-4">
             <div className="p-3 bg-amber-500 rounded-xl shadow-md">
               <FileText className="w-6 h-6 text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-gray-900">Generate Invoice</h2>
-              <p className="text-sm text-gray-600 mt-1">
+              <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Generate Invoice</h2>
+              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
                 {matter.title || 'No Matter Selected'} • {matter.clientName || 'No Client'}
               </p>
             </div>
           </div>
           <button 
             onClick={onClose}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-neutral-100 dark:hover:bg-metallic-gray-700 rounded-lg transition-colors"
           >
-            <X className="w-6 h-6 text-gray-500" />
+            <X className="w-6 h-6 text-neutral-500 dark:text-neutral-400" />
           </button>
         </div>
 
@@ -272,7 +273,7 @@ export function InvoiceGenerationModal({
           <div className="flex-1 p-6 overflow-y-auto">
             {/* Tab Navigation */}
             <div className="mb-6">
-              <div className="border-b border-gray-200">
+              <div className="border-b border-neutral-200 dark:border-metallic-gray-700">
                 <nav className="flex -mb-px">
                   {[
                     { id: 'time', label: 'Time Entries', icon: Timer, color: 'blue' },
@@ -285,8 +286,8 @@ export function InvoiceGenerationModal({
                       onClick={() => setActiveTab(id)}
                       className={`flex items-center gap-2 px-6 py-3 font-medium text-sm border-b-2 transition-all ${
                         activeTab === id
-                          ? 'border-amber-500 text-amber-600'
-                          : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+                          ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+                          : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:border-neutral-300 dark:hover:border-metallic-gray-600'
                       }`}
                     >
                       <Icon className="w-5 h-5" />
@@ -313,7 +314,7 @@ export function InvoiceGenerationModal({
                 <div className="space-y-3">
                   {timeEntries.length === 0 ? (
                     <div className="text-center py-8 text-gray-500">
-                      <Timer className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                      <Timer className="w-12 h-12 mx-auto mb-3 text-neutral-300 dark:text-neutral-600" />
                       <p className="text-lg font-medium">No time entries available</p>
                       <p className="text-sm">Time entries will appear here when added to the matter</p>
                     </div>
@@ -324,8 +325,8 @@ export function InvoiceGenerationModal({
                       onClick={() => handleEntryToggle(entry.id)}
                       className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                         selectedEntries.includes(entry.id)
-                          ? 'border-amber-500 bg-amber-50'
-                          : 'border-gray-200 hover:border-gray-300'
+                          ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
+                          : 'border-neutral-200 dark:border-metallic-gray-700 hover:border-neutral-300 dark:hover:border-metallic-gray-600'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -337,15 +338,15 @@ export function InvoiceGenerationModal({
                         />
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-900">
+                            <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                               {formatDate(entry.date)}
                             </span>
                             <span className="text-lg font-bold text-gray-900">
                               {formatRand((entry.duration / 60) * entry.rate)}
                             </span>
                           </div>
-                          <p className="text-gray-700 mb-2">{entry.description}</p>
-                          <div className="flex items-center gap-4 text-sm text-gray-500">
+                          <p className="text-neutral-700 dark:text-neutral-300 mb-2">{entry.description}</p>
+                          <div className="flex items-center gap-4 text-sm text-neutral-500 dark:text-neutral-400">
                             <span>{(entry.duration / 60).toFixed(1)} hours</span>
                             <span>@ {formatRand(entry.rate)}/hour</span>
                           </div>
@@ -454,8 +455,8 @@ export function InvoiceGenerationModal({
                       key={expense.id}
                       className={`p-4 border-2 rounded-lg transition-all ${
                         selectedExpenses.includes(expense.id)
-                          ? 'border-amber-500 bg-amber-50'
-                          : 'border-gray-200'
+                          ? 'border-amber-500 bg-amber-50 dark:bg-amber-900/20'
+                          : 'border-neutral-200 dark:border-metallic-gray-700'
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -467,8 +468,8 @@ export function InvoiceGenerationModal({
                         />
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-2">
-                            <span className="font-medium text-gray-900">{expense.description}</span>
-                            <span className="text-lg font-bold text-gray-900">
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">{expense.description}</span>
+                            <span className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
                               {formatRand(expense.amount)}
                             </span>
                           </div>
@@ -699,37 +700,37 @@ export function InvoiceGenerationModal({
           </div>
 
           {/* Summary Sidebar */}
-          <div className="w-80 bg-gray-50 p-6 border-l border-gray-200 flex flex-col">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Invoice Summary</h3>
+          <div className="w-80 bg-neutral-50 dark:bg-metallic-gray-900 p-6 border-l border-neutral-200 dark:border-metallic-gray-700 flex flex-col">
+            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Invoice Summary</h3>
 
             <div className="flex-1 space-y-4">
-              <div className="bg-white rounded-lg p-3 border border-gray-200">
-                <div className="text-sm font-medium text-gray-700 mb-1">
+              <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-3 border border-neutral-200 dark:border-metallic-gray-700">
+                <div className="text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                   {matter.bar} Bar
                 </div>
-                <div className="text-xs text-gray-600">
+                <div className="text-xs text-neutral-600 dark:text-neutral-400">
                   Payment Terms: 60 days
                 </div>
               </div>
 
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Hours:</span>
+                  <span className="text-neutral-600 dark:text-neutral-400">Hours:</span>
                   <span className="font-medium">{totals.totalHours.toFixed(1)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-gray-600">Professional Fees:</span>
+                  <span className="text-neutral-600 dark:text-neutral-400">Professional Fees:</span>
                   <span className="font-medium">{formatRand(totals.totalFees)}</span>
                 </div>
                 {totals.totalExpenses > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Expenses:</span>
+                    <span className="text-neutral-600 dark:text-neutral-400">Expenses:</span>
                     <span className="font-medium">{formatRand(totals.totalExpenses)}</span>
                   </div>
                 )}
                 {useRateCards && totals.rateCardTotal > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Rate Card Services:</span>
+                    <span className="text-neutral-600 dark:text-neutral-400">Rate Card Services:</span>
                     <span className="font-medium">{formatRand(totals.rateCardTotal)}</span>
                   </div>
                 )}
@@ -741,17 +742,17 @@ export function InvoiceGenerationModal({
                 )}
                 {totals.disbursements > 0 && (
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Disbursements:</span>
+                    <span className="text-neutral-600 dark:text-neutral-400">Disbursements:</span>
                     <span className="font-medium">{formatRand(totals.disbursements)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
-                  <span className="text-gray-600">VAT (15%):</span>
+                  <span className="text-neutral-600 dark:text-neutral-400">VAT (15%):</span>
                   <span className="font-medium">{formatRand(totals.vatAmount)}</span>
                 </div>
-                <div className="border-t border-gray-200 pt-3 flex justify-between">
-                  <span className="font-semibold text-gray-900">Total:</span>
-                  <span className="font-bold text-xl text-gray-900">
+                <div className="border-t border-neutral-200 dark:border-metallic-gray-700 pt-3 flex justify-between">
+                  <span className="font-semibold text-neutral-900 dark:text-neutral-100">Total:</span>
+                  <span className="font-bold text-xl text-neutral-900 dark:text-neutral-100">
                     {formatRand(totals.totalAmount)}
                   </span>
                 </div>
@@ -779,12 +780,12 @@ export function InvoiceGenerationModal({
               </button>
               <button
                 disabled={selectedEntries.length === 0 && selectedExpenses.length === 0}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3 border-2 border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 <Download className="w-5 h-5" />
                 Preview PDF
               </button>
-              <button className="w-full px-4 py-3 border-2 border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors">
+              <button className="w-full px-4 py-3 border-2 border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 transition-colors">
                 Cancel
               </button>
             </div>

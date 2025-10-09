@@ -263,7 +263,7 @@ export class ProFormaRequestService {
         .update({
           ...submissionData,
           status: 'sent',
-          sent_at: new Date().toISOString(),
+          responded_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
         .eq('token', token)

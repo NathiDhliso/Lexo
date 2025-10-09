@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, FileText, Clock, CheckCircle, XCircle, ArrowRight, Link, Undo2 } from 'lucide-react';
+import { Plus, FileText, Clock, CheckCircle, XCircle, ArrowRight, Link, Undo2, Download } from 'lucide-react';
 import { proformaRequestService } from '../services/api/proforma-request.service';
 import { matterConversionService } from '../services/api/matter-conversion.service';
+import { proFormaPDFService } from '../services/proforma-pdf.service';
 import { LoadingSpinner } from '../components/design-system/components';
 import { NewProFormaModal } from '../components/proforma/NewProFormaModal';
 import { ConvertProFormaModal } from '../components/matters/ConvertProFormaModal';
@@ -10,6 +11,7 @@ import { useAuth } from '../hooks/useAuth';
 import { Database } from '../../types/database';
 import type { Page } from '../types';
 import { toast } from 'react-hot-toast';
+import { supabase } from '../lib/supabase';
 
 type ProFormaRequest = Database['public']['Tables']['proforma_requests']['Row'];
 type ProFormaRequestStatus = Database['public']['Enums']['proforma_request_status'];
@@ -137,13 +139,38 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
 
     try {
       await matterConversionService.reverseConversion(request.converted_matter_id);
-      // Add a small delay to ensure database changes are propagated
       setTimeout(() => {
         loadRequests();
       }, 500);
     } catch (error) {
       console.error('Error reversing conversion:', error);
-      // Error is already handled in the service with toast
+    }
+  };
+
+  const handleDownloadPDF = async (request: ProFormaRequest) => {
+    try {
+      const { data: advocate, error } = await supabase
+        .from('advocates')
+        .select('full_name, practice_number, email, phone_number')
+        .eq('id', user?.id)
+        .single();
+
+      if (error || !advocate) {
+        toast.error('Failed to load advocate information');
+        return;
+      }
+
+      await proFormaPDFService.downloadProFormaPDF(request, {
+        full_name: advocate.full_name,
+        practice_number: advocate.practice_number,
+        email: advocate.email || undefined,
+        phone: advocate.phone_number || undefined,
+      });
+
+      toast.success('Pro forma PDF downloaded successfully');
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+      toast.error('Failed to generate PDF');
     }
   };
 
@@ -209,13 +236,19 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4 flex-1">
-                  {getStatusIcon(request.status)}
+                  {request.status && getStatusIcon(request.status)}
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2 flex-wrap">
                       <h3 className="font-semibold text-gray-900 dark:text-neutral-100">
                         {request.work_title}
                       </h3>
-                      {getStatusBadge(request.status)}
+                      {request.status && getStatusBadge(request.status)}
+                      {request.status === 'sent' && request.responded_at && (
+                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3" />
+                          Attorney Responded
+                        </span>
+                      )}
                       {getUrgencyBadge(request.urgency)}
                     </div>
                     <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">
@@ -239,19 +272,31 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
                         })}
                       </p>
                     )}
-                    <p className="text-xs text-gray-500 dark:text-neutral-500 mt-2">
-                      Created {new Date(request.created_at).toLocaleDateString()}
-                    </p>
+                    {request.created_at && (
+                      <p className="text-xs text-gray-500 dark:text-neutral-500 mt-2">
+                        Created {new Date(request.created_at).toLocaleDateString()}
+                      </p>
+                    )}
                   </div>
                 </div>
 
                 <div className="flex gap-2 flex-wrap">
+                  {(request.status === 'draft' || request.status === 'sent' || request.status === 'accepted') && request.estimated_amount && (
+                    <button
+                      onClick={() => handleDownloadPDF(request)}
+                      className="px-3 py-1 bg-purple-600 dark:bg-purple-700 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 text-sm whitespace-nowrap flex items-center gap-1 transition-colors"
+                      title="Download Pro Forma PDF"
+                    >
+                      <Download className="w-3 h-3" />
+                      Download PDF
+                    </button>
+                  )}
                   {request.status === 'draft' && (
                     <>
                       <button
                         onClick={() => {
                           setSelectedProFormaId(request.id);
-                          setSelectedProFormaTitle(request.work_title);
+                          setSelectedProFormaTitle(request.work_title || '');
                           setShowLinkModal(true);
                         }}
                         className="px-3 py-1 bg-amber-600 text-white rounded-lg hover:bg-amber-700 text-sm whitespace-nowrap flex items-center gap-1"
@@ -268,25 +313,12 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
                     </>
                   )}
                   {request.status === 'sent' && (
-                    <>
-                      <button
-                        onClick={() => {
-                          setSelectedProFormaId(request.id);
-                          setSelectedProFormaTitle(request.work_title);
-                          setShowLinkModal(true);
-                        }}
-                        className="px-3 py-1 bg-amber-600 text-white rounded-lg hover:bg-amber-700 text-sm whitespace-nowrap flex items-center gap-1"
-                      >
-                        <Link className="w-3 h-3" />
-                        Generate Link
-                      </button>
-                      <button
-                        onClick={() => handleAccept(request.id)}
-                        className="px-3 py-1 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 text-sm whitespace-nowrap transition-colors"
-                      >
-                        Mark Accepted
-                      </button>
-                    </>
+                    <button
+                      onClick={() => handleAccept(request.id)}
+                      className="px-3 py-1 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 text-sm whitespace-nowrap transition-colors"
+                    >
+                      Mark Accepted
+                    </button>
                   )}
                   {request.status === 'accepted' && !request.converted_matter_id && (
                     <button 
@@ -341,7 +373,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
             setShowConvertModal(false);
             setSelectedProFormaId(null);
           }}
-          onSuccess={(matterId) => {
+          onSuccess={() => {
             setShowConvertModal(false);
             setSelectedProFormaId(null);
             loadRequests();

@@ -25,57 +25,8 @@ const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // Default quick actions
-  const defaultActions: QuickAction[] = [
-    {
-      id: 'create-proforma',
-      label: 'Create Pro Forma',
-      description: 'Generate a new pro forma invoice',
-      icon: FileText,
-      shortcut: 'Ctrl+Shift+P',
-      page: 'proforma',
-      action: () => onAction('create-proforma'),
-      isNew: false,
-      minTier: UserTier.JUNIOR_START,
-      usageCount: 0
-    },
-    {
-      id: 'add-matter',
-      label: 'Add New Matter',
-      description: 'Create a new matter file',
-      icon: FolderPlus,
-      shortcut: 'Ctrl+Shift+M',
-      page: undefined,
-      action: () => onAction('add-matter'),
-      isNew: false,
-      minTier: UserTier.JUNIOR_START,
-      usageCount: 0
-    },
-    {
-      id: 'analyze-brief',
-      label: 'Analyze Brief',
-      description: 'AI-powered brief analysis',
-      icon: Brain,
-      shortcut: 'Ctrl+Shift+A',
-      page: undefined,
-      action: () => onAction('analyze-brief'),
-      isNew: true,
-      minTier: UserTier.ADVOCATE_PRO,
-      usageCount: 0
-    },
-    {
-      id: 'quick-invoice',
-      label: 'Quick Invoice',
-      description: 'Generate invoice from time entries',
-      icon: Receipt,
-      shortcut: 'Ctrl+Shift+I',
-      page: undefined,
-      action: () => onAction('quick-invoice'),
-      isNew: false,
-      minTier: UserTier.JUNIOR_START,
-      usageCount: 0
-    }
-  ];
+  // TODO: Load quick actions from user preferences or database instead of hardcoded defaults
+  const defaultActions: QuickAction[] = [];
 
   // Filter actions based on user tier
   const getFilteredActions = () => {

@@ -118,13 +118,13 @@ export const NewProFormaModal: React.FC<NewProFormaModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white rounded-lg shadow-xl max-w-md w-full mx-4">
-        <div className="border-b px-6 py-4 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Generate Pro Forma Link</h2>
+    <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div className="border-b border-neutral-200 dark:border-metallic-gray-700 px-6 py-4 flex items-center justify-between">
+          <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Generate Pro Forma Link</h2>
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
           >
             <X className="w-5 h-5" />
           </button>
@@ -135,10 +135,10 @@ export const NewProFormaModal: React.FC<NewProFormaModalProps> = ({
             <div>
               <div className="text-center mb-6">
                 <Link className="w-16 h-16 text-blue-500 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-900 mb-2">
+                <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
                   Generate Attorney Link
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-neutral-600 dark:text-neutral-400">
                   Create a secure link that attorneys can use to submit their pro forma request details.
                 </p>
               </div>
@@ -153,22 +153,22 @@ export const NewProFormaModal: React.FC<NewProFormaModalProps> = ({
                     onChange={(e) => setIncludeRateCards(e.target.checked)}
                     className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                   />
-                  <label htmlFor="includeRateCards" className="flex items-center gap-2 text-sm font-medium text-gray-700">
+                  <label htmlFor="includeRateCards" className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
                     <Calculator className="w-4 h-4" />
                     Include pricing estimation with rate cards
                   </label>
                 </div>
                 
                 {includeRateCards && (
-                  <div className="border border-gray-200 rounded-lg p-4 bg-gray-50">
+                  <div className="border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-4 bg-neutral-50 dark:bg-metallic-gray-900">
                     <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                         Matter Type
                       </label>
                       <select
                         value={matterType}
                         onChange={(e) => setMatterType(e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       >
                         <option value="">Select matter type...</option>
                         <option value="civil_litigation">Civil Litigation</option>
@@ -218,15 +218,15 @@ export const NewProFormaModal: React.FC<NewProFormaModalProps> = ({
           ) : (
             <div className="text-center">
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">
+              <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
                 Link Generated Successfully!
               </h3>
-              <p className="text-gray-600 mb-4">
+              <p className="text-neutral-600 dark:text-neutral-400 mb-4">
                 Share this link with the attorney to collect their details:
               </p>
               
-              <div className="bg-gray-50 border rounded-lg p-3 mb-4">
-                <div className="text-sm text-gray-800 break-all font-mono">
+              <div className="bg-neutral-50 dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-3 mb-4">
+                <div className="text-sm text-neutral-800 dark:text-neutral-200 break-all font-mono">
                   {generatedLink}
                 </div>
               </div>
@@ -250,7 +250,7 @@ export const NewProFormaModal: React.FC<NewProFormaModalProps> = ({
                 </button>
                 <button
                   onClick={handleClose}
-                  className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg"
+                  className="px-4 py-2 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-700 rounded-lg"
                 >
                   Done
                 </button>

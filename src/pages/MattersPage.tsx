@@ -10,7 +10,8 @@ import {
   Undo2
 } from 'lucide-react';
 import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
-
+import { MatterDetailModal } from '../components/matters/MatterDetailModal';
+import { EditMatterModal } from '../components/matters/EditMatterModal';
 import { matterApiService } from '../services/api';
 import { matterConversionService } from '../services/api/matter-conversion.service';
 import { useAuth } from '../hooks/useAuth';
@@ -26,67 +27,87 @@ interface MattersPageProps {
 const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [activeTab, setActiveTab] = useState<'active' | 'all'>('active');
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
 
   const [matters, setMatters] = useState<Matter[]>([]);
   const [loadingMatters, setLoadingMatters] = useState(true);
   const { user, loading, isAuthenticated } = useAuth();
 
   // Load matters from API based on current user
-  React.useEffect(() => {
-    const fetchMatters = async () => {
-      if (loading || !isAuthenticated || !user?.id) return;
-      setLoadingMatters(true);
-      try {
-        const { data, error } = await matterApiService.getByAdvocate(user.id);
-        if (error) {
-          toast.error('Failed to load matters');
-          setMatters([]);
-        } else {
-          // Fetch associated services for each matter
-          const mattersWithServices = await Promise.all(
-            (data || []).map(async (matter) => {
-              try {
-                const { data: matterServices } = await supabase
-                  .from('matter_services')
-                  .select(`
-                    service_id,
-                    services (
-                      id,
-                      name,
-                      description,
-                      service_categories (
-                        id,
-                        name
-                      )
-                    )
-                  `)
-                  .eq('matter_id', matter.id);
-                
-                return {
-                  ...matter,
-                  associatedServices: matterServices?.map(ms => ms.services) || []
-                };
-              } catch (serviceError) {
-                console.error('Error fetching services for matter:', matter.id, serviceError);
-                return {
-                  ...matter,
-                  associatedServices: []
-                };
-              }
-            })
-          );
-          
-          setMatters(mattersWithServices);
-        }
-      } catch (err) {
-        toast.error('Unexpected error loading matters');
+  const fetchMatters = React.useCallback(async () => {
+    if (loading || !isAuthenticated || !user?.id) return;
+    setLoadingMatters(true);
+    try {
+      console.log('[MattersPage] Fetching matters for user:', user.id);
+      const { data, error } = await matterApiService.getByAdvocate(user.id);
+      console.log('[MattersPage] Matters response:', { data, error, count: data?.length });
+      
+      if (error) {
+        console.error('[MattersPage] Error fetching matters:', error);
+        toast.error('Failed to load matters');
         setMatters([]);
-      } finally {
-        setLoadingMatters(false);
+      } else {
+        // Fetch associated services for each matter
+        const mattersWithServices = await Promise.all(
+          (data || []).map(async (matter) => {
+            try {
+              const { data: matterServices } = await supabase
+                .from('matter_services')
+                .select(`
+                  service_id,
+                  services (
+                    id,
+                    name,
+                    description,
+                    service_categories (
+                      id,
+                      name
+                    )
+                  )
+                `)
+                .eq('matter_id', matter.id);
+              
+              return {
+                ...matter,
+                associatedServices: matterServices?.map(ms => ms.services) || []
+              };
+            } catch (serviceError) {
+              console.error('Error fetching services for matter:', matter.id, serviceError);
+              return {
+                ...matter,
+                associatedServices: []
+              };
+            }
+          })
+        );
+        
+        console.log('[MattersPage] Setting matters:', mattersWithServices.length, 'matters');
+        setMatters(mattersWithServices);
       }
-    };
-    fetchMatters();
+    } catch (err) {
+      console.error('[MattersPage] Unexpected error:', err);
+      toast.error('Unexpected error loading matters');
+      setMatters([]);
+    } finally {
+      setLoadingMatters(false);
+    }
   }, [loading, isAuthenticated, user?.id]);
+
+  React.useEffect(() => {
+    fetchMatters();
+  }, [fetchMatters]);
+
+  // Refresh matters when window regains focus (user comes back from creating a matter)
+  React.useEffect(() => {
+    const handleFocus = () => {
+      fetchMatters();
+    };
+    
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [fetchMatters]);
 
   // Function to determine if a matter is high WIP inactive
   const isHighWipInactive = (matter: Matter) => {
@@ -130,11 +151,18 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   };
 
   const handleViewMatter = (matter: Matter) => {
-    toast(`Viewing details for ${matter.title}`);
+    setSelectedMatter(matter);
+    setShowDetailModal(true);
   };
 
   const handleEditMatter = (matter: Matter) => {
-    toast(`Editing ${matter.title}`);
+    setSelectedMatter(matter);
+    setShowDetailModal(false);
+    setShowEditModal(true);
+  };
+
+  const handleSaveMatter = () => {
+    fetchMatters();
   };
 
   const handleReverseConversion = async (matter: Matter) => {
@@ -377,7 +405,19 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         )}
       </div>
 
+      <MatterDetailModal
+        matter={selectedMatter}
+        isOpen={showDetailModal}
+        onClose={() => setShowDetailModal(false)}
+        onEdit={handleEditMatter}
+      />
 
+      <EditMatterModal
+        matter={selectedMatter}
+        isOpen={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        onSave={handleSaveMatter}
+      />
     </div>
   );
 };

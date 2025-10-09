@@ -75,13 +75,53 @@ const MATTER_STEPS: Step[] = [
   }
 ];
 
+const MATTER_STEPS_WITHOUT_UPLOAD: Step[] = [
+  {
+    id: 'basics',
+    title: 'Basic Info',
+    description: 'Matter details',
+    icon: FileText,
+    fields: ['title', 'matter_type', 'description']
+  },
+  {
+    id: 'client',
+    title: 'Client',
+    description: 'Client information',
+    icon: User,
+    fields: ['client_name', 'client_email', 'client_type']
+  },
+  {
+    id: 'attorney',
+    title: 'Attorney',
+    description: 'Instructing attorney',
+    icon: Briefcase,
+    fields: ['instructing_attorney', 'instructing_firm']
+  },
+  {
+    id: 'financial',
+    title: 'Financial',
+    description: 'Fee structure',
+    icon: DollarSign,
+    fields: ['fee_type', 'estimated_fee']
+  },
+  {
+    id: 'review',
+    title: 'Review',
+    description: 'Confirm details',
+    icon: CheckCircle,
+    fields: []
+  }
+];
+
 export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
   isOpen,
   onClose,
   onComplete,
-  initialData = {}
+  initialData = {},
+  isPrepopulated = false
 }) => {
-  // File upload state
+  const steps = isPrepopulated ? MATTER_STEPS_WITHOUT_UPLOAD : MATTER_STEPS;
+  
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
   const [isProcessingDocument, setIsProcessingDocument] = useState(false);
   const [processingProgress, setProcessingProgress] = useState(0);
@@ -129,26 +169,29 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Create New Matter</h2>
           
           <MultiStepForm
-            steps={MATTER_STEPS}
+            steps={steps}
             initialData={initialData}
             onComplete={onComplete}
             onCancel={onClose}
           >
             {(currentStep, data, updateData) => {
-              // Auto-population function
               const applyExtractedData = () => {
                 if (!extractedData) return;
                 
                 const extracted = extractedData.extractedData;
                 
-                // Apply extracted data to form
-                if (extracted.clientName) updateData('client_name', extracted.clientName);
-                if (extracted.clientEmail) updateData('client_email', extracted.clientEmail);
-                if (extracted.clientPhone) updateData('client_phone', extracted.clientPhone);
-                if (extracted.lawFirm) updateData('instructing_firm', extracted.lawFirm);
+                if (extracted.caseTitle) updateData('title', extracted.caseTitle);
                 if (extracted.description) updateData('description', extracted.description);
                 if (extracted.caseNumber) updateData('court_case_number', extracted.caseNumber);
                 
+                if (extracted.clientName) updateData('client_name', extracted.clientName);
+                if (extracted.clientEmail) updateData('client_email', extracted.clientEmail);
+                if (extracted.clientPhone) updateData('client_phone', extracted.clientPhone);
+                if (extracted.clientAddress) updateData('client_address', extracted.clientAddress);
+                
+                if (extracted.lawFirm) updateData('instructing_firm', extracted.lawFirm);
+                
+                console.log('✓ Applied extracted data to form:', extracted);
                 setShowExtractedDataPreview(false);
               };
 
@@ -205,20 +248,14 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
                           <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
                             {extractedData.extractedData.clientName && (
                               <div>
-                                <span className="font-medium text-blue-900">Name:</span>
+                                <span className="font-medium text-blue-900">Client:</span>
                                 <span className="ml-2 text-blue-800">{extractedData.extractedData.clientName}</span>
                               </div>
                             )}
-                            {extractedData.extractedData.clientEmail && (
+                            {extractedData.extractedData.caseTitle && (
                               <div>
-                                <span className="font-medium text-blue-900">Email:</span>
-                                <span className="ml-2 text-blue-800">{extractedData.extractedData.clientEmail}</span>
-                              </div>
-                            )}
-                            {extractedData.extractedData.clientPhone && (
-                              <div>
-                                <span className="font-medium text-blue-900">Phone:</span>
-                                <span className="ml-2 text-blue-800">{extractedData.extractedData.clientPhone}</span>
+                                <span className="font-medium text-blue-900">Case Title:</span>
+                                <span className="ml-2 text-blue-800">{extractedData.extractedData.caseTitle}</span>
                               </div>
                             )}
                             {extractedData.extractedData.lawFirm && (
@@ -231,6 +268,18 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
                               <div>
                                 <span className="font-medium text-blue-900">Case Number:</span>
                                 <span className="ml-2 text-blue-800">{extractedData.extractedData.caseNumber}</span>
+                              </div>
+                            )}
+                            {extractedData.extractedData.dateOfIncident && (
+                              <div>
+                                <span className="font-medium text-blue-900">Date:</span>
+                                <span className="ml-2 text-blue-800">{extractedData.extractedData.dateOfIncident}</span>
+                              </div>
+                            )}
+                            {extractedData.extractedData.urgency && (
+                              <div>
+                                <span className="font-medium text-blue-900">Urgency:</span>
+                                <span className="ml-2 text-blue-800 capitalize">{extractedData.extractedData.urgency}</span>
                               </div>
                             )}
                           </div>
@@ -426,65 +475,65 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
                 
                 {currentStep.id === 'review' && (
                   <div className="space-y-6">
-                    <h3 className="text-lg font-semibold text-neutral-900">Review Your Matter</h3>
+                    <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">Review Your Matter</h3>
                     
                     <div className="space-y-4">
-                      <div className="p-4 bg-neutral-50 rounded-lg">
-                        <h4 className="font-medium text-neutral-900 mb-2">Basic Information</h4>
+                      <div className="p-4 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
+                        <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">Basic Information</h4>
                         <dl className="space-y-1 text-sm">
                           <div className="flex justify-between">
-                            <dt className="text-neutral-600">Title:</dt>
-                            <dd className="font-medium">{data.title}</dd>
+                            <dt className="text-neutral-600 dark:text-neutral-400">Title:</dt>
+                            <dd className="font-medium text-neutral-900 dark:text-neutral-100">{data.title}</dd>
                           </div>
                           <div className="flex justify-between">
-                            <dt className="text-neutral-600">Type:</dt>
-                            <dd className="font-medium">{data.matter_type}</dd>
+                            <dt className="text-neutral-600 dark:text-neutral-400">Type:</dt>
+                            <dd className="font-medium text-neutral-900 dark:text-neutral-100">{data.matter_type}</dd>
                           </div>
                         </dl>
                       </div>
                       
-                      <div className="p-4 bg-neutral-50 rounded-lg">
-                        <h4 className="font-medium text-neutral-900 mb-2">Client Details</h4>
+                      <div className="p-4 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
+                        <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">Client Details</h4>
                         <dl className="space-y-1 text-sm">
                           <div className="flex justify-between">
-                            <dt className="text-neutral-600">Name:</dt>
-                            <dd className="font-medium">{data.client_name}</dd>
+                            <dt className="text-neutral-600 dark:text-neutral-400">Name:</dt>
+                            <dd className="font-medium text-neutral-900 dark:text-neutral-100">{data.client_name}</dd>
                           </div>
                           <div className="flex justify-between">
-                            <dt className="text-neutral-600">Email:</dt>
-                            <dd className="font-medium">{data.client_email}</dd>
+                            <dt className="text-neutral-600 dark:text-neutral-400">Email:</dt>
+                            <dd className="font-medium text-neutral-900 dark:text-neutral-100">{data.client_email}</dd>
                           </div>
                           <div className="flex justify-between">
-                            <dt className="text-neutral-600">Type:</dt>
-                            <dd className="font-medium capitalize">{data.client_type}</dd>
+                            <dt className="text-neutral-600 dark:text-neutral-400">Type:</dt>
+                            <dd className="font-medium capitalize text-neutral-900 dark:text-neutral-100">{data.client_type}</dd>
                           </div>
                         </dl>
                       </div>
                       
-                      <div className="p-4 bg-neutral-50 rounded-lg">
-                        <h4 className="font-medium text-neutral-900 mb-2">Attorney Information</h4>
+                      <div className="p-4 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
+                        <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">Attorney Information</h4>
                         <dl className="space-y-1 text-sm">
                           <div className="flex justify-between">
-                            <dt className="text-neutral-600">Attorney:</dt>
-                            <dd className="font-medium">{data.instructing_attorney}</dd>
+                            <dt className="text-neutral-600 dark:text-neutral-400">Attorney:</dt>
+                            <dd className="font-medium text-neutral-900 dark:text-neutral-100">{data.instructing_attorney}</dd>
                           </div>
                           <div className="flex justify-between">
-                            <dt className="text-neutral-600">Firm:</dt>
-                            <dd className="font-medium">{data.instructing_firm}</dd>
+                            <dt className="text-neutral-600 dark:text-neutral-400">Firm:</dt>
+                            <dd className="font-medium text-neutral-900 dark:text-neutral-100">{data.instructing_firm}</dd>
                           </div>
                         </dl>
                       </div>
                       
-                      <div className="p-4 bg-mpondo-gold-50 border border-mpondo-gold-200 rounded-lg">
-                        <h4 className="font-medium text-neutral-900 mb-2">Financial Details</h4>
+                      <div className="p-4 bg-mpondo-gold-50 dark:bg-mpondo-gold-900/20 border border-mpondo-gold-200 dark:border-mpondo-gold-700 rounded-lg">
+                        <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">Financial Details</h4>
                         <dl className="space-y-1 text-sm">
                           <div className="flex justify-between">
-                            <dt className="text-neutral-600">Fee Type:</dt>
-                            <dd className="font-medium capitalize">{data.fee_type}</dd>
+                            <dt className="text-neutral-600 dark:text-neutral-400">Fee Type:</dt>
+                            <dd className="font-medium capitalize text-neutral-900 dark:text-neutral-100">{data.fee_type}</dd>
                           </div>
                           <div className="flex justify-between">
-                            <dt className="text-neutral-600">Estimated Fee:</dt>
-                            <dd className="font-bold text-mpondo-gold-700">
+                            <dt className="text-neutral-600 dark:text-neutral-400">Estimated Fee:</dt>
+                            <dd className="font-bold text-mpondo-gold-700 dark:text-mpondo-gold-400">
                               R{Number(data.estimated_fee || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                             </dd>
                           </div>

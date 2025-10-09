@@ -10,6 +10,7 @@ import {
 } from '../../types';
 import { toast } from 'react-hot-toast';
 import { format, addDays } from 'date-fns';
+import { awsEmailService } from '../aws-email.service';
 
 // South African Bar Payment Rules
 const BAR_PAYMENT_RULES: Record<string, BarPaymentRules> = {
@@ -804,7 +805,6 @@ export class InvoiceService {
     }
   }
 
-  // Send invoice to client
   static async sendInvoice(invoiceId: string): Promise<void> {
     try {
       const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -812,21 +812,43 @@ export class InvoiceService {
         throw new Error('User not authenticated');
       }
 
-      const { data: invoice, error } = await supabase
+      const { data: invoice, error: invoiceError } = await supabase
+        .from('invoices')
+        .select('*, matters(client_name, client_email)')
+        .eq('id', invoiceId)
+        .eq('advocate_id', user.id)
+        .single();
+      
+      if (invoiceError || !invoice) {
+        throw new Error('Invoice not found or unauthorized');
+      }
+
+      const matter = invoice.matters as any;
+      const clientEmail = matter?.client_email;
+      const clientName = matter?.client_name || 'Valued Client';
+
+      if (clientEmail && awsEmailService.isConfigured()) {
+        const emailResult = await awsEmailService.sendInvoiceEmail({
+          recipientEmail: clientEmail,
+          recipientName: clientName,
+          invoiceNumber: invoice.invoice_number,
+          invoiceAmount: invoice.total_amount,
+          dueDate: format(new Date(invoice.due_date), 'dd MMM yyyy'),
+        });
+
+        if (!emailResult.success) {
+          console.warn('Failed to send invoice email:', emailResult.error);
+        }
+      }
+
+      await supabase
         .from('invoices')
         .update({ 
           status: 'sent',
           sent_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
-        .eq('id', invoiceId)
-        .eq('advocate_id', user.id)
-        .select()
-        .single();
-      
-      if (error || !invoice) {
-        throw new Error('Invoice not found or unauthorized');
-      }
+        .eq('id', invoiceId);
       
       toast.success('Invoice sent successfully');
       
@@ -836,6 +858,221 @@ export class InvoiceService {
       toast.error(message);
       throw error;
     }
+  }
+
+  // Generate HTML for invoice
+  private static generateInvoiceHTML(invoice: any): string {
+    const subtotal = invoice.fees_amount + invoice.disbursements_amount;
+    const vatAmount = invoice.vat_amount || (subtotal * (invoice.vat_rate || 0.15));
+    const total = invoice.total_amount || (subtotal + vatAmount);
+
+    return `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Invoice ${invoice.invoice_number}</title>
+  <style>
+    @media print {
+      body { margin: 0; }
+      .no-print { display: none; }
+    }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 40px;
+      color: #333;
+      line-height: 1.6;
+    }
+    .header {
+      text-align: center;
+      margin-bottom: 40px;
+      border-bottom: 3px solid #D4AF37;
+      padding-bottom: 20px;
+    }
+    .header h1 {
+      color: #D4AF37;
+      margin: 0;
+      font-size: 2.5em;
+      letter-spacing: 2px;
+    }
+    .header .invoice-number {
+      font-size: 1.2em;
+      color: #666;
+      margin-top: 10px;
+    }
+    .invoice-details {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+    .invoice-details div {
+      flex: 1;
+    }
+    .invoice-details h3 {
+      color: #D4AF37;
+      margin-bottom: 10px;
+      font-size: 1.1em;
+    }
+    .invoice-details p {
+      margin: 5px 0;
+    }
+    .invoice-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 30px 0;
+    }
+    .invoice-table th {
+      background: #f8f8f8;
+      padding: 15px;
+      text-align: left;
+      border-bottom: 2px solid #D4AF37;
+      font-weight: 600;
+      color: #333;
+    }
+    .invoice-table td {
+      padding: 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .invoice-table tr:hover {
+      background: #fafafa;
+    }
+    .fee-narrative {
+      margin: 30px 0;
+      padding: 20px;
+      background: #f9f9f9;
+      border-left: 4px solid #D4AF37;
+      border-radius: 4px;
+    }
+    .fee-narrative h4 {
+      margin-top: 0;
+      color: #D4AF37;
+    }
+    .totals {
+      margin-top: 40px;
+      text-align: right;
+    }
+    .totals table {
+      margin-left: auto;
+      width: 400px;
+      border-collapse: collapse;
+    }
+    .totals td {
+      padding: 10px 15px;
+      border-bottom: 1px solid #eee;
+    }
+    .totals .subtotal-row {
+      font-weight: 500;
+    }
+    .totals .final-row {
+      font-weight: bold;
+      font-size: 1.3em;
+      border-top: 3px solid #D4AF37;
+      background: #f8f8f8;
+      color: #D4AF37;
+    }
+    .footer {
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 2px solid #eee;
+      text-align: center;
+      color: #666;
+      font-size: 0.9em;
+    }
+    .footer p {
+      margin: 5px 0;
+    }
+    .print-button {
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      padding: 12px 24px;
+      background: #D4AF37;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    }
+    .print-button:hover {
+      background: #c49d2f;
+    }
+  </style>
+</head>
+<body>
+  <button class="print-button no-print" onclick="window.print()">Print / Save as PDF</button>
+
+  <div class="header">
+    <h1>INVOICE</h1>
+    <div class="invoice-number">${invoice.invoice_number}</div>
+  </div>
+
+  <div class="invoice-details">
+    <div>
+      <h3>Bill To:</h3>
+      <p><strong>${invoice.client_name || 'Client Name'}</strong></p>
+      <p>Matter: ${invoice.matter_title || 'Matter Title'}</p>
+    </div>
+    <div style="text-align: right;">
+      <p><strong>Invoice Date:</strong> ${new Date(invoice.invoice_date).toLocaleDateString('en-ZA', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+      <p><strong>Due Date:</strong> ${new Date(invoice.due_date).toLocaleDateString('en-ZA', { day: '2-digit', month: 'long', year: 'numeric' })}</p>
+      <p><strong>Bar:</strong> ${invoice.bar.charAt(0).toUpperCase() + invoice.bar.slice(1)}</p>
+    </div>
+  </div>
+
+  <table class="invoice-table">
+    <thead>
+      <tr>
+        <th>Description</th>
+        <th style="text-align: right; width: 150px;">Amount</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Professional Fees</strong></td>
+        <td style="text-align: right;">R ${invoice.fees_amount.toFixed(2)}</td>
+      </tr>
+      ${invoice.disbursements_amount > 0 ? `
+      <tr>
+        <td><strong>Disbursements</strong></td>
+        <td style="text-align: right;">R ${invoice.disbursements_amount.toFixed(2)}</td>
+      </tr>
+      ` : ''}
+    </tbody>
+  </table>
+
+  ${invoice.fee_narrative ? `
+  <div class="fee-narrative">
+    <h4>Fee Narrative</h4>
+    <p>${invoice.fee_narrative}</p>
+  </div>
+  ` : ''}
+
+  <div class="totals">
+    <table>
+      <tr class="subtotal-row">
+        <td>Subtotal:</td>
+        <td style="text-align: right;">R ${subtotal.toFixed(2)}</td>
+      </tr>
+      <tr>
+        <td>VAT (${((invoice.vat_rate || 0.15) * 100).toFixed(0)}%):</td>
+        <td style="text-align: right;">R ${vatAmount.toFixed(2)}</td>
+      </tr>
+      <tr class="final-row">
+        <td>TOTAL AMOUNT DUE:</td>
+        <td style="text-align: right;">R ${total.toFixed(2)}</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    <p><strong>Thank you for your business</strong></p>
+    <p>Please make payment within the specified due date</p>
+    <p style="margin-top: 20px; font-size: 0.85em;">This is a computer-generated invoice</p>
+  </div>
+</body>
+</html>
+    `.trim();
   }
 
   // Download invoice PDF
@@ -858,32 +1095,21 @@ export class InvoiceService {
         throw new Error('Invoice not found or unauthorized');
       }
 
-      // For now, we'll create a simple text-based download
-      // In production, this would generate a proper PDF
-      const invoiceContent = `
-INVOICE ${invoice.invoice_number}
+      // Generate HTML invoice
+      const invoiceHTML = this.generateInvoiceHTML(invoice);
 
-Date: ${new Date(invoice.invoice_date).toLocaleDateString()}
-Due Date: ${new Date(invoice.due_date).toLocaleDateString()}
-
-Professional Fees: R${invoice.fees_amount.toFixed(2)}
-Disbursements: R${invoice.disbursements_amount.toFixed(2)}
-VAT: R${invoice.vat_amount.toFixed(2)}
-Total: R${invoice.total_amount.toFixed(2)}
-
-Fee Narrative:
-${invoice.fee_narrative || 'No narrative provided'}
-      `;
-
-      const blob = new Blob([invoiceContent], { type: 'text/plain' });
+      // Create blob and download
+      const blob = new Blob([invoiceHTML], { type: 'text/html' });
       const url = window.URL.createObjectURL(blob);
       const link = document.createElement('a');
       link.href = url;
-      link.download = `${invoice.invoice_number}.txt`;
+      link.download = `${invoice.invoice_number}.html`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
+      
+      toast.success('Invoice downloaded. Open the file and use Print to PDF from your browser.');
       
     } catch (error) {
       console.error('Error downloading invoice:', error);
@@ -1149,10 +1375,60 @@ ${invoice.fee_narrative || 'No narrative provided'}
     return `${format(minDate, 'dd MMMM yyyy')} to ${format(maxDate, 'dd MMMM yyyy')}`;
   }
   
-  // Helper: Send reminder (placeholder for email integration)
+  // Helper: Send reminder (integrated with AWS SES)
   private static async sendReminder(invoice: Invoice): Promise<void> {
-    // In production, integrate with email service
-    console.log(`Sending reminder for invoice ${invoice.invoiceNumber}`);
+    try {
+      // Get matter details for client information
+      const { data: matter, error: matterError } = await supabase
+        .from('matters')
+        .select('client_name, client_email')
+        .eq('id', invoice.matterId)
+        .single();
+
+      if (matterError || !matter) {
+        console.warn(`Could not find matter for invoice ${invoice.invoiceNumber}`);
+        return;
+      }
+
+      const clientEmail = matter.client_email;
+      const clientName = matter.client_name || 'Valued Client';
+
+      if (clientEmail && awsEmailService.isConfigured()) {
+        // Calculate days overdue
+        const dueDate = new Date(invoice.dueDate);
+        const today = new Date();
+        const daysOverdue = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
+
+        const emailResult = await awsEmailService.sendPaymentReminderEmail({
+          recipientEmail: clientEmail,
+          recipientName: clientName,
+          invoiceNumber: invoice.invoiceNumber,
+          amountDue: invoice.totalAmount,
+          dueDate: format(dueDate, 'dd MMM yyyy'),
+          daysOverdue: Math.max(0, daysOverdue)
+        });
+
+        if (emailResult.success) {
+          console.log(`Payment reminder sent for invoice ${invoice.invoiceNumber}`);
+          
+          // Update reminder tracking
+          await supabase
+            .from('invoices')
+            .update({ 
+              last_reminder_sent: new Date().toISOString(),
+              reminder_count: (invoice.reminderCount || 0) + 1,
+              updated_at: new Date().toISOString()
+            })
+            .eq('id', invoice.id);
+        } else {
+          console.warn(`Failed to send reminder for invoice ${invoice.invoiceNumber}:`, emailResult.error);
+        }
+      } else {
+        console.log(`Email not configured or client email missing for invoice ${invoice.invoiceNumber}`);
+      }
+    } catch (error) {
+      console.error(`Error sending reminder for invoice ${invoice.invoiceNumber}:`, error);
+    }
   }
   
   // Helper: Schedule reminders

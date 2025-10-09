@@ -33,6 +33,26 @@ Step 3: INVOICE (Billing)
 
 **You MUST start with Pro Forma. You CANNOT create matters directly.**
 
+### 🔗 Matter-Centric Invoice Flow
+
+**Everything links through Matter ID:**
+```
+Pro Forma → Matter (source_proforma_id)
+    ↓
+Time Entries → Matter (matter_id)
+    ↓
+Expenses → Matter (matter_id)
+    ↓
+Invoice ← Auto-imports ALL data
+```
+
+**When generating invoices:**
+- Select matter
+- Pro forma services **auto-load** (if linked)
+- Time entries **auto-load** (unbilled only)
+- Expenses **auto-load**
+- Review → Configure → Generate
+
 ---
 
 ## ⚡ Quick Setup
@@ -52,6 +72,7 @@ Step 3: INVOICE (Billing)
 3. **Only 3 core features** (Pro Forma, Matter, Invoice)
 4. **Remote database only** (no local databases)
 5. **Reject features outside the 3-step workflow**
+6. **Everything links by Matter ID** (pro forma, time, expenses, invoices)
 
 ---
 

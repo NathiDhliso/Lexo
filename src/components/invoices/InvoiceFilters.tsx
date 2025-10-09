@@ -67,23 +67,23 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
   };
 
   return (
-    <div className="bg-white border border-neutral-200 rounded-lg p-4 space-y-4">
+    <div className="bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-4 space-y-4">
       {/* Search */}
       <div className="relative">
-        <Search className="absolute left-3 top-2.5 w-4 h-4 text-neutral-400" />
+        <Search className="absolute left-3 top-2.5 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
         <input
           type="text"
           placeholder="Search invoices by number, client, or matter..."
           value={filters.search}
           onChange={(e) => handleSearchChange(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent"
+          className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400 dark:placeholder:text-neutral-500 focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent"
         />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Status Filter */}
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
             Status
           </label>
           <div className="space-y-2">
@@ -93,7 +93,7 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
                   type="checkbox"
                   checked={filters.status.includes(option.value)}
                   onChange={() => handleStatusToggle(option.value)}
-                  className="rounded border-neutral-300 text-mpondo-gold-600 focus:ring-mpondo-gold-500"
+                  className="rounded border-neutral-300 dark:border-metallic-gray-600 text-mpondo-gold-600 focus:ring-mpondo-gold-500 dark:bg-metallic-gray-800"
                 />
                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${option.color}`}>
                   {option.label}
@@ -105,7 +105,7 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
 
         {/* Bar Filter */}
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
             Bar
           </label>
           <div className="space-y-2">
@@ -115,7 +115,7 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
                   type="checkbox"
                   checked={filters.bar.includes(option.value)}
                   onChange={() => handleBarToggle(option.value)}
-                  className="rounded border-neutral-300 text-mpondo-gold-600 focus:ring-mpondo-gold-500"
+                  className="rounded border-neutral-300 dark:border-metallic-gray-600 text-mpondo-gold-600 focus:ring-mpondo-gold-500 dark:bg-metallic-gray-800"
                 />
                 <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium ${option.color}`}>
                   <Building2 className="w-3 h-3" />
@@ -129,13 +129,13 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
         {/* Date Range Filter */}
         <div>
           <div className="flex items-center justify-between mb-2">
-            <label className="block text-sm font-medium text-neutral-700">
+            <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
               Date Range
             </label>
             {filters.dateRange && (
               <button
                 onClick={clearDateRange}
-                className="text-xs text-neutral-500 hover:text-neutral-700"
+                className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200"
               >
                 Clear
               </button>
@@ -143,23 +143,23 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
           </div>
           <div className="space-y-2">
             <div className="relative">
-              <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-neutral-400" />
+              <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
               <input
                 type="date"
                 placeholder="Start date"
                 value={filters.dateRange?.start || ''}
                 onChange={(e) => handleDateRangeChange('start', e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent text-sm"
+                className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent text-sm"
               />
             </div>
             <div className="relative">
-              <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-neutral-400" />
+              <Calendar className="absolute left-3 top-2.5 w-4 h-4 text-neutral-400 dark:text-neutral-500" />
               <input
                 type="date"
                 placeholder="End date"
                 value={filters.dateRange?.end || ''}
                 onChange={(e) => handleDateRangeChange('end', e.target.value)}
-                className="w-full pl-10 pr-4 py-2 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent text-sm"
+                className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent text-sm"
               />
             </div>
           </div>
@@ -168,17 +168,17 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
 
       {/* Active Filters & Clear */}
       {hasActiveFilters && (
-        <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
+        <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-2 flex-wrap">
-            <Filter className="w-4 h-4 text-neutral-500" />
-            <span className="text-sm text-neutral-600">Active filters:</span>
+            <Filter className="w-4 h-4 text-neutral-500 dark:text-neutral-400" />
+            <span className="text-sm text-neutral-600 dark:text-neutral-300">Active filters:</span>
             
             {filters.search && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-neutral-100 text-neutral-700 rounded text-xs">
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-700 dark:text-neutral-300 rounded text-xs">
                 Search: "{filters.search}"
                 <button
                   onClick={() => handleSearchChange('')}
-                  className="hover:text-neutral-900"
+                  className="hover:text-neutral-900 dark:hover:text-neutral-100"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -216,11 +216,11 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
             })}
             
             {filters.dateRange && (
-              <span className="inline-flex items-center gap-1 px-2 py-1 bg-neutral-100 text-neutral-700 rounded text-xs">
+              <span className="inline-flex items-center gap-1 px-2 py-1 bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-700 dark:text-neutral-300 rounded text-xs">
                 {filters.dateRange.start} to {filters.dateRange.end}
                 <button
                   onClick={clearDateRange}
-                  className="hover:text-neutral-900"
+                  className="hover:text-neutral-900 dark:hover:text-neutral-100"
                 >
                   <X className="w-3 h-3" />
                 </button>
@@ -230,7 +230,7 @@ export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({
           
           <button
             onClick={onClearFilters}
-            className="text-sm text-neutral-600 hover:text-neutral-900 font-medium"
+            className="text-sm text-neutral-600 dark:text-neutral-300 hover:text-neutral-900 dark:hover:text-neutral-100 font-medium"
           >
             Clear all
           </button>

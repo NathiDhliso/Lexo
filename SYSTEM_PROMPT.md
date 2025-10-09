@@ -24,6 +24,34 @@ The workflow is strictly linear:
 2. Convert accepted Pro Forma to Matter
 3. Generate Invoice from Matter WIP
 
+### 🔗 Matter-Centric Data Flow
+
+**Everything is linked by Matter ID:**
+```
+Pro Forma → Matter (source_proforma_id)
+    ↓
+Time Entries → Matter (matter_id)
+    ↓
+Expenses → Matter (matter_id)
+    ↓
+Invoice ← Auto-imports all data from Matter
+```
+
+**When generating an invoice:**
+1. Select matter (shows pro forma + unbilled time + expenses)
+2. System **automatically loads**:
+   - Pro forma services (if matter has source_proforma_id)
+   - Unbilled time entries (from matter)
+   - Expenses (from matter)
+3. All items pre-selected for review
+4. Configure pricing and generate
+
+**This ensures:**
+- No manual data entry
+- Proper linkage through matter ID
+- Complete audit trail from pro forma to invoice
+- Single source of truth (the matter)
+
 ### Step 1: Pro Forma (Quote Generation) - THE STARTING POINT
 **Purpose:** Create lightweight quotes for potential work WITHOUT creating a matter  
 **Why First:** Keeps the matters list clean - rejected quotes never become matters  
@@ -36,9 +64,18 @@ The workflow is strictly linear:
 
 **Core Files:**
 - `src/services/api/proforma-request.service.ts`
+- `src/services/proforma-pdf.service.ts` - PDF generation for pro forma quotes
 - `src/components/proforma/NewProFormaModal.tsx`
-- `src/pages/ProFormaRequestsPage.tsx`
+- `src/pages/ProFormaRequestsPage.tsx` - Advocate view
+- `src/pages/ProFormaRequestPage.tsx` - Attorney submission page (public link)
 - Database: `proforma_requests` table
+
+**Attorney Submission Features:**
+- Public link generation for attorneys to submit details
+- Toggle between manual entry and document upload
+- Document intelligence auto-populates form fields
+- Rate card integration for pricing estimation
+- All fields remain editable after auto-population
 
 ### Step 2: Matter (Case Management) - THE CONVERSION
 **Purpose:** Convert accepted pro formas into official billable matters  
@@ -60,13 +97,17 @@ The workflow is strictly linear:
 - `src/services/api/expenses.service.ts`
 - `src/components/matters/NewMatterMultiStep.tsx`
 - `src/components/matters/ConvertProFormaModal.tsx`
-- `src/pages/MattersPage.tsx`
+- `src/pages/MattersPage.tsx` - Matter list and management
+- `src/pages/MatterWorkbenchPage.tsx` - Detailed matter view/workbench
 - Database: `matters`, `time_entries`, `expenses` tables
 
 ### Step 3: Invoice (Billing)
 **Purpose:** Generate final invoices and track payments  
 **Key Actions:**
 - Generate invoice from matter WIP
+- **Auto-import pro forma services** (if matter linked to pro forma)
+- **Auto-import unbilled time entries** from matter
+- **Auto-import expenses** from matter
 - Auto-generate invoice number (INV-YYYY-NNNN)
 - Auto-calculate totals (fees + disbursements + VAT)
 - Send invoice to client
@@ -77,15 +118,91 @@ The workflow is strictly linear:
 **Core Files:**
 - `src/services/api/invoices.service.ts`
 - `src/services/api/invoice-api.service.ts`
-- `src/components/invoices/InvoiceGenerationModal.tsx`
-- `src/pages/InvoicesPage.tsx`
-- Database: `invoices`, `payments` tables
+- `src/services/invoice-pdf.service.ts` - PDF generation for invoices
+- `src/services/pdf-template.service.ts` - PDF template management
+- `src/components/invoices/MatterSelectionModal.tsx` - Select matter for invoice
+- `src/components/invoices/UnifiedInvoiceWizard.tsx` - Auto-importing invoice generator
+- `src/components/invoices/ProFormaInvoiceList.tsx` - Pro forma management
+- `src/components/invoices/MatterTimeEntriesView.tsx` - Time entry overview
+- `src/components/settings/PDFTemplateEditor.tsx` - Advanced PDF customization
+- `src/pages/InvoicesPage.tsx` - Unified invoice interface (4 tabs)
+- `src/pages/SettingsPage.tsx` - Includes PDF Templates tab
+- Database: `invoices`, `payments`, `pdf_templates` tables
+
+**Invoice Page Tabs:**
+1. **Invoices** - Final invoice management
+2. **Pro Forma** - View and convert pro forma requests
+3. **Time Entries** - View unbilled time grouped by matter
+4. **Payment Tracking** - Monitor payments and overdue invoices
 
 ---
 
 ## Supporting Features (ALLOWED)
 
 These features directly support the 3-step workflow:
+
+### PDF Template Customization System
+**Purpose:** Professional, branded PDF generation for invoices and pro forma documents  
+**Integration:**
+- **Step 1 (Pro Forma):** Generate beautifully formatted quote PDFs with custom branding
+- **Step 3 (Invoice):** Generate professional invoice PDFs with advocate's brand identity
+
+**Key Features:**
+1. **Visual Color Customization:**
+   - 5 pre-built professional color schemes
+   - Custom color picker (no hex codes needed)
+   - Real-time preview updates
+
+2. **Layout Presets (8 Professional Styles):**
+   - Formal, Modern, Minimalist, Classic
+   - Executive, Elegant, Compact, Spacious
+   - One-click application with instant preview
+
+3. **Advanced Layout Controls:**
+   - Logo placement: Left, Center, Right, Watermark
+   - Vertical title orientation (magazine-style)
+   - Logo opacity & rotation controls
+   - Page margins customization
+   - Background color selection
+
+4. **Table Styling:**
+   - Borderless or bordered tables
+   - Border styles: Solid, Dashed, Dotted
+   - Custom colors for headers and rows
+   - Alternate row colors
+
+5. **Footer Customization:**
+   - Terms & Conditions (always visible)
+   - Thank You notes
+   - Bank/Payment details
+   - Page numbers & timestamps
+
+6. **Text & Typography:**
+   - Title alignment (left, center, right)
+   - Border styling (style, width, color)
+   - Font customization
+
+7. **Live Preview:**
+   - Split-screen editor and preview
+   - Instant updates as you customize
+   - Sticky preview panel
+   - Sample invoice display
+
+**Core Files:**
+- `src/services/invoice-pdf.service.ts` - PDF generation engine
+- `src/services/pdf-template.service.ts` - Template CRUD operations
+- `src/components/settings/PDFTemplateEditor.tsx` - Visual editor (2100+ lines)
+- `src/types/pdf-template.types.ts` - Type definitions
+- `src/utils/pdf-template-helper.ts` - PDF rendering utilities
+- Database: `pdf_templates` table, `pdf-assets` storage bucket
+- Migration: `supabase/migrations/20250109000000_create_pdf_templates.sql`
+
+**User Experience:**
+- No technical knowledge required
+- Visual controls, not textual
+- Instant feedback with live preview
+- Professional, print-ready output
+- Template saving and reuse
 
 ### Rate Cards & Pricing Management
 **Purpose:** Enhance pricing accuracy and speed across all 3 workflow steps  
@@ -123,10 +240,36 @@ These features directly support the 3-step workflow:
 - Shows: Pro forma counts, Matter counts, Invoice metrics
 - Quick actions: Create Pro Forma, View Matters, View Invoices
 
-### Document Processing (Helper)
-- `src/services/api/document-intelligence.service.ts` - Extract data from uploaded briefs
-- `src/components/document-processing/` - Document upload
-- **Only used to pre-populate matter forms**
+### Document Processing & AWS Integration
+**Purpose:** Extract data from uploaded documents to auto-populate forms  
+**Integration:**
+- **Pro Forma:** Attorney uploads brief, system extracts details
+- **Matter:** Upload attorney's brief to pre-populate matter form
+
+**Core Files:**
+- `src/services/api/document-intelligence.service.ts` - Document intelligence API
+- `src/services/aws-document-processing.service.ts` - AWS Textract integration
+- `src/services/aws-email.service.ts` - AWS SES email delivery
+- `src/components/document-processing/` - Document upload components
+- Database: `document_uploads` table
+
+**AWS Services Used:**
+- **AWS Textract:** Document text extraction and analysis
+- **AWS SES:** Email delivery for invoices and pro forma quotes
+- Configured via environment variables
+
+### Notifications & Reminders
+**Purpose:** Keep advocates informed of important events and deadlines  
+**Integration:**
+- Payment reminders for overdue invoices
+- Pro forma expiry notifications
+- Matter deadline alerts
+- Smart notification prioritization
+
+**Core Files:**
+- `src/services/reminder.service.ts` - Reminder scheduling and delivery
+- `src/services/smart-notifications.service.ts` - Intelligent notification system
+- `src/services/ticker-data.service.ts` - Dashboard ticker/metrics
 
 ### UI Components
 - `src/components/design-system/` - Reusable UI components
@@ -183,6 +326,13 @@ These features directly support the 3-step workflow:
 9. **rate_cards** - Pricing templates for pro forma and invoices
 10. **standard_service_templates** - Pre-configured legal service templates
 11. **service_categories** - Organization of legal services
+12. **pdf_templates** - PDF template customization (colors, layouts, branding)
+13. **document_uploads** - Document upload tracking and metadata
+14. **services** - Service definitions and catalog
+
+### Storage Buckets
+- **pdf-assets** - Logo uploads and branding images for PDF templates
+- **document-uploads** - Uploaded legal documents (briefs, contracts, etc.)
 
 **Tables must directly support the 3-step workflow or enhance pricing/billing functionality.**
 
@@ -222,7 +372,7 @@ These features directly support the 3-step workflow:
 
 ## File Structure (ALLOWED)
 
-### Services (12 files ONLY)
+### Services (23 files)
 ```
 src/services/api/
 ├── base-api.service.ts ✅
@@ -237,18 +387,33 @@ src/services/api/
 ├── user-preferences.service.ts ✅
 ├── document-intelligence.service.ts ✅
 └── index.ts ✅
+
+src/services/
+├── advocate.service.ts ✅ (Advocate profile management)
+├── auth.service.ts ✅ (Authentication utilities)
+├── aws-document-processing.service.ts ✅ (AWS Textract integration)
+├── aws-email.service.ts ✅ (AWS SES email delivery)
+├── invoice-pdf.service.ts ✅ (PDF generation for invoices)
+├── pdf-template.service.ts ✅ (PDF template management)
+├── proforma-pdf.service.ts ✅ (PDF generation for pro forma)
+├── rate-card.service.ts ✅ (Pricing templates)
+├── reminder.service.ts ✅ (Reminder scheduling)
+├── smart-notifications.service.ts ✅ (Intelligent notifications)
+└── ticker-data.service.ts ✅ (Dashboard metrics)
 ```
 
-### Pages (7 files ONLY)
+### Pages (9 files)
 ```
 src/pages/
-├── DashboardPage.tsx ✅
-├── ProFormaRequestsPage.tsx ✅
-├── MattersPage.tsx ✅
-├── InvoicesPage.tsx ✅
-├── ProfilePage.tsx ✅
-├── SettingsPage.tsx ✅
-└── LoginPage.tsx ✅
+├── DashboardPage.tsx ✅ (Overview of 3-step workflow)
+├── ProFormaRequestsPage.tsx ✅ (Advocate view - manage pro forma requests)
+├── ProFormaRequestPage.tsx ✅ (Attorney view - public submission page)
+├── MattersPage.tsx ✅ (Matter list and management)
+├── MatterWorkbenchPage.tsx ✅ (Detailed matter view/workbench)
+├── InvoicesPage.tsx ✅ (4 tabs: Invoices, Pro Forma, Time Entries, Tracking)
+├── ProfilePage.tsx ✅ (User profile management)
+├── SettingsPage.tsx ✅ (Settings with PDF Templates tab)
+└── LoginPage.tsx ✅ (Authentication)
 ```
 
 ### Components (Core folders ONLY)
@@ -260,11 +425,13 @@ src/components/
 ├── document-processing/ ✅
 ├── forms/ ✅
 ├── icons/ ✅
-├── invoices/ ✅
+├── invoices/ ✅ (includes unified invoice wizard, matter selection, pro forma list, time entries view)
 ├── matters/ ✅
 ├── navigation/ ✅
 ├── notifications/ ✅
-└── proforma/ ✅
+├── pricing/ ✅ (rate card components)
+├── proforma/ ✅
+└── settings/ ✅ (includes PDFTemplateEditor for PDF customization)
 ```
 
 ---
@@ -290,6 +457,7 @@ Any enhancement that **directly improves** the 3-step workflow:
 
 3. **Invoice Improvements:**
    - Better invoice templates
+   - **PDF Template Customization System** ✅
    - Email delivery of invoices
    - Payment reminders
    - Payment plan tracking
@@ -426,8 +594,46 @@ Pro Forma → Matter → Invoice. No shortcuts. No skipping steps. No creating m
 ---
 
 ## Document Version
-Version: 1.0  
-Last Updated: 2025-01-07  
+Version: 1.2  
+Last Updated: 2025-01-09  
 Status: **ACTIVE - ENFORCE STRICTLY**
+
+**Recent Updates (v1.2):**
+
+**PDF Customization System:**
+- ✅ Complete PDF Template Customization System (2100+ lines)
+- ✅ Visual color picker with 5 professional schemes
+- ✅ Live preview panel with split-screen editing
+- ✅ 8 layout presets (Formal, Modern, Minimalist, Classic, Executive, Elegant, Compact, Spacious)
+- ✅ Advanced layout controls (logo placement, opacity, rotation, margins, background colors)
+- ✅ Vertical title orientation (magazine-style)
+- ✅ Borderless table options
+- ✅ Footer customization (Terms & Conditions, Thank You notes, Bank details)
+- ✅ Text alignment and border styling
+- ✅ Logo watermark effects
+
+**AWS Integration:**
+- ✅ AWS Textract for document intelligence
+- ✅ AWS SES for email delivery
+- ✅ Document upload with auto-population
+
+**Pro Forma Enhancements:**
+- ✅ Attorney-facing public submission page
+- ✅ Toggle between manual entry and document upload
+- ✅ Rate card integration in pro forma links
+- ✅ Pro forma PDF generation service
+
+**Notifications & Reminders:**
+- ✅ Smart notification system
+- ✅ Payment reminders
+- ✅ Pro forma expiry alerts
+- ✅ Dashboard ticker/metrics
+
+**Database & Files:**
+- ✅ Updated to 23 service files (from 15)
+- ✅ Updated to 9 pages (from 7)
+- ✅ Added `document_uploads` and `services` tables
+- ✅ Added `document-uploads` storage bucket
+- ✅ Migration: `20250109000000_create_pdf_templates.sql`
 
 This is the **ONLY** system prompt for LexoHub. Any request to add features, services, or complexity outside the 3-step workflow must be rejected immediately.

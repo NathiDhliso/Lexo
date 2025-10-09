@@ -30,80 +30,8 @@ interface ServiceBundle {
   estimatedHours: number;
 }
 
-const SERVICE_BUNDLES: ServiceBundle[] = [
-  {
-    id: 'high-court-litigation',
-    name: 'High Court Litigation Package',
-    description: 'Complete service package for High Court matters',
-    icon: '⚖️',
-    matterTypes: ['litigation', 'commercial', 'general'],
-    services: [
-      { serviceCategory: 'consultation', defaultHours: 1.5 },
-      { serviceCategory: 'research', defaultHours: 5 },
-      { serviceCategory: 'drafting', defaultHours: 8 },
-      { serviceCategory: 'court_appearance', defaultHours: 8 }
-    ],
-    estimatedTotal: 65000,
-    estimatedHours: 22.5
-  },
-  {
-    id: 'criminal-defense',
-    name: 'Criminal Defense Package',
-    description: 'Essential services for criminal matters',
-    icon: '🛡️',
-    matterTypes: ['criminal'],
-    services: [
-      { serviceCategory: 'consultation', defaultHours: 2 },
-      { serviceCategory: 'research', defaultHours: 4 },
-      { serviceCategory: 'court_appearance', defaultHours: 6 }
-    ],
-    estimatedTotal: 45000,
-    estimatedHours: 12
-  },
-  {
-    id: 'commercial-transaction',
-    name: 'Commercial Transaction Package',
-    description: 'Due diligence and contract services',
-    icon: '💼',
-    matterTypes: ['commercial'],
-    services: [
-      { serviceCategory: 'consultation', defaultHours: 1 },
-      { serviceCategory: 'document_review', defaultHours: 8 },
-      { serviceCategory: 'drafting', defaultHours: 6 },
-      { serviceCategory: 'negotiation', defaultHours: 4 }
-    ],
-    estimatedTotal: 48000,
-    estimatedHours: 19
-  },
-  {
-    id: 'quick-opinion',
-    name: 'Quick Legal Opinion',
-    description: 'Fast turnaround legal advice',
-    icon: '📝',
-    matterTypes: ['general'],
-    services: [
-      { serviceCategory: 'consultation', defaultHours: 1 },
-      { serviceCategory: 'research', defaultHours: 3 },
-      { serviceCategory: 'drafting', defaultHours: 4 }
-    ],
-    estimatedTotal: 18000,
-    estimatedHours: 8
-  },
-  {
-    id: 'appeal-package',
-    name: 'Appeal Court Package',
-    description: 'Complete appeal preparation and appearance',
-    icon: '📊',
-    matterTypes: ['litigation'],
-    services: [
-      { serviceCategory: 'research', defaultHours: 8 },
-      { serviceCategory: 'drafting', defaultHours: 12 },
-      { serviceCategory: 'court_appearance', defaultHours: 10 }
-    ],
-    estimatedTotal: 95000,
-    estimatedHours: 30
-  }
-];
+// TODO: Replace with real service bundles from database/API
+const SERVICE_BUNDLES: ServiceBundle[] = [];
 
 export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
   matterId,

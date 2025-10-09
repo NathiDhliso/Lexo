@@ -294,13 +294,8 @@ class RateCardService {
         ? await this.getRateCards({ is_active: true })
         : rateCards;
 
-      // Default service categories for pro forma
-      const defaultCategories: ServiceCategory[] = [
-        'consultation',
-        'research', 
-        'drafting',
-        'court_appearance'
-      ];
+      // TODO: Load service categories from user's rate cards instead of hardcoded defaults
+      const defaultCategories: ServiceCategory[] = [];
 
       const lineItems: ProFormaLineItem[] = [];
       let totalHours = 0;
