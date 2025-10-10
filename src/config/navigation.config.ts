@@ -1,6 +1,6 @@
-import type { NavigationConfig, NavigationItem, TypedNavigationItem, NavigationCategory } from '../types';
+import type { NavigationConfig, NavigationItem } from '../types';
 import { UserTier } from '../types';
-import { BarChart3, Building2, Settings, FileText, Users, Calendar, FolderOpen, CreditCard, TrendingUp, DollarSign, Layout, FileCheck } from 'lucide-react';
+import { BarChart3, Settings, FileText, Users, FolderOpen, CreditCard, TrendingUp, DollarSign, FileCheck, CheckSquare, ExternalLink, Clock } from 'lucide-react';
 
 // Navigation items
 const navigationItems: NavigationItem[] = [
@@ -38,6 +38,15 @@ const navigationItems: NavigationItem[] = [
     description: 'Invoicing and billing',
   },
   {
+    id: 'partner-approval',
+    label: 'Partner Approval',
+    href: '/partner-approval',
+    page: 'partner-approval',
+    icon: CheckSquare,
+    description: 'Review billing readiness',
+    isNew: true,
+  },
+  {
     id: 'profile',
     label: 'Profile',
     href: '/profile',
@@ -59,26 +68,152 @@ const navigationItems: NavigationItem[] = [
 export const navigationConfig: NavigationConfig = {
   categories: [
     {
-      id: 'core',
-      label: 'Core Features',
-      icon: BarChart3,
+      id: 'proforma',
+      label: 'Pro Forma',
+      icon: FileCheck,
       sections: [
         {
-          id: 'main',
-          title: 'Workflow',
+          id: 'proforma-actions',
+          title: 'Actions',
           items: [
-            navigationItems.find(item => item.id === 'dashboard')!,
-            navigationItems.find(item => item.id === 'proforma-requests')!,
-            navigationItems.find(item => item.id === 'matters')!,
-            navigationItems.find(item => item.id === 'invoices')!,
+            {
+              id: 'create-proforma',
+              label: 'Create Pro Forma',
+              page: 'proforma-requests',
+              icon: FileCheck,
+              description: 'Create new quote request',
+            },
+            {
+              id: 'view-proforma',
+              label: 'View All Requests',
+              page: 'proforma-requests',
+              icon: FileText,
+              description: 'Manage all pro forma requests',
+            },
           ],
         },
         {
-          id: 'system',
-          title: 'System',
+          id: 'proforma-features',
+          title: 'Features',
           items: [
-            navigationItems.find(item => item.id === 'profile')!,
-            navigationItems.find(item => item.id === 'settings')!,
+            {
+              id: 'attorney-links',
+              label: 'Attorney Portal Links',
+              page: 'proforma-requests',
+              icon: ExternalLink,
+              description: 'Generate & send attorney links',
+              isNew: true,
+            },
+            {
+              id: 'rate-cards',
+              label: 'Rate Cards',
+              page: 'proforma-requests',
+              icon: CreditCard,
+              description: 'Pricing & estimates',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'matters',
+      label: 'Matters',
+      icon: FileText,
+      sections: [
+        {
+          id: 'matter-actions',
+          title: 'Actions',
+          items: [
+            {
+              id: 'create-matter',
+              label: 'Create Matter',
+              page: 'matters',
+              icon: FileText,
+              description: 'Start new case',
+            },
+            {
+              id: 'view-matters',
+              label: 'View All Matters',
+              page: 'matters',
+              icon: FolderOpen,
+              description: 'Manage all cases',
+            },
+          ],
+        },
+        {
+          id: 'matter-features',
+          title: 'Features',
+          items: [
+            {
+              id: 'time-tracking',
+              label: 'Time Entries',
+              page: 'matters',
+              icon: Clock,
+              description: 'Track billable hours',
+            },
+            {
+              id: 'documents',
+              label: 'Documents',
+              page: 'matters',
+              icon: FolderOpen,
+              description: 'Upload & manage files',
+              isNew: true,
+            },
+            {
+              id: 'scope-amendments',
+              label: 'Scope Amendments',
+              page: 'matters',
+              icon: TrendingUp,
+              description: 'Manage scope changes',
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'invoicing',
+      label: 'Invoicing',
+      icon: CreditCard,
+      sections: [
+        {
+          id: 'invoice-actions',
+          title: 'Actions',
+          items: [
+            {
+              id: 'create-invoice',
+              label: 'Create Invoice',
+              page: 'invoices',
+              icon: CreditCard,
+              description: 'Generate new invoice',
+            },
+            {
+              id: 'view-invoices',
+              label: 'View All Invoices',
+              page: 'invoices',
+              icon: FileText,
+              description: 'Manage all invoices',
+            },
+          ],
+        },
+        {
+          id: 'invoice-features',
+          title: 'Features',
+          items: [
+            {
+              id: 'partner-approval',
+              label: 'Partner Approval',
+              page: 'partner-approval',
+              icon: CheckSquare,
+              description: 'Review billing readiness',
+              isNew: true,
+            },
+            {
+              id: 'payment-tracking',
+              label: 'Payment Tracking',
+              page: 'invoices',
+              icon: DollarSign,
+              description: 'Track payments & reminders',
+            },
           ],
         },
       ],
@@ -104,9 +239,9 @@ const getUserTierLevel = (tier: UserTier): number => {
 
 // Function to filter navigation items based on user tier
 export const getAccessibleNavigationItems = (
-  items: TypedNavigationItem[], 
+  items: NavigationItem[], 
   userTier: UserTier
-): TypedNavigationItem[] => {
+): NavigationItem[] => {
   const userTierLevel = getUserTierLevel(userTier);
   
   return items.filter(item => {

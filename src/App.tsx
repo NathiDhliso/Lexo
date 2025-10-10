@@ -23,10 +23,13 @@ import {
   InvoicesPage,
   ProfilePage,
   SettingsPage,
-  ProFormaRequestsPage
+  ProFormaRequestsPage,
+  PartnerApprovalPage
 } from './pages';
 import ProFormaRequestPage from './pages/ProFormaRequestPage';
 import MatterWorkbenchPage from './pages/MatterWorkbenchPage';
+import { ProFormaSubmissionPage } from './pages/attorney/ProFormaSubmissionPage';
+import { EngagementSigningPage } from './pages/attorney/EngagementSigningPage';
 
 // Create Query Client with proper configuration
 const queryClient = new QueryClient({
@@ -191,6 +194,8 @@ const AppContent: React.FC = () => {
         return <MatterWorkbenchPage onNavigate={handlePageChange} />;
       case 'invoices':
         return <InvoicesPage onNavigate={handlePageChange} />;
+      case 'partner-approval':
+        return <PartnerApprovalPage />;
       case 'profile':
         return <ProfilePage />;
       case 'settings':
@@ -232,34 +237,61 @@ const AppContent: React.FC = () => {
 
 // Main App Component
 function App() {
-  // Check if this is a public pro forma request route
-  const isPublicProFormaRoute = () => {
+  // Check for public routes
+  const checkPublicRoutes = () => {
     const hash = window.location.hash;
     const pathname = window.location.pathname;
     
-    // Check for hash-based route: #/pro-forma-request/token
+    // Check for hash-based routes
     if (hash.startsWith('#/pro-forma-request/')) {
-      return hash.substring(2); // Remove '#/' prefix
+      return { type: 'proforma', token: hash.substring(2).split('/').pop() };
+    }
+    if (hash.startsWith('#/attorney/proforma/')) {
+      return { type: 'attorney-proforma', token: hash.substring(2).split('/').pop() };
+    }
+    if (hash.startsWith('#/attorney/engagement/')) {
+      return { type: 'attorney-engagement', token: hash.substring(2).split('/').pop() };
     }
     
-    // Check for pathname-based route: /pro-forma-request/token
+    // Check for pathname-based routes
     if (pathname.startsWith('/pro-forma-request/')) {
-      return pathname;
+      return { type: 'proforma', token: pathname.split('/').pop() };
+    }
+    if (pathname.startsWith('/attorney/proforma/')) {
+      return { type: 'attorney-proforma', token: pathname.split('/').pop() };
+    }
+    if (pathname.startsWith('/attorney/engagement/')) {
+      return { type: 'attorney-engagement', token: pathname.split('/').pop() };
     }
     
     return null;
   };
 
-  const publicRoute = isPublicProFormaRoute();
+  const publicRoute = checkPublicRoutes();
   
   if (publicRoute) {
-    const token = publicRoute.split('/').pop();
+    let PageComponent;
+    
+    switch (publicRoute.type) {
+      case 'proforma':
+        PageComponent = <ProFormaRequestPage token={publicRoute.token} />;
+        break;
+      case 'attorney-proforma':
+        PageComponent = <ProFormaSubmissionPage />;
+        break;
+      case 'attorney-engagement':
+        PageComponent = <EngagementSigningPage />;
+        break;
+      default:
+        PageComponent = <ProFormaRequestPage token={publicRoute.token} />;
+    }
+    
     return (
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
           <ErrorBoundary>
             <div className="App">
-              <ProFormaRequestPage token={token} />
+              {PageComponent}
               <Toaster
                 position="top-right"
                 toastOptions={{

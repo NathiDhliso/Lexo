@@ -17,6 +17,8 @@ import { format } from 'date-fns';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input } from '../design-system/components';
 import { formatRand } from '../../lib/currency';
 import { InvoiceService } from '../../services/api/invoices.service';
+import { invoicePDFService } from '../../services/invoice-pdf.service';
+import { supabase } from '../../lib/supabase';
 import { toast } from 'react-hot-toast';
 import type { Invoice } from '../../types';
 import { InvoiceStatus } from '../../types';
@@ -69,8 +71,71 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
   const handleDownloadPDF = async () => {
     try {
       setIsLoading(true);
-      await InvoiceService.downloadInvoicePDF(invoice.id);
-      toast.success('Invoice downloaded successfully');
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast.error('User not authenticated');
+        return;
+      }
+
+      const { data: advocate, error: advocateError } = await supabase
+        .from('advocates')
+        .select('full_name, practice_number, email, phone_number')
+        .eq('id', user.id)
+        .single();
+
+      if (advocateError || !advocate) {
+        toast.error('Failed to load advocate information');
+        return;
+      }
+
+      const { data: matter, error: matterError } = await supabase
+        .from('matters')
+        .select('title, client_name, reference_number')
+        .eq('id', invoice.matterId || (invoice as any).matter_id)
+        .single();
+
+      const { data: timeEntries } = await supabase
+        .from('time_entries')
+        .select('*')
+        .eq('invoice_id', invoice.id);
+
+      const { data: expenses } = await supabase
+        .from('expenses')
+        .select('*')
+        .eq('invoice_id', invoice.id);
+
+      const { data: services } = await supabase
+        .from('matter_services')
+        .select(`
+          *,
+          services (
+            service_name,
+            description,
+            service_category,
+            pricing_type,
+            unit_price,
+            estimated_hours
+          )
+        `)
+        .eq('matter_id', invoice.matterId || (invoice as any).matter_id);
+
+      const invoiceWithDetails = {
+        ...invoice,
+        matter: matter || undefined,
+        time_entries: timeEntries || [],
+        expenses: expenses || [],
+        services: services || [],
+      };
+
+      await invoicePDFService.downloadInvoicePDF(invoiceWithDetails as any, {
+        full_name: advocate.full_name,
+        practice_number: advocate.practice_number,
+        email: advocate.email || undefined,
+        phone: advocate.phone_number || undefined,
+        advocate_id: user.id,
+      });
+
+      toast.success('Invoice PDF downloaded successfully');
     } catch (error) {
       console.error('Error downloading invoice:', error);
       toast.error('Failed to download invoice');

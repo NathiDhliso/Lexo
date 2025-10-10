@@ -14,15 +14,15 @@ import { awsEmailService } from '../aws-email.service';
 
 // South African Bar Payment Rules
 const BAR_PAYMENT_RULES: Record<string, BarPaymentRules> = {
-  'Johannesburg': {
+  'johannesburg': {
     paymentTermDays: 60,
-    reminderSchedule: [30, 45, 55], // Days after invoice
+    reminderSchedule: [30, 45, 55],
     vatRate: 0.15,
     trustTransferDays: 7,
-    lateFeePercentage: 0.02, // 2% per month
+    lateFeePercentage: 0.02,
     prescriptionYears: 3
   },
-  'Cape Town': {
+  'cape_town': {
     paymentTermDays: 90,
     reminderSchedule: [30, 60, 85],
     vatRate: 0.15,
@@ -206,7 +206,7 @@ export class InvoiceService {
     const requestId = matterId.replace('temp-pro-forma-', '');
     
     const { data: proFormaRequest, error: requestError } = await supabase
-      .from('pro_forma_requests')
+      .from('proforma_requests')
       .select('*')
       .eq('id', requestId)
       .single();
@@ -333,7 +333,7 @@ export class InvoiceService {
     }
     
     await supabase
-      .from('pro_forma_requests')
+      .from('proforma_requests')
       .update({
         status: 'processed',
         processed_at: new Date().toISOString()

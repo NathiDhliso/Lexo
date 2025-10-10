@@ -25,13 +25,6 @@ export {
   type MatterSearchOptions
 } from './matter-api.service';
 
-export { 
-  InvoiceApiService, 
-  invoiceApiService,
-  type InvoiceFilters,
-  type InvoiceStats,
-  type InvoiceGenerationOptions
-} from './invoice-api.service';
 
 export {
   userPreferencesService,
@@ -43,6 +36,62 @@ export { matterConversionService } from './matter-conversion.service';
 export { InvoiceService } from './invoices.service';
 export { TimeEntryService } from './time-entries.service';
 export { ExpensesService } from './expenses.service';
+
+export { 
+  EngagementAgreementService,
+  engagementAgreementService,
+  type CreateEngagementAgreementRequest,
+  type SignEngagementAgreementRequest
+} from './engagement-agreement.service';
+
+export {
+  ScopeAmendmentService,
+  scopeAmendmentService,
+  type CreateScopeAmendmentRequest
+} from './scope-amendment.service';
+
+export {
+  PaymentDisputeService,
+  paymentDisputeService,
+  type CreateDisputeRequest,
+  type ResolveDisputeRequest
+} from './payment-dispute.service';
+
+export {
+  PaymentService,
+  paymentService,
+  type RecordPaymentRequest,
+  type PaymentSummary
+} from './payment.service';
+
+export {
+  CreditNoteService,
+  creditNoteService,
+  type CreateCreditNoteRequest
+} from './credit-note.service';
+
+export {
+  PartnerApprovalService,
+  partnerApprovalService,
+  type SubmitForApprovalRequest,
+  type ApprovalDecisionRequest,
+  type PendingApproval
+} from './partner-approval.service';
+
+export {
+  BillingReadinessService,
+  billingReadinessService,
+  type ReadinessCheck
+} from './billing-readiness.service';
+
+export {
+  RetainerService,
+  retainerService,
+  type CreateRetainerRequest,
+  type DepositRequest,
+  type DrawdownRequest,
+  type RetainerSummary
+} from './retainer.service';
 
 // Re-export commonly used types from the main types file
 export type {

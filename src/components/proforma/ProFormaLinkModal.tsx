@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import { X, Copy, ExternalLink, Clock, CheckCircle, Calculator } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, Copy, ExternalLink, Clock, CheckCircle, Calculator, Mail } from 'lucide-react';
 import { proformaRequestService } from '../../services/api/proforma-request.service';
 import RateCardSelector from '../pricing/RateCardSelector';
 import { PricingCalculator, ServiceItem } from '../../utils/PricingCalculator';
+import { supabase } from '../../lib/supabase';
 import { toast } from 'react-hot-toast';
+import { awsEmailService } from '../../services/aws-email.service';
 
 interface ProFormaLinkModalProps {
   isOpen: boolean;
@@ -26,6 +28,29 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
   const [selectedServices, setSelectedServices] = useState<any[]>([]);
   const [estimatedAmount, setEstimatedAmount] = useState<number>(0);
   const [matterType, setMatterType] = useState<string>('');
+  const [emailAddress, setEmailAddress] = useState<string>('');
+  const [sendingEmail, setSendingEmail] = useState(false);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const fetchLink = async () => {
+      const { data, error } = await supabase
+        .from('proforma_requests')
+        .select('public_token')
+        .eq('id', proformaId)
+        .single();
+
+      if (error) return;
+
+      const token = data.public_token;
+      const baseUrl = window.location.origin;
+      const link = `${baseUrl}/#/attorney/proforma/${token}`;
+      setGeneratedLink(link);
+    };
+
+    fetchLink();
+  }, [isOpen, proformaId]);
 
   const generateLink = async () => {
     setLoading(true);
@@ -40,16 +65,51 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
         });
       }
 
-      const { token, expiresAt: expiry } = await proformaRequestService.generateToken(proformaId);
-      const baseUrl = window.location.origin;
-      const link = `${baseUrl}/pro-forma-request/${token}`;
-      setGeneratedLink(link);
-      setExpiresAt(expiry);
+      const expiryDate = new Date();
+      expiryDate.setDate(expiryDate.getDate() + 7);
+      setExpiresAt(expiryDate.toISOString());
     } catch (error) {
       console.error('Failed to generate link:', error);
       toast.error('Failed to generate link. Please try again.');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const sendEmail = async () => {
+    if (!emailAddress || !generatedLink) return;
+    
+    setSendingEmail(true);
+    try {
+      const attorneyName = emailAddress.split('@')[0].replace(/[._-]/g, ' ');
+      
+      const result = await awsEmailService.sendProFormaLinkEmail({
+        recipientEmail: emailAddress,
+        recipientName: attorneyName,
+        matterTitle: workTitle,
+        linkUrl: generatedLink,
+        expiresAt: expiresAt || undefined
+      });
+
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to send email');
+      }
+
+      await supabase
+        .from('proforma_requests')
+        .update({
+          link_sent_at: new Date().toISOString(),
+          link_sent_to: emailAddress
+        })
+        .eq('id', proformaId);
+
+      toast.success(`Link sent to ${emailAddress}`);
+      setEmailAddress('');
+    } catch (error) {
+      console.error('Failed to send email:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to send email');
+    } finally {
+      setSendingEmail(false);
     }
   };
 
@@ -266,6 +326,32 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
                 </div>
               </div>
 
+              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
+                <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
+                  <Mail className="w-4 h-4" />
+                  Send Link via Email
+                </h4>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    value={emailAddress}
+                    onChange={(e) => setEmailAddress(e.target.value)}
+                    placeholder="attorney@example.com"
+                    className="flex-1 px-3 py-2 border border-blue-300 dark:border-blue-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  />
+                  <button
+                    onClick={sendEmail}
+                    disabled={!emailAddress || sendingEmail}
+                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                  >
+                    {sendingEmail ? 'Sending...' : 'Send'}
+                  </button>
+                </div>
+                <p className="text-xs text-blue-700 dark:text-blue-300 mt-2">
+                  The attorney will receive an email with the link to submit their pro forma details.
+                </p>
+              </div>
+
               <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
                 <h4 className="font-medium text-amber-800 mb-2">Instructions for Attorney</h4>
                 <ul className="text-sm text-amber-700 space-y-1">
@@ -278,15 +364,8 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
 
               <div className="flex gap-3 mt-6">
                 <button
-                  onClick={generateLink}
-                  disabled={loading}
-                  className="flex-1 px-4 py-2 bg-neutral-100 dark:bg-metallic-gray-700 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-200 dark:hover:bg-metallic-gray-600 disabled:opacity-50"
-                >
-                  Generate New Link
-                </button>
-                <button
                   onClick={handleClose}
-                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
                 >
                   Done
                 </button>

@@ -156,11 +156,11 @@ const MegaMenuSection: React.FC<MegaMenuSectionProps> = ({
   }
 
   return (
-    <div className="space-y-1 bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-100 dark:border-metallic-gray-700 p-4">
-      <h3 className="text-xs font-semibold text-judicial-blue-600 dark:text-judicial-blue-400 uppercase tracking-wider mb-3">
+    <div className="space-y-2 bg-white dark:bg-metallic-gray-800 rounded-xl border border-neutral-200 dark:border-metallic-gray-700 p-5 shadow-sm hover:shadow-md transition-shadow">
+      <h3 className="text-xs font-bold text-judicial-blue-600 dark:text-judicial-blue-400 uppercase tracking-wider mb-4 pb-2 border-b border-neutral-100 dark:border-metallic-gray-700">
         {section.title}
       </h3>
-      <div className="space-y-1">
+      <div className="space-y-2">
         {section.items.map((item) => (
           <MegaMenuItem
             key={item.id}
@@ -281,25 +281,27 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
 
   return (
     <div 
-      className={`max-w-7xl mx-auto px-4 lg:px-8 py-6 ${className}`}
+      className={`max-w-7xl mx-auto px-6 sm:px-8 lg:px-12 py-8 ${className}`}
       role="menu"
       aria-label={`${category.label} menu`}
     >
       {/* Category Header */}
-      <div className="mb-6">
-        <div className="flex items-center gap-3 mb-2">
-          <category.icon className="w-6 h-6 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
-          <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+      <div className="mb-8">
+        <div className="flex items-center gap-3 mb-3">
+          <div className="p-2 bg-mpondo-gold-100 dark:bg-mpondo-gold-900/30 rounded-lg">
+            <category.icon className="w-6 h-6 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
+          </div>
+          <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
             {category.label}
           </h2>
         </div>
         {category.description && (
-          <p className="text-sm text-neutral-600 dark:text-neutral-400">{category.description}</p>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 ml-14">{category.description}</p>
         )}
       </div>
 
       {/* Menu Content Grid */}
-      <div className={`grid gap-4 ${getGridColumns()}`}>
+      <div className={`grid gap-6 ${getGridColumns()}`}>
         {/* Navigation Sections */}
         {accessibleSections.map((section) => (
           <MegaMenuSection
@@ -321,9 +323,14 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
       </div>
 
       {/* Footer Actions */}
-      <div className="mt-8 pt-6 border-t border-neutral-200 dark:border-metallic-gray-700">
-        <div className="text-xs text-neutral-500 dark:text-neutral-400">
-          Explore all {category.label.toLowerCase()} features
+      <div className="mt-10 pt-6 border-t border-neutral-200 dark:border-metallic-gray-700">
+        <div className="flex items-center justify-between">
+          <div className="text-sm text-neutral-500 dark:text-neutral-400">
+            Explore all {category.label.toLowerCase()} features
+          </div>
+          <div className="text-xs text-neutral-400 dark:text-neutral-500">
+            {accessibleSections.reduce((acc, section) => acc + section.items.length, 0)} features available
+          </div>
         </div>
       </div>
     </div>

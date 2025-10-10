@@ -404,6 +404,204 @@ This is an automated reminder from LexoHub
     });
   }
 
+  async sendEngagementLinkEmail(params: {
+    recipientEmail: string;
+    recipientName: string;
+    matterTitle: string;
+    linkUrl: string;
+  }): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const { recipientEmail, recipientName, matterTitle, linkUrl } = params;
+
+    const htmlBody = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background-color: #059669; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px 20px; background-color: #f9fafb; }
+            .link-box { background-color: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #059669; }
+            .button { display: inline-block; padding: 12px 24px; background-color: #059669; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            .info-box { background-color: #d1fae5; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #059669; }
+            .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Engagement Agreement - LexoHub</h1>
+            </div>
+            <div class="content">
+              <p>Dear ${recipientName},</p>
+              <p>Your engagement agreement is ready for review and signature:</p>
+              
+              <div class="link-box">
+                <h3 style="margin-top: 0; color: #059669;">${matterTitle}</h3>
+                <p style="margin-bottom: 20px;">Click the button below to review and sign the agreement:</p>
+                <a href="${linkUrl}" class="button">Review & Sign Agreement</a>
+                <p style="font-size: 12px; color: #6b7280; margin-top: 15px;">Or copy this link: ${linkUrl}</p>
+              </div>
+
+              <div class="info-box">
+                <strong>📝 What's Next:</strong>
+                <ul style="margin: 10px 0; padding-left: 20px;">
+                  <li>Review the engagement agreement carefully</li>
+                  <li>Sign digitally using your mouse or touchscreen</li>
+                  <li>Submit the signed agreement</li>
+                  <li>You'll receive a confirmation email</li>
+                </ul>
+              </div>
+              
+              <p>If you have any questions about the agreement, please contact your advocate before signing.</p>
+            </div>
+            <div class="footer">
+              <p>This is an automated message from LexoHub</p>
+              <p>&copy; ${new Date().getFullYear()} LexoHub. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const textBody = `
+Engagement Agreement - LexoHub
+
+Dear ${recipientName},
+
+Your engagement agreement is ready for review and signature:
+
+Matter: ${matterTitle}
+
+Review and sign the agreement here:
+${linkUrl}
+
+What's Next:
+- Review the engagement agreement carefully
+- Sign digitally using your mouse or touchscreen
+- Submit the signed agreement
+- You'll receive a confirmation email
+
+If you have any questions about the agreement, please contact your advocate before signing.
+
+This is an automated message from LexoHub
+    `;
+
+    return this.sendEmail({
+      to: recipientEmail,
+      subject: `Engagement Agreement Ready for Signature: ${matterTitle}`,
+      htmlBody,
+      textBody,
+    });
+  }
+
+  async sendProFormaLinkEmail(params: {
+    recipientEmail: string;
+    recipientName: string;
+    matterTitle: string;
+    linkUrl: string;
+    expiresAt?: string;
+  }): Promise<{ success: boolean; messageId?: string; error?: string }> {
+    const { recipientEmail, recipientName, matterTitle, linkUrl, expiresAt } = params;
+
+    const htmlBody = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background-color: #2563eb; color: white; padding: 20px; text-align: center; }
+            .content { padding: 30px 20px; background-color: #f9fafb; }
+            .link-box { background-color: white; padding: 20px; border-radius: 8px; margin: 20px 0; border: 2px solid #2563eb; }
+            .button { display: inline-block; padding: 12px 24px; background-color: #2563eb; color: white; text-decoration: none; border-radius: 6px; margin: 20px 0; }
+            .info-box { background-color: #fef3c7; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #f59e0b; }
+            .footer { text-align: center; padding: 20px; color: #6b7280; font-size: 14px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>Pro Forma Request - LexoHub</h1>
+            </div>
+            <div class="content">
+              <p>Dear ${recipientName},</p>
+              <p>You have been invited to submit pro forma details for the following matter:</p>
+              
+              <div class="link-box">
+                <h3 style="margin-top: 0; color: #2563eb;">${matterTitle}</h3>
+                <p style="margin-bottom: 20px;">Click the button below to access the secure submission form:</p>
+                <a href="${linkUrl}" class="button">Submit Pro Forma Details</a>
+                <p style="font-size: 12px; color: #6b7280; margin-top: 15px;">Or copy this link: ${linkUrl}</p>
+              </div>
+
+              ${expiresAt ? `
+              <div class="info-box">
+                <strong>⏰ Important:</strong> This link expires on ${new Date(expiresAt).toLocaleDateString('en-ZA', {
+                  weekday: 'long',
+                  year: 'numeric',
+                  month: 'long',
+                  day: 'numeric',
+                  hour: '2-digit',
+                  minute: '2-digit',
+                })} for security purposes.
+              </div>
+              ` : ''}
+
+              <p><strong>What you need to do:</strong></p>
+              <ul>
+                <li>Click the link above to access the secure form</li>
+                <li>Review the matter details</li>
+                <li>Submit your pro forma response</li>
+                <li>No account creation required</li>
+              </ul>
+              
+              <p>If you have any questions, please contact the advocate who sent this request.</p>
+            </div>
+            <div class="footer">
+              <p>This is an automated message from LexoHub</p>
+              <p>&copy; ${new Date().getFullYear()} LexoHub. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `;
+
+    const textBody = `
+Pro Forma Request - LexoHub
+
+Dear ${recipientName},
+
+You have been invited to submit pro forma details for the following matter:
+
+Matter: ${matterTitle}
+
+Access the submission form here:
+${linkUrl}
+
+${expiresAt ? `⏰ Important: This link expires on ${new Date(expiresAt).toLocaleDateString('en-ZA')} for security purposes.` : ''}
+
+What you need to do:
+- Click the link above to access the secure form
+- Review the matter details
+- Submit your pro forma response
+- No account creation required
+
+If you have any questions, please contact the advocate who sent this request.
+
+This is an automated message from LexoHub
+    `;
+
+    return this.sendEmail({
+      to: recipientEmail,
+      subject: `Pro Forma Request: ${matterTitle}`,
+      htmlBody,
+      textBody,
+    });
+  }
+
   isConfigured(): boolean {
     return this.sesClient !== null;
   }

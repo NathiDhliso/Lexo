@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Clock, Receipt, DollarSign, Plus, TrendingUp, AlertCircle, CheckCircle, Calendar } from 'lucide-react';
-import { InvoiceGenerationWizard } from './InvoiceGenerationWizard';
+import { FileText, Clock, DollarSign, Plus, TrendingUp, AlertCircle, Calendar } from 'lucide-react';
+import { UnifiedInvoiceWizard } from './UnifiedInvoiceWizard';
 import { TimeEntryService } from '../../services/api/time-entries.service';
 import { formatRand } from '../../lib/currency';
 
@@ -23,7 +23,6 @@ export const MatterInvoicePanel: React.FC<MatterInvoicePanelProps> = ({
 }) => {
   const [showWizard, setShowWizard] = useState(false);
   const [timeEntries, setTimeEntries] = useState<any[]>([]);
-  const [expenses, setExpenses] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [invoiceStats, setInvoiceStats] = useState({
     totalBillable: 0,
@@ -94,7 +93,7 @@ export const MatterInvoicePanel: React.FC<MatterInvoicePanelProps> = ({
         </div>
         <button
           onClick={() => setShowWizard(true)}
-          disabled={timeEntries.length === 0 && expenses.length === 0}
+          disabled={timeEntries.length === 0}
           className="flex items-center gap-2 px-4 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
         >
           <Plus className="w-4 h-4" />
@@ -258,7 +257,7 @@ export const MatterInvoicePanel: React.FC<MatterInvoicePanelProps> = ({
       )}
 
       {showWizard && (
-        <InvoiceGenerationWizard
+        <UnifiedInvoiceWizard
           matter={{
             id: matterId,
             title: matterTitle,
@@ -268,14 +267,6 @@ export const MatterInvoicePanel: React.FC<MatterInvoicePanelProps> = ({
             disbursements: 0,
             matterType
           }}
-          timeEntries={timeEntries.map(entry => ({
-            id: entry.id,
-            date: entry.entry_date,
-            description: entry.description,
-            duration: entry.hours * 60,
-            rate: entry.hourly_rate
-          }))}
-          expenses={expenses}
           onClose={() => setShowWizard(false)}
           onGenerate={handleInvoiceGenerated}
         />

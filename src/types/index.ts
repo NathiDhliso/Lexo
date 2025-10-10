@@ -5,6 +5,7 @@ export type Page =
   | 'matters'
   | 'matter-workbench'
   | 'invoices'
+  | 'partner-approval'
   | 'profile'
   | 'settings';
 

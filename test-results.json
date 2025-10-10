@@ -1,0 +1,1309 @@
+[dotenv@17.2.3] injecting env (29) from .env -- tip: ≡ƒùé∩╕Å backup and recover secrets: https://dotenvx.com/ops
+[dotenv@17.2.3] injecting env (0) from .env -- tip: ≡ƒöä add secrets lifecycle management: https://dotenvx.com/ops
+≡ƒöÉ Logging in once for all tests...
+Γ£à Authentication state saved!
+{
+  "config": {
+    "configFile": "C:\\Users\\nathi\\Downloads\\LexoHub\\playwright.config.ts",
+    "rootDir": "C:/Users/nathi/Downloads/LexoHub/tests",
+    "forbidOnly": false,
+    "fullyParallel": true,
+    "globalSetup": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\setup\\global-setup.ts",
+    "globalTeardown": null,
+    "globalTimeout": 0,
+    "grep": {},
+    "grepInvert": null,
+    "maxFailures": 0,
+    "metadata": {
+      "actualWorkers": 4
+    },
+    "preserveOutput": "always",
+    "reporter": [
+      [
+        "json"
+      ]
+    ],
+    "reportSlowTests": {
+      "max": 5,
+      "threshold": 300000
+    },
+    "quiet": false,
+    "projects": [
+      {
+        "outputDir": "C:/Users/nathi/Downloads/LexoHub/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "chromium",
+        "name": "chromium",
+        "testDir": "C:/Users/nathi/Downloads/LexoHub/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/nathi/Downloads/LexoHub/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "firefox",
+        "name": "firefox",
+        "testDir": "C:/Users/nathi/Downloads/LexoHub/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      },
+      {
+        "outputDir": "C:/Users/nathi/Downloads/LexoHub/test-results",
+        "repeatEach": 1,
+        "retries": 0,
+        "metadata": {
+          "actualWorkers": 4
+        },
+        "id": "webkit",
+        "name": "webkit",
+        "testDir": "C:/Users/nathi/Downloads/LexoHub/tests",
+        "testIgnore": [],
+        "testMatch": [
+          "**/*.@(spec|test).?(c|m)[jt]s?(x)"
+        ],
+        "timeout": 30000
+      }
+    ],
+    "shard": null,
+    "updateSnapshots": "missing",
+    "updateSourceMethod": "patch",
+    "version": "1.56.0",
+    "workers": 4,
+    "webServer": {
+      "command": "npm run dev",
+      "url": "http://localhost:5173",
+      "reuseExistingServer": true
+    }
+  },
+  "suites": [
+    {
+      "title": "02-proforma.spec.ts",
+      "file": "02-proforma.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Pro Forma System - Complete Workflow",
+          "file": "02-proforma.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Test 2.1: Navigate to Pro Forma page",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 22377,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:19:41.763Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29fbd869fd75b627ac79-810f89d4b54bbd92fc9f",
+              "file": "02-proforma.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test 2.2: View existing Pro Formas by status",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 24391,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:19:41.750Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29fbd869fd75b627ac79-c3600cc3dee63c3f8b00",
+              "file": "02-proforma.spec.ts",
+              "line": 12,
+              "column": 3
+            },
+            {
+              "title": "Test 2.3: View accepted Pro Forma ready for conversion",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 2,
+                      "parallelIndex": 2,
+                      "status": "failed",
+                      "duration": 27007,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Convert to Matter' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Convert to Matter' })\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Convert to Matter' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Convert to Matter' })\u001b[22m\n\n    at C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts:39:77",
+                        "location": {
+                          "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts",
+                          "column": 77,
+                          "line": 39
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 37 |\u001b[39m     \u001b[36mconst\u001b[39m acceptedProformas \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Accepted'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 38 |\u001b[39m     \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m acceptedProformas\u001b[33m.\u001b[39misVisible()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 39 |\u001b[39m       \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'button'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'Convert to Matter'\u001b[39m }))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                             \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 40 |\u001b[39m     }\n \u001b[90m 41 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 42 |\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts",
+                            "column": 77,
+                            "line": 39
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'Convert to Matter' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'Convert to Matter' })\u001b[22m\n\n\n  37 |     const acceptedProformas = page.locator('text=Accepted').first();\n  38 |     if (await acceptedProformas.isVisible()) {\n> 39 |       await expect(page.getByRole('button', { name: 'Convert to Matter' })).toBeVisible();\n     |                                                                             ^\n  40 |     }\n  41 |   });\n  42 |\n    at C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts:39:77"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:19:41.964Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\nathi\\Downloads\\LexoHub\\test-results\\02-proforma-Pro-Forma-Syst-20c96--Forma-ready-for-conversion-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\nathi\\Downloads\\LexoHub\\test-results\\02-proforma-Pro-Forma-Syst-20c96--Forma-ready-for-conversion-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts",
+                        "column": 77,
+                        "line": 39
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "29fbd869fd75b627ac79-ae9274150ea0e8352dc3",
+              "file": "02-proforma.spec.ts",
+              "line": 31,
+              "column": 3
+            },
+            {
+              "title": "Test 2.4: View converted Pro Formas",
+              "ok": false,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 3,
+                      "parallelIndex": 3,
+                      "status": "failed",
+                      "duration": 27559,
+                      "error": {
+                        "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'View Matter' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'View Matter' })\u001b[22m\n",
+                        "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'View Matter' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'View Matter' })\u001b[22m\n\n    at C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts:51:71",
+                        "location": {
+                          "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts",
+                          "column": 71,
+                          "line": 51
+                        },
+                        "snippet": "\u001b[0m \u001b[90m 49 |\u001b[39m     \u001b[36mconst\u001b[39m convertedProformas \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Converted'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\n \u001b[90m 50 |\u001b[39m     \u001b[36mif\u001b[39m (\u001b[36mawait\u001b[39m convertedProformas\u001b[33m.\u001b[39misVisible()) {\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 51 |\u001b[39m       \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'button'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'View Matter'\u001b[39m }))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                                                                       \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 52 |\u001b[39m       \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mgetByRole(\u001b[32m'button'\u001b[39m\u001b[33m,\u001b[39m { name\u001b[33m:\u001b[39m \u001b[32m'Reverse Conversion'\u001b[39m }))\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 53 |\u001b[39m     }\n \u001b[90m 54 |\u001b[39m   })\u001b[33m;\u001b[39m\u001b[0m"
+                      },
+                      "errors": [
+                        {
+                          "location": {
+                            "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts",
+                            "column": 71,
+                            "line": 51
+                          },
+                          "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByRole('button', { name: 'View Matter' })\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByRole('button', { name: 'View Matter' })\u001b[22m\n\n\n  49 |     const convertedProformas = page.locator('text=Converted').first();\n  50 |     if (await convertedProformas.isVisible()) {\n> 51 |       await expect(page.getByRole('button', { name: 'View Matter' })).toBeVisible();\n     |                                                                       ^\n  52 |       await expect(page.getByRole('button', { name: 'Reverse Conversion' })).toBeVisible();\n  53 |     }\n  54 |   });\n    at C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts:51:71"
+                        }
+                      ],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:19:41.888Z",
+                      "annotations": [],
+                      "attachments": [
+                        {
+                          "name": "screenshot",
+                          "contentType": "image/png",
+                          "path": "C:\\Users\\nathi\\Downloads\\LexoHub\\test-results\\02-proforma-Pro-Forma-Syst-5ec59-4-View-converted-Pro-Formas-chromium\\test-failed-1.png"
+                        },
+                        {
+                          "name": "error-context",
+                          "contentType": "text/markdown",
+                          "path": "C:\\Users\\nathi\\Downloads\\LexoHub\\test-results\\02-proforma-Pro-Forma-Syst-5ec59-4-View-converted-Pro-Formas-chromium\\error-context.md"
+                        }
+                      ],
+                      "errorLocation": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts",
+                        "column": 71,
+                        "line": 51
+                      }
+                    }
+                  ],
+                  "status": "unexpected"
+                }
+              ],
+              "id": "29fbd869fd75b627ac79-b38ada77a5c6b7aeab0b",
+              "file": "02-proforma.spec.ts",
+              "line": 43,
+              "column": 3
+            },
+            {
+              "title": "Test 2.5: Pro Forma displays attorney details",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 15057,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:04.534Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29fbd869fd75b627ac79-bff1a73d5f2663d942ab",
+              "file": "02-proforma.spec.ts",
+              "line": 56,
+              "column": 3
+            },
+            {
+              "title": "Test 2.6: Generate Link button for attorney submission",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 15791,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:06.435Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "29fbd869fd75b627ac79-bf3c376bf33cd350f1e0",
+              "file": "02-proforma.spec.ts",
+              "line": 66,
+              "column": 3
+            },
+            {
+              "title": "Test 2.7: Client Response - Accept (requires attorney portal)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts",
+                        "line": 74,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:09.507Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "29fbd869fd75b627ac79-ec34e27a300722ba0277",
+              "file": "02-proforma.spec.ts",
+              "line": 74,
+              "column": 8
+            },
+            {
+              "title": "Test 2.8: Client Response - Negotiate (requires attorney portal)",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\02-proforma.spec.ts",
+                        "line": 78,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:09.507Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "29fbd869fd75b627ac79-b109e8d5e1b3ce51a506",
+              "file": "02-proforma.spec.ts",
+              "line": 78,
+              "column": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "04-matter-management.spec.ts",
+      "file": "04-matter-management.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Matter Management - Complete Workflow",
+          "file": "04-matter-management.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Test 4.1: Navigate to Matters page",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 17589,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:12.696Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-353766ffa92212dcf42f",
+              "file": "04-matter-management.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test 4.2: View matters by state filter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 18627,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:13.664Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-f5ce382e4d65a41fd61b",
+              "file": "04-matter-management.spec.ts",
+              "line": 12,
+              "column": 3
+            },
+            {
+              "title": "Test 4.3: View existing matters with reference numbers",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 16035,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:19.667Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-f7269f16591d0e369ff4",
+              "file": "04-matter-management.spec.ts",
+              "line": 22,
+              "column": 3
+            },
+            {
+              "title": "Test 4.4: Matter displays WIP value",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 16776,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:22.468Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-e70cc00e843c5798f69b",
+              "file": "04-matter-management.spec.ts",
+              "line": 36,
+              "column": 3
+            },
+            {
+              "title": "Test 4.5: Matter shows link to source Pro Forma",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 17195,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:30.487Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-cc32d11f8d89adfc5a34",
+              "file": "04-matter-management.spec.ts",
+              "line": 48,
+              "column": 3
+            },
+            {
+              "title": "Test 4.6: Matter state management - 6 states available",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 17893,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:32.557Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-693a7bdd69276291ff2f",
+              "file": "04-matter-management.spec.ts",
+              "line": 61,
+              "column": 3
+            },
+            {
+              "title": "Test 4.7: New Matter button for urgent matters",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 17806,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:35.761Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-57fca00d1731f8dfbdad",
+              "file": "04-matter-management.spec.ts",
+              "line": 72,
+              "column": 3
+            },
+            {
+              "title": "Test 4.8: Matter Workbench - Time Entries tab",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\04-matter-management.spec.ts",
+                        "line": 80,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:39.306Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-fa55753b1ed72eee3ee1",
+              "file": "04-matter-management.spec.ts",
+              "line": 80,
+              "column": 8
+            },
+            {
+              "title": "Test 4.9: Matter Workbench - Expenses tab",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\04-matter-management.spec.ts",
+                        "line": 84,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:39.306Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-23dbbb8990df3de19775",
+              "file": "04-matter-management.spec.ts",
+              "line": 84,
+              "column": 8
+            },
+            {
+              "title": "Test 4.10: WIP Accumulator updates automatically",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\04-matter-management.spec.ts",
+                        "line": 88,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:39.306Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-e83bf17527897226409e",
+              "file": "04-matter-management.spec.ts",
+              "line": 88,
+              "column": 8
+            },
+            {
+              "title": "Test 4.11: Cost variance triggers scope amendment",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\04-matter-management.spec.ts",
+                        "line": 92,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:39.306Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5cbb597df7807a87d839-06f119e6a585e6d990b0",
+              "file": "04-matter-management.spec.ts",
+              "line": 92,
+              "column": 8
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "09-invoice-generation.spec.ts",
+      "file": "09-invoice-generation.spec.ts",
+      "column": 0,
+      "line": 0,
+      "specs": [],
+      "suites": [
+        {
+          "title": "Invoice Generation - Complete Workflow",
+          "file": "09-invoice-generation.spec.ts",
+          "line": 4,
+          "column": 6,
+          "specs": [
+            {
+              "title": "Test 9.1: Navigate to Invoices page",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 17156,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:39.341Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5920df3619c785f6f018-f62ee329b22f2593a671",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 5,
+              "column": 3
+            },
+            {
+              "title": "Test 9.2: View existing invoices with matter reference",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 4,
+                      "parallelIndex": 2,
+                      "status": "passed",
+                      "duration": 17173,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:47.737Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5920df3619c785f6f018-b22d1a4e8bce6c67d79a",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 11,
+              "column": 3
+            },
+            {
+              "title": "Test 9.3: Invoice displays status badge",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 5,
+                      "parallelIndex": 3,
+                      "status": "passed",
+                      "duration": 18012,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:50.511Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5920df3619c785f6f018-7e2c292ce25aca555bb8",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 22,
+              "column": 3
+            },
+            {
+              "title": "Test 9.4: Invoice shows invoice number",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 0,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 17154,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:53.652Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5920df3619c785f6f018-9110445f8dcd95cc149d",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 34,
+              "column": 3
+            },
+            {
+              "title": "Test 9.5: Invoice displays total amount",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [],
+                  "expectedStatus": "passed",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": 1,
+                      "parallelIndex": 1,
+                      "status": "passed",
+                      "duration": 16047,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:20:56.543Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "expected"
+                }
+              ],
+              "id": "5920df3619c785f6f018-cf39c4eb01d7f8dd5e4e",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 45,
+              "column": 3
+            },
+            {
+              "title": "Test 9.6: Generate Interim Invoice from Matter",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\09-invoice-generation.spec.ts",
+                        "line": 56,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:21:04.942Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5920df3619c785f6f018-49ca0a2e681153c16ca5",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 56,
+              "column": 8
+            },
+            {
+              "title": "Test 9.7: Generate Milestone Invoice",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\09-invoice-generation.spec.ts",
+                        "line": 60,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:21:04.942Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5920df3619c785f6f018-cd78c46c18e9bd125538",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 60,
+              "column": 8
+            },
+            {
+              "title": "Test 9.8: Generate Final Invoice",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\09-invoice-generation.spec.ts",
+                        "line": 64,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:21:04.942Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5920df3619c785f6f018-11668a7b7618c5740dbe",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 64,
+              "column": 8
+            },
+            {
+              "title": "Test 9.9: Invoice PDF Generation",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\09-invoice-generation.spec.ts",
+                        "line": 68,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:21:04.942Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5920df3619c785f6f018-001a567819d7be07f199",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 68,
+              "column": 8
+            },
+            {
+              "title": "Test 9.10: Send Invoice to Client",
+              "ok": true,
+              "tags": [],
+              "tests": [
+                {
+                  "timeout": 30000,
+                  "annotations": [
+                    {
+                      "type": "skip",
+                      "location": {
+                        "file": "C:\\Users\\nathi\\Downloads\\LexoHub\\tests\\09-invoice-generation.spec.ts",
+                        "line": 72,
+                        "column": 8
+                      }
+                    }
+                  ],
+                  "expectedStatus": "skipped",
+                  "projectId": "chromium",
+                  "projectName": "chromium",
+                  "results": [
+                    {
+                      "workerIndex": -1,
+                      "parallelIndex": -1,
+                      "status": "skipped",
+                      "duration": 0,
+                      "errors": [],
+                      "stdout": [],
+                      "stderr": [],
+                      "retry": 0,
+                      "startTime": "2025-10-09T20:21:04.942Z",
+                      "annotations": [],
+                      "attachments": []
+                    }
+                  ],
+                  "status": "skipped"
+                }
+              ],
+              "id": "5920df3619c785f6f018-145e7c3cd6a2991b754f",
+              "file": "09-invoice-generation.spec.ts",
+              "line": 72,
+              "column": 8
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "stats": {
+    "startTime": "2025-10-09T20:19:29.805Z",
+    "duration": 103086.649,
+    "expected": 16,
+    "skipped": 11,
+    "unexpected": 2,
+    "flaky": 0
+  }
+}

@@ -45,6 +45,7 @@ class AWSDocumentProcessingService {
   private readonly bedrockModelId: string;
   private s3Client: S3Client | null = null;
   private bedrockClient: BedrockRuntimeClient | null = null;
+  private readonly USE_MOCK_UPLOAD = false;
 
   constructor() {
     this.bucketName = import.meta.env.VITE_AWS_S3_BUCKET || '';
@@ -141,6 +142,11 @@ class AWSDocumentProcessingService {
     file: File,
     onProgress?: (progress: UploadProgress) => void
   ): Promise<string> {
+    if (this.USE_MOCK_UPLOAD) {
+      console.log('📄 Using mock upload (AWS CORS not configured - set USE_MOCK_UPLOAD = false when ready)');
+      return this.mockUpload(file, onProgress);
+    }
+
     if (!this.s3Client || !this.bucketName) {
       console.log('AWS not configured, using mock upload');
       return this.mockUpload(file, onProgress);

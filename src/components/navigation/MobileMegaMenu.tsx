@@ -56,9 +56,9 @@ const MobileMenuItem: React.FC<{
 
   return (
     <div
-      className={`flex items-center gap-3 p-3 rounded-lg transition-colors min-h-[48px] ${
+      className={`flex items-center gap-3 p-3 rounded-lg transition-colors min-h-[52px] ${
         isAccessible
-          ? 'active:bg-neutral-100 cursor-pointer touch-manipulation'
+          ? 'active:bg-neutral-100 dark:active:bg-metallic-gray-700 cursor-pointer touch-manipulation'
           : 'opacity-60 cursor-not-allowed'
       }`}
       onClick={handleClick}
@@ -66,20 +66,20 @@ const MobileMenuItem: React.FC<{
       tabIndex={isAccessible ? 0 : -1}
     >
       {/* Icon */}
-      <div className={`flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center ${
+      <div className={`flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center ${
         isAccessible 
-          ? 'bg-mpondo-gold-100 text-mpondo-gold-600' 
-          : 'bg-neutral-100 text-neutral-400'
+          ? 'bg-mpondo-gold-100 dark:bg-mpondo-gold-900/30 text-mpondo-gold-600 dark:text-mpondo-gold-400' 
+          : 'bg-neutral-100 dark:bg-metallic-gray-700 text-neutral-400 dark:text-neutral-600'
       }`}>
-        {Icon ? <Icon className="w-4 h-4" /> : null}
+        {Icon ? <Icon className="w-5 h-5" /> : null}
       </div>
 
       {/* Content */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center justify-between">
           <div className="flex-1">
-            <h4 className={`font-medium text-sm ${
-              isAccessible ? 'text-neutral-900' : 'text-neutral-500'
+            <h4 className={`font-medium text-base ${
+              isAccessible ? 'text-neutral-900 dark:text-neutral-100' : 'text-neutral-500 dark:text-neutral-600'
             }`}>
               {item.label}
             </h4>
@@ -109,13 +109,13 @@ const MobileMenuItem: React.FC<{
           
           {/* Arrow indicator */}
           {isAccessible && item.page && (
-            <ArrowRight className="w-4 h-4 text-neutral-400 flex-shrink-0" />
+            <ArrowRight className="w-5 h-5 text-neutral-400 dark:text-neutral-500 flex-shrink-0" />
           )}
         </div>
         
         {item.description && (
-          <p className={`text-xs mt-1 line-clamp-2 ${
-            isAccessible ? 'text-neutral-600' : 'text-neutral-400'
+          <p className={`text-sm mt-1 line-clamp-2 ${
+            isAccessible ? 'text-neutral-600 dark:text-neutral-400' : 'text-neutral-400 dark:text-neutral-600'
           }`}>
             {item.description}
           </p>
@@ -138,11 +138,11 @@ const MobileSection: React.FC<MobileSectionProps> = ({
   }
 
   return (
-    <div className="space-y-1">
-      <h3 className="text-xs font-semibold text-judicial-blue-600 uppercase tracking-wider mb-2 px-3">
+    <div className="space-y-2">
+      <h3 className="text-xs font-bold text-judicial-blue-600 dark:text-judicial-blue-400 uppercase tracking-wider mb-3 px-3">
         {section.title}
       </h3>
-      <div className="space-y-0.5">
+      <div className="space-y-1">
         {section.items.map((item) => (
           <MobileMenuItem
             key={item.id}
@@ -172,23 +172,23 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
   );
 
   return (
-    <div className="border-b border-neutral-100 last:border-b-0">
+    <div className="border-b border-neutral-200 dark:border-metallic-gray-700 last:border-b-0">
       {/* Category Header */}
       <button
         onClick={onToggle}
-        className={`w-full flex items-center justify-between p-4 text-left transition-colors min-h-[56px] ${
+        className={`w-full flex items-center justify-between p-5 text-left transition-colors min-h-[60px] ${
           isActive
-            ? 'bg-mpondo-gold-50 text-mpondo-gold-900'
-            : 'text-neutral-700 active:bg-neutral-50'
+            ? 'bg-mpondo-gold-50 dark:bg-mpondo-gold-900/20 text-mpondo-gold-900 dark:text-mpondo-gold-400'
+            : 'text-neutral-700 dark:text-neutral-300 active:bg-neutral-50 dark:active:bg-metallic-gray-800'
         }`}
         aria-expanded={isExpanded}
       >
         <div className="flex items-center gap-3">
-          <Icon className="w-5 h-5" />
-          <span className="font-medium text-base">{category.label}</span>
+          <Icon className="w-6 h-6" />
+          <span className="font-semibold text-lg">{category.label}</span>
         </div>
         <ChevronDown 
-          className={`w-5 h-5 transition-transform ${
+          className={`w-6 h-6 transition-transform ${
             isExpanded ? 'rotate-180' : ''
           }`} 
         />
@@ -196,26 +196,26 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
 
       {/* Expanded Content */}
       {isExpanded && (
-        <div className="bg-neutral-50 px-2 py-3">
+        <div className="bg-neutral-50 dark:bg-metallic-gray-900 px-3 py-4">
           {/* Quick access to main category page */}
           {category.page && (
             <div className="mb-4">
               <button
                 onClick={() => onItemClick(category.page!)}
-                className="w-full flex items-center gap-3 p-3 bg-white rounded-lg shadow-sm active:bg-neutral-50 transition-colors min-h-[48px]"
+                className="w-full flex items-center gap-3 p-4 bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm active:bg-neutral-50 dark:active:bg-metallic-gray-700 transition-colors min-h-[56px]"
               >
-                <div className="w-8 h-8 bg-mpondo-gold-100 text-mpondo-gold-600 rounded-lg flex items-center justify-center">
-                  <Icon className="w-4 h-4" />
+                <div className="w-10 h-10 bg-mpondo-gold-100 dark:bg-mpondo-gold-900/30 text-mpondo-gold-600 dark:text-mpondo-gold-400 rounded-lg flex items-center justify-center">
+                  <Icon className="w-5 h-5" />
                 </div>
                 <div className="flex-1 text-left">
-                  <span className="font-medium text-sm text-neutral-900">
+                  <span className="font-semibold text-base text-neutral-900 dark:text-neutral-100">
                     View {category.label}
                   </span>
-                  <p className="text-xs text-neutral-600">
+                  <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5">
                     {category.description || `Access all ${category.label.toLowerCase()} features`}
                   </p>
                 </div>
-                <ArrowRight className="w-4 h-4 text-neutral-400" />
+                <ArrowRight className="w-5 h-5 text-neutral-400 dark:text-neutral-500" />
               </button>
             </div>
           )}
@@ -233,10 +233,10 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
 
             {/* Featured Items */}
             {category.featured && category.featured.length > 0 && (
-              <div className="bg-gradient-to-br from-mpondo-gold-50 to-judicial-blue-50 rounded-lg p-3">
-                <div className="flex items-center gap-2 mb-2">
-                  <Star className="w-4 h-4 text-mpondo-gold-600" />
-                  <h3 className="text-sm font-semibold text-neutral-900">Featured</h3>
+              <div className="bg-gradient-to-br from-mpondo-gold-50 to-judicial-blue-50 dark:from-mpondo-gold-950/20 dark:to-judicial-blue-950/20 rounded-lg p-4">
+                <div className="flex items-center gap-2 mb-3">
+                  <Star className="w-5 h-5 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
+                  <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100">Featured</h3>
                 </div>
                 <div className="space-y-1">
                   {getAccessibleNavigationItems(category.featured, userTier).map((item) => (
@@ -277,8 +277,8 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
   };
 
   return (
-    <div className="lg:hidden bg-white border-b border-neutral-200 max-h-[80vh] overflow-y-auto">
-      <div className="divide-y divide-neutral-100">
+    <div className="lg:hidden bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700 max-h-[80vh] overflow-y-auto">
+      <div className="divide-y divide-neutral-200 dark:divide-metallic-gray-700">
         {categories.map((category) => (
           <MobileCategory
             key={category.id}

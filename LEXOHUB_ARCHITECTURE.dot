@@ -1,0 +1,280 @@
+digraph LexoHub {
+    // Graph settings
+    graph [
+        rankdir=LR
+        bgcolor="#f8fafc"
+        fontname="Arial"
+        fontsize=14
+        splines=curved
+        nodesep=1.2
+        ranksep=2.0
+    ]
+    
+    node [
+        shape=box
+        style="rounded,filled"
+        fontname="Arial"
+        fontsize=12
+        margin=0.3
+    ]
+    
+    edge [
+        fontname="Arial"
+        fontsize=10
+        color="#64748b"
+    ]
+
+    // Central Hub
+    hub [
+        label="LexoHub\nCore"
+        shape=circle
+        width=2.5
+        height=2.5
+        fillcolor="#2962FF"
+        fontcolor=white
+        fontsize=16
+        style="filled"
+    ]
+
+    // Domain 0: Client/Attorney (External Stakeholder)
+    subgraph cluster_client {
+        label="Client/Attorney Portal\n(External Stakeholder)"
+        style="rounded,filled"
+        fillcolor="#fef3c7"
+        color="#f59e0b"
+        fontsize=14
+        fontcolor="#78350f"
+        penwidth=3
+
+        client [label="Client/\nAttorney" fillcolor="#fbbf24" fontcolor="#78350f" shape=box style="rounded,filled"]
+        client_retainer [label="Client\nRetainer" fillcolor="#86efac" fontcolor="#14532d"]
+        client_portal [label="Attorney\nPortal" fillcolor="#a5f3fc" fontcolor="#0c4a6e"]
+        attorney_proforma_page [label="Pro Forma\nSubmission" fillcolor="#86efac" fontcolor="#14532d"]
+        attorney_engagement_page [label="Engagement\nSigning" fillcolor="#86efac" fontcolor="#14532d"]
+        
+        client -> client_retainer [label="owns"]
+        client -> client_portal [label="accesses"]
+        client_portal -> attorney_proforma_page [label="submit"]
+        client_portal -> attorney_engagement_page [label="sign"]
+    }
+
+    // Domain 1: Pro Forma (Step 1)
+    subgraph cluster_proforma {
+        label="Domain 1: Pro Forma\n(Client Engagement)"
+        style="rounded,filled"
+        fillcolor="#e0f2fe"
+        color="#0284c7"
+        fontsize=14
+        fontcolor="#0c4a6e"
+        penwidth=2
+
+        proforma_request [label="Pro Forma\nRequest" fillcolor="#38bdf8" fontcolor=white]
+        proforma_estimate [label="Fee\nEstimate" fillcolor="#7dd3fc" fontcolor="#0c4a6e"]
+        proforma_pdf [label="Pro Forma\nPDF" fillcolor="#7dd3fc" fontcolor="#0c4a6e"]
+        client_approval [label="Client\nResponse" fillcolor="#7dd3fc" fontcolor="#0c4a6e"]
+        negotiation [label="Negotiation\nCycle" fillcolor="#f0abfc" fontcolor="#701a75"]
+        rejection [label="Rejection\nArchive" fillcolor="#fca5a5" fontcolor="#7f1d1d"]
+        engagement_agreement [label="Engagement\nAgreement" fillcolor="#86efac" fontcolor="#14532d"]
+        client_signature [label="Client\nSignature" fillcolor="#86efac" fontcolor="#14532d"]
+        advocate_signature [label="Advocate\nSignature" fillcolor="#86efac" fontcolor="#14532d"]
+        scope_change [label="Scope\nAmendment" fillcolor="#fcd34d" fontcolor="#78350f"]
+        scope_approval [label="Scope\nApproval" fillcolor="#fcd34d" fontcolor="#78350f"]
+        
+        proforma_request -> proforma_estimate [label="generate"]
+        proforma_estimate -> proforma_pdf [label="create"]
+        proforma_pdf -> client_approval [label="send"]
+        client_approval -> engagement_agreement [label="accept" color="#16a34a" penwidth=2]
+        client_approval -> negotiation [label="negotiate" color="#a855f7"]
+        client_approval -> rejection [label="reject" color="#dc2626"]
+        negotiation -> proforma_estimate [label="revise" style=dashed]
+        engagement_agreement -> client_signature [label="send"]
+        client_signature -> advocate_signature [label="counter-sign"]
+        advocate_signature -> engagement_agreement [label="finalize" dir=back]
+        engagement_agreement -> scope_change [label="amend" style=dashed]
+        scope_change -> scope_approval [label="review"]
+        scope_approval -> scope_change [label="approve/reject" dir=back]
+        scope_change -> proforma_estimate [label="new estimate" style=dashed]
+    }
+
+    // Domain 2: Matter (Step 2)
+    subgraph cluster_matter {
+        label="Domain 2: Matter\n(Work Execution)"
+        style="rounded,filled"
+        fillcolor="#fef3c7"
+        color="#d97706"
+        fontsize=14
+        fontcolor="#78350f"
+        penwidth=2
+
+        matter [label="Matter\n(Case)" fillcolor="#fbbf24" fontcolor="#78350f"]
+        urgent_matter [label="Urgent\nMatter" fillcolor="#fb923c" fontcolor=white]
+        retainer [label="Retainer\nAgreement" fillcolor="#86efac" fontcolor="#14532d"]
+        trust_account [label="Trust\nAccount" fillcolor="#a5f3fc" fontcolor="#0c4a6e"]
+        trust_transactions [label="Trust\nTransactions" fillcolor="#a5f3fc" fontcolor="#0c4a6e"]
+        trust_deposit [label="Deposit\nFunds" fillcolor="#86efac" fontcolor="#14532d"]
+        trust_drawdown [label="Drawdown\nFunds" fillcolor="#fcd34d" fontcolor="#78350f"]
+        trust_refund [label="Refund\nFunds" fillcolor="#f0abfc" fontcolor="#701a75"]
+        
+        matter_state [label="Matter State\n(Active/Paused/\nOn Hold/Awaiting\nCourt/Completed/\nArchived)" fillcolor="#fcd34d" fontcolor="#78350f"]
+        
+        time_entries [label="Time\nEntries" fillcolor="#fcd34d" fontcolor="#78350f"]
+        expenses [label="Expenses &\nDisbursements" fillcolor="#fcd34d" fontcolor="#78350f"]
+        services [label="Rate Card\nServices" fillcolor="#fcd34d" fontcolor="#78350f"]
+        
+        wip_accumulator [label="WIP\nAccumulator" fillcolor="#fbbf24" fontcolor="#78350f"]
+        cost_tracking [label="Actual vs\nAgreed Terms" fillcolor="#fcd34d" fontcolor="#78350f"]
+        billing_review [label="Billing\nReadiness" fillcolor="#fcd34d" fontcolor="#78350f"]
+        
+        matter -> matter_state [label="update"]
+        matter -> retainer [label="manage" style=dashed]
+        matter -> trust_account [label="track funds" style=dashed]
+        
+        trust_account -> trust_transactions [label="records"]
+        trust_deposit -> trust_transactions [label="creates"]
+        trust_drawdown -> trust_transactions [label="creates"]
+        trust_refund -> trust_transactions [label="creates"]
+        trust_transactions -> trust_account [label="updates balance" dir=back]
+        
+        time_entries -> wip_accumulator [label="accumulate"]
+        expenses -> wip_accumulator [label="accumulate"]
+        services -> wip_accumulator [label="accumulate"]
+        
+        wip_accumulator -> matter [label="update WIP" style=dashed dir=back]
+        wip_accumulator -> cost_tracking [label="compare"]
+        
+        matter_state -> billing_review [label="completed"]
+        cost_tracking -> billing_review [label="validated"]
+    }
+
+    // Domain 3: Invoice (Step 3)
+    subgraph cluster_invoice {
+        label="Domain 3: Invoice\n(Billing & Payment)"
+        style="rounded,filled"
+        fillcolor="#dcfce7"
+        color="#16a34a"
+        fontsize=14
+        fontcolor="#14532d"
+        penwidth=2
+
+        partner_approval [label="Partner\nApproval" fillcolor="#4ade80" fontcolor="#14532d"]
+        invoice_gen [label="Invoice\nGeneration" fillcolor="#4ade80" fontcolor="#14532d"]
+        interim_invoice [label="Interim\nInvoice" fillcolor="#86efac" fontcolor="#14532d"]
+        milestone_invoice [label="Milestone\nInvoice" fillcolor="#86efac" fontcolor="#14532d"]
+        final_invoice [label="Final\nInvoice" fillcolor="#86efac" fontcolor="#14532d"]
+        invoice_pdf [label="Invoice\nPDF" fillcolor="#86efac" fontcolor="#14532d"]
+        invoice_send [label="Send to\nClient" fillcolor="#86efac" fontcolor="#14532d"]
+        payment [label="Payment\nTracking" fillcolor="#86efac" fontcolor="#14532d"]
+        partial_payment [label="Partial\nPayment" fillcolor="#fcd34d" fontcolor="#78350f"]
+        dispute [label="Payment\nDispute" fillcolor="#fca5a5" fontcolor="#7f1d1d"]
+        credit_note [label="Credit\nNote" fillcolor="#fca5a5" fontcolor="#7f1d1d"]
+        write_off [label="Write-off" fillcolor="#fca5a5" fontcolor="#7f1d1d"]
+        reminders [label="Automated\nReminders" fillcolor="#86efac" fontcolor="#14532d"]
+        
+        partner_approval -> invoice_gen [label="approve"]
+        invoice_gen -> interim_invoice [label="monthly"]
+        invoice_gen -> milestone_invoice [label="milestone"]
+        invoice_gen -> final_invoice [label="completion"]
+        interim_invoice -> invoice_pdf [label="create"]
+        milestone_invoice -> invoice_pdf [label="create"]
+        final_invoice -> invoice_pdf [label="create"]
+        invoice_pdf -> invoice_send [label="email"]
+        invoice_send -> payment [label="track"]
+        payment -> partial_payment [label="partial" color="#d97706"]
+        payment -> dispute [label="dispute" color="#dc2626"]
+        payment -> reminders [label="overdue"]
+        dispute -> credit_note [label="issue"]
+        dispute -> write_off [label="write-off"]
+    }
+    
+    // Hub connections to domains
+    client_inquiry -> proforma_request [label="triggers" penwidth=3 color="#a855f7"]
+    hub -> proforma_request [label="1. Start" penwidth=3 color="#2962FF"]
+    hub -> urgent_matter [label="1. Urgent" penwidth=3 color="#fb923c" style=bold]
+    engagement_agreement -> hub [label="formalize" penwidth=2 color="#16a34a"]
+    rejection -> hub [label="archive" penwidth=1 color="#dc2626" style=dotted]
+    
+    hub -> matter [label="2. Convert" penwidth=3 color="#2962FF"]
+    hub -> partner_approval [label="3. Review" penwidth=3 color="#2962FF"]
+    
+    wip_accumulator -> hub [label="WIP summary" penwidth=2 color="#d97706" style=dashed]
+    cost_tracking -> hub [label="variance alert" penwidth=2 color="#fb923c" style=dashed]
+    payment -> hub [label="complete" penwidth=2 color="#16a34a" style=dashed]
+
+    // Cross-domain workflows
+    client_retainer -> retainer [label="establishes" color="#f59e0b" penwidth=3 style=bold]
+    attorney_proforma_page -> proforma_pdf [label="reviews" color="#0ea5e9" style=dashed]
+    attorney_proforma_page -> client_approval [label="responds" color="#0ea5e9" penwidth=2]
+    attorney_engagement_page -> client_signature [label="signs" color="#16a34a" penwidth=2]
+    client_portal -> invoice_pdf [label="views" color="#0ea5e9" style=dashed]
+    client_portal -> payment [label="pays" color="#16a34a" penwidth=2]
+    
+    engagement_agreement -> matter [label="convert to\nmatter" color="#16a34a" penwidth=2 style=bold]
+    engagement_agreement -> retainer [label="establish\nretainer" color="#16a34a" penwidth=2 style=dashed]
+    urgent_matter -> retainer [label="requires\nretainer" color="#fb923c" penwidth=2 style=bold]
+    
+    retainer -> trust_account [label="prepayment" color="#0ea5e9" penwidth=2]
+    retainer -> matter [label="funds multiple\nmatters" color="#0ea5e9" penwidth=2 style=bold]
+    trust_account -> wip_accumulator [label="draw down" color="#0ea5e9" style=dashed dir=back]
+    
+    cost_tracking -> engagement_agreement [label="compare to\nagreed terms" color="#fb923c" penwidth=2 style=dotted]
+    cost_tracking -> scope_change [label="exceeds\nterms" color="#fb923c" penwidth=2 style=bold]
+    scope_change -> engagement_agreement [label="re-approve" color="#a855f7" style=dashed]
+    
+    billing_review -> partner_approval [label="ready" penwidth=2 color="#d97706"]
+    billing_review -> invoice_gen [label="generate" color="#d97706" penwidth=2 style=bold]
+    
+    interim_invoice -> matter [label="references\nmatter_id" color="#d97706" penwidth=2 dir=back]
+    milestone_invoice -> matter [label="references\nmatter_id" color="#d97706" penwidth=2 dir=back]
+    final_invoice -> matter [label="references\nmatter_id" color="#d97706" penwidth=2 dir=back]
+    
+    // NEW: Explicit closing/archiving workflow
+    payment -> matter_state [label="final payment received" color="#16a34a" penwidth=3 style=bold]
+
+    // Supporting systems (satellites)
+    subgraph cluster_support {
+        label="Supporting Systems"
+        style="rounded,dashed"
+        fillcolor="#f1f5f9"
+        color="#94a3b8"
+        fontsize=12
+        fontcolor="#475569"
+
+        auth [label="Authentication\n& Authorization" fillcolor="#cbd5e1" fontcolor="#1e293b"]
+        templates [label="PDF\nTemplates" fillcolor="#cbd5e1" fontcolor="#1e293b"]
+        aws [label="AWS Services\n(Email, Storage)" fillcolor="#cbd5e1" fontcolor="#1e293b"]
+        rate_cards [label="Rate Cards\n& Pricing" fillcolor="#cbd5e1" fontcolor="#1e293b"]
+        notifications [label="Notification\nService" fillcolor="#f0abfc" fontcolor="#701a75"]
+    }
+
+    // Support connections
+    hub -> auth [style=dotted color="#94a3b8"]
+    invoice_pdf -> templates [style=dotted color="#94a3b8"]
+    proforma_pdf -> templates [style=dotted color="#94a3b8"]
+    invoice_send -> aws [style=dotted color="#94a3b8"]
+    services -> rate_cards [style=dotted color="#94a3b8"]
+    proforma_estimate -> rate_cards [label="pricing" style=dotted color="#94a3b8"]
+    retainer -> rate_cards [label="pricing" style=dotted color="#94a3b8"]
+    
+    // NEW: Notification triggers
+    advocate_signature -> notifications [label="notify client" style=dotted color="#a855f7"]
+    invoice_send -> notifications [label="notify client" style=dotted color="#a855f7"]
+    dispute -> notifications [label="alert staff" style=dotted color="#a855f7"]
+    cost_tracking -> notifications [label="budget alert" style=dotted color="#a855f7"]
+
+    // Legend
+    subgraph cluster_legend {
+        label="Workflow Legend"
+        style="rounded"
+        fillcolor=white
+        color="#64748b"
+        fontsize=11
+
+        legend_primary [label="Primary Flow" shape=plaintext]
+        legend_feedback [label="Feedback Loop" shape=plaintext]
+        legend_support [label="Support Service" shape=plaintext]
+        
+        legend_primary -> legend_feedback [label="solid" penwidth=2]
+        legend_feedback -> legend_support [label="dashed" style=dashed penwidth=2]
+        legend_support -> legend_primary [label="dotted" style=dotted]
+    }
+}
