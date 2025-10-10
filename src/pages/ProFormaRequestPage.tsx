@@ -184,7 +184,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center px-4">
         <LoadingSpinner />
       </div>
     );
@@ -192,7 +192,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
 
   if (error) {
     return (
-      <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg shadow-lg p-8 text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Access Error</h1>
@@ -207,7 +207,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center">
+      <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg shadow-lg p-8 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Request Submitted</h1>
@@ -230,22 +230,22 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
   }
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 py-8">
-      <div className="max-w-4xl mx-auto px-4">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-metallic-gray-950 py-8">
+      <div className="max-w-4xl mx-auto px-4 w-full">
         {/* Header */}
-        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-6 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-            <div>
-              <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Pro Forma Request</h1>
-              <p className="text-neutral-600 dark:text-neutral-300">Please provide your details for this legal matter</p>
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6 mb-6">
+          <div className="flex items-start gap-3 mb-4">
+            <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+            <div className="min-w-0 flex-1">
+              <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 break-words">Pro Forma Request</h1>
+              <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-300 break-words">Please provide your details for this legal matter</p>
             </div>
           </div>
 
           {request?.expires_at && (
-            <div className="flex items-center gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
-              <Clock className="w-4 h-4" />
-              <span>This link expires on {formatDate(request.expires_at)}</span>
+            <div className="flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+              <Clock className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <span className="break-words">This link expires on {formatDate(request.expires_at)}</span>
             </div>
           )}
         </div>
@@ -253,13 +253,13 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Request Details */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-6">
+            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Request Details</h2>
               
               <div className="space-y-4">
-                <div>
+                <div className="min-w-0">
                   <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Work Title</label>
-                  <p className="text-neutral-900 dark:text-neutral-100 font-medium">{request?.work_title}</p>
+                  <p className="text-neutral-900 dark:text-neutral-100 font-medium break-words">{request?.work_title}</p>
                 </div>
 
                 {request?.estimated_amount && (
@@ -284,9 +284,9 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                   </div>
                 )}
 
-                <div>
+                <div className="min-w-0">
                   <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Quote Number</label>
-                  <p className="text-neutral-600 dark:text-neutral-400 font-mono text-sm">{request?.quote_number}</p>
+                  <p className="text-neutral-600 dark:text-neutral-400 font-mono text-sm break-all">{request?.quote_number}</p>
                 </div>
               </div>
             </div>
@@ -294,34 +294,34 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
 
           {/* Submission Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-6">
+            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-6">Your Information</h2>
 
               <div className="mb-6">
-                <div className="flex items-center gap-4 p-1 bg-neutral-100 dark:bg-metallic-gray-700 rounded-lg">
+                <div className="flex items-center gap-2 sm:gap-4 p-1 bg-neutral-100 dark:bg-metallic-gray-700 rounded-lg">
                   <button
                     type="button"
                     onClick={() => handleModeSwitch('manual')}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-all ${
+                    className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-md font-medium text-sm sm:text-base transition-all ${
                       inputMode === 'manual'
                         ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 shadow-sm'
                         : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
                     }`}
                   >
-                    <Edit3 className="w-4 h-4" />
-                    Manual Entry
+                    <Edit3 className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">Manual Entry</span>
                   </button>
                   <button
                     type="button"
                     onClick={() => handleModeSwitch('upload')}
-                    className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-md font-medium transition-all ${
+                    className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-md font-medium text-sm sm:text-base transition-all ${
                       inputMode === 'upload'
                         ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 shadow-sm'
                         : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
                     }`}
                   >
-                    <Upload className="w-4 h-4" />
-                    Upload Document
+                    <Upload className="w-4 h-4 flex-shrink-0" />
+                    <span className="truncate">Upload Document</span>
                   </button>
                 </div>
                 <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2 text-center">
@@ -370,15 +370,17 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                   <>
                     {/* Attorney Information */}
                     <div className="space-y-4">
-                      <h3 className="font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                        <User className="w-4 h-4" />
-                        Attorney Details
+                      <div>
+                        <h3 className="font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+                          <User className="w-4 h-4" />
+                          Attorney Details
+                        </h3>
                         {inputMode === 'upload' && extractedData && (
-                          <span className="ml-auto text-xs text-neutral-500 dark:text-neutral-400 font-normal">
+                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                             You can edit the auto-populated fields below
-                          </span>
+                          </p>
                         )}
-                      </h3>
+                      </div>
                   
                   <div>
                     <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">

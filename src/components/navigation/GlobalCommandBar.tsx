@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, Clock, ArrowRight, FileText, Users, Receipt, Zap } from 'lucide-react';
 import { SearchResult, SearchCategory, SearchState, KeyboardShortcut } from '../../types';
-import { Button } from '../design-system/components';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
-import { useFuzzySearch } from '../../hooks/useFuzzySearch';
 
 interface GlobalCommandBarProps {
   onNavigate: (page: string) => void;
@@ -28,7 +26,6 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
 
   const searchInputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const { searchResults, isSearching } = useFuzzySearch(searchState.query);
 
   // Keyboard shortcuts
   const shortcuts: KeyboardShortcut[] = [
@@ -66,10 +63,9 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
     setSearchState(prev => ({
       ...prev,
       query,
-      isLoading: query.length > 0,
-      results: query.length > 0 ? searchResults : []
+      isLoading: false
     }));
-  }, [searchResults]);
+  }, []);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (!searchState.isOpen) return;
@@ -121,31 +117,26 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
     closeCommandBar();
   }, [onNavigate, onAction]);
 
-  // Click outside to close
+  // Auto-focus on mount
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        closeCommandBar();
-      }
-    };
+    searchInputRef.current?.focus();
+  }, []);
 
-    if (searchState.isOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-      return () => document.removeEventListener('mousedown', handleClickOutside);
-    }
-  }, [searchState.isOpen]);
-
-  // Update results when search results change
+  // Mock search - in production, this would query your backend
   useEffect(() => {
     if (searchState.query) {
-      setSearchState(prev => ({
-        ...prev,
-        results: searchResults,
-        isLoading: isSearching,
-        selectedIndex: searchResults.length > 0 ? 0 : -1
-      }));
+      // Simulate search delay
+      const timer = setTimeout(() => {
+        setSearchState(prev => ({
+          ...prev,
+          results: [],
+          isLoading: false,
+          selectedIndex: -1
+        }));
+      }, 300);
+      return () => clearTimeout(timer);
     }
-  }, [searchResults, isSearching, searchState.query]);
+  }, [searchState.query]);
 
   const getCategoryIcon = (category: SearchCategory) => {
     switch (category) {
@@ -195,33 +186,32 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
 
   return (
     <div
-      className={`relative ${containerWidthClasses} transition-[width] duration-200 ${className}`}
+      className={`relative w-full ${className}`}
       ref={dropdownRef}
+      onClick={(e) => e.stopPropagation()}
     >
       {/* Search Input */}
-      <div className="relative">
-        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-          <Search className="h-4 w-4 text-neutral-400 dark:text-neutral-500" />
+      <div className="relative bg-white dark:bg-metallic-gray-900 rounded-t-lg border border-neutral-200 dark:border-metallic-gray-700">
+        <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+          <Search className="h-5 w-5 text-neutral-400 dark:text-neutral-500" />
         </div>
         <input
           ref={searchInputRef}
           type="text"
-          placeholder="Search matters, clients, invoices... (Ctrl+K)"
+          placeholder="Search matters, clients, invoices..."
           value={searchState.query}
           onChange={(e) => handleSearch(e.target.value)}
           onKeyDown={handleKeyDown}
-          onFocus={() => setSearchState(prev => ({ ...prev, isOpen: true }))}
-          className="w-full pl-10 pr-12 py-2 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg text-sm placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-judicial-blue-500 focus:border-transparent transition-all duration-200"
+          className="w-full pl-12 pr-4 py-4 bg-transparent text-base placeholder-neutral-400 dark:placeholder-neutral-500 text-neutral-900 dark:text-neutral-100 focus:outline-none"
           aria-label="Global search"
-          aria-expanded={searchState.isOpen}
           aria-haspopup="listbox"
           role="combobox"
         />
       </div>
 
       {/* Search Dropdown */}
-      {searchState.isOpen && (
-        <div className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+      {(
+        <div className="bg-white dark:bg-metallic-gray-900 border-t-0 border border-neutral-200 dark:border-metallic-gray-700 rounded-b-lg shadow-xl max-h-96 overflow-y-auto">
           {searchState.query === '' ? (
             /* Empty State - Recent Searches */
             <div className="p-4">

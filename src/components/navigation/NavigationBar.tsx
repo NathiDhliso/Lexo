@@ -1,12 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Menu, X, Search, Plus, ChevronDown, Bell, User, LogOut, Settings } from 'lucide-react';
+import { Search, Plus, ChevronDown, Bell, User, LogOut, Settings } from 'lucide-react';
 import lexoLogo from '../../Public/Assets/lexo-logo.png';
 import { Button, Icon } from '../design-system/components';
 import { MegaMenu } from './MegaMenu';
 import { MobileMegaMenu } from './MobileMegaMenu';
 import GlobalCommandBar from './GlobalCommandBar';
-import QuickActionsMenu from './QuickActionsMenu';
-import { RealTimeTicker, TickerItem } from './RealTimeTicker';
+import { RealTimeTicker } from './RealTimeTicker';
 import AlertsDropdown from '../notifications/AlertsDropdown';
 import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
 import { CreateProFormaModal } from '../proforma/CreateProFormaModal';
@@ -24,74 +23,85 @@ import type {
   UserTier,
   NavigationA11y 
 } from '../../types';
-import { UserTier as UserTierValue } from '../../types';
 import type { NotificationBadge, SmartNotification } from '../../services/smart-notifications.service';
 import { useNavigate } from 'react-router-dom';
 
 interface NavigationBarProps {
   activePage: Page;
   onPageChange: (page: Page) => void;
-  userTier?: UserTier;
-  className?: string;
-  onToggleSidebar?: () => void;
-  sidebarOpen?: boolean;
+  userTier: UserTier;
+  onToggleSidebar: () => void;
+  sidebarOpen: boolean;
 }
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({
   activePage,
   onPageChange,
-  userTier = UserTierValue.JUNIOR_START,
-  className = '',
+  userTier,
   onToggleSidebar,
   sidebarOpen
 }) => {
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
+  
+  // Navigation state
   const [navigationState, setNavigationState] = useState<NavigationState>({
-    activeCategory: null,
     activePage,
+    activeCategory: null,
+    hoveredCategory: null,
     megaMenuOpen: false,
     mobileMenuOpen: false,
-    hoveredCategory: null
+    searchOpen: false,
+    quickActionsOpen: false
   });
 
-  const [commandBarOpen, setCommandBarOpen] = useState(false);
-  const [quickActionsOpen, setQuickActionsOpen] = useState(false);
-  const [notificationBadges, setNotificationBadges] = useState<NotificationBadge[]>([]);
-  const [notifications, setNotifications] = useState<SmartNotification[]>([]);
+  // UI state
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  
-  // Modal state management
+  const [alertsOpen, setAlertsOpen] = useState(false);
+  const [commandBarOpen, setCommandBarOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  // Modal state
   const [modalState, setModalState] = useState({
     createMatter: false,
-    createProForma: false,
-    createInvoice: false
+    createProForma: false
   });
-  
+
+  // Notification state
+  const [notifications, setNotifications] = useState<SmartNotification[]>([]);
+  const [notificationBadges, setNotificationBadges] = useState<NotificationBadge[]>([]);
+
+  // Refs
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const navBarRef = useRef<HTMLElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
-  const commandBarRef = useRef<HTMLDivElement>(null);
-  const quickActionsRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  
-  const { user, signOut } = useAuth();
+  const alertsRef = useRef<HTMLDivElement>(null);
 
   // Get filtered navigation config based on user tier
-  const filteredConfig = getFilteredNavigationConfig(userTier);
+  const filteredConfig = getFilteredNavigationConfig(navigationConfig, userTier);
 
-  // Handle category hover with delay
+  // Handle scroll for navbar styling
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 10);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  // Handle category hover
   const handleCategoryHover = (categoryId: string) => {
     if (hoverTimeoutRef.current) {
       clearTimeout(hoverTimeoutRef.current);
     }
 
-    hoverTimeoutRef.current = setTimeout(() => {
-      setNavigationState(prev => ({
-        ...prev,
-        hoveredCategory: categoryId,
-        megaMenuOpen: true,
-        activeCategory: categoryId
-      }));
-    }, 300); // 300ms hover delay as per PRD
+    setNavigationState(prev => ({
+      ...prev,
+      hoveredCategory: categoryId,
+      activeCategory: categoryId,
+      megaMenuOpen: true
+    }));
   };
 
   // Handle category leave
@@ -129,32 +139,25 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     }, 150);
   };
 
-  // Handle action clicks for modal opening
-  const handleActionClick = (action: string) => {
-    // Close mega menu when action is triggered
+  // Handle mobile menu toggle with improved animation
+  const handleMobileMenuToggle = () => {
     setNavigationState(prev => ({
       ...prev,
-      megaMenuOpen: false,
-      mobileMenuOpen: false,
-      activeCategory: null,
-      hoveredCategory: null
+      mobileMenuOpen: !prev.mobileMenuOpen
     }));
-
-    // Open appropriate modal based on action
-    switch (action) {
-      case 'create-matter':
-        setModalState(prev => ({ ...prev, createMatter: true }));
-        break;
-      case 'create-proforma':
-        setModalState(prev => ({ ...prev, createProForma: true }));
-        break;
-      case 'create-invoice':
-        setModalState(prev => ({ ...prev, createInvoice: true }));
-        break;
-      default:
-        console.warn(`Unknown action: ${action}`);
-        break;
+    
+    // Prevent body scroll when menu is open
+    if (!navigationState.mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
     }
+  };
+
+  // Close mobile menu and restore scroll
+  const closeMobileMenu = () => {
+    setNavigationState(prev => ({ ...prev, mobileMenuOpen: false }));
+    document.body.style.overflow = '';
   };
 
   // Handle page navigation
@@ -168,272 +171,138 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       activeCategory: null,
       hoveredCategory: null
     }));
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
   };
 
-  // New: handle ticker item clicks that may include full paths or page keys
-  const navigate = useNavigate();
-  const handleTickerItemClick = (item: TickerItem) => {
-    const target = item?.navigateTo;
-    if (!target) return;
-    const pageKeys: string[] = [
-      'dashboard',
-      'proforma-requests',
-      'matters',
-      'matter-workbench',
-      'invoices',
-      'partner-approval',
-      'profile',
-      'settings',
-      'reports'
-    ];
-
-    if (pageKeys.includes(target)) {
-      handlePageNavigation(target as Page);
-      return;
-    }
-
-    if (target.startsWith('/')) {
-      // Map detail paths to base pages since router doesn't define :id routes yet
-      if (target.startsWith('/invoices')) {
-        handlePageNavigation('invoices');
-        return;
-      }
-      if (target.startsWith('/matters')) {
-        handlePageNavigation('matters');
-        return;
-      }
-      if (target.startsWith('/proforma')) {
-        handlePageNavigation('proforma-requests');
-        return;
-      }
-      // Fallback to direct navigation for other paths
-      navigate(target);
-      setNavigationState(prev => ({
-        ...prev,
-        megaMenuOpen: false,
-        mobileMenuOpen: false,
-        activeCategory: null,
-        hoveredCategory: null
-      }));
-    }
-  };
-
-  // Handle quick action execution
-  const handleQuickAction = (actionId: string) => {
-    switch (actionId) {
+  // Handle action clicks
+  const handleActionClick = (action: string) => {
+    switch (action) {
+      case 'create-matter':
+        setModalState(prev => ({ ...prev, createMatter: true }));
+        break;
       case 'create-proforma':
-        // Navigate to proforma requests page
-        handlePageNavigation('proforma-requests');
+        setModalState(prev => ({ ...prev, createProForma: true }));
         break;
-      
-      case 'add-matter':
-        // Show placeholder notification for add matter
-        toast.success('Add Matter feature coming soon!', {
-          duration: 3000,
-          position: 'top-right'
-        });
+      case 'create-invoice':
+        handlePageNavigation('invoices');
         break;
-      
-      case 'analyze-brief':
-        // Show placeholder notification for brief analysis
-        toast.success('AI Brief Analysis feature coming soon!', {
-          duration: 3000,
-          position: 'top-right'
-        });
-        break;
-      
-      case 'quick-invoice':
-        // Show placeholder notification for quick invoice
-        toast.success('Quick Invoice feature coming soon!', {
-          duration: 3000,
-          position: 'top-right'
-        });
-        break;
-      
       default:
-        break;
+        console.log('Action clicked:', action);
     }
-  };
-
-  // Handle mobile menu toggle
-  const toggleMobileMenu = () => {
-    setNavigationState(prev => ({
-      ...prev,
-      mobileMenuOpen: !prev.mobileMenuOpen
-    }));
-  };
-
-  // Handle command bar toggle
-  const toggleCommandBar = () => {
-    setCommandBarOpen(!commandBarOpen);
-  };
-
-  // Handle quick actions toggle
-  const toggleQuickActions = () => {
-    setQuickActionsOpen(!quickActionsOpen);
-  };
-
-  // Handle sign out
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      toast.success('Signed out successfully');
-    } catch (error) {
-      toast.error('Failed to sign out');
-    }
-    setUserMenuOpen(false);
-  };
-
-  // Alerts dropdown state
-  const [alertsOpen, setAlertsOpen] = useState(false);
-  const alertsRef = useRef<HTMLDivElement>(null);
-  useClickOutside(alertsRef, () => setAlertsOpen(false));
-  
-  // User menu click outside
-  useClickOutside(userMenuRef, () => setUserMenuOpen(false));
-
-
-
-  // Close all dropdowns
-  const closeAllDropdowns = () => {
-    setCommandBarOpen(false);
-    setQuickActionsOpen(false);
+    
+    // Close menus
     setNavigationState(prev => ({
       ...prev,
       megaMenuOpen: false,
-      activeCategory: null,
-      hoveredCategory: null
+      mobileMenuOpen: false,
+      quickActionsOpen: false
     }));
+    
+    // Restore body scroll
+    document.body.style.overflow = '';
   };
+
+  // Click outside handlers
+  useClickOutside(userMenuRef, () => setUserMenuOpen(false));
+  useClickOutside(alertsRef, () => setAlertsOpen(false));
 
   // Keyboard shortcuts
   useKeyboardShortcuts([
     {
       key: 'k',
       ctrlKey: true,
-      action: toggleCommandBar,
+      action: () => setCommandBarOpen(true),
       description: 'Open command bar'
-    },
-    {
-      key: 'k',
-      metaKey: true,
-      action: toggleCommandBar,
-      description: 'Open command bar'
-    },
-    {
-      key: 'n',
-      ctrlKey: true,
-      shiftKey: true,
-      action: toggleQuickActions,
-      description: 'Open quick actions'
     },
     {
       key: 'Escape',
-      action: closeAllDropdowns,
-      description: 'Close all menus'
+      action: () => {
+        setNavigationState(prev => ({
+          ...prev,
+          megaMenuOpen: false,
+          mobileMenuOpen: false
+        }));
+        setCommandBarOpen(false);
+        setUserMenuOpen(false);
+        setAlertsOpen(false);
+        document.body.style.overflow = '';
+      },
+      description: 'Close menus'
     }
   ]);
 
-  // Click outside handlers
-  useClickOutside(commandBarRef, () => setCommandBarOpen(false), commandBarOpen);
-  useClickOutside(quickActionsRef, () => setQuickActionsOpen(false), quickActionsOpen);
-
-  // Keyboard navigation for categories
-  const handleKeyDown = (event: React.KeyboardEvent, categoryId?: string) => {
-    switch (event.key) {
-      case 'Enter':
-      case ' ':
-        if (categoryId) {
-          event.preventDefault();
-          handleCategoryHover(categoryId);
-        }
-        break;
-    }
-  };
-
-  // Cleanup timeout on unmount
+  // Load notifications
   useEffect(() => {
-    return () => {
-      if (hoverTimeoutRef.current) {
-        clearTimeout(hoverTimeoutRef.current);
+    const loadNotifications = async () => {
+      try {
+        const notifs = await smartNotificationsService.getNotifications();
+        const badge = await smartNotificationsService.getBadgeInfo();
+        setNotifications(notifs);
+        setNotificationBadges([badge]);
+      } catch (error) {
+        console.error('Failed to load notifications:', error);
       }
     };
+
+    loadNotifications();
   }, []);
 
-  // Update active page when prop changes
-  useEffect(() => {
-    setNavigationState(prev => ({
-      ...prev,
-      activePage
-    }));
-  }, [activePage]);
-
-  // Lock body scroll when mobile menu is open
-  useEffect(() => {
-    if (navigationState.mobileMenuOpen) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
+  // Handle sign out
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      navigate('/login');
+    } catch (error) {
+      toast.error('Failed to sign out');
     }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [navigationState.mobileMenuOpen]);
-
-  // Subscribe to notifications
-  useEffect(() => {
-    const unsubscribeBadges = smartNotificationsService.subscribeToBadges(setNotificationBadges);
-    const unsubscribeNotifications = smartNotificationsService.subscribe(setNotifications);
-
-    return () => {
-      unsubscribeBadges();
-      unsubscribeNotifications();
-    };
-  }, []);
-
-  // Get accessibility props for category buttons
-  const getCategoryA11yProps = (category: NavigationCategory): NavigationA11y => ({
-    ariaLabel: `${category.label} menu`,
-    ariaExpanded: navigationState.activeCategory === category.id,
-    ariaHaspopup: true,
-    role: 'button',
-    tabIndex: 0
-  });
-
-  // Get notification badge for a category
-  const getCategoryBadge = (categoryPage?: Page) => {
-    if (!categoryPage) return null;
-    return notificationBadges.find(badge => badge.page === categoryPage);
   };
 
-  return (
-    <nav 
-      ref={navBarRef}
-      className={`bg-white/80 dark:bg-metallic-gray-900/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 supports-[backdrop-filter]:dark:bg-metallic-gray-900/60 border-b border-neutral-200 dark:border-metallic-gray-700 sticky top-0 z-50`}
-    >
-      {/* Real-Time Ticker */}
-      <RealTimeTicker onItemClick={handleTickerItemClick} />
+  // Calculate total notification count
+  const totalNotificationCount = notificationBadges.reduce((sum, badge) => sum + badge.count, 0);
 
+  return (
+    <>
       {/* Main Navigation Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16">
-          {/* Logo and Brand */}
-          <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2">
-              <img src={lexoLogo} alt="LexoHub Logo" className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain" style={{ background: 'transparent' }} />
-              <span className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">LexoHub</span>
+      <nav 
+         className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+           isScrolled 
+             ? 'bg-white/95 dark:bg-metallic-gray-900/95 backdrop-blur-md shadow-lg border-b border-neutral-200/50 dark:border-metallic-gray-700/50' 
+             : 'bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700'
+         }`}
+        role="navigation"
+        aria-label="Main navigation"
+      >
+        {/* Real-time ticker */}
+        <RealTimeTicker />
+
+        <div className="w-full max-w-full px-3 sm:px-4 md:px-6">
+          <div className="flex items-center justify-between h-16 md:h-18">
+            {/* Logo and Brand */}
+            <div className="flex items-center gap-3 md:gap-4">
+              <button
+                onClick={() => handlePageNavigation('dashboard')}
+                className="flex items-center gap-2 md:gap-3 group transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:ring-offset-2 rounded-lg p-1"
+                aria-label="Go to dashboard"
+              >
+                <img 
+                  src={lexoLogo} 
+                  alt="LexoHub" 
+                  className="h-8 w-8 md:h-10 md:w-10 object-contain transition-transform group-hover:rotate-3" 
+                />
+                <span className="text-lg sm:text-xl md:text-2xl font-bold bg-gradient-to-r from-mpondo-gold-600 to-judicial-blue-600 bg-clip-text text-transparent">
+                  LexoHub
+                </span>
+              </button>
             </div>
 
-            {/* Desktop Navigation Categories */}
-            <div className="hidden lg:flex items-center space-x-1">
+            {/* Desktop Navigation - Hidden on mobile */}
+            <div className="hidden md:flex items-center space-x-1 lg:space-x-2">
               {filteredConfig.categories.map((category) => {
-                const CategoryIcon = category.icon;
-                const isActive = navigationState.activePage === category.page;
+                const isActive = activePage === category.page;
                 const isHovered = navigationState.hoveredCategory === category.id;
-                const a11yProps = getCategoryA11yProps(category);
-
-                const badge = getCategoryBadge(category.page);
-
+                
                 return (
                   <div
                     key={category.id}
@@ -443,188 +312,175 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                   >
                     <button
                       onClick={() => category.page && handlePageNavigation(category.page)}
-                      onKeyDown={(e) => handleKeyDown(e, category.id)}
-                      className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg transition-all duration-200 ${
-                        isActive
-                          ? 'text-mpondo-gold-600 dark:text-mpondo-gold-400 font-semibold'
-                          : isHovered
-                          ? 'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100'
-                          : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 hover:text-neutral-900 dark:hover:text-neutral-100'
+                      className={`flex items-center gap-2 px-3 lg:px-4 py-2 rounded-lg text-sm lg:text-base font-medium transition-all duration-200 min-h-[44px] ${
+                        isActive || isHovered
+                          ? 'bg-mpondo-gold-100 dark:bg-mpondo-gold-900/30 text-mpondo-gold-900 dark:text-mpondo-gold-400 px-4 py-2 text-sm font-medium text-center'
+                          : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200'
                       }`}
-                      aria-label={a11yProps.ariaLabel}
-                      aria-expanded={a11yProps.ariaExpanded}
-                      aria-haspopup={a11yProps.ariaHaspopup}
-                      role={a11yProps.role}
-                      tabIndex={a11yProps.tabIndex}
+                      aria-expanded={navigationState.megaMenuOpen && navigationState.activeCategory === category.id}
+                      aria-haspopup="menu"
                     >
-                      <Icon icon={CategoryIcon} className="w-4 h-4" />
-                      <span>{category.label}</span>
-                      
-                      {/* Notification Badge */}
-                      {badge && badge.count > 0 && (
-                        <span 
-                          className={`inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-medium rounded-full ${
-                            badge.hasUrgent 
-                              ? 'bg-status-error-500 text-white' 
-                              : badge.highestPriority >= 7
-                              ? 'bg-status-warning-500 text-white'
-                              : 'bg-mpondo-gold-500 text-white'
-                          }`}
-                          aria-label={`${badge.count} notifications`}
-                        >
-                          {badge.count > 99 ? '99+' : badge.count}
-                        </span>
-                      )}
-                      
-                      <Icon 
-                        icon={ChevronDown}
-                        noGradient
-                        className={`w-3 h-3 transition-transform duration-200 ${
-                          isHovered ? 'rotate-180' : ''
-                        }`} 
-                      />
+                      <Icon icon={category.icon} className="w-4 h-4 lg:w-5 lg:h-5" />
+                      <span className="hidden lg:inline">{category.label}</span>
+                      <ChevronDown className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform duration-200 ${
+                        navigationState.megaMenuOpen && navigationState.activeCategory === category.id ? 'rotate-180' : ''
+                      }`} />
                     </button>
                   </div>
                 );
               })}
             </div>
-          </div>
 
-          {/* Right Side Actions */}
-          <div className="flex items-center gap-3">
-            {/* Theme Toggle - Desktop Only */}
-            <div className="hidden lg:block">
-              <ThemeToggle />
-            </div>
+            {/* Right Side Actions */}
+            <div className="flex items-center gap-2 md:gap-3">
+              {/* Search - Desktop only */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden md:flex items-center gap-2 min-h-[44px]"
+                onClick={() => setCommandBarOpen(true)}
+                aria-label="Open search (Ctrl+K)"
+              >
+                <Icon icon={Search} className="w-4 h-4" />
+                <span className="hidden lg:inline text-sm text-neutral-500 dark:text-neutral-400">
+                  Search...
+                </span>
+                <kbd className="hidden lg:inline-flex items-center gap-1 px-2 py-1 text-xs bg-neutral-100 dark:bg-metallic-gray-700 rounded border">
+                  ⌘K
+                </kbd>
+              </Button>
 
-            {/* Global Command Bar */}
-            <div ref={commandBarRef}>
-              <GlobalCommandBar
-                onNavigate={handlePageNavigation}
-                onAction={(actionId: string) => {
-                  // Handle action execution
-                  console.log('Action executed:', actionId);
-                }}
-              />
-            </div>
+              {/* Quick Actions */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="hidden md:flex items-center gap-2 min-h-[44px] bg-mpondo-gold-500 hover:bg-mpondo-gold-600 dark:bg-mpondo-gold-600 dark:hover:bg-mpondo-gold-700 text-white dark:text-metallic-gray-900 shadow-sm hover:shadow-md transition-all"
+                onClick={() => handleActionClick('create-matter')}
+                aria-label="Quick create"
+              >
+                <Icon icon={Plus} className="w-4 h-4" />
+                <span className="hidden lg:inline">Create</span>
+              </Button>
 
-            {/* Quick Actions Menu */}
-            <div ref={quickActionsRef}>
-              <QuickActionsMenu
-                onAction={handleQuickAction}
-                userTier={userTier}
-              />
-            </div>
+              {/* Notifications */}
+              <div className="relative" ref={alertsRef}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="relative min-h-[44px] min-w-[44px]"
+                  onClick={() => setAlertsOpen(!alertsOpen)}
+                  aria-label={`Notifications ${totalNotificationCount > 0 ? `(${totalNotificationCount} unread)` : ''}`}
+                >
+                  <Icon icon={Bell} className="w-4 h-4 md:w-5 md:h-5" />
+                  {totalNotificationCount > 0 && (
+                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-status-error-500 text-white px-2 py-1 rounded-full text-xs font-medium">
+                      {totalNotificationCount > 99 ? '99+' : totalNotificationCount}
+                    </span>
+                  )}
+                </Button>
+                
+                {alertsOpen && (
+                  <AlertsDropdown
+                    notifications={notifications}
+                    badges={notificationBadges}
+                    onClose={() => setAlertsOpen(false)}
+                    onNotificationClick={(notification) => {
+                      if (notification.actionUrl) {
+                        handlePageNavigation(notification.actionUrl as Page);
+                      }
+                      setAlertsOpen(false);
+                    }}
+                  />
+                )}
+              </div>
 
-             {/* Notifications Button */}
-             <div className="relative" ref={alertsRef}>
-               <Button
-                 variant="ghost"
-                 size="sm"
-                 className="flex items-center gap-2"
-                 aria-label="Notifications"
-                 onClick={() => setAlertsOpen((open) => !open)}
-               >
-                 <Icon icon={Bell} className="w-4 h-4" />
-                 <span className="hidden sm:inline">Alerts</span>
-                 {notificationBadges.length > 0 && (
-                   <span className="absolute -top-1 -right-1 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-medium bg-status-error-500 text-white rounded-full">
-                     {notificationBadges.reduce((sum, badge) => sum + badge.count, 0)}
-                   </span>
-                 )}
-               </Button>
-               {alertsOpen && (
-                 <AlertsDropdown onNavigate={handlePageNavigation} onClose={() => setAlertsOpen(false)} />
-               )}
-             </div>
+              {/* Theme Toggle - Desktop only */}
+              <div className="hidden md:block">
+                <ThemeToggle />
+              </div>
 
-             {/* User Menu */}
-             <div className="relative" ref={userMenuRef}>
-               <Button
-                 variant="ghost"
-                 size="sm"
-                 className="flex items-center gap-2"
-                 aria-label="User menu"
-                 onClick={() => setUserMenuOpen((open) => !open)}
-               >
-                 <Icon icon={User} className="w-4 h-4" />
-                 <span className="hidden sm:inline">{user?.email?.split('@')[0] || 'User'}</span>
-                 <Icon icon={ChevronDown} className={`w-3 h-3 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
-               </Button>
-               {userMenuOpen && (
-                 <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg z-50">
-                   <div className="py-1">
-                     <button
-                       onClick={() => {
-                         onPageChange('settings');
-                         setUserMenuOpen(false);
-                       }}
-                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-700 transition-colors"
-                     >
-                       <Icon icon={Settings} className="w-4 h-4" />
-                       Settings
-                     </button>
-                     <hr className="my-1 border-neutral-200 dark:border-metallic-gray-700" />
-                     <button
-                       onClick={handleSignOut}
-                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-status-error-600 dark:text-status-error-400 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 transition-colors"
-                     >
-                       <Icon icon={LogOut} className="w-4 h-4" />
-                       Sign Out
-                     </button>
+              {/* User Menu */}
+              <div className="relative" ref={userMenuRef}>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="flex items-center gap-2 min-h-[44px]"
+                  aria-label="User menu"
+                  onClick={() => setUserMenuOpen((open) => !open)}
+                >
+                  <Icon icon={User} className="w-4 h-4" />
+                  <span className="hidden sm:inline">{user?.email?.split('@')[0] || 'User'}</span>
+                  <Icon icon={ChevronDown} className={`w-3 h-3 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
+                </Button>
+                {userMenuOpen && (
+                   <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg z-50">
+                     <div className="py-1">
+                       <button
+                         onClick={() => {
+                           onPageChange('settings');
+                           setUserMenuOpen(false);
+                         }}
+                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-700 transition-colors min-h-[44px]"
+                       >
+                         <Icon icon={Settings} className="w-4 h-4" />
+                         Settings
+                       </button>
+                       <hr className="my-1 border-neutral-200 dark:border-metallic-gray-700" />
+                       <button
+                         onClick={handleSignOut}
+                         className="flex items-center gap-2 w-full px-4 py-2 text-sm text-status-error-600 dark:text-status-error-400 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 transition-colors min-h-[44px]"
+                       >
+                         <Icon icon={LogOut} className="w-4 h-4" />
+                         Sign Out
+                       </button>
+                     </div>
                    </div>
-                </div>
-              )}
-            </div>
+                 )}
+              </div>
 
-             {/* Mobile Menu Toggle - Enhanced */}
-             <button
-               aria-controls="mobile-mega-menu"
-               aria-expanded={navigationState.mobileMenuOpen}
-               aria-label={navigationState.mobileMenuOpen ? 'Close menu' : 'Open menu'}
-               onClick={() => setNavigationState(prev => ({ ...prev, mobileMenuOpen: !prev.mobileMenuOpen }))}
-               className="lg:hidden mobile-menu-toggle flex items-center justify-center"
-               title={navigationState.mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
-               type="button"
-               style={{
-                 background: 'linear-gradient(135deg, #D4AF37 0%, #C5A028 100%)',
-                 padding: '12px',
-                 borderRadius: '12px',
-                 boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)',
-                 minHeight: '48px',
-                 minWidth: '48px',
-                 border: '2px solid rgba(255, 255, 255, 0.2)',
-                 transition: 'all 0.3s ease'
-               }}
-             >
-               {navigationState.mobileMenuOpen ? (
-                 <X className="w-6 h-6 text-white" />
-               ) : (
-                 <Menu className="w-6 h-6 text-white" />
-               )}
-             </button>
+              {/* Mobile Menu Toggle - Enhanced */}
+              <button
+                onClick={handleMobileMenuToggle}
+                className="md:hidden mobile-menu-toggle relative z-50 flex items-center justify-center min-h-[48px] min-w-[48px] rounded-xl bg-gradient-to-br from-mpondo-gold-500 to-mpondo-gold-600 dark:from-mpondo-gold-600 dark:to-mpondo-gold-700 hover:from-mpondo-gold-600 hover:to-mpondo-gold-700 dark:hover:from-mpondo-gold-500 dark:hover:to-mpondo-gold-600 shadow-md hover:shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 dark:focus:ring-mpondo-gold-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-metallic-gray-900"
+                aria-label={navigationState.mobileMenuOpen ? 'Close menu' : 'Open menu'}
+                aria-expanded={navigationState.mobileMenuOpen}
+              >
+                <div className="relative w-6 h-6">
+                  {/* Hamburger to X animation */}
+                  <span className={`absolute left-0 top-1 w-6 h-0.5 bg-white dark:bg-metallic-gray-900 transition-all duration-300 ease-in-out ${
+                    navigationState.mobileMenuOpen ? 'rotate-45 translate-y-2' : ''
+                  }`} />
+                  <span className={`absolute left-0 top-3 w-6 h-0.5 bg-white dark:bg-metallic-gray-900 transition-all duration-300 ease-in-out ${
+                    navigationState.mobileMenuOpen ? 'opacity-0' : ''
+                  }`} />
+                  <span className={`absolute left-0 top-5 w-6 h-0.5 bg-white dark:bg-metallic-gray-900 transition-all duration-300 ease-in-out ${
+                    navigationState.mobileMenuOpen ? '-rotate-45 -translate-y-2' : ''
+                  }`} />
+                </div>
+              </button>
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Mega Menu */}
-      {navigationState.megaMenuOpen && navigationState.activeCategory && (
-        <div
-          ref={megaMenuRef}
-          onMouseEnter={handleMegaMenuHover}
-          onMouseLeave={handleMegaMenuLeave}
-          className="absolute top-full left-0 w-full bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700 shadow-soft z-40"
-        >
-          <MegaMenu
-            category={filteredConfig.categories.find(c => c.id === navigationState.activeCategory)!}
-            onItemClick={handlePageNavigation}
-            onActionClick={handleActionClick}
-            userTier={userTier}
-          />
-        </div>
-      )}
+        {/* Desktop Mega Menu */}
+        {navigationState.megaMenuOpen && navigationState.activeCategory && (
+          <div
+            ref={megaMenuRef}
+            onMouseEnter={handleMegaMenuHover}
+            onMouseLeave={handleMegaMenuLeave}
+            className="hidden md:block absolute top-full left-0 w-full bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700 shadow-soft z-40"
+          >
+            <MegaMenu
+              category={filteredConfig.categories.find(c => c.id === navigationState.activeCategory)!}
+              onItemClick={handlePageNavigation}
+              onActionClick={handleActionClick}
+              userTier={userTier}
+            />
+          </div>
+        )}
+      </nav>
 
-      {/* Mobile Menu */}
+      {/* Mobile Menu - Enhanced */}
       {navigationState.mobileMenuOpen && (
         <MobileMegaMenu
           categories={filteredConfig.categories}
@@ -632,8 +488,25 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           onActionClick={handleActionClick}
           userTier={userTier}
           activePage={navigationState.activePage}
-          onClose={() => setNavigationState(prev => ({ ...prev, mobileMenuOpen: false }))}
+          onClose={closeMobileMenu}
         />
+      )}
+
+      {/* Global Command Bar Modal */}
+      {commandBarOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4 bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-2xl">
+            <GlobalCommandBar
+              onNavigate={handlePageNavigation}
+              onAction={handleActionClick}
+            />
+          </div>
+          <button
+            onClick={() => setCommandBarOpen(false)}
+            className="absolute inset-0 w-full h-full cursor-default"
+            aria-label="Close search"
+          />
+        </div>
       )}
 
       {/* Modals */}
@@ -653,45 +526,13 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         <CreateProFormaModal
           isOpen={modalState.createProForma}
           onClose={() => setModalState(prev => ({ ...prev, createProForma: false }))}
-          onSuccess={(proforma) => {
+          onComplete={(proForma) => {
             setModalState(prev => ({ ...prev, createProForma: false }));
-            toast.success('Pro Forma created successfully');
+            toast.success('Pro Forma request created successfully');
             handlePageNavigation('proforma-requests');
           }}
         />
       )}
-
-      {modalState.createInvoice && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Generate Invoice</h3>
-            <p className="text-neutral-600 mb-4">
-              Create professional invoices with automated fee calculations and Bar-compliant formatting.
-            </p>
-            <div className="space-y-3">
-              <Button 
-                variant="primary" 
-                className="w-full"
-                onClick={() => {
-                  setModalState(prev => ({ ...prev, createInvoice: false }));
-                  handlePageNavigation('invoices');
-                  toast.success('Opening invoice generation...');
-                }}
-              >
-                Open Invoice Generator
-              </Button>
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => setModalState(prev => ({ ...prev, createInvoice: false }))}
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-    </nav>
+    </>
   );
 };

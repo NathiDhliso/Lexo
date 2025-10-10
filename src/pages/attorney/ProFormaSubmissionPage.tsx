@@ -38,26 +38,38 @@ export const ProFormaSubmissionPage: React.FC = () => {
 
   const loadProForma = async () => {
     try {
-      const { data, error } = await supabase
+      // First, get the pro forma request
+      const { data: proformaData, error: proformaError } = await supabase
         .from('proforma_requests')
-        .select(`
-          *,
-          matters!inner(title)
-        `)
-        .eq('public_token', token)
+        .select('*')
+        .eq('token', token)
         .single();
 
-      if (error) throw error;
+      if (proformaError) throw proformaError;
 
-      if (data) {
+      if (proformaData) {
+        // Then get the matter title if matter_id exists
+        let matterTitle = 'Unknown Matter';
+        if (proformaData.matter_id) {
+          const { data: matterData, error: matterError } = await supabase
+            .from('matters')
+            .select('title')
+            .eq('id', proformaData.matter_id)
+            .single();
+
+          if (!matterError && matterData) {
+            matterTitle = matterData.title;
+          }
+        }
+
         setProforma({
-          ...data,
-          matter_title: data.matters.title
+          ...proformaData,
+          matter_title: matterTitle
         });
       }
     } catch (error) {
       console.error('Error loading pro forma:', error);
-      toast.error('Failed to load pro forma request');
+      toast.error('Failed to load pro forma request. The link may be invalid or expired.');
     } finally {
       setLoading(false);
     }

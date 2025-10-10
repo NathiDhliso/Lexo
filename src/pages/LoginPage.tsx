@@ -556,10 +556,10 @@ const LoginPage = () => {
             <img 
               src={lexoLogo} 
               alt="LexoHub Logo" 
-              className="w-10 h-10 sm:w-14 sm:h-14 md:w-20 md:h-20 object-contain transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 drop-shadow-2xl float-animation" 
+              className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 drop-shadow-2xl float-animation" 
               style={{ background: 'transparent' }} 
             />
-            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white tracking-wider drop-shadow-2xl transition-all duration-300 group-hover:text-blue-100">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-wider drop-shadow-2xl transition-all duration-300 group-hover:text-blue-100">
               lexo
             </h1>
           </div>

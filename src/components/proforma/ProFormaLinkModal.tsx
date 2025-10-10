@@ -34,22 +34,41 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
   useEffect(() => {
     if (!isOpen) return;
 
-    const fetchLink = async () => {
-      const { data, error } = await supabase
-        .from('proforma_requests')
-        .select('public_token')
-        .eq('id', proformaId)
-        .single();
+    const fetchOrGenerateLink = async () => {
+      try {
+        // First, try to get existing token
+        const { data, error } = await supabase
+          .from('proforma_requests')
+          .select('token, expires_at')
+          .eq('id', proformaId)
+          .single();
 
-      if (error) return;
+        if (error) {
+          console.error('Error fetching proforma:', error);
+          return;
+        }
 
-      const token = data.public_token;
-      const baseUrl = window.location.origin;
-      const link = `${baseUrl}/#/attorney/proforma/${token}`;
-      setGeneratedLink(link);
+        let token = data.token;
+        let expiresAt = data.expires_at;
+
+        // If no token exists or it's expired, generate a new one
+        if (!token || (expiresAt && new Date(expiresAt) < new Date())) {
+          const result = await proformaRequestService.generateToken(proformaId);
+          token = result.token;
+          expiresAt = result.expiresAt;
+        }
+
+        const baseUrl = window.location.origin;
+        const link = `${baseUrl}/#/pro-forma-request/${token}`;
+        setGeneratedLink(link);
+        setExpiresAt(expiresAt);
+      } catch (error) {
+        console.error('Error generating link:', error);
+        toast.error('Failed to generate link');
+      }
     };
 
-    fetchLink();
+    fetchOrGenerateLink();
   }, [isOpen, proformaId]);
 
   const generateLink = async () => {

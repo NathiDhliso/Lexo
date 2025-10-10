@@ -1626,7 +1626,7 @@ export const PDFTemplateEditor: React.FC = () => {
       </div>
 
       {/* Live Preview Panel */}
-      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 sticky top-6">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 lg:sticky lg:top-6">
         <div className="border-b border-neutral-200 dark:border-metallic-gray-700 px-6 py-4">
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
             <Eye className="w-5 h-5" />
@@ -1637,12 +1637,12 @@ export const PDFTemplateEditor: React.FC = () => {
           </p>
         </div>
         
-        <div className="p-6">
+        <div className="p-4 md:p-6">
           {/* Preview Container */}
           <div 
-            className="rounded-lg shadow-lg border border-neutral-200 relative" 
+            className="rounded-lg shadow-lg border border-neutral-200 relative overflow-hidden" 
             style={{ 
-              minHeight: '600px',
+              minHeight: '400px',
               backgroundColor: template.colorScheme.background || '#FFFFFF',
               display: 'flex'
             }}
@@ -1650,7 +1650,7 @@ export const PDFTemplateEditor: React.FC = () => {
             {/* Vertical Title (Full Height) */}
             {(template.header as any).titleOrientation === 'vertical' && (
               <div 
-                className="flex items-center justify-center py-8"
+                className="hidden md:flex items-center justify-center py-8"
                 style={{ 
                   writingMode: 'vertical-rl',
                   transform: 'rotate(180deg)',
@@ -1675,51 +1675,49 @@ export const PDFTemplateEditor: React.FC = () => {
             )}
 
             {/* Main Content Area */}
-            <div className="flex-1 p-8">
+            <div className="flex-1 p-4 md:p-6 lg:p-8 overflow-auto">
             {/* Header Preview */}
             <div className="mb-6">
               {(template.header as any).titleOrientation === 'vertical' ? (
                 /* Vertical Mode - Show logo and details at top */
                 <div>
                   <div className="flex justify-between items-start mb-6">
-                    <div>
-                      <h3 className="text-sm font-semibold text-neutral-600 mb-2">Invoice to</h3>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-xs md:text-sm font-semibold text-neutral-600 mb-2">Invoice to</h3>
                       <div style={{ 
                         fontFamily: template.sections.toSection.contentStyle.fontFamily,
-                        fontSize: `${template.sections.toSection.contentStyle.fontSize}px`,
+                        fontSize: `${Math.max(8, template.sections.toSection.contentStyle.fontSize * 0.8)}px`,
                         color: template.sections.toSection.contentStyle.color,
-                      }}>
-                        <p className="font-semibold">Client Name</p>
-                        <p>Studio Address</p>
-                        <p>123 Anywhere St., Any City, ST 12345</p>
-                        <p>client@email.com</p>
+                      }} className="text-xs md:text-sm">
+                        <p className="font-semibold truncate">Client Name</p>
+                        <p className="truncate">Studio Address</p>
+                        <p className="truncate">123 Anywhere St., Any City, ST 12345</p>
+                        <p className="truncate">client@email.com</p>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="text-right flex-shrink-0 ml-2">
                       {template.header.showLogo && logoPreview && (
                         <img 
                           src={logoPreview} 
                           alt="Logo" 
                           style={{ 
-                            width: `${template.header.logoWidth}px`, 
-                            height: `${template.header.logoHeight}px`,
+                            width: `${Math.min(60, template.header.logoWidth || 100)}px`, 
+                            height: `${Math.min(60, template.header.logoHeight || 100)}px`,
                             objectFit: 'contain',
                             opacity: template.header.logoOpacity || 1,
-                            marginBottom: '12px',
+                            marginBottom: '8px',
                             marginLeft: 'auto'
                           }} 
+                          className="md:w-auto md:h-auto"
                         />
                       )}
                       <div style={{ 
                         fontFamily: template.sections.fromSection.contentStyle.fontFamily,
-                        fontSize: `${template.sections.fromSection.contentStyle.fontSize}px`,
+                        fontSize: `${Math.max(8, template.sections.fromSection.contentStyle.fontSize * 0.8)}px`,
                         color: template.sections.fromSection.contentStyle.color,
-                      }}>
-                        <p className="font-semibold" style={{ color: template.colorScheme.primary }}>AVERY DAVIS</p>
-                        <p>123 Anywhere St., Any City, ST 12345</p>
-                        <p>hello@reallygreatsite.com</p>
-                        <p>www.reallygreatsite.com</p>
-                        <p>123-456-7890</p>
+                      }} className="text-xs md:text-sm">
+                        <p className="font-semibold truncate" style={{ color: template.colorScheme.primary }}>Client</p>
+                        <p className="truncate">client@email.com</p>
                       </div>
                     </div>
                   </div>

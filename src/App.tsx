@@ -242,28 +242,37 @@ function App() {
     const hash = window.location.hash;
     const pathname = window.location.pathname;
     
+    console.log('Checking public routes:', { hash, pathname });
+    
     // Check for hash-based routes
     if (hash.startsWith('#/pro-forma-request/')) {
+      console.log('Matched pro-forma-request route');
       return { type: 'proforma', token: hash.substring(2).split('/').pop() };
     }
     if (hash.startsWith('#/attorney/proforma/')) {
+      console.log('Matched attorney/proforma route');
       return { type: 'attorney-proforma', token: hash.substring(2).split('/').pop() };
     }
     if (hash.startsWith('#/attorney/engagement/')) {
+      console.log('Matched attorney/engagement route');
       return { type: 'attorney-engagement', token: hash.substring(2).split('/').pop() };
     }
     
     // Check for pathname-based routes
     if (pathname.startsWith('/pro-forma-request/')) {
+      console.log('Matched pathname pro-forma-request route');
       return { type: 'proforma', token: pathname.split('/').pop() };
     }
     if (pathname.startsWith('/attorney/proforma/')) {
+      console.log('Matched pathname attorney/proforma route');
       return { type: 'attorney-proforma', token: pathname.split('/').pop() };
     }
     if (pathname.startsWith('/attorney/engagement/')) {
+      console.log('Matched pathname attorney/engagement route');
       return { type: 'attorney-engagement', token: pathname.split('/').pop() };
     }
     
+    console.log('No public route matched');
     return null;
   };
 
