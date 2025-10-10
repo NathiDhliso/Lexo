@@ -71,46 +71,53 @@ export class InvoicePDFService {
     const primaryRgb = this.hexToRgb(primaryColor);
     const isVerticalTitle = pdfTemplate?.header?.titleOrientation === 'vertical';
 
-    doc.setFontSize(pdfTemplate?.header?.titleStyle?.fontSize || 28);
-    doc.setFont(
-      pdfTemplate?.header?.titleStyle?.fontFamily || 'helvetica',
-      pdfTemplate?.header?.titleStyle?.fontWeight || 'bold'
-    );
-    doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
+    const leftContentMargin = isVerticalTitle ? margins.left + 40 : margins.left;
 
     if (isVerticalTitle) {
       const titleText = pdfTemplate?.header?.title || 'INVOICE';
-      const xPos = margins.left + 15;
-      const yPos = pageHeight / 2 + (doc.getTextWidth(titleText) / 2);
+      doc.setFontSize(pdfTemplate?.header?.titleStyle?.fontSize || 28);
+      doc.setFont(
+        pdfTemplate?.header?.titleStyle?.fontFamily || 'helvetica',
+        pdfTemplate?.header?.titleStyle?.fontWeight || 'bold'
+      );
+      doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
+      
+      const xPos = margins.left + 5;
+      const yPos = margins.top + 30;
       
       doc.text(titleText, xPos, yPos, {
-        angle: 90
+        angle: 270,
+        baseline: 'top'
       });
       
       yPosition = margins.top;
     } else {
+      doc.setFontSize(pdfTemplate?.header?.titleStyle?.fontSize || 28);
+      doc.setFont(
+        pdfTemplate?.header?.titleStyle?.fontFamily || 'helvetica',
+        pdfTemplate?.header?.titleStyle?.fontWeight || 'bold'
+      );
+      doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
       doc.text(pdfTemplate?.header?.title || 'INVOICE', pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 10;
+      yPosition += 12;
     }
     
     if (!isVerticalTitle) {
       doc.setFontSize(10);
-      doc.setTextColor(100, 100, 100);
       const statusText = invoice.status === 'paid' ? 'PAID' : invoice.status === 'overdue' ? 'OVERDUE' : 'DUE';
       const statusColor = invoice.status === 'paid' ? [34, 197, 94] : invoice.status === 'overdue' ? [239, 68, 68] : [251, 146, 60];
       doc.setTextColor(statusColor[0], statusColor[1], statusColor[2]);
       doc.setFont('helvetica', 'bold');
       doc.text(statusText, pageWidth / 2, yPosition, { align: 'center' });
-      yPosition += 10;
-    } else {
-      yPosition += 5;
+      yPosition += 8;
     }
+    
     if (pdfTemplate?.header?.showBorder) {
       const borderColor = pdfTemplate.header.borderColor || primaryColor;
       const borderRgb = this.hexToRgb(borderColor);
       doc.setDrawColor(borderRgb.r, borderRgb.g, borderRgb.b);
       doc.setLineWidth(pdfTemplate.header.borderWidth || 0.5);
-      doc.line(margins.left, yPosition, pageWidth - margins.right, yPosition);
+      doc.line(leftContentMargin, yPosition, pageWidth - margins.right, yPosition);
     }
 
     yPosition += 10;
@@ -123,7 +130,7 @@ export class InvoicePDFService {
       sectionTitleStyle?.fontWeight || 'bold'
     );
     doc.setTextColor(0, 0, 0);
-    doc.text(pdfTemplate?.sections?.fromSection?.title || 'FROM:', margins.left, yPosition);
+    doc.text(pdfTemplate?.sections?.fromSection?.title || 'FROM:', leftContentMargin, yPosition);
     
     yPosition += 7;
     const contentStyle = pdfTemplate?.sections?.fromSection?.contentStyle;
@@ -132,16 +139,16 @@ export class InvoicePDFService {
       contentStyle?.fontWeight || 'normal'
     );
     doc.setFontSize(contentStyle?.fontSize || 10);
-    doc.text(advocateInfo.full_name, margins.left, yPosition);
+    doc.text(advocateInfo.full_name, leftContentMargin, yPosition);
     yPosition += 5;
-    doc.text(`Practice Number: ${advocateInfo.practice_number}`, margins.left, yPosition);
+    doc.text(`Practice Number: ${advocateInfo.practice_number}`, leftContentMargin, yPosition);
     if (advocateInfo.email) {
       yPosition += 5;
-      doc.text(`Email: ${advocateInfo.email}`, margins.left, yPosition);
+      doc.text(`Email: ${advocateInfo.email}`, leftContentMargin, yPosition);
     }
     if (advocateInfo.phone) {
       yPosition += 5;
-      doc.text(`Phone: ${advocateInfo.phone}`, margins.left, yPosition);
+      doc.text(`Phone: ${advocateInfo.phone}`, leftContentMargin, yPosition);
     }
 
     let rightYPosition: number;
@@ -160,7 +167,7 @@ export class InvoicePDFService {
       toSectionTitleStyle?.fontWeight || 'bold'
     );
     doc.setFontSize(toSectionTitleStyle?.fontSize || 11);
-    doc.text(pdfTemplate?.sections?.toSection?.title || 'BILL TO:', isVerticalLayout ? margins.left : rightColumnX, rightYPosition);
+    doc.text(pdfTemplate?.sections?.toSection?.title || 'BILL TO:', isVerticalLayout ? leftContentMargin : rightColumnX, rightYPosition);
     
     rightYPosition += 7;
     const toContentStyle = pdfTemplate?.sections?.toSection?.contentStyle;
@@ -170,26 +177,26 @@ export class InvoicePDFService {
     );
     doc.setFontSize(toContentStyle?.fontSize || 10);
     if (invoice.matter?.client_name) {
-      doc.text(invoice.matter.client_name, isVerticalLayout ? margins.left : rightColumnX, rightYPosition);
+      doc.text(invoice.matter.client_name, isVerticalLayout ? leftContentMargin : rightColumnX, rightYPosition);
       rightYPosition += 5;
     }
     if ((invoice as any).client_email) {
-      doc.text((invoice as any).client_email, isVerticalLayout ? margins.left : rightColumnX, rightYPosition);
+      doc.text((invoice as any).client_email, isVerticalLayout ? leftContentMargin : rightColumnX, rightYPosition);
       rightYPosition += 5;
     }
     if ((invoice as any).client_phone) {
-      doc.text((invoice as any).client_phone, isVerticalLayout ? margins.left : rightColumnX, rightYPosition);
+      doc.text((invoice as any).client_phone, isVerticalLayout ? leftContentMargin : rightColumnX, rightYPosition);
     }
 
     yPosition = isVerticalLayout ? rightYPosition + 10 : yPosition + 15;
 
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.3);
-    doc.line(20, yPosition, pageWidth - 20, yPosition);
+    doc.line(leftContentMargin, yPosition, pageWidth - margins.right, yPosition);
 
     yPosition += 10;
 
-    const leftColX = 20;
+    const leftColX = leftContentMargin;
     const rightColX = pageWidth / 2 + 10;
 
     doc.setFont('helvetica', 'bold');
@@ -254,13 +261,13 @@ export class InvoicePDFService {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
       doc.setTextColor(41, 98, 255);
-      doc.text('Fee Narrative:', 20, yPosition);
+      doc.text('Fee Narrative:', leftContentMargin, yPosition);
       yPosition += 7;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      const narrativeLines = doc.splitTextToSize(invoice.fee_narrative, pageWidth - 40);
-      doc.text(narrativeLines, 20, yPosition);
+      const narrativeLines = doc.splitTextToSize(invoice.fee_narrative, pageWidth - leftContentMargin - margins.right);
+      doc.text(narrativeLines, leftContentMargin, yPosition);
       yPosition += narrativeLines.length * 5 + 10;
     }
 
@@ -268,7 +275,7 @@ export class InvoicePDFService {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
       doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.text('Time Entries:', margins.left, yPosition);
+      doc.text('Time Entries:', leftContentMargin, yPosition);
       yPosition += 10;
 
       const timeTableData = invoice.time_entries.map((entry: TimeEntry) => {
@@ -312,7 +319,7 @@ export class InvoicePDFService {
           3: { cellWidth: 25, halign: 'right' },
           4: { cellWidth: 30, halign: 'right' }
         },
-        margin: { left: margins.left, right: margins.right },
+        margin: { left: leftContentMargin, right: margins.right },
       });
 
       yPosition = (doc as any).lastAutoTable.finalY + 10;
@@ -327,7 +334,7 @@ export class InvoicePDFService {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
       doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.text('Services:', margins.left, yPosition);
+      doc.text('Services:', leftContentMargin, yPosition);
       yPosition += 10;
 
       const servicesTableData = (invoice as any).services.map((matterService: any) => {
@@ -372,7 +379,7 @@ export class InvoicePDFService {
           3: { cellWidth: 30, halign: 'right' },
           4: { cellWidth: 30, halign: 'right' }
         },
-        margin: { left: margins.left, right: margins.right },
+        margin: { left: leftContentMargin, right: margins.right },
       });
 
       yPosition = (doc as any).lastAutoTable.finalY + 10;
@@ -387,7 +394,7 @@ export class InvoicePDFService {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
       doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-      doc.text('Disbursements & Expenses:', margins.left, yPosition);
+      doc.text('Disbursements & Expenses:', leftContentMargin, yPosition);
       yPosition += 10;
 
       const expenseTableData = invoice.expenses.map((expense: Expense) => {
@@ -420,7 +427,7 @@ export class InvoicePDFService {
           2: { cellWidth: 30 },
           3: { cellWidth: 30, halign: 'right' }
         },
-        margin: { left: 20, right: 20 },
+        margin: { left: leftContentMargin, right: margins.right },
       });
 
       yPosition = (doc as any).lastAutoTable.finalY + 10;
@@ -433,7 +440,7 @@ export class InvoicePDFService {
 
     doc.setDrawColor(200, 200, 200);
     doc.setLineWidth(0.3);
-    doc.line(20, yPosition, pageWidth - 20, yPosition);
+    doc.line(leftContentMargin, yPosition, pageWidth - margins.right, yPosition);
 
     yPosition += 10;
 
@@ -443,32 +450,37 @@ export class InvoicePDFService {
     const vatAmount = invoice.vat_amount || 0;
     const total = invoice.total_amount || (subtotal + vatAmount);
 
+    const summaryLabelX = pageWidth - 90;
+    const summaryValueX = pageWidth - margins.right;
+
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
+    doc.setTextColor(0, 0, 0);
     
-    doc.text('Professional Fees:', pageWidth - 80, yPosition);
-    doc.text(`R${feesAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
+    doc.text('Professional Fees:', summaryLabelX, yPosition);
+    doc.text(`R${feesAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, summaryValueX, yPosition, { align: 'right' });
     
     if (disbursementsAmount > 0) {
-      yPosition += 7;
-      doc.text('Disbursements:', pageWidth - 80, yPosition);
-      doc.text(`R${disbursementsAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
+      yPosition += 6;
+      doc.text('Disbursements:', summaryLabelX, yPosition);
+      doc.text(`R${disbursementsAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, summaryValueX, yPosition, { align: 'right' });
     }
     
-    yPosition += 7;
-    doc.text('Subtotal:', pageWidth - 80, yPosition);
-    doc.text(`R${subtotal.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
+    yPosition += 6;
+    doc.text('Subtotal:', summaryLabelX, yPosition);
+    doc.text(`R${subtotal.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, summaryValueX, yPosition, { align: 'right' });
     
-    yPosition += 7;
-    doc.text(`VAT (${((invoice.vat_rate || 0.15) * 100).toFixed(0)}%):`, pageWidth - 80, yPosition);
-    doc.text(`R${vatAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
+    yPosition += 6;
+    doc.text(`VAT (${((invoice.vat_rate || 0.15) * 100).toFixed(0)}%):`, summaryLabelX, yPosition);
+    doc.text(`R${vatAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, summaryValueX, yPosition, { align: 'right' });
     
     yPosition += 10;
-    doc.setFontSize(14);
+    doc.setFontSize(12);
     doc.setTextColor(primaryRgb.r, primaryRgb.g, primaryRgb.b);
-    doc.text('TOTAL AMOUNT DUE:', pageWidth - 80, yPosition);
+    doc.text('TOTAL AMOUNT DUE:', summaryLabelX, yPosition);
+    doc.setFontSize(14);
     const totalText = `R ${total.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-    doc.text(totalText, pageWidth - margins.right, yPosition, { align: 'right' });
+    doc.text(totalText, summaryValueX, yPosition, { align: 'right' });
 
     yPosition += 15;
 
@@ -479,13 +491,13 @@ export class InvoicePDFService {
 
     if (pdfTemplate?.footer?.showBankDetails && pdfTemplate.footer.bankDetails) {
       doc.setFillColor(245, 247, 250);
-      doc.rect(margins.left, yPosition, pageWidth - margins.left - margins.right, 45, 'F');
+      doc.rect(leftContentMargin, yPosition, pageWidth - leftContentMargin - margins.right, 45, 'F');
       
       yPosition += 8;
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      doc.text('Banking Details:', margins.left + 5, yPosition);
+      doc.text('Banking Details:', leftContentMargin + 5, yPosition);
       
       yPosition += 6;
       doc.setFont('helvetica', 'normal');
@@ -494,23 +506,23 @@ export class InvoicePDFService {
       
       const bankDetails = pdfTemplate.footer.bankDetails;
       if (bankDetails.bankName) {
-        doc.text(`Bank: ${bankDetails.bankName}`, margins.left + 5, yPosition);
+        doc.text(`Bank: ${bankDetails.bankName}`, leftContentMargin + 5, yPosition);
         yPosition += 5;
       }
       if (bankDetails.accountName) {
-        doc.text(`Account Name: ${bankDetails.accountName}`, margins.left + 5, yPosition);
+        doc.text(`Account Name: ${bankDetails.accountName}`, leftContentMargin + 5, yPosition);
         yPosition += 5;
       }
       if (bankDetails.accountNumber) {
-        doc.text(`Account Number: ${bankDetails.accountNumber}`, margins.left + 5, yPosition);
+        doc.text(`Account Number: ${bankDetails.accountNumber}`, leftContentMargin + 5, yPosition);
         yPosition += 5;
       }
       if (bankDetails.branchCode) {
-        doc.text(`Branch Code: ${bankDetails.branchCode}`, margins.left + 5, yPosition);
+        doc.text(`Branch Code: ${bankDetails.branchCode}`, leftContentMargin + 5, yPosition);
         yPosition += 5;
       }
       if (bankDetails.swiftCode) {
-        doc.text(`SWIFT Code: ${bankDetails.swiftCode}`, margins.left + 5, yPosition);
+        doc.text(`SWIFT Code: ${bankDetails.swiftCode}`, leftContentMargin + 5, yPosition);
         yPosition += 5;
       }
       
@@ -518,38 +530,38 @@ export class InvoicePDFService {
     }
 
     doc.setFillColor(245, 247, 250);
-    doc.rect(margins.left, yPosition, pageWidth - margins.left - margins.right, 35, 'F');
+    doc.rect(leftContentMargin, yPosition, pageWidth - leftContentMargin - margins.right, 35, 'F');
     
     yPosition += 8;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
-    doc.text('Payment Information:', margins.left + 5, yPosition);
+    doc.text('Payment Information:', leftContentMargin + 5, yPosition);
     
     yPosition += 6;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
     doc.setTextColor(80, 80, 80);
-    doc.text('• Please make payment within the specified due date', margins.left + 5, yPosition);
+    doc.text('• Please make payment within the specified due date', leftContentMargin + 5, yPosition);
     yPosition += 5;
-    doc.text('• Include invoice number as payment reference', margins.left + 5, yPosition);
+    doc.text('• Include invoice number as payment reference', leftContentMargin + 5, yPosition);
     yPosition += 5;
-    doc.text('• All amounts are in South African Rand (ZAR)', margins.left + 5, yPosition);
+    doc.text('• All amounts are in South African Rand (ZAR)', leftContentMargin + 5, yPosition);
     yPosition += 5;
-    doc.text('• Contact us immediately if you have any queries regarding this invoice', margins.left + 5, yPosition);
+    doc.text('• Contact us immediately if you have any queries regarding this invoice', leftContentMargin + 5, yPosition);
 
     if ((invoice as any).notes) {
       yPosition += 15;
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      doc.text('Additional Notes:', 20, yPosition);
+      doc.text('Additional Notes:', leftContentMargin, yPosition);
       yPosition += 6;
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(9);
       doc.setTextColor(80, 80, 80);
-      const notesLines = doc.splitTextToSize((invoice as any).notes, pageWidth - 40);
-      doc.text(notesLines, 20, yPosition);
+      const notesLines = doc.splitTextToSize((invoice as any).notes, pageWidth - leftContentMargin - margins.right);
+      doc.text(notesLines, leftContentMargin, yPosition);
     }
 
     doc.setFontSize(8);

@@ -51,7 +51,7 @@ export const MatterDetailModal: React.FC<MatterDetailModalProps> = ({
     setLoadingRetainer(true);
     try {
       const { data, error } = await supabase
-        .from('retainers')
+        .from('retainer_agreements')
         .select('*')
         .eq('matter_id', matter.id)
         .eq('status', 'active')

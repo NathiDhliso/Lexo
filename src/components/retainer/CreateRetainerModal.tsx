@@ -33,15 +33,15 @@ export const CreateRetainerModal: React.FC<CreateRetainerModalProps> = ({
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const { error } = await supabase.from('retainers').insert({
+      const { error } = await supabase.from('retainer_agreements').insert({
         matter_id: matterId,
         advocate_id: user.id,
         retainer_type: formData.retainerType,
         retainer_amount: parseFloat(formData.retainerAmount),
         billing_period: formData.billingPeriod,
         start_date: formData.startDate,
-        description: formData.description,
-        balance: 0,
+        notes: formData.description,
+        trust_account_balance: 0,
         status: 'active',
       });
 

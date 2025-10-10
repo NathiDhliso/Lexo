@@ -8,6 +8,8 @@ import GlobalCommandBar from './GlobalCommandBar';
 import QuickActionsMenu from './QuickActionsMenu';
 import { RealTimeTicker, TickerItem } from './RealTimeTicker';
 import AlertsDropdown from '../notifications/AlertsDropdown';
+import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
+import { CreateProFormaModal } from '../proforma/CreateProFormaModal';
 
 import { navigationConfig, getFilteredNavigationConfig } from '../../config/navigation.config';
 import { useKeyboardShortcuts, useClickOutside } from '../../hooks';
@@ -56,6 +58,13 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   const [notificationBadges, setNotificationBadges] = useState<NotificationBadge[]>([]);
   const [notifications, setNotifications] = useState<SmartNotification[]>([]);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+  
+  // Modal state management
+  const [modalState, setModalState] = useState({
+    createMatter: false,
+    createProForma: false,
+    createInvoice: false
+  });
   
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const navBarRef = useRef<HTMLElement>(null);
@@ -118,6 +127,34 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         activeCategory: null
       }));
     }, 150);
+  };
+
+  // Handle action clicks for modal opening
+  const handleActionClick = (action: string) => {
+    // Close mega menu when action is triggered
+    setNavigationState(prev => ({
+      ...prev,
+      megaMenuOpen: false,
+      mobileMenuOpen: false,
+      activeCategory: null,
+      hoveredCategory: null
+    }));
+
+    // Open appropriate modal based on action
+    switch (action) {
+      case 'create-matter':
+        setModalState(prev => ({ ...prev, createMatter: true }));
+        break;
+      case 'create-proforma':
+        setModalState(prev => ({ ...prev, createProForma: true }));
+        break;
+      case 'create-invoice':
+        setModalState(prev => ({ ...prev, createInvoice: true }));
+        break;
+      default:
+        console.warn(`Unknown action: ${action}`);
+        break;
+    }
   };
 
   // Handle page navigation
@@ -581,6 +618,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           <MegaMenu
             category={filteredConfig.categories.find(c => c.id === navigationState.activeCategory)!}
             onItemClick={handlePageNavigation}
+            onActionClick={handleActionClick}
             userTier={userTier}
           />
         </div>
@@ -591,12 +629,68 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         <MobileMegaMenu
           categories={filteredConfig.categories}
           onItemClick={handlePageNavigation}
+          onActionClick={handleActionClick}
           userTier={userTier}
           activePage={navigationState.activePage}
           onClose={() => setNavigationState(prev => ({ ...prev, mobileMenuOpen: false }))}
         />
       )}
 
+      {/* Modals */}
+      {modalState.createMatter && (
+        <NewMatterMultiStep
+          isOpen={modalState.createMatter}
+          onClose={() => setModalState(prev => ({ ...prev, createMatter: false }))}
+          onComplete={(newMatter) => {
+            setModalState(prev => ({ ...prev, createMatter: false }));
+            toast.success(`Matter "${newMatter.title}" created successfully`);
+            handlePageNavigation('matters');
+          }}
+        />
+      )}
+
+      {modalState.createProForma && (
+        <CreateProFormaModal
+          isOpen={modalState.createProForma}
+          onClose={() => setModalState(prev => ({ ...prev, createProForma: false }))}
+          onSuccess={(proforma) => {
+            setModalState(prev => ({ ...prev, createProForma: false }));
+            toast.success('Pro Forma created successfully');
+            handlePageNavigation('proforma-requests');
+          }}
+        />
+      )}
+
+      {modalState.createInvoice && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h3 className="text-lg font-semibold mb-4">Generate Invoice</h3>
+            <p className="text-neutral-600 mb-4">
+              Create professional invoices with automated fee calculations and Bar-compliant formatting.
+            </p>
+            <div className="space-y-3">
+              <Button 
+                variant="primary" 
+                className="w-full"
+                onClick={() => {
+                  setModalState(prev => ({ ...prev, createInvoice: false }));
+                  handlePageNavigation('invoices');
+                  toast.success('Opening invoice generation...');
+                }}
+              >
+                Open Invoice Generator
+              </Button>
+              <Button 
+                variant="outline" 
+                className="w-full"
+                onClick={() => setModalState(prev => ({ ...prev, createInvoice: false }))}
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </nav>
   );

@@ -13,6 +13,7 @@ import type {
 interface MobileMegaMenuProps {
   categories: NavigationCategory[];
   onItemClick: (page: Page) => void;
+  onActionClick?: (action: string) => void;
   userTier: UserTier;
   activePage: Page;
   onClose: () => void;
@@ -21,6 +22,7 @@ interface MobileMegaMenuProps {
 interface MobileCategoryProps {
   category: NavigationCategory;
   onItemClick: (page: Page) => void;
+  onActionClick?: (action: string) => void;
   userTier: UserTier;
   activePage: Page;
   isExpanded: boolean;
@@ -30,6 +32,7 @@ interface MobileCategoryProps {
 interface MobileSectionProps {
   section: NavigationSection;
   onItemClick: (page: Page) => void;
+  onActionClick?: (action: string) => void;
   userTier: UserTier;
 }
 
@@ -42,15 +45,20 @@ const getUserTierLevel = (tier: UserTier): number => {
 const MobileMenuItem: React.FC<{
   item: NavigationItem;
   onItemClick: (page: Page) => void;
+  onActionClick?: (action: string) => void;
   userTier: UserTier;
-}> = ({ item, onItemClick, userTier }) => {
+}> = ({ item, onItemClick, onActionClick, userTier }) => {
   const Icon = item.icon;
   const isAccessible = !item.minTier || 
     (item.minTier && getUserTierLevel(userTier) >= getUserTierLevel(item.minTier));
   
   const handleClick = () => {
-    if (isAccessible && item.page) {
-      onItemClick(item.page);
+    if (isAccessible) {
+      if (item.action && onActionClick) {
+        onActionClick(item.action);
+      } else if (item.page) {
+        onItemClick(item.page);
+      }
     }
   };
 
@@ -129,6 +137,7 @@ const MobileMenuItem: React.FC<{
 const MobileSection: React.FC<MobileSectionProps> = ({ 
   section, 
   onItemClick, 
+  onActionClick,
   userTier 
 }) => {
   const accessibleItems = getAccessibleNavigationItems(section.items, userTier);
@@ -148,6 +157,7 @@ const MobileSection: React.FC<MobileSectionProps> = ({
             key={item.id}
             item={item}
             onItemClick={onItemClick}
+            onActionClick={onActionClick}
             userTier={userTier}
           />
         ))}
@@ -160,6 +170,7 @@ const MobileSection: React.FC<MobileSectionProps> = ({
 const MobileCategory: React.FC<MobileCategoryProps> = ({
   category,
   onItemClick,
+  onActionClick,
   userTier,
   activePage,
   isExpanded,
@@ -227,6 +238,7 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
                 key={section.id}
                 section={section}
                 onItemClick={onItemClick}
+                onActionClick={onActionClick}
                 userTier={userTier}
               />
             ))}
@@ -244,6 +256,7 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
                       key={item.id}
                       item={item}
                       onItemClick={onItemClick}
+                      onActionClick={onActionClick}
                       userTier={userTier}
                     />
                   ))}
@@ -261,6 +274,7 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
 export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
   categories,
   onItemClick,
+  onActionClick,
   userTier,
   activePage,
   onClose
@@ -273,6 +287,13 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
 
   const handleItemClick = (page: Page) => {
     onItemClick(page);
+    onClose();
+  };
+
+  const handleActionClick = (action: string) => {
+    if (onActionClick) {
+      onActionClick(action);
+    }
     onClose();
   };
 
@@ -293,6 +314,7 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
               key={category.id}
               category={category}
               onItemClick={handleItemClick}
+              onActionClick={handleActionClick}
               userTier={userTier}
               activePage={activePage}
               isExpanded={expandedCategory === category.id}

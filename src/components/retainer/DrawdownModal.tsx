@@ -56,8 +56,8 @@ export const DrawdownModal: React.FC<DrawdownModalProps> = ({
       if (transactionError) throw transactionError;
 
       const { error: updateError } = await supabase
-        .from('retainers')
-        .update({ balance: newBalance })
+        .from('retainer_agreements')
+        .update({ trust_account_balance: newBalance })
         .eq('id', retainerId);
 
       if (updateError) throw updateError;

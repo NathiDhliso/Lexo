@@ -24,6 +24,7 @@ export interface NavigationItem {
   label: string;
   href?: string;
   page?: Page;
+  action?: string; // For modal actions like 'create-matter', 'create-proforma'
   icon?: React.ComponentType<{ className?: string }>;
   description?: string;
   badge?: string;
@@ -468,7 +469,7 @@ export interface Document {
   parent_document_id?: string;
   description?: string;
   tags: string[];
-  uploaded_at: string;
+  created_at: string;
   updated_at: string;
   deleted_at?: string;
   content_text?: string;

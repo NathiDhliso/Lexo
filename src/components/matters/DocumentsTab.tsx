@@ -9,7 +9,7 @@ interface Document {
   name: string;
   file_type: string;
   file_size: number;
-  uploaded_at: string;
+  created_at: string;
   uploaded_by: string;
   storage_path: string;
 }
@@ -30,7 +30,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
         .from('document_uploads')
         .select('*')
         .eq('matter_id', matterId)
-        .order('uploaded_at', { ascending: false });
+        .order('created_at', { ascending: false });
 
       if (error) throw error;
 
@@ -180,7 +180,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
                     <div className="flex items-center gap-3 mt-1 text-sm text-neutral-600 dark:text-neutral-400">
                       <span>{formatFileSize(doc.file_size)}</span>
                       <span>•</span>
-                      <span>{formatDate(doc.uploaded_at)}</span>
+                      <span>{formatDate(doc.created_at)}</span>
                     </div>
                   </div>
                 </div>

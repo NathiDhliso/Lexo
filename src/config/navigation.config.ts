@@ -79,7 +79,7 @@ export const navigationConfig: NavigationConfig = {
             {
               id: 'create-proforma',
               label: 'Create Pro Forma',
-              page: 'proforma-requests',
+              action: 'create-proforma',
               icon: FileCheck,
               description: 'Create new quote request',
             },
@@ -127,7 +127,7 @@ export const navigationConfig: NavigationConfig = {
             {
               id: 'create-matter',
               label: 'Create Matter',
-              page: 'matters',
+              action: 'create-matter',
               icon: FileText,
               description: 'Start new case',
             },
@@ -182,7 +182,7 @@ export const navigationConfig: NavigationConfig = {
             {
               id: 'create-invoice',
               label: 'Create Invoice',
-              page: 'invoices',
+              action: 'create-invoice',
               icon: CreditCard,
               description: 'Generate new invoice',
             },

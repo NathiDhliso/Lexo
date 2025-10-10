@@ -212,6 +212,74 @@ const SettingsPage: React.FC = () => {
     }
   };
 
+  const handleViewRateCard = (rateCard: RateCard) => {
+    // Create a detailed view modal or navigate to a detailed view
+    const details = `
+Service: ${rateCard.service_name}
+Category: ${rateCard.service_category.replace('_', ' ')}
+${rateCard.service_description ? `Description: ${rateCard.service_description}` : ''}
+Pricing: ${rateCard.pricing_type === 'hourly' 
+  ? `R${rateCard.hourly_rate}/hour` 
+  : `R${rateCard.fixed_fee} (fixed)`}
+${rateCard.estimated_hours_min ? `Estimated Hours: ${rateCard.estimated_hours_min}${rateCard.estimated_hours_max && rateCard.estimated_hours_max !== rateCard.estimated_hours_min ? ` - ${rateCard.estimated_hours_max}` : ''} hours` : ''}
+${rateCard.matter_type ? `Matter Type: ${rateCard.matter_type}` : ''}
+Status: ${rateCard.is_active ? 'Active' : 'Inactive'}
+${rateCard.requires_approval ? 'Requires Approval: Yes' : ''}
+Created: ${new Date(rateCard.created_at).toLocaleDateString()}
+Updated: ${new Date(rateCard.updated_at).toLocaleDateString()}
+    `.trim();
+    
+    alert(details); // For now, using alert. In production, you'd use a proper modal
+    toast.success('Rate card details displayed');
+  };
+
+  const handleEditRateCard = (rateCard: RateCard) => {
+    // Pre-populate the create form with existing data for editing
+    setCreateRateCardForm({
+      service_name: rateCard.service_name,
+      service_description: rateCard.service_description || '',
+      service_category: rateCard.service_category,
+      matter_type: rateCard.matter_type || '',
+      pricing_type: rateCard.pricing_type,
+      hourly_rate: rateCard.hourly_rate || 2500,
+      fixed_fee: rateCard.fixed_fee || 0,
+      minimum_fee: rateCard.minimum_fee,
+      maximum_fee: rateCard.maximum_fee,
+      estimated_hours_min: rateCard.estimated_hours_min || 1,
+      estimated_hours_max: rateCard.estimated_hours_max || 1,
+      is_default: rateCard.is_default || false,
+      requires_approval: rateCard.requires_approval || false
+    });
+    setShowCreateRateCardModal(true);
+    toast.info('Edit mode: Update the rate card details');
+  };
+
+  const handleDuplicateRateCard = async (rateCard: RateCard) => {
+    try {
+      const duplicateRequest: CreateRateCardRequest = {
+        service_name: `${rateCard.service_name} (Copy)`,
+        service_description: rateCard.service_description,
+        service_category: rateCard.service_category,
+        matter_type: rateCard.matter_type,
+        pricing_type: rateCard.pricing_type,
+        hourly_rate: rateCard.hourly_rate,
+        fixed_fee: rateCard.fixed_fee,
+        minimum_fee: rateCard.minimum_fee,
+        maximum_fee: rateCard.maximum_fee,
+        estimated_hours_min: rateCard.estimated_hours_min,
+        estimated_hours_max: rateCard.estimated_hours_max,
+        is_default: false, // Duplicates should not be default
+        requires_approval: rateCard.requires_approval
+      };
+      
+      const newRateCard = await rateCardService.createRateCard(duplicateRequest);
+      setRateCards(prev => [newRateCard, ...prev]);
+      toast.success('Rate card duplicated successfully');
+    } catch (error) {
+      toast.error('Failed to duplicate rate card');
+    }
+  };
+
   const handleCreateRateCardSubmit = async () => {
     try {
       if (!createRateCardForm.service_name.trim()) {
@@ -670,11 +738,21 @@ const SettingsPage: React.FC = () => {
                       {/* Action Buttons */}
                       <div className="flex items-center justify-between pt-4 border-t border-neutral-200 dark:border-metallic-gray-600">
                         <div className="flex items-center gap-2">
-                          <Button variant="secondary" size="sm" className="flex items-center gap-1">
+                          <Button 
+                            variant="secondary" 
+                            size="sm" 
+                            className="flex items-center gap-1"
+                            onClick={() => handleViewRateCard(rateCard)}
+                          >
                             <Eye className="w-4 h-4" />
                             <span className="hidden sm:inline">View</span>
                           </Button>
-                          <Button variant="secondary" size="sm" className="flex items-center gap-1">
+                          <Button 
+                            variant="secondary" 
+                            size="sm" 
+                            className="flex items-center gap-1"
+                            onClick={() => handleEditRateCard(rateCard)}
+                          >
                             <span className="hidden sm:inline">Edit</span>
                           </Button>
                         </div>
@@ -684,6 +762,7 @@ const SettingsPage: React.FC = () => {
                             variant="secondary" 
                             size="sm"
                             className="text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100"
+                            onClick={() => handleDuplicateRateCard(rateCard)}
                           >
                             <span className="text-xs">Duplicate</span>
                           </Button>
@@ -763,10 +842,20 @@ const SettingsPage: React.FC = () => {
                         
                         {/* Right Section - Actions */}
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <Button variant="secondary" size="sm" className="flex items-center gap-1">
+                          <Button 
+                            variant="secondary" 
+                            size="sm" 
+                            className="flex items-center gap-1"
+                            onClick={() => handleViewRateCard(rateCard)}
+                          >
                             <Eye className="w-4 h-4" />
                           </Button>
-                          <Button variant="secondary" size="sm" className="flex items-center gap-1">
+                          <Button 
+                            variant="secondary" 
+                            size="sm" 
+                            className="flex items-center gap-1"
+                            onClick={() => handleEditRateCard(rateCard)}
+                          >
                             <Edit3 className="w-4 h-4" />
                           </Button>
                           <Button 

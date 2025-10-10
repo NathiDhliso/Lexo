@@ -52,7 +52,7 @@ export const CreateAmendmentModal: React.FC<CreateAmendmentModalProps> = ({
         new_estimated_hours: parseFloat(formData.newEstimatedHours || '0'),
         justification: formData.justification,
         current_wip: currentWIP,
-        cost_variance_percentage: costVariance,
+        variance_percentage: costVariance,
         status: 'pending',
         created_by: user.id,
       });

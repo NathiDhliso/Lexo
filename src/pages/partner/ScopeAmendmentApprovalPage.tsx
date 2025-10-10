@@ -15,7 +15,7 @@ interface Amendment {
   new_estimated_hours: number;
   justification: string;
   current_wip: number;
-  cost_variance_percentage: number;
+  variance_percentage: number;
   status: string;
   created_at: string;
   matters?: {
@@ -177,13 +177,13 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
               </p>
             </div>
 
-            {selectedAmendment.cost_variance_percentage > 15 && (
+            {selectedAmendment.variance_percentage > 15 && (
               <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-4 flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-amber-600 dark:text-amber-400 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="text-sm font-medium text-amber-800 dark:text-amber-300">Cost Variance Alert</p>
                   <p className="text-sm text-amber-700 dark:text-amber-400 mt-1">
-                    Current WIP exceeds estimated cost by {selectedAmendment.cost_variance_percentage.toFixed(1)}%
+                    Current WIP exceeds estimated cost by {selectedAmendment.variance_percentage.toFixed(1)}%
                   </p>
                 </div>
               </div>
@@ -345,7 +345,7 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
                 <div>
                   <p className="text-xs text-gray-600 dark:text-neutral-400">Variance</p>
                   <p className="font-semibold text-amber-600 dark:text-amber-400">
-                    {amendment.cost_variance_percentage.toFixed(1)}%
+                    {amendment.variance_percentage.toFixed(1)}%
                   </p>
                 </div>
               </div>

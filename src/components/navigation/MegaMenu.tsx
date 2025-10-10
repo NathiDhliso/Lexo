@@ -13,6 +13,7 @@ import { UserTier } from '../../types';
 interface MegaMenuProps {
   category: NavigationCategory;
   onItemClick: (page: Page) => void;
+  onActionClick?: (action: string) => void;
   userTier: UserTier;
   className?: string;
 }
@@ -20,12 +21,14 @@ interface MegaMenuProps {
 interface MegaMenuItemProps {
   item: NavigationItem;
   onItemClick: (page: Page) => void;
+  onActionClick?: (action: string) => void;
   userTier: UserTier;
 }
 
 interface MegaMenuSectionProps {
   section: NavigationSection;
   onItemClick: (page: Page) => void;
+  onActionClick?: (action: string) => void;
   userTier: UserTier;
 }
 
@@ -33,6 +36,7 @@ interface MegaMenuSectionProps {
 const MegaMenuItem: React.FC<MegaMenuItemProps> = ({ 
   item, 
   onItemClick, 
+  onActionClick,
   userTier 
 }) => {
   const Icon = item.icon;
@@ -40,15 +44,23 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
     (item.minTier && getUserTierLevel(userTier) >= getUserTierLevel(item.minTier));
   
   const handleClick = () => {
-    if (isAccessible && item.page) {
-      onItemClick(item.page);
+    if (isAccessible) {
+      if (item.action && onActionClick) {
+        onActionClick(item.action);
+      } else if (item.page) {
+        onItemClick(item.page);
+      }
     }
   };
 
   const handleKeyDown = (event: React.KeyboardEvent) => {
-    if ((event.key === 'Enter' || event.key === ' ') && isAccessible && item.page) {
+    if ((event.key === 'Enter' || event.key === ' ') && isAccessible) {
       event.preventDefault();
-      onItemClick(item.page);
+      if (item.action && onActionClick) {
+        onActionClick(item.action);
+      } else if (item.page) {
+        onItemClick(item.page);
+      }
     }
   };
 
@@ -117,7 +129,7 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
         </div>
 
         {/* Arrow indicator for accessible items */}
-        {isAccessible && item.page && (
+        {isAccessible && (item.page || item.action) && (
           <ArrowRight className="w-4 h-4 text-neutral-400 dark:text-neutral-500 opacity-60 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity flex-shrink-0" />
         )}
       </div>
@@ -147,6 +159,7 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
 const MegaMenuSection: React.FC<MegaMenuSectionProps> = ({ 
   section, 
   onItemClick, 
+  onActionClick,
   userTier 
 }) => {
   const accessibleItems = getAccessibleNavigationItems(section.items, userTier);
@@ -166,6 +179,7 @@ const MegaMenuSection: React.FC<MegaMenuSectionProps> = ({
             key={item.id}
             item={item}
             onItemClick={onItemClick}
+            onActionClick={onActionClick}
             userTier={userTier}
           />
         ))}
@@ -178,8 +192,9 @@ const MegaMenuSection: React.FC<MegaMenuSectionProps> = ({
 const FeaturedItems: React.FC<{
   items: NavigationItem[];
   onItemClick: (page: Page) => void;
+  onActionClick?: (action: string) => void;
   userTier: UserTier;
-}> = ({ items, onItemClick, userTier }) => {
+}> = ({ items, onItemClick, onActionClick, userTier }) => {
   const accessibleItems = getAccessibleNavigationItems(items, userTier);
   
   if (accessibleItems.length === 0) {
@@ -206,7 +221,15 @@ const FeaturedItems: React.FC<{
                   ? 'hover:bg-white/60 dark:hover:bg-metallic-gray-900/60 active:bg-white/80 dark:active:bg-metallic-gray-900/80 cursor-pointer touch-manipulation'
                   : 'opacity-60 cursor-not-allowed'
               }`}
-              onClick={() => isAccessible && item.page && onItemClick(item.page)}
+              onClick={() => {
+                if (isAccessible) {
+                  if (item.action && onActionClick) {
+                    onActionClick(item.action);
+                  } else if (item.page) {
+                    onItemClick(item.page);
+                  }
+                }
+              }}
               role="menuitem"
               tabIndex={isAccessible ? 0 : -1}
             >
@@ -251,6 +274,7 @@ const getUserTierLevel = (tier: UserTier): number => {
 export const MegaMenu: React.FC<MegaMenuProps> = ({
   category,
   onItemClick,
+  onActionClick,
   userTier,
   className = ''
 }) => {
@@ -313,6 +337,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
             key={section.id}
             section={section}
             onItemClick={onItemClick}
+            onActionClick={onActionClick}
             userTier={userTier}
           />
         ))}
@@ -322,6 +347,7 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
           <FeaturedItems
             items={category.featured}
             onItemClick={onItemClick}
+            onActionClick={onActionClick}
             userTier={userTier}
           />
         )}
