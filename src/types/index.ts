@@ -7,7 +7,8 @@ export type Page =
   | 'invoices'
   | 'partner-approval'
   | 'profile'
-  | 'settings';
+  | 'settings'
+  | 'reports';
 
 // Export integration types
 export * from './integrations';

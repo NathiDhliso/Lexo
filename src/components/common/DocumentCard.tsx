@@ -1,6 +1,6 @@
 import React from 'react';
-import { MoreVertical, ExternalLink } from 'lucide-react';
-import { Card, CardContent, Button } from '../design-system/components';
+import { MoreVertical, ExternalLink, Shield, AlertTriangle } from 'lucide-react';
+import { Card, CardContent, Button, Badge } from '../design-system/components';
 
 export type DocumentType = 'matter' | 'proforma' | 'invoice';
 
@@ -17,6 +17,9 @@ export interface DocumentCardProps {
   timeline?: React.ReactNode;
   onClick?: () => void;
   className?: string;
+  practiceNumber?: string;
+  isTrustAccount?: boolean;
+  isContingencyFee?: boolean;
 }
 
 const getDocumentTypeStyles = (type: DocumentType) => {
@@ -73,7 +76,10 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
   metrics,
   timeline,
   onClick,
-  className = ''
+  className = '',
+  practiceNumber,
+  isTrustAccount,
+  isContingencyFee
 }) => {
   const styles = getDocumentTypeStyles(type);
   const statusColor = getStatusBadgeColor(status);
@@ -89,31 +95,53 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
           {/* Header */}
           <div className="flex items-start justify-between">
             <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-3 mb-2">
+              <div className="flex items-center gap-2 mb-2 flex-wrap">
                 <span className={`text-xs font-medium uppercase tracking-wide ${styles.accentColor}`}>
                   {type}
                 </span>
                 
                 {urgent && (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-error-100 text-status-error-700 border border-status-error-200">
+                  <Badge variant="error" className="flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
                     Urgent
-                  </span>
+                  </Badge>
                 )}
                 
                 <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium border ${statusColor}`}>
                   {status}
                 </span>
+                
+                {practiceNumber && (
+                  <Badge variant="info" className="flex items-center gap-1">
+                    <Shield className="w-3 h-3" />
+                    {practiceNumber}
+                  </Badge>
+                )}
+                
+                {isTrustAccount && (
+                  <Badge variant="info" className="flex items-center gap-1">
+                    <Shield className="w-3 h-3" />
+                    Trust Account
+                  </Badge>
+                )}
+                
+                {isContingencyFee && (
+                  <Badge variant="warning" className="flex items-center gap-1">
+                    <AlertTriangle className="w-3 h-3" />
+                    Contingency Fee
+                  </Badge>
+                )}
               </div>
               
               <h3 
-                className={`text-lg font-semibold text-neutral-900 truncate ${onClick ? 'cursor-pointer hover:text-mpondo-gold-600' : ''}`}
+                className={`text-lg font-semibold text-neutral-900 dark:text-neutral-100 truncate ${onClick ? 'cursor-pointer hover:text-mpondo-gold-600 dark:hover:text-mpondo-gold-400' : ''}`}
                 onClick={onClick}
               >
                 {title}
               </h3>
               
               {subtitle && (
-                <p className="text-sm text-neutral-600 mt-1">{subtitle}</p>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">{subtitle}</p>
               )}
             </div>
             
@@ -126,28 +154,28 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
 
           {/* Metrics */}
           {metrics && (
-            <div className="pt-3 border-t border-neutral-200">
+            <div className="pt-4 border-t border-neutral-200 dark:border-metallic-gray-700">
               {metrics}
             </div>
           )}
 
           {/* Timeline */}
           {timeline && (
-            <div className="pt-3 border-t border-neutral-200">
+            <div className="pt-4 border-t border-neutral-200 dark:border-metallic-gray-700">
               {timeline}
             </div>
           )}
 
           {/* Custom Content */}
           {children && (
-            <div className="pt-3 border-t border-neutral-200">
+            <div className="pt-4 border-t border-neutral-200 dark:border-metallic-gray-700">
               {children}
             </div>
           )}
 
           {/* Related Documents */}
           {relatedDocuments && (
-            <div className="pt-3 border-t border-neutral-200">
+            <div className="pt-4 border-t border-neutral-200 dark:border-metallic-gray-700">
               {relatedDocuments}
             </div>
           )}
@@ -158,7 +186,7 @@ export const DocumentCard: React.FC<DocumentCardProps> = ({
 };
 
 export const DocumentCardMetrics: React.FC<{ children: React.ReactNode }> = ({ children }) => (
-  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+  <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
     {children}
   </div>
 );
@@ -170,10 +198,10 @@ export const DocumentCardMetric: React.FC<{
   highlight?: boolean;
 }> = ({ label, value, icon: Icon, highlight = false }) => (
   <div className="flex items-center gap-2">
-    {Icon && <Icon className={`w-4 h-4 ${highlight ? 'text-mpondo-gold-600' : 'text-neutral-400'}`} />}
+    {Icon && <Icon className={`w-4 h-4 ${highlight ? 'text-mpondo-gold-600 dark:text-mpondo-gold-400' : 'text-neutral-400 dark:text-neutral-500'}`} />}
     <div>
-      <div className="text-xs text-neutral-600">{label}</div>
-      <div className={`text-sm font-semibold ${highlight ? 'text-mpondo-gold-700' : 'text-neutral-900'}`}>
+      <div className="text-xs text-neutral-600 dark:text-neutral-400">{label}</div>
+      <div className={`text-sm font-semibold ${highlight ? 'text-mpondo-gold-700 dark:text-mpondo-gold-400' : 'text-neutral-900 dark:text-neutral-100'}`}>
         {value}
       </div>
     </div>

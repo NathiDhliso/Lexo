@@ -1,6 +1,8 @@
 @import './styles/theme-variables.css';
 @import './styles/theme-components.css';
 @import './styles/dark-mode.css';
+@import './styles/mobile-optimizations.css';
+@import './styles/mobile-menu-enhancement.css';
 @import url('https://fonts.googleapis.com/css2?family=Work+Sans:wght@400;500;600&family=Libre+Baskerville:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap');
 @tailwind base;
 @tailwind components;
@@ -48,6 +50,9 @@
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+    width: 100%;
+    max-width: 100vw;
   }
 
   .dark body {

@@ -130,7 +130,7 @@ const MainLayout: React.FC<{
 }> = ({ children, activePage, onPageChange, sidebarOpen, onToggleSidebar }) => {
   const userTier: UserTier = UserTier.ADVOCATE_PRO;
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-gradient-to-br dark:from-metallic-gray-900 dark:via-metallic-gray-800 dark:to-metallic-gray-900 flex flex-col transition-colors duration-300">
+    <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-gradient-to-br dark:from-metallic-gray-900 dark:via-metallic-gray-800 dark:to-metallic-gray-900 flex flex-col transition-colors duration-300">
       <NavigationBar
         activePage={activePage}
         onPageChange={onPageChange}
@@ -138,8 +138,8 @@ const MainLayout: React.FC<{
         onToggleSidebar={onToggleSidebar}
         sidebarOpen={sidebarOpen}
       />
-      <main className="flex-1">
-        <div className="px-3 sm:px-4 md:px-6 py-4 md:py-6">
+      <main className="flex-1 w-full max-w-full overflow-x-hidden">
+        <div className="w-full max-w-full px-3 sm:px-4 md:px-6 py-4 md:py-6">
           {children}
         </div>
       </main>

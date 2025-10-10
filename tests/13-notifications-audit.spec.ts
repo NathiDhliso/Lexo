@@ -2,7 +2,7 @@ import { test, expect } from './fixtures/auth.fixture';
 import { fillFormField, clickButton, waitForToast } from './utils/test-helpers';
 
 test.describe('Notifications & Audit Trail', () => {
-  test.skip('Test 16.1: Pro Forma Request Notification', async ({ authenticatedPage: page, page: clientPage }) => {
+  test('Test 16.1: Pro Forma Request Notification', async ({ authenticatedPage: page, page: clientPage }) => {
     await page.goto('/proforma');
     await clickButton(page, 'New Pro Forma');
     

@@ -6,7 +6,7 @@ import { MegaMenu } from './MegaMenu';
 import { MobileMegaMenu } from './MobileMegaMenu';
 import GlobalCommandBar from './GlobalCommandBar';
 import QuickActionsMenu from './QuickActionsMenu';
-import { RealTimeTicker } from './RealTimeTicker';
+import { RealTimeTicker, TickerItem } from './RealTimeTicker';
 import AlertsDropdown from '../notifications/AlertsDropdown';
 
 import { navigationConfig, getFilteredNavigationConfig } from '../../config/navigation.config';
@@ -24,6 +24,7 @@ import type {
 } from '../../types';
 import { UserTier as UserTierValue } from '../../types';
 import type { NotificationBadge, SmartNotification } from '../../services/smart-notifications.service';
+import { useNavigate } from 'react-router-dom';
 
 interface NavigationBarProps {
   activePage: Page;
@@ -57,6 +58,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const navBarRef = useRef<HTMLElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const commandBarRef = useRef<HTMLDivElement>(null);
   const quickActionsRef = useRef<HTMLDivElement>(null);
@@ -131,12 +133,60 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     }));
   };
 
+  // New: handle ticker item clicks that may include full paths or page keys
+  const navigate = useNavigate();
+  const handleTickerItemClick = (item: TickerItem) => {
+    const target = item?.navigateTo;
+    if (!target) return;
+    const pageKeys: string[] = [
+      'dashboard',
+      'proforma-requests',
+      'matters',
+      'matter-workbench',
+      'invoices',
+      'partner-approval',
+      'profile',
+      'settings',
+      'reports'
+    ];
+
+    if (pageKeys.includes(target)) {
+      handlePageNavigation(target as Page);
+      return;
+    }
+
+    if (target.startsWith('/')) {
+      // Map detail paths to base pages since router doesn't define :id routes yet
+      if (target.startsWith('/invoices')) {
+        handlePageNavigation('invoices');
+        return;
+      }
+      if (target.startsWith('/matters')) {
+        handlePageNavigation('matters');
+        return;
+      }
+      if (target.startsWith('/proforma')) {
+        handlePageNavigation('proforma-requests');
+        return;
+      }
+      // Fallback to direct navigation for other paths
+      navigate(target);
+      setNavigationState(prev => ({
+        ...prev,
+        megaMenuOpen: false,
+        mobileMenuOpen: false,
+        activeCategory: null,
+        hoveredCategory: null
+      }));
+    }
+  };
+
   // Handle quick action execution
   const handleQuickAction = (actionId: string) => {
     switch (actionId) {
       case 'create-proforma':
-        // Navigate to proforma page
-        handlePageNavigation('proforma');
+        // Navigate to proforma requests page
+        handlePageNavigation('proforma-requests');
         break;
       
       case 'add-matter':
@@ -164,11 +214,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         break;
       
       default:
-        // Fallback for unknown actions
-        toast.error(`Unknown action: ${actionId}`, {
-          duration: 2000,
-          position: 'top-right'
-        });
         break;
     }
   };
@@ -286,6 +331,18 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     }));
   }, [activePage]);
 
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (navigationState.mobileMenuOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [navigationState.mobileMenuOpen]);
+
   // Subscribe to notifications
   useEffect(() => {
     const unsubscribeBadges = smartNotificationsService.subscribeToBadges(setNotificationBadges);
@@ -314,12 +371,11 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   return (
     <nav 
-      className={`bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700 sticky top-0 z-50 transition-colors duration-300 ${className}`}
-      role="navigation"
-      aria-label="Main navigation"
+      ref={navBarRef}
+      className={`bg-white/80 dark:bg-metallic-gray-900/80 backdrop-blur supports-[backdrop-filter]:bg-white/60 supports-[backdrop-filter]:dark:bg-metallic-gray-900/60 border-b border-neutral-200 dark:border-metallic-gray-700 sticky top-0 z-50`}
     >
       {/* Real-Time Ticker */}
-      <RealTimeTicker onItemClick={handlePageNavigation} />
+      <RealTimeTicker onItemClick={handleTickerItemClick} />
 
       {/* Main Navigation Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -399,8 +455,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
           {/* Right Side Actions */}
           <div className="flex items-center gap-3">
-            {/* Theme Toggle */}
-            <ThemeToggle />
+            {/* Theme Toggle - Desktop Only */}
+            <div className="hidden lg:block">
+              <ThemeToggle />
+            </div>
 
             {/* Global Command Bar */}
             <div ref={commandBarRef}>
@@ -478,25 +536,36 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                        Sign Out
                      </button>
                    </div>
-                 </div>
-               )}
-             </div>
+                </div>
+              )}
+            </div>
 
-             {/* Mobile Menu Toggle */}
-             <Button
-               variant="ghost"
-               size="sm"
-               onClick={toggleMobileMenu}
-               className="lg:hidden"
-               aria-label="Toggle mobile menu"
+             {/* Mobile Menu Toggle - Enhanced */}
+             <button
+               aria-controls="mobile-mega-menu"
                aria-expanded={navigationState.mobileMenuOpen}
+               aria-label={navigationState.mobileMenuOpen ? 'Close menu' : 'Open menu'}
+               onClick={() => setNavigationState(prev => ({ ...prev, mobileMenuOpen: !prev.mobileMenuOpen }))}
+               className="lg:hidden mobile-menu-toggle flex items-center justify-center"
+               title={navigationState.mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
+               type="button"
+               style={{
+                 background: 'linear-gradient(135deg, #D4AF37 0%, #C5A028 100%)',
+                 padding: '12px',
+                 borderRadius: '12px',
+                 boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)',
+                 minHeight: '48px',
+                 minWidth: '48px',
+                 border: '2px solid rgba(255, 255, 255, 0.2)',
+                 transition: 'all 0.3s ease'
+               }}
              >
                {navigationState.mobileMenuOpen ? (
-                 <Icon icon={X} className="w-5 h-5" noGradient />
+                 <X className="w-6 h-6 text-white" />
                ) : (
-                 <Icon icon={Menu} className="w-5 h-5" noGradient />
+                 <Menu className="w-6 h-6 text-white" />
                )}
-             </Button>
+             </button>
           </div>
         </div>
       </div>

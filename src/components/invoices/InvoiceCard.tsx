@@ -8,12 +8,15 @@ import {
   MoreHorizontal,
   Eye,
   Download,
-  Mail
+  Mail,
+  Shield,
+  BadgeCheck
 } from 'lucide-react';
 import { format, differenceInDays, isAfter } from 'date-fns';
-import { Card, CardHeader, CardContent, Button } from '../design-system/components';
+import { Card, CardHeader, CardContent, Button, Badge } from '../design-system/components';
 import { RandIcon } from '../icons/RandIcon';
 import { formatRand } from '../../lib/currency';
+import { calculateVAT, formatSADate } from '../../lib/sa-legal-utils';
 import type { Invoice } from '@/types';
 import { InvoiceStatus, BarAssociation } from '@/types';
 
@@ -226,31 +229,59 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
         </div>
       </CardHeader>
 
-      <CardContent className="p-0 space-y-4">
+      <CardContent className="p-0 space-y-6">
+        {/* VAT Breakdown - SA Legal Compliance */}
+        <div className="p-4 bg-mpondo-gold-50 dark:bg-mpondo-gold-900/10 rounded-lg border border-mpondo-gold-200 dark:border-mpondo-gold-800">
+          <div className="flex items-center gap-2 mb-3">
+            <BadgeCheck className="w-4 h-4 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
+            <h4 className="text-sm font-semibold text-mpondo-gold-900 dark:text-mpondo-gold-100">Amount Breakdown (incl. VAT)</h4>
+          </div>
+          <div className="space-y-2 text-sm">
+            <div className="flex justify-between">
+              <span className="text-neutral-600 dark:text-neutral-400">Subtotal (excl. VAT):</span>
+              <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                {formatRand(calculateVAT(invoice.totalAmount ?? (invoice as any).total_amount ?? 0).subtotal / 1.15)}
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-neutral-600 dark:text-neutral-400">VAT (15%):</span>
+              <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                {formatRand((invoice.totalAmount ?? (invoice as any).total_amount ?? 0) * 0.15 / 1.15)}
+              </span>
+            </div>
+            <div className="flex justify-between pt-2 border-t border-mpondo-gold-200 dark:border-mpondo-gold-800">
+              <span className="font-semibold text-neutral-900 dark:text-neutral-100">Total (incl. VAT):</span>
+              <span className="font-bold text-lg text-mpondo-gold-700 dark:text-mpondo-gold-400">
+                {formatRand(invoice.totalAmount ?? (invoice as any).total_amount ?? 0)}
+              </span>
+            </div>
+          </div>
+        </div>
+
         {/* Amount and Dates */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           <div>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Total Amount</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Invoice Number</p>
             <p className="font-semibold text-neutral-900 dark:text-neutral-100">
-              {formatRand(invoice.totalAmount ?? (invoice as any).total_amount ?? 0)}
+              {invoice.invoiceNumber ?? (invoice as any).invoice_number ?? '—'}
             </p>
           </div>
           
           <div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Date Issued</p>
             <p className="text-sm text-neutral-700 dark:text-neutral-300">
-              {invoice.dateIssued ? format(new Date(invoice.dateIssued), 'dd MMM yyyy') : 'N/A'}
+              {invoice.dateIssued ? formatSADate(new Date(invoice.dateIssued)) : 'N/A'}
             </p>
           </div>
           
           <div>
             <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Due Date</p>
             <p className={`text-sm ${
-              daysOverdue > 0 ? 'text-error-600 dark:text-error-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
+              daysOverdue > 0 ? 'text-status-error-600 dark:text-status-error-400 font-medium' : 'text-neutral-700 dark:text-neutral-300'
             }`}>
-              {invoice.dateDue ? format(new Date(invoice.dateDue), 'dd MMM yyyy') : 'N/A'}
+              {invoice.dateDue ? formatSADate(new Date(invoice.dateDue)) : 'N/A'}
               {daysOverdue > 0 && (
-                <span className="block text-xs text-error-500 dark:text-error-400">
+                <span className="block text-xs text-status-error-500 dark:text-status-error-400">
                   {daysOverdue} days overdue
                 </span>
               )}
@@ -258,14 +289,38 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
           </div>
           
           <div>
-            <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Bar</p>
-            <div className="flex items-center gap-1">
-              <div className={`w-2 h-2 rounded-full ${
-                invoice.bar === BarAssociation.JOHANNESBURG ? 'bg-mpondo-gold-500' : 'bg-judicial-blue-500'
-              }`}></div>
-              <p className="text-sm text-neutral-700 dark:text-neutral-300">{invoice.bar === BarAssociation.JOHANNESBURG ? 'Johannesburg' : invoice.bar === BarAssociation.CAPE_TOWN ? 'Cape Town' : (typeof invoice.bar === 'string' ? invoice.bar : 'N/A')}</p>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mb-1">Bar Association</p>
+            <div className="flex items-center gap-2">
+              <Badge variant="legal" className="text-xs">
+                {invoice.bar === BarAssociation.JOHANNESBURG ? 'Johannesburg Bar' : invoice.bar === BarAssociation.CAPE_TOWN ? 'Cape Town Bar' : (typeof invoice.bar === 'string' ? invoice.bar : 'N/A')}
+              </Badge>
             </div>
           </div>
+        </div>
+
+        {/* Practice Number & Trust Account Indicators */}
+        <div className="flex flex-wrap items-center gap-3 p-3 bg-neutral-50 dark:bg-metallic-gray-900 rounded-lg">
+          {(invoice as any).practice_number && (
+            <div className="flex items-center gap-2">
+              <Shield className="w-4 h-4 text-judicial-blue-600 dark:text-judicial-blue-400" />
+              <span className="text-xs text-neutral-600 dark:text-neutral-400">Practice No:</span>
+              <Badge variant="info" className="font-mono text-xs">
+                {(invoice as any).practice_number}
+              </Badge>
+            </div>
+          )}
+          {(invoice as any).is_trust_account && (
+            <Badge variant="info" className="flex items-center gap-1">
+              <Shield className="w-3 h-3" />
+              Trust Account Matter
+            </Badge>
+          )}
+          {(invoice as any).fee_type === 'contingency' && (
+            <Badge variant="warning" className="flex items-center gap-1">
+              <AlertTriangle className="w-3 h-3" />
+              Contingency Fee
+            </Badge>
+          )}
         </div>
 
         {/* Payment Progress (if partially paid) */}

@@ -277,19 +277,29 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
   };
 
   return (
-    <div className="lg:hidden bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700 max-h-[80vh] overflow-y-auto">
-      <div className="divide-y divide-neutral-200 dark:divide-metallic-gray-700">
-        {categories.map((category) => (
-          <MobileCategory
-            key={category.id}
-            category={category}
-            onItemClick={handleItemClick}
-            userTier={userTier}
-            activePage={activePage}
-            isExpanded={expandedCategory === category.id}
-            onToggle={() => handleCategoryToggle(category.id)}
-          />
-        ))}
+    <div id="mobile-mega-menu" className="lg:hidden fixed inset-0 z-40">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-black/40 dark:bg-black/50"
+        onClick={onClose}
+        aria-hidden="true"
+      />
+
+      {/* Menu Panel */}
+      <div className="absolute inset-x-0 top-0 bottom-0 bg-white dark:bg-metallic-gray-900 border-t border-neutral-200 dark:border-metallic-gray-700 overflow-y-auto pt-16">
+        <div className="divide-y divide-neutral-200 dark:divide-metallic-gray-700">
+          {categories.map((category) => (
+            <MobileCategory
+              key={category.id}
+              category={category}
+              onItemClick={handleItemClick}
+              userTier={userTier}
+              activePage={activePage}
+              isExpanded={expandedCategory === category.id}
+              onToggle={() => handleCategoryToggle(category.id)}
+            />
+          ))}
+        </div>
       </div>
     </div>
   );

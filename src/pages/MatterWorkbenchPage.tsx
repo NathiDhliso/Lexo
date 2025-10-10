@@ -26,6 +26,7 @@ import { matterApiService } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import type { NewMatterForm, Page, DocumentProcessingResult } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 interface MatterWorkbenchPageProps {
   onNavigate?: (page: Page) => void;
@@ -329,31 +330,40 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
-  const handleSubmit = async () => {
-    if (!validateStep(currentStep)) return;
+  const navigate = useNavigate();
 
-    setIsSubmitting(true);
-    try {
-      console.log('[MatterWorkbench] Creating matter with data:', formData);
-      const result = await matterApiService.createFromForm(formData);
-      
-      if (result.error) {
-        console.error('[MatterWorkbench] Error creating matter:', result.error);
-        toast.error(result.error.message || 'Failed to create matter');
-        return;
-      }
-      
-      console.log('[MatterWorkbench] Matter created successfully:', result.data);
-      toast.success(`Matter "${result.data?.title}" created successfully`);
-      
-      if (onNavigate) {
-        onNavigate('matters');
-      }
-    } catch (error) {
-      console.error('[MatterWorkbench] Unexpected error:', error);
-      toast.error('Failed to create matter');
-    } finally {
-      setIsSubmitting(false);
+  const navigatePage = (page: Page) => {
+    if (onNavigate) {
+      onNavigate(page);
+      return;
+    }
+    switch (page) {
+      case 'dashboard':
+        navigate('/dashboard');
+        break;
+      case 'proforma-requests':
+        navigate('/proforma-requests');
+        break;
+      case 'matters':
+        navigate('/matters');
+        break;
+      case 'matter-workbench':
+        navigate('/matter-workbench');
+        break;
+      case 'invoices':
+        navigate('/invoices');
+        break;
+      case 'partner-approval':
+        navigate('/partner-approval');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      case 'settings':
+        navigate('/settings');
+        break;
+      default:
+        break;
     }
   };
 

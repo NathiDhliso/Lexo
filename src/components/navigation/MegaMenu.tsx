@@ -254,6 +254,11 @@ export const MegaMenu: React.FC<MegaMenuProps> = ({
   userTier,
   className = ''
 }) => {
+  // Safety check: return null if category is undefined
+  if (!category || !category.sections) {
+    return null;
+  }
+
   // Filter sections to only show those with accessible items
   const accessibleSections = category.sections.filter(section => 
     getAccessibleNavigationItems(section.items, userTier).length > 0

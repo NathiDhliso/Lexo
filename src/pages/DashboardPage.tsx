@@ -11,14 +11,17 @@ import {
   DollarSign,
   Calculator
 } from 'lucide-react';
-import { Card, CardHeader, CardContent, Button, Icon } from '../components/design-system/components';
+import { Card, CardHeader, CardContent, Button, Icon, EmptyState, SkeletonCard, Badge } from '../components/design-system/components';
 import { NewMatterMultiStep } from '../components/matters/NewMatterMultiStep';
 import { InvoiceService } from '../services/api/invoices.service';
 import { matterApiService } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-hot-toast';
+import { formatRand } from '../lib/currency';
+import { formatSADate } from '../lib/sa-legal-utils';
 import type { Matter, Page, Invoice } from '../types';
 import { MatterStatus, InvoiceStatus } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 interface DashboardPageProps {
   onNavigate?: (page: Page) => void;
@@ -60,6 +63,43 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
     newInvoiceModal: false,
     quickTimeEntry: false
   });
+
+  // Local navigation helper for dashboard actions
+  const navigate = useNavigate();
+  const navigatePage = (page: Page) => {
+    switch (page) {
+      case 'dashboard':
+        navigate('/dashboard');
+        break;
+      case 'proforma-requests':
+        navigate('/proforma-requests');
+        break;
+      case 'matters':
+        navigate('/matters');
+        break;
+      case 'matter-workbench':
+        navigate('/matter-workbench');
+        break;
+      case 'invoices':
+        navigate('/invoices');
+        break;
+      case 'partner-approval':
+        navigate('/partner-approval');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      case 'settings':
+        navigate('/settings');
+        break;
+      case 'reports':
+        navigate('/reports');
+        break;
+      default:
+        navigate('/dashboard');
+        break;
+    }
+  };
 
   // Tab state
   const [activeTab, setActiveTab] = useState<'overview'>('overview');
@@ -218,13 +258,8 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         toast.success('Opening new matter form...');
         break;
       case 'new-invoice':
-        if (onNavigate) {
-          onNavigate('invoices');
-          toast.success('Navigating to invoice generation...');
-        } else {
-          setQuickActions(prev => ({ ...prev, newInvoiceModal: true }));
-          toast.success('Opening invoice generation...');
-        }
+        navigatePage('invoices');
+        toast.success('Navigating to invoice generation...');
         break;
       case 'time-entry':
         setQuickActions(prev => ({ ...prev, quickTimeEntry: true }));
@@ -243,19 +278,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
     if (matter) {
       toast.success(`Opening matter: ${matter.title}`);
       // In real implementation, this would navigate to matter details
-      if (onNavigate) {
-        onNavigate('matters');
-      }
+      navigatePage('matters');
     }
   };
 
   const handleViewAllMatters = () => {
-    if (onNavigate) {
-      onNavigate('matters');
-      toast.success('Navigating to matters page...');
-    } else {
-      toast.success('Matters page navigation...');
-    }
+    navigatePage('matters');
+    toast.success('Navigating to matters page...');
   };
 
   // Enhanced button handlers for stat cards
@@ -270,23 +299,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
   };
 
   const handleOverdueInvoicesClick = () => {
-    if (onNavigate) {
-      onNavigate('invoices');
-      toast.success('Navigating to overdue invoices...');
-    } else {
-      setShowDetailedView(prev => ({ ...prev, overdueInvoices: true }));
-      toast('Opening overdue invoices...', { icon: 'ℹ️' });
-    }
+    navigatePage('invoices');
+    toast.success('Navigating to overdue invoices...');
   };
 
   const handleAnalyticsClick = () => {
-    if (onNavigate) {
-      onNavigate('ai-analytics');
-      toast.success('Opening AI Analytics Dashboard...');
-    } else {
-      setShowDetailedView(prev => ({ ...prev, analytics: true }));
-      toast('Opening analytics...', { icon: 'ℹ️' });
-    }
+    navigatePage('reports');
+    toast.success('Opening Reports...');
   };
 
   const formatCurrency = (amount: number) => {
@@ -344,7 +363,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
         <Button 
           variant="outline" 
-          onClick={() => onNavigate?.('proforma-requests')}
+          onClick={() => navigatePage('proforma-requests')}
           className="h-16 flex flex-col items-center justify-center hover:border-judicial-blue-500 hover:bg-judicial-blue-50"
         >
           <Icon icon={Calculator} className="w-6 h-6 mb-1" noGradient />
@@ -360,7 +379,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         </Button>
         <Button 
           variant="outline" 
-          onClick={() => onNavigate?.('invoices')}
+          onClick={() => navigatePage('invoices')}
           className="h-16 flex flex-col items-center justify-center hover:border-status-success-500 hover:bg-status-success-50"
         >
           <Icon icon={FileText} className="w-6 h-6 mb-1" noGradient />
@@ -370,7 +389,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
     {/* Invoice Metrics Row */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <Card hoverable onClick={() => onNavigate?.('invoices')} className="cursor-pointer hover:shadow-lg transition-shadow">
+      <Card hoverable onClick={() => navigatePage('invoices')} className="cursor-pointer hover:shadow-lg transition-shadow">
         <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={FileText} className="w-6 h-6 mx-auto" noGradient />
@@ -385,7 +404,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-      <Card hoverable onClick={() => onNavigate?.('proforma')} className="cursor-pointer hover:shadow-lg transition-shadow">
+      <Card hoverable onClick={() => navigatePage('proforma-requests')} className="cursor-pointer hover:shadow-lg transition-shadow">
         <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={Calculator} className="w-6 h-6 mx-auto" noGradient />
@@ -415,7 +434,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-      <Card hoverable className="cursor-pointer hover:shadow-lg transition-shadow">
+      <Card hoverable onClick={() => navigatePage('reports')} className="cursor-pointer hover:shadow-lg transition-shadow">
         <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={DollarSign} className="w-6 h-6 mx-auto" noGradient />
@@ -541,7 +560,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       <Card>
         <CardHeader className="flex flex-row items-center justify-between">
           <h2 className="text-xl font-semibold text-neutral-900">Recent Invoices</h2>
-          <Button variant="ghost" size="sm" onClick={() => onNavigate?.('invoices')}>
+          <Button variant="ghost" size="sm" onClick={() => navigatePage('invoices')}>
             View All <Icon icon={ArrowRight} className="w-4 h-4 ml-1" noGradient />
           </Button>
         </CardHeader>
@@ -555,7 +574,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
               <div 
                 key={invoice.id}
                 className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg hover:bg-neutral-100 cursor-pointer transition-colors"
-                onClick={() => onNavigate?.('invoices')}
+                onClick={() => navigatePage('invoices')}
               >
                 <div className="flex-1">
                   <h4 className="font-medium text-neutral-900 dark:text-neutral-100">{invoice.invoice_number}</h4>
@@ -645,7 +664,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         onComplete={(newMatter) => {
           setQuickActions(prev => ({ ...prev, newMatterModal: false }));
           toast.success(`Matter "${newMatter.title}" created successfully`);
-          if (onNavigate) onNavigate('matters');
+          navigatePage('matters');
         }}
       />
 
@@ -663,7 +682,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                 className="w-full"
                 onClick={() => {
                   setQuickActions(prev => ({ ...prev, newInvoiceModal: false }));
-                  if (onNavigate) onNavigate('invoices');
+                  navigatePage('invoices');
                   toast.success('Opening invoice generation...');
                 }}
               >
@@ -852,7 +871,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                 className="flex-1"
                 onClick={() => {
                   setShowDetailedView(prev => ({ ...prev, overdueInvoices: false }));
-                  if (onNavigate) onNavigate('invoices');
+                  navigatePage('invoices');
                 }}
               >
                 Manage Invoices

@@ -83,7 +83,6 @@ const config = {
             400: '#f87171',
             500: '#ef4444',
             600: '#dc2626',
-            700: '#b91c1c',
             800: '#991b1b',
             900: '#7f1d1d',
           },
@@ -101,12 +100,14 @@ const config = {
           800: '#262626',
           900: '#171717',
           950: '#0a0a0a',
+        },
+        legal: {
+          urgent: '#dc2626',
+          priority: '#f59e0b',
+          routine: '#6c757d',
+          trust: '#0891b2',
+          compliance: '#059669',
         }
-      },
-      fontFamily: {
-        sans: ['Work Sans', 'system-ui', '-apple-system', 'sans-serif'],
-        serif: ['Libre Baskerville', 'Georgia', 'serif'],
-        mono: ['JetBrains Mono', 'monospace'],
       },
       fontSize: {
         '2xs': ['0.625rem', { lineHeight: '0.875rem' }],

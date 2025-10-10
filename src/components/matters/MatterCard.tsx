@@ -88,53 +88,56 @@ export const MatterCard: React.FC<MatterCardProps> = ({
   const hasNextCourtDate = matter.next_court_date;
 
   return (
-    <Card className={`transition-all duration-200 hover:shadow-md ${isOverdue ? 'border-l-4 border-l-red-500' : ''}`}>
-      <CardContent className="p-6">
+    <Card 
+      hoverable
+      className={`transition-all duration-200 ${isOverdue ? 'border-l-4 border-l-status-error-500' : ''}`}
+    >
+      <CardContent className="p-6 space-y-4">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
-            <div className="flex items-center space-x-2 mb-2">
-              <Briefcase className="h-5 w-5 text-mpondo-gold" />
-              <h3 className="text-lg font-semibold text-neutral-900 truncate">
+        <div className="flex items-start justify-between">
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <Briefcase className="h-5 w-5 text-mpondo-gold-600 dark:text-mpondo-gold-400 flex-shrink-0" />
+              <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 truncate">
                 {matter.title}
               </h3>
               {isOverdue && (
-                <AlertTriangle className="h-4 w-4 text-red-500" />
+                <AlertTriangle className="h-4 w-4 text-status-error-500 flex-shrink-0" />
               )}
             </div>
             
-            <div className="flex items-center space-x-4 text-sm text-neutral-600 mb-2">
-              <span className="font-medium">{matter.reference_number}</span>
-              <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(matter.status)}`}>
+            <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 mb-3">
+              <span className="font-mono text-xs font-medium bg-neutral-100 dark:bg-metallic-gray-800 px-2 py-1 rounded">{matter.reference_number}</span>
+              <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(matter.status)}`}>
                 {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
               </span>
-              <span className="flex items-center space-x-1">
+              <span className="flex items-center gap-1">
                 <AlertTriangle className={`h-3 w-3 ${getRiskColor(matter.risk_level)}`} />
-                <span className={getRiskColor(matter.risk_level)}>
+                <span className={`text-xs ${getRiskColor(matter.risk_level)}`}>
                   {matter.risk_level.charAt(0).toUpperCase() + matter.risk_level.slice(1)} Risk
                 </span>
               </span>
             </div>
 
-            <p className="text-sm text-neutral-600 mb-3 line-clamp-2">
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 line-clamp-2 max-w-prose">
               {matter.description || 'No description provided'}
             </p>
           </div>
 
-          <div className="flex items-center space-x-2 ml-4">
+          <div className="flex items-center ml-4 flex-shrink-0">
             <Button
               variant="ghost"
               size="sm"
               onClick={() => onEdit?.(matter)}
-              className="p-2"
+              className="p-2 min-h-[44px] min-w-[44px]"
             >
-              <MoreVertical className="h-4 w-4" />
+              <MoreVertical className="h-5 w-5" />
             </Button>
           </div>
         </div>
 
         {/* Client Information */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <div className="flex items-center space-x-2 text-sm text-neutral-600 mb-1">
               <User className="h-4 w-4" />
@@ -181,7 +184,7 @@ export const MatterCard: React.FC<MatterCardProps> = ({
         </div>
 
         {/* Financial Information */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 p-3 bg-neutral-50 rounded-lg">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-neutral-50 dark:bg-metallic-gray-900 rounded-lg">
           <div className="text-center">
             <div className="text-xs text-neutral-500 mb-1">Fee Type</div>
             <div className="text-sm font-medium text-neutral-900">
@@ -216,7 +219,7 @@ export const MatterCard: React.FC<MatterCardProps> = ({
         </div>
 
         {/* Important Dates */}
-        <div className="flex items-center justify-between text-sm text-neutral-600 mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 text-sm text-neutral-600 dark:text-neutral-400">
           <div className="flex items-center space-x-4">
             <div className="flex items-center space-x-1">
               <Calendar className="h-4 w-4" />
@@ -256,7 +259,7 @@ export const MatterCard: React.FC<MatterCardProps> = ({
         )}
 
         {/* Actions */}
-        <div className="flex items-center justify-between pt-4 border-t border-neutral-200">
+        <div className="flex flex-wrap items-center justify-between gap-3 pt-4 border-t border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center space-x-4">
             {showInvoiceCount && (
               <span className="text-sm text-neutral-600">

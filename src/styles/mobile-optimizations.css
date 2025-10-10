@@ -1,0 +1,291 @@
+/**
+ * Mobile Optimizations
+ * Ensures 100% mobile compliance with touch targets, spacing, and ergonomics
+ */
+
+/* Touch Target Compliance - Minimum 48x48px */
+@media (max-width: 768px) {
+  /* All interactive elements */
+  button:not(.no-min-size),
+  a:not(.no-min-size),
+  input[type="button"]:not(.no-min-size),
+  input[type="submit"]:not(.no-min-size),
+  [role="button"]:not(.no-min-size) {
+    min-height: 48px;
+    min-width: 48px;
+  }
+
+  /* Icon buttons need padding for touch area */
+  .icon-button,
+  button:has(svg:only-child) {
+    padding: 12px;
+  }
+
+  /* Input fields */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  select,
+  textarea {
+    min-height: 48px;
+    font-size: 16px; /* Prevents zoom on iOS */
+  }
+
+  /* Better spacing for mobile sections */
+  .mobile-section {
+    padding: 16px;
+    margin-bottom: 24px;
+  }
+
+  /* Card spacing */
+  .mobile-card {
+    padding: 20px;
+    margin-bottom: 16px;
+  }
+
+  /* Increase heading sizes */
+  h1 {
+    font-size: 30px;
+    line-height: 1.2;
+  }
+
+  h2 {
+    font-size: 24px;
+    line-height: 1.3;
+  }
+
+  h3 {
+    font-size: 20px;
+    line-height: 1.4;
+  }
+
+  /* Better button prominence */
+  .btn-primary-mobile {
+    min-height: 56px;
+    font-size: 18px;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+  }
+
+  /* Stack elements vertically */
+  .mobile-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  /* Full width on mobile */
+  .mobile-full {
+    width: 100%;
+  }
+
+  /* Thumb zone optimization */
+  .thumb-zone-primary {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 16px;
+    background: white;
+    border-top: 1px solid #e5e5e5;
+    z-index: 40;
+  }
+
+  /* Better tap feedback */
+  button:active,
+  [role="button"]:active {
+    transform: scale(0.98);
+    transition: transform 0.1s ease;
+  }
+
+  /* Prevent text selection on buttons */
+  button,
+  [role="button"] {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* Better focus indicators */
+  button:focus-visible,
+  a:focus-visible,
+  input:focus-visible,
+  select:focus-visible,
+  textarea:focus-visible {
+    outline: 3px solid #D4AF37;
+    outline-offset: 2px;
+  }
+
+  /* Prevent horizontal scroll */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Better modal sizing */
+  .mobile-modal {
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* Sticky header spacing */
+  .mobile-content-with-header {
+    padding-top: 64px; /* Account for sticky header */
+  }
+
+  /* FAB spacing */
+  .mobile-content-with-fab {
+    padding-bottom: 88px; /* Account for FAB */
+  }
+}
+
+/* Tablet optimizations */
+@media (min-width: 769px) and (max-width: 1024px) {
+  button:not(.no-min-size),
+  a:not(.no-min-size) {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Landscape mobile */
+@media (max-width: 768px) and (orientation: landscape) {
+  /* Reduce vertical spacing in landscape */
+  .mobile-section {
+    padding: 12px;
+    margin-bottom: 16px;
+  }
+
+  /* Smaller headings in landscape */
+  h1 {
+    font-size: 24px;
+  }
+
+  h2 {
+    font-size: 20px;
+  }
+}
+
+/* High DPI screens */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  /* Sharper borders */
+  .mobile-card {
+    border-width: 0.5px;
+  }
+}
+
+/* Dark mode mobile adjustments */
+@media (max-width: 768px) and (prefers-color-scheme: dark) {
+  .thumb-zone-primary {
+    background: #212529;
+    border-top-color: #343a40;
+  }
+}
+
+/* Accessibility - Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  button:active,
+  [role="button"]:active {
+    transform: none;
+  }
+
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Utility classes for mobile optimization */
+.mobile-touch-target {
+  min-height: 48px;
+  min-width: 48px;
+}
+
+.mobile-touch-target-lg {
+  min-height: 56px;
+  min-width: 56px;
+}
+
+.mobile-spacing-sm {
+  padding: 12px;
+  gap: 8px;
+}
+
+.mobile-spacing-md {
+  padding: 16px;
+  gap: 12px;
+}
+
+.mobile-spacing-lg {
+  padding: 24px;
+  gap: 16px;
+}
+
+.mobile-text-readable {
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.mobile-heading {
+  font-size: 30px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.mobile-prominent-button {
+  min-height: 56px;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.mobile-card-elevated {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 12px;
+}
+
+/* Prevent zoom on input focus (iOS) */
+@supports (-webkit-touch-callout: none) {
+  input,
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+/* Fullscreen overlay utility to ensure menus/modals cover the viewport on mobile */
+@media (max-width: 1023px) {
+  .mobile-fullscreen-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    z-index: 40 !important;
+  }
+
+  .mobile-overlay-backdrop {
+    position: absolute !important;
+    inset: 0 !important;
+    background: rgba(0,0,0,0.4) !important;
+  }
+
+  .mobile-overlay-panel {
+    position: absolute !important;
+    inset: 0 !important;
+    background: var(--surface) !important;
+    overflow-y: auto !important;
+    padding-top: 4rem !important; /* account for sticky nav height */
+  }
+}
+
+/* Avoid split columns due to min-width constraints */
+@media (max-width: 767px) {
+  .thumb-zone-primary {
+    min-width: auto !important;
+    max-width: 100% !important;
+  }
+}

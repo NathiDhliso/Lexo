@@ -56,7 +56,6 @@ export interface SortOptions {
 export abstract class BaseApiService<T = unknown> {
   protected tableName: string;
   protected selectFields: string;
-  protected supabase = supabase;
 
   constructor(tableName: string, selectFields: string = '*') {
     this.tableName = tableName;

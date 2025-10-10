@@ -11,6 +11,7 @@ import { invoicePDFService } from '../../services/invoice-pdf.service';
 import { supabase } from '../../lib/supabase';
 import { formatRand } from '../../lib/currency';
 import { toast } from 'react-hot-toast';
+import { Button, EmptyState, SkeletonCard } from '../design-system/components';
 import type { Invoice, BarAssociation } from '@/types';
 import { InvoiceStatus } from '@/types';
 
@@ -293,24 +294,34 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
 
   if (loading) {
     return (
-      <div className={`flex items-center justify-center py-12 ${className}`}>
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mpondo-gold-600"></div>
+      <div className={`space-y-6 ${className}`}>
+        <div className="flex items-center justify-end">
+          <div className="h-10 w-40 bg-neutral-200 dark:bg-metallic-gray-700 rounded-lg animate-pulse"></div>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
+        </div>
+        <SkeletonCard />
+        <SkeletonCard />
+        <SkeletonCard />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className={`text-center py-12 ${className}`}>
-        <AlertCircle className="w-12 h-12 text-error-500 mx-auto mb-4" />
-        <p className="text-error-600 mb-4">{error}</p>
-        <button
-          onClick={loadInvoices}
-          className="px-4 py-2 bg-mpondo-gold-600 text-white rounded-lg hover:bg-mpondo-gold-700 transition-colors"
-        >
-          Try Again
-        </button>
-      </div>
+      <EmptyState
+        icon={AlertCircle}
+        title="Failed to load invoices"
+        description={error}
+        action={
+          <Button variant="primary" onClick={loadInvoices}>
+            Try Again
+          </Button>
+        }
+      />
     );
   }
 
@@ -318,13 +329,13 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
     <div className={`space-y-6 ${className}`}>
       {/* Quick Action */}
       <div className="flex items-center justify-end">
-        <button
+        <Button
+          variant="primary"
           onClick={() => setShowMatterSelection(true)}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-mpondo-gold-600 text-white rounded-lg hover:bg-mpondo-gold-700 transition-colors"
         >
-          <Plus className="w-4 h-4" />
+          <Plus className="w-4 h-4 mr-2" />
           Generate Invoice
-        </button>
+        </Button>
       </div>
 
       {/* Summary Cards */}
@@ -382,27 +393,23 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
       {/* Invoice List */}
       <div className="space-y-4">
         {filteredInvoices.length === 0 ? (
-          <div className="text-center py-12 bg-white dark:bg-metallic-gray-900 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
-            <FileText className="w-12 h-12 text-neutral-400 dark:text-neutral-500 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
-              {invoices.length === 0 ? 'No invoices yet' : 'No invoices match your filters'}
-            </h3>
-            <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-              {invoices.length === 0 
-                ? 'Generate your first invoice to get started.'
+          <EmptyState
+            icon={FileText}
+            title={invoices.length === 0 ? 'No invoices yet' : 'No invoices match your filters'}
+            description={
+              invoices.length === 0 
+                ? 'Generate your first invoice from a matter to start tracking payments and managing your billing.'
                 : 'Try adjusting your filters to see more results.'
-              }
-            </p>
-            {invoices.length === 0 && (
-              <button
-                onClick={() => setShowMatterSelection(true)}
-                className="inline-flex items-center gap-2 px-4 py-2 bg-mpondo-gold-600 text-white rounded-lg hover:bg-mpondo-gold-700 transition-colors"
-              >
-                <Plus className="w-4 h-4" />
-                Generate First Invoice
-              </button>
-            )}
-          </div>
+            }
+            action={
+              invoices.length === 0 ? (
+                <Button variant="primary" onClick={() => setShowMatterSelection(true)}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Generate First Invoice
+                </Button>
+              ) : undefined
+            }
+          />
         ) : (
           <div className="grid gap-4">
             {filteredInvoices.map((invoice) => (

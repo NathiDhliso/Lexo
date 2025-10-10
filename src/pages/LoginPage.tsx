@@ -22,12 +22,50 @@ import { toast } from 'react-hot-toast';
 import LexoHubBGhd from '../Public/Assets/LexoHubBGhd.jpg';
 import { validateEmail, validatePassword, validateName } from '../utils/validation';
 
+const useDeviceType = () => {
+  const [deviceType, setDeviceType] = useState({
+    isMobile: typeof window !== 'undefined' ? window.innerWidth < 768 : false,
+    isTablet: typeof window !== 'undefined' ? window.innerWidth >= 768 && window.innerWidth < 1024 : false,
+    isDesktop: typeof window !== 'undefined' ? window.innerWidth >= 1024 : true
+  });
+
+  useEffect(() => {
+    const handleResize = () => {
+      setDeviceType({
+        isMobile: window.innerWidth < 768,
+        isTablet: window.innerWidth >= 768 && window.innerWidth < 1024,
+        isDesktop: window.innerWidth >= 1024
+      });
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return deviceType;
+};
+
 const GlobalStyles = () => (
   <style>{`
     .glass-auth {
       will-change: transform, opacity, filter;
       transform-style: preserve-3d;
       backface-visibility: visible;
+    }
+    .safe-area-inset {
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+      padding-left: env(safe-area-inset-left);
+      padding-right: env(safe-area-inset-right);
+    }
+    .pb-safe {
+      padding-bottom: max(1rem, env(safe-area-inset-bottom));
+    }
+    @supports (height: 100dvh) {
+      .min-h-screen {
+        min-height: 100dvh;
+      }
     }
     @keyframes headerFadeIn {
       from {
@@ -76,6 +114,45 @@ const GlobalStyles = () => (
       width: 300px;
       height: 300px;
       opacity: 0;
+    }
+    @media (max-width: 767px) {
+      .glass-auth {
+        transform: none !important;
+        perspective: none !important;
+        filter: none !important;
+      }
+      input, select, textarea {
+        font-size: 16px !important;
+      }
+      button, a, input[type="checkbox"] {
+        min-height: 44px;
+        min-width: 44px;
+      }
+    }
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .glass-auth {
+        perspective: 1800px !important;
+      }
+    }
+    @media (min-width: 1024px) {
+      .glass-auth {
+        perspective: 2500px !important;
+      }
+      .glass-auth input,
+      .glass-auth label {
+        font-size: 0.9rem !important;
+      }
+      .glass-auth h2 {
+        font-size: 1.75rem !important;
+        margin-bottom: 1rem !important;
+      }
+      .glass-auth button[type="submit"] {
+        font-size: 0.95rem !important;
+        padding: 0.75rem 1rem !important;
+      }
+      .glass-auth form {
+        gap: 0.75rem !important;
+      }
     }
     @media (prefers-reduced-motion: reduce) {
       .glass-auth,
@@ -228,8 +305,45 @@ const SkeletonAuthPage = () => (
 );
 
 
+interface AuthToggleProps {
+  activeMode: AuthMode;
+  onModeChange: (mode: AuthMode) => void;
+}
+
+const AuthToggle: React.FC<AuthToggleProps> = ({ activeMode, onModeChange }) => (
+  <div className="w-full max-w-md mx-auto mb-4 sm:mb-6 md:mb-8 px-4">
+    <div className="bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-1.5 flex gap-2 shadow-lg">
+      <button
+        type="button"
+        onClick={() => onModeChange('signin')}
+        className={cn(
+          "flex-1 py-3 px-4 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300",
+          activeMode === 'signin'
+            ? "bg-gradient-to-br from-blue-500 to-blue-600 text-white shadow-lg scale-105"
+            : "text-white/70 hover:text-white hover:bg-white/5"
+        )}
+      >
+        Sign In
+      </button>
+      <button
+        type="button"
+        onClick={() => onModeChange('signup')}
+        className={cn(
+          "flex-1 py-3 px-4 rounded-xl font-semibold text-sm sm:text-base transition-all duration-300",
+          activeMode === 'signup'
+            ? "bg-gradient-to-br from-green-500 to-emerald-600 text-white shadow-lg scale-105"
+            : "text-white/70 hover:text-white hover:bg-white/5"
+        )}
+      >
+        Sign Up
+      </button>
+    </div>
+  </div>
+);
+
 const LoginPage = () => {
   const { signIn, signUp, signInWithMagicLink, loading } = useAuth();
+  const { isMobile, isTablet, isDesktop } = useDeviceType();
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -246,15 +360,17 @@ const LoginPage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const handleMouseMove = (e: MouseEvent) => {
-      const x = (e.clientX / window.innerWidth - 0.5) * 2;
-      const y = (e.clientY / window.innerHeight - 0.5) * 2;
-      setMousePosition({ x, y });
-    };
+    if (!isMobile) {
+      const handleMouseMove = (e: MouseEvent) => {
+        const x = (e.clientX / window.innerWidth - 0.5) * 2;
+        const y = (e.clientY / window.innerHeight - 0.5) * 2;
+        setMousePosition({ x, y });
+      };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
+      window.addEventListener('mousemove', handleMouseMove);
+      return () => window.removeEventListener('mousemove', handleMouseMove);
+    }
+  }, [isMobile]);
 
   const emailValidation = validateEmail(formData.email);
   const passwordValidation = validatePassword(formData.password);
@@ -272,64 +388,64 @@ const LoginPage = () => {
   }, [authMode]);
 
   useEffect(() => {
-    if (!loginPanelRef.current || !signupPanelRef.current) return;
+    if (!isMobile && loginPanelRef.current && signupPanelRef.current) {
+      const timeline = gsap.timeline();
 
-    const timeline = gsap.timeline();
-
-    if (authMode === 'signin') {
-      timeline
-        .to(loginPanelRef.current, {
-          x: 0,
-          y: 0,
-          scale: 1.2,
-          rotationY: 0,
-          opacity: 1,
-          filter: 'blur(0px) brightness(1)',
-          zIndex: 10,
-          boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 15px 40px rgba(0,0,0,0.6), 0 5px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.15)',
-          duration: 1,
-          ease: 'power4.out'
-        }, 0)
-        .to(signupPanelRef.current, {
-          x: 280,
-          y: 0,
-          scale: 0.65,
-          rotationY: 50,
-          opacity: 0.7,
-          filter: 'blur(1.5px) brightness(0.75)',
-          zIndex: 1,
-          boxShadow: '0 10px 30px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.4)',
-          duration: 1,
-          ease: 'power4.out'
-        }, 0);
-    } else {
-      timeline
-        .to(signupPanelRef.current, {
-          x: 0,
-          y: 0,
-          scale: 1.2,
-          rotationY: 0,
-          opacity: 1,
-          filter: 'blur(0px) brightness(1)',
-          zIndex: 10,
-          boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 15px 40px rgba(0,0,0,0.6), 0 5px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.15)',
-          duration: 1,
-          ease: 'power4.out'
-        }, 0)
-        .to(loginPanelRef.current, {
-          x: -280,
-          y: 0,
-          scale: 0.65,
-          rotationY: -50,
-          opacity: 0.7,
-          filter: 'blur(1.5px) brightness(0.75)',
-          zIndex: 1,
-          boxShadow: '0 10px 30px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.4)',
-          duration: 1,
-          ease: 'power4.out'
-        }, 0);
+      if (authMode === 'signin') {
+        timeline
+          .to(loginPanelRef.current, {
+            x: 0,
+            y: 0,
+            scale: 1.0,
+            rotationY: 0,
+            opacity: 1,
+            filter: 'blur(0px) brightness(1)',
+            zIndex: 10,
+            boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 15px 40px rgba(0,0,0,0.6), 0 5px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.15)',
+            duration: 0.8,
+            ease: 'power4.out'
+          }, 0)
+          .to(signupPanelRef.current, {
+            x: 220,
+            y: 0,
+            scale: 0.55,
+            rotationY: 45,
+            opacity: 0.6,
+            filter: 'blur(1.5px) brightness(0.75)',
+            zIndex: 1,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.4)',
+            duration: 0.8,
+            ease: 'power4.out'
+          }, 0);
+      } else {
+        timeline
+          .to(signupPanelRef.current, {
+            x: 0,
+            y: 0,
+            scale: 1.0,
+            rotationY: 0,
+            opacity: 1,
+            filter: 'blur(0px) brightness(1)',
+            zIndex: 10,
+            boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 15px 40px rgba(0,0,0,0.6), 0 5px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.15)',
+            duration: 0.8,
+            ease: 'power4.out'
+          }, 0)
+          .to(loginPanelRef.current, {
+            x: -220,
+            y: 0,
+            scale: 0.55,
+            rotationY: -45,
+            opacity: 0.6,
+            filter: 'blur(1.5px) brightness(0.75)',
+            zIndex: 1,
+            boxShadow: '0 10px 30px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.4)',
+            duration: 0.8,
+            ease: 'power4.out'
+          }, 0);
+      }
     }
-  }, [authMode]);
+  }, [authMode, isMobile]);
 
   const handleInputChange = (field: string, value: string | boolean) => {
     let finalValue = value;
@@ -434,59 +550,43 @@ const LoginPage = () => {
     >
       <GlobalStyles />
       
-      <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center px-4 py-8">
-        <header className="text-center mb-12 header-entrance">
-          <div className="flex items-center justify-center gap-3 mb-4 group">
+      <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12 safe-area-inset">
+        <header className="text-center mb-6 sm:mb-8 md:mb-12 header-entrance w-full max-w-md px-2">
+          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 group">
             <img 
               src={lexoLogo} 
               alt="LexoHub Logo" 
-              className="w-14 h-14 md:w-20 md:h-20 object-contain transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 drop-shadow-2xl float-animation" 
+              className="w-10 h-10 sm:w-14 sm:h-14 md:w-20 md:h-20 object-contain transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 drop-shadow-2xl float-animation" 
               style={{ background: 'transparent' }} 
             />
-            <h1 className="text-4xl md:text-6xl font-bold text-white tracking-wider drop-shadow-2xl transition-all duration-300 group-hover:text-blue-100">
+            <h1 className="text-3xl sm:text-4xl md:text-6xl font-bold text-white tracking-wider drop-shadow-2xl transition-all duration-300 group-hover:text-blue-100">
               lexo
             </h1>
           </div>
-          <p className="text-base md:text-lg text-slate-100 leading-tight font-medium drop-shadow-lg">
+          <p className="text-sm sm:text-base md:text-lg text-slate-100 leading-tight font-medium drop-shadow-lg px-4">
             Where Strategy Meets Practice.
           </p>
         </header>
 
-        <div
-          ref={containerRef}
-          className="relative flex items-center justify-center mb-12"
-          style={{
-            width: "1000px",
-            maxWidth: "95vw",
-            height: "600px",
-            perspective: "2500px",
-            perspectiveOrigin: "center center",
-          }}
-        >
-          <div
-            ref={loginPanelRef}
-            className="absolute w-[440px] h-[600px] cursor-pointer glass-auth"
-            style={{
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)'
-            }}
-            onClick={() => setAuthMode('signin')}
-          >
-            <div className="border-[4px] border-white/90 shadow-2xl rounded-[36px] h-full w-full flex flex-col justify-center p-10 relative" style={{
-              backgroundImage: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05))',
-              boxShadow: '0 40px 100px rgba(0,0,0,0.25), 0 20px 50px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.2), inset 2px 0 4px rgba(255,255,255,0.6), inset -2px 0 4px rgba(0,0,0,0.15)',
-              borderTop: '2px solid rgba(255, 255, 255, 0.6)',
-              borderLeft: '2px solid rgba(255, 255, 255, 0.5)',
-              borderBottom: '2px solid rgba(0, 0, 0, 0.2)',
-              borderRight: '2px solid rgba(0, 0, 0, 0.15)',
-              transform: `translateZ(0px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
-              transition: 'transform 0.3s ease-out',
-              overflow: 'visible'
-            }}>
-              <h2 className="text-4xl text-white font-bold mb-8 text-center relative z-10" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.5), 0 -1px 1px rgba(255,255,255,0.2)' }}>LOGIN</h2>
-              {authMode === 'signin' && (
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-5 relative z-10">
+        {isMobile ? (
+          <>
+            <AuthToggle activeMode={authMode} onModeChange={setAuthMode} />
+
+            <div className="w-full max-w-md mx-auto px-4">
+              <div className="bg-white/10 backdrop-blur-md border-[3px] sm:border-[4px] border-white/30 rounded-[24px] sm:rounded-[32px] shadow-2xl p-5 sm:p-8 md:p-10 transition-all duration-500" style={{
+                backgroundImage: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05))',
+                boxShadow: '0 30px 80px rgba(0,0,0,0.3), 0 15px 40px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.1)',
+                borderTop: '2px solid rgba(255, 255, 255, 0.5)',
+                borderLeft: '2px solid rgba(255, 255, 255, 0.4)',
+                borderBottom: '2px solid rgba(0, 0, 0, 0.15)',
+                borderRight: '2px solid rgba(0, 0, 0, 0.1)'
+              }}>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-4 sm:mb-6 text-center" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)' }}>
+                  {authMode === 'signin' ? 'Welcome Back' : 'Create Account'}
+                </h2>
+                
+                {authMode === 'signin' ? (
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5 relative z-10">
                   {error && (
                     <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4 text-red-300" />
@@ -500,84 +600,82 @@ const LoginPage = () => {
                     </div>
                   )}
                   
-                  <input
-                    id="email"
-                    type="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={e => handleInputChange('email', e.target.value)}
-                    className="w-full p-4 rounded-2xl bg-white/95 text-slate-900 placeholder-slate-600 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
-                    style={{
-                      boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
-                      borderTop: '1px solid rgba(255, 255, 255, 0.5)',
-                      borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
-                      borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-                      borderRight: '1px solid rgba(0, 0, 0, 0.1)'
-                    }}
-                    required
-                  />
-                  
-                  <div className="relative">
+                  <div className="space-y-1">
+                    <label htmlFor="email" className="block text-sm font-medium text-white/90 pl-1">Email</label>
                     <input
-                      id="password"
-                      type={showPassword ? 'text' : 'password'}
-                      placeholder="Password"
-                      value={formData.password}
-                      onChange={e => handleInputChange('password', e.target.value)}
-                      className="w-full p-4 rounded-2xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-600 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                      id="email"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      placeholder="Enter your email"
+                      value={formData.email}
+                      onChange={e => handleInputChange('email', e.target.value)}
+                      className="w-full px-3 sm:px-4 py-3 sm:py-3.5 text-base rounded-xl sm:rounded-2xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
                       style={{
-                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                        boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
+                        borderTop: '1px solid rgba(255, 255, 255, 0.5)',
+                        borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+                        borderRight: '1px solid rgba(0, 0, 0, 0.1)',
+                        fontSize: '16px',
+                        minHeight: '44px'
                       }}
                       required
                     />
+                  </div>
+                  
+                  <div className="space-y-1">
+                    <label htmlFor="password" className="block text-sm font-medium text-white/90 pl-1">Password</label>
+                    <div className="relative">
+                      <input
+                        id="password"
+                        type={showPassword ? 'text' : 'password'}
+                        autoComplete="current-password"
+                        placeholder="Enter your password"
+                        value={formData.password}
+                        onChange={e => handleInputChange('password', e.target.value)}
+                        className="w-full px-3 sm:px-4 py-3 sm:py-3.5 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        style={{
+                          boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                          fontSize: '16px',
+                          minHeight: '44px'
+                        }}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 hover:text-slate-900 transition-colors p-1"
+                        style={{ minWidth: '44px', minHeight: '44px' }}
+                        aria-label="Toggle password visibility"
+                      >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
                     <button
                       type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 hover:text-slate-900 transition-colors"
-                      aria-label="Toggle password visibility"
+                      onClick={handleSendMagicLink}
+                      className="text-sky-200 hover:text-sky-100 font-medium underline underline-offset-2 transition-colors"
                     >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      Forgot password?
                     </button>
                   </div>
 
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="w-full py-4 rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold text-lg mt-4 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(59,130,246,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-blue-400/30"
+                    className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(59,130,246,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-blue-400/30"
                   >
-                    <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Signing In...' : 'Submit'}</span>
+                    <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
                     <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
                 </form>
-              )}
-            </div>
-          </div>
-
-          <div
-            ref={signupPanelRef}
-            className="absolute w-[440px] h-[600px] cursor-pointer glass-auth"
-            style={{
-              left: '50%',
-              top: '50%',
-              transform: 'translate(-50%, -50%)'
-            }}
-            onClick={() => setAuthMode('signup')}
-          >
-            <div className="border-[4px] border-white/90 shadow-2xl rounded-[36px] h-full w-full flex flex-col justify-center p-10 relative" style={{
-              backgroundImage: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05))',
-              boxShadow: '0 40px 100px rgba(0,0,0,0.25), 0 20px 50px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.2), inset 2px 0 4px rgba(255,255,255,0.6), inset -2px 0 4px rgba(0,0,0,0.15)',
-              borderTop: '2px solid rgba(255, 255, 255, 0.6)',
-              borderLeft: '2px solid rgba(255, 255, 255, 0.5)',
-              borderBottom: '2px solid rgba(0, 0, 0, 0.2)',
-              borderRight: '2px solid rgba(0, 0, 0, 0.15)',
-              transform: `translateZ(0px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
-              transition: 'transform 0.3s ease-out',
-              overflow: 'visible'
-            }}>
-              <h2 className="text-4xl text-white font-bold mb-8 text-center relative z-10" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.5), 0 -1px 1px rgba(255,255,255,0.2)' }}>SIGN UP</h2>
-              {authMode === 'signup' && (
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-4 relative z-10">
+            ) : (
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5 md:space-y-4 relative z-10">
                   {error && (
                     <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
                       <AlertCircle className="h-4 w-4 text-red-300" />
@@ -593,12 +691,16 @@ const LoginPage = () => {
 
                   <input
                     id="fullName"
+                    type="text"
+                    autoComplete="name"
                     placeholder="Full Name"
                     value={formData.fullName}
                     onChange={e => handleInputChange('fullName', e.target.value)}
-                    className="w-full p-3.5 rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
                     style={{
-                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                      fontSize: '16px',
+                      minHeight: '44px'
                     }}
                     required
                   />
@@ -606,12 +708,16 @@ const LoginPage = () => {
                   <input
                     id="email-signup"
                     type="email"
+                    inputMode="email"
+                    autoComplete="email"
                     placeholder="Email"
                     value={formData.email}
                     onChange={e => handleInputChange('email', e.target.value)}
-                    className="w-full p-3.5 rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
                     style={{
-                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                      fontSize: '16px',
+                      minHeight: '44px'
                     }}
                     required
                   />
@@ -620,34 +726,41 @@ const LoginPage = () => {
                     <input
                       id="password-signup"
                       type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
                       placeholder="New Password"
                       value={formData.password}
                       onChange={e => handleInputChange('password', e.target.value)}
-                      className="w-full p-3.5 rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
                       style={{
-                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                        fontSize: '16px',
+                        minHeight: '44px'
                       }}
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-1"
+                      style={{ minWidth: '44px', minHeight: '44px' }}
                       aria-label="Toggle password visibility"
                     >
-                      {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
                   </div>
                   
                   <input
                     id="confirmPassword"
                     type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
                     placeholder="Confirm Password"
                     value={formData.confirmPassword}
                     onChange={e => handleInputChange('confirmPassword', e.target.value)}
-                    className="w-full p-3.5 rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
                     style={{
-                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                      fontSize: '16px',
+                      minHeight: '44px'
                     }}
                     required
                   />
@@ -668,34 +781,289 @@ const LoginPage = () => {
                   <button
                     type="submit"
                     disabled={isSubmitting || !formData.termsAccepted}
-                    className="w-full py-4 rounded-2xl bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 text-white font-bold text-lg mt-4 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(34,197,94,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-green-400/30"
+                    className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(34,197,94,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-green-400/30"
                   >
                     <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
                     <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
                 </form>
-              )}
+            )}
+              </div>
+            </div>
+          </>
+        ) : (
+          <div
+            ref={containerRef}
+            className="relative flex items-center justify-center mb-6 sm:mb-8 md:mb-12 w-full"
+            style={{
+              width: "100%",
+              maxWidth: "min(95vw, 500px)",
+              height: "auto",
+              minHeight: "350px",
+              perspective: "2500px",
+              perspectiveOrigin: "center center",
+            }}
+          >
+            <div
+              ref={loginPanelRef}
+              className="absolute w-full max-w-[90vw] sm:max-w-[320px] h-auto min-h-[400px] sm:h-[450px] cursor-pointer glass-auth"
+              style={{
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)'
+              }}
+              onClick={() => setAuthMode('signin')}
+            >
+              <div className="border-[3px] sm:border-[3px] border-white/90 shadow-2xl rounded-[18px] sm:rounded-[20px] h-full w-full flex flex-col justify-center p-4 sm:p-6 md:p-7 relative" style={{
+                backgroundImage: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05))',
+                boxShadow: '0 40px 100px rgba(0,0,0,0.25), 0 20px 50px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.2), inset 2px 0 4px rgba(255,255,255,0.6), inset -2px 0 4px rgba(0,0,0,0.15)',
+                borderTop: '2px solid rgba(255, 255, 255, 0.6)',
+                borderLeft: '2px solid rgba(255, 255, 255, 0.5)',
+                borderBottom: '2px solid rgba(0, 0, 0, 0.2)',
+                borderRight: '2px solid rgba(0, 0, 0, 0.15)',
+                transform: `translateZ(0px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
+                transition: 'transform 0.3s ease-out',
+                overflow: 'visible'
+              }}>
+                <h2 className="text-xl sm:text-2xl md:text-3xl text-white font-bold mb-3 sm:mb-4 md:mb-5 text-center relative z-10" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.5), 0 -1px 1px rgba(255,255,255,0.2)' }}>LOGIN</h2>
+                {authMode === 'signin' && (
+                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-2.5 sm:space-y-3 md:space-y-3.5 relative z-10">
+                    {error && (
+                      <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-300" />
+                        <p className="text-xs text-red-200">{error}</p>
+                      </div>
+                    )}
+                    {success && (
+                      <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-300" />
+                        <p className="text-xs text-green-200">{success}</p>
+                      </div>
+                    )}
+                    
+                    <div className="space-y-1">
+                      <label htmlFor="desktop-email" className="block text-sm font-medium text-white/90 pl-1">Email</label>
+                      <input
+                        id="desktop-email"
+                        type="email"
+                        inputMode="email"
+                        autoComplete="email"
+                        placeholder="Enter your email"
+                        value={formData.email}
+                        onChange={e => handleInputChange('email', e.target.value)}
+                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        style={{
+                          boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
+                          borderTop: '1px solid rgba(255, 255, 255, 0.5)',
+                          borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+                          borderRight: '1px solid rgba(0, 0, 0, 0.1)'
+                        }}
+                        required
+                      />
+                    </div>
+                    
+                    <div className="space-y-1">
+                      <label htmlFor="desktop-password" className="block text-sm font-medium text-white/90 pl-1">Password</label>
+                      <div className="relative">
+                        <input
+                          id="desktop-password"
+                          type={showPassword ? 'text' : 'password'}
+                          autoComplete="current-password"
+                          placeholder="Enter your password"
+                          value={formData.password}
+                          onChange={e => handleInputChange('password', e.target.value)}
+                          className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 pr-10 text-sm rounded-xl sm:rounded-xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                          style={{
+                            boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                          }}
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 hover:text-slate-900 transition-colors p-1"
+                          aria-label="Toggle password visibility"
+                        >
+                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-center justify-between text-xs sm:text-sm">
+                      <button
+                        type="button"
+                        onClick={handleSendMagicLink}
+                        className="text-sky-200 hover:text-sky-100 font-medium underline underline-offset-2 transition-colors"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full py-2.5 sm:py-3 md:py-3 text-sm sm:text-base rounded-xl sm:rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold mt-2 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(59,130,246,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-blue-400/30"
+                    >
+                      <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </form>
+                )}
+              </div>
+            </div>
+
+            <div
+              ref={signupPanelRef}
+              className="absolute w-full max-w-[90vw] sm:max-w-[320px] h-auto min-h-[400px] sm:h-[450px] cursor-pointer glass-auth"
+              style={{
+                left: '50%',
+                top: '50%',
+                transform: 'translate(-50%, -50%)'
+              }}
+              onClick={() => setAuthMode('signup')}
+            >
+              <div className="border-[3px] sm:border-[3px] border-white/90 shadow-2xl rounded-[18px] sm:rounded-[20px] h-full w-full flex flex-col justify-center p-4 sm:p-6 md:p-7 relative" style={{
+                backgroundImage: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.05))',
+                boxShadow: '0 40px 100px rgba(0,0,0,0.25), 0 20px 50px rgba(0,0,0,0.15), inset 0 2px 4px rgba(255,255,255,0.8), inset 0 -2px 4px rgba(0,0,0,0.2), inset 2px 0 4px rgba(255,255,255,0.6), inset -2px 0 4px rgba(0,0,0,0.15)',
+                borderTop: '2px solid rgba(255, 255, 255, 0.6)',
+                borderLeft: '2px solid rgba(255, 255, 255, 0.5)',
+                borderBottom: '2px solid rgba(0, 0, 0, 0.2)',
+                borderRight: '2px solid rgba(0, 0, 0, 0.15)',
+                transform: `translateZ(0px) rotateX(${mousePosition.y * 3}deg) rotateY(${mousePosition.x * 3}deg)`,
+                transition: 'transform 0.3s ease-out',
+                overflow: 'visible'
+              }}>
+                <h2 className="text-xl sm:text-2xl md:text-3xl text-white font-bold mb-3 sm:mb-4 md:mb-5 text-center relative z-10" style={{ textShadow: '0 1px 3px rgba(0,0,0,0.3), 0 2px 8px rgba(0,0,0,0.5), 0 -1px 1px rgba(255,255,255,0.2)' }}>SIGN UP</h2>
+                {authMode === 'signup' && (
+                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-2 sm:space-y-2.5 md:space-y-3 relative z-10">
+                    {error && (
+                      <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-300" />
+                        <p className="text-xs text-red-200">{error}</p>
+                      </div>
+                    )}
+                    {success && (
+                      <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-300" />
+                        <p className="text-xs text-green-200">{success}</p>
+                      </div>
+                    )}
+
+                    <input
+                      id="desktop-fullName"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Full Name"
+                      value={formData.fullName}
+                      onChange={e => handleInputChange('fullName', e.target.value)}
+                      className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                      style={{
+                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                      }}
+                      required
+                    />
+                    
+                    <input
+                      id="desktop-email-signup"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      placeholder="Email"
+                      value={formData.email}
+                      onChange={e => handleInputChange('email', e.target.value)}
+                      className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                      style={{
+                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                      }}
+                      required
+                    />
+                    
+                    <div className="relative">
+                      <input
+                        id="desktop-password-signup"
+                        type={showPassword ? 'text' : 'password'}
+                        autoComplete="new-password"
+                        placeholder="New Password"
+                        value={formData.password}
+                        onChange={e => handleInputChange('password', e.target.value)}
+                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 pr-10 text-sm rounded-xl sm:rounded-xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                        style={{
+                          boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                        }}
+                        required
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-1"
+                        aria-label="Toggle password visibility"
+                      >
+                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      </button>
+                    </div>
+                    
+                    <input
+                      id="desktop-confirmPassword"
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete="new-password"
+                      placeholder="Confirm Password"
+                      value={formData.confirmPassword}
+                      onChange={e => handleInputChange('confirmPassword', e.target.value)}
+                      className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                      style={{
+                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                      }}
+                      required
+                    />
+
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="desktop-terms"
+                        checked={formData.termsAccepted}
+                        onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
+                        className="rounded bg-white border-2 border-slate-300 text-green-600 focus:ring-green-500"
+                      />
+                      <label htmlFor="desktop-terms" className="text-xs text-white font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                        I agree to Terms & Conditions
+                      </label>
+                    </div>
+                    
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !formData.termsAccepted}
+                      className="w-full py-2.5 sm:py-3 md:py-3 text-sm sm:text-base rounded-xl sm:rounded-xl bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 text-white font-bold mt-2 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(34,197,94,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-green-400/30"
+                    >
+                      <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </form>
+                )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
-        <footer className="text-center mt-8 space-y-4 px-4 header-entrance">
-          <div className="flex items-center justify-center gap-4 sm:gap-6 text-slate-200/90 flex-wrap">
-             <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
-               <Lock size={14} className="text-blue-300" />
-               <span className="text-xs font-medium">256-bit SSL</span>
+        <footer className="text-center mt-4 sm:mt-6 md:mt-8 space-y-3 sm:space-y-4 px-4 header-entrance pb-safe">
+          <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6 text-slate-200/90 flex-wrap">
+             <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+               <Lock size={12} className="sm:w-3.5 sm:h-3.5 text-blue-300" />
+               <span className="text-[10px] sm:text-xs font-medium">256-bit SSL</span>
              </div>
-             <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
-               <ShieldCheck size={14} className="text-green-300" />
-               <span className="text-xs font-medium">POPIA Compliant</span>
+             <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+               <ShieldCheck size={12} className="sm:w-3.5 sm:h-3.5 text-green-300" />
+               <span className="text-[10px] sm:text-xs font-medium">POPIA Compliant</span>
              </div>
-             <div className="flex items-center gap-2 bg-white/5 backdrop-blur-sm px-3 py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
-               <Scale size={14} className="text-yellow-300" />
-               <span className="text-xs font-medium">Legal Grade Security</span>
+             <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+               <Scale size={12} className="sm:w-3.5 sm:h-3.5 text-yellow-300" />
+               <span className="text-[10px] sm:text-xs font-medium">Legal Grade Security</span>
              </div>
           </div>
-            <p className="text-slate-300/80 text-xs font-medium">&copy; {new Date().getFullYear()} lexo. All rights reserved. Data stored in South Africa.</p>
+            <p className="text-slate-300/80 text-[10px] sm:text-xs font-medium">&copy; {new Date().getFullYear()} lexo. All rights reserved. Data stored in South Africa.</p>
         </footer>
 
         {redirecting && (

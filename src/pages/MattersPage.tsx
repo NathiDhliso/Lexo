@@ -19,6 +19,7 @@ import { toast } from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
 import type { Matter, Page } from '../types';
 import { MatterStatus } from '../types';
+import { useNavigate } from 'react-router-dom';
 
 interface MattersPageProps {
   onNavigate?: (page: Page) => void;
@@ -34,6 +35,42 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [matters, setMatters] = useState<Matter[]>([]);
   const [loadingMatters, setLoadingMatters] = useState(true);
   const { user, loading, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
+
+  const navigatePage = (page: Page) => {
+    if (onNavigate) {
+      onNavigate(page);
+      return;
+    }
+    switch (page) {
+      case 'dashboard':
+        navigate('/dashboard');
+        break;
+      case 'proforma-requests':
+        navigate('/proforma-requests');
+        break;
+      case 'matters':
+        navigate('/matters');
+        break;
+      case 'matter-workbench':
+        navigate('/matter-workbench');
+        break;
+      case 'invoices':
+        navigate('/invoices');
+        break;
+      case 'partner-approval':
+        navigate('/partner-approval');
+        break;
+      case 'profile':
+        navigate('/profile');
+        break;
+      case 'settings':
+        navigate('/settings');
+        break;
+      default:
+        break;
+    }
+  };
 
   // Load matters from API based on current user
   const fetchMatters = React.useCallback(async () => {
@@ -143,11 +180,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   }, [matters, searchTerm, activeTab]);
 
   const handleNewMatterClick = () => {
-    if (onNavigate) {
-      onNavigate('matter-workbench');
-    } else {
-      console.warn('Navigation function not available');
-    }
+    navigatePage('matter-workbench');
   };
 
   const handleViewMatter = (matter: Matter) => {

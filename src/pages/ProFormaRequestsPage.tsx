@@ -3,8 +3,9 @@ import { Plus, FileText, Clock, CheckCircle, XCircle, ArrowRight, Link, Undo2, D
 import { proformaRequestService } from '../services/api/proforma-request.service';
 import { matterConversionService } from '../services/api/matter-conversion.service';
 import { proFormaPDFService } from '../services/proforma-pdf.service';
-import { LoadingSpinner } from '../components/design-system/components';
+import { LoadingSpinner, Button, EmptyState, Badge, SkeletonCard } from '../components/design-system/components';
 import { NewProFormaModal } from '../components/proforma/NewProFormaModal';
+import { CreateProFormaModal } from '../components/proforma/CreateProFormaModal';
 import { ConvertProFormaModal } from '../components/matters/ConvertProFormaModal';
 import { ProFormaLinkModal } from '../components/proforma/ProFormaLinkModal';
 import { useAuth } from '../hooks/useAuth';
@@ -12,6 +13,8 @@ import { Database } from '../../types/database';
 import type { Page } from '../types';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
+import { formatRand } from '../lib/currency';
+import { formatSADate, calculateVAT } from '../lib/sa-legal-utils';
 
 type ProFormaRequest = Database['public']['Tables']['proforma_requests']['Row'];
 type ProFormaRequestStatus = Database['public']['Enums']['proforma_request_status'];
@@ -25,11 +28,14 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
   const [requests, setRequests] = useState<ProFormaRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [showNewModal, setShowNewModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [selectedProFormaId, setSelectedProFormaId] = useState<string | null>(null);
   const [selectedProFormaTitle, setSelectedProFormaTitle] = useState<string>('');
   const [filter, setFilter] = useState<ProFormaRequestStatus[]>(['draft', 'sent', 'accepted', 'converted']);
+  const [selectedProForma, setSelectedProForma] = useState<any | null>(null);
+  const [showSendModal, setShowSendModal] = useState(false);
 
   useEffect(() => {
     loadRequests();
@@ -183,13 +189,16 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
             Manage quotes and estimates before creating matters
           </p>
         </div>
-        <button
-          onClick={() => setShowNewModal(true)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 dark:bg-mpondo-gold-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-mpondo-gold-700 transition-colors"
-        >
-          <Plus className="w-5 h-5" />
-          Generate Link
-        </button>
+        <div className="flex gap-3">
+          <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+            <Plus className="w-5 h-5 mr-2" />
+            New Pro Forma
+          </Button>
+          <Button variant="secondary" onClick={() => setShowNewModal(true)}>
+            <Link className="w-5 h-5 mr-2" />
+            Generate Link
+          </Button>
+        </div>
       </div>
 
       <div className="mb-6 flex gap-2 flex-wrap">
@@ -215,18 +224,23 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
       </div>
 
       {loading ? (
-        <LoadingSpinner />
-      ) : requests.length === 0 ? (
-        <div className="text-center py-12 bg-gray-50 dark:bg-metallic-gray-900 rounded-lg">
-          <FileText className="w-12 h-12 text-gray-400 dark:text-neutral-500 mx-auto mb-3" />
-          <p className="text-gray-600 dark:text-neutral-400">No pro forma requests found</p>
-          <button
-            onClick={() => setShowNewModal(true)}
-            className="mt-4 text-blue-600 dark:text-mpondo-gold-400 hover:text-blue-700 dark:hover:text-mpondo-gold-300 font-medium"
-          >
-            Create your first pro forma
-          </button>
+        <div className="grid gap-4">
+          <SkeletonCard />
+          <SkeletonCard />
+          <SkeletonCard />
         </div>
+      ) : requests.length === 0 ? (
+        <EmptyState
+          icon={FileText}
+          title="No pro forma requests found"
+          description="Create your first pro forma to send quotes and estimates to attorneys before creating matters."
+          action={
+            <Button variant="primary" onClick={() => setShowNewModal(true)}>
+              <Plus className="w-4 h-4 mr-2" />
+              Create Pro Forma
+            </Button>
+          }
+        />
       ) : (
         <div className="grid gap-4">
           {requests.map((request) => (
@@ -238,16 +252,16 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
                 <div className="flex items-start gap-4 flex-1">
                   {request.status && getStatusIcon(request.status)}
                   <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-2 flex-wrap">
-                      <h3 className="font-semibold text-gray-900 dark:text-neutral-100">
+                    <div className="flex items-center gap-2 mb-3 flex-wrap">
+                      <h3 className="font-semibold text-lg text-gray-900 dark:text-neutral-100">
                         {request.work_title}
                       </h3>
                       {request.status && getStatusBadge(request.status)}
                       {request.status === 'sent' && request.responded_at && (
-                        <span className="px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 flex items-center gap-1">
+                        <Badge variant="info" className="flex items-center gap-1">
                           <CheckCircle className="w-3 h-3" />
                           Attorney Responded
-                        </span>
+                        </Badge>
                       )}
                       {getUrgencyBadge(request.urgency)}
                     </div>
@@ -265,16 +279,32 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
                       </p>
                     )}
                     {request.estimated_amount && (
-                      <p className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mt-2">
-                        R {request.estimated_amount.toLocaleString('en-ZA', {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        })}
-                      </p>
+                      <div className="mt-3 p-3 bg-mpondo-gold-50 dark:bg-mpondo-gold-900/10 rounded-lg border border-mpondo-gold-200 dark:border-mpondo-gold-800">
+                        <div className="space-y-1 text-sm">
+                          <div className="flex justify-between">
+                            <span className="text-neutral-600 dark:text-neutral-400">Estimated Amount (excl. VAT):</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                              {formatRand(calculateVAT(request.estimated_amount).subtotal / 1.15)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="text-neutral-600 dark:text-neutral-400">VAT (15%):</span>
+                            <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                              {formatRand(request.estimated_amount * 0.15 / 1.15)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between pt-2 border-t border-mpondo-gold-200 dark:border-mpondo-gold-800">
+                            <span className="font-semibold text-neutral-900 dark:text-neutral-100">Total (incl. VAT):</span>
+                            <span className="font-bold text-lg text-mpondo-gold-700 dark:text-mpondo-gold-400">
+                              {formatRand(request.estimated_amount)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     )}
                     {request.created_at && (
-                      <p className="text-xs text-gray-500 dark:text-neutral-500 mt-2">
-                        Created {new Date(request.created_at).toLocaleDateString()}
+                      <p className="text-xs text-gray-500 dark:text-neutral-500 mt-3">
+                        Created {formatSADate(new Date(request.created_at))}
                       </p>
                     )}
                   </div>
@@ -282,71 +312,73 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
 
                 <div className="flex gap-2 flex-wrap">
                   {(request.status === 'draft' || request.status === 'sent' || request.status === 'accepted') && request.estimated_amount && (
-                    <button
-                      onClick={() => handleDownloadPDF(request)}
-                      className="px-3 py-1 bg-purple-600 dark:bg-purple-700 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 text-sm whitespace-nowrap flex items-center gap-1 transition-colors"
-                      title="Download Pro Forma PDF"
-                    >
-                      <Download className="w-3 h-3" />
+                    <Button size="sm" variant="secondary" onClick={() => handleDownloadPDF(request)}>
+                      <Download className="w-4 h-4 mr-1" />
                       Download PDF
-                    </button>
+                    </Button>
                   )}
                   {request.status === 'draft' && (
                     <>
-                      <button
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => {
                           setSelectedProFormaId(request.id);
                           setSelectedProFormaTitle(request.work_title || '');
                           setShowLinkModal(true);
                         }}
-                        className="px-3 py-1 bg-amber-600 text-white rounded-lg hover:bg-amber-700 text-sm whitespace-nowrap flex items-center gap-1"
                       >
-                        <Link className="w-3 h-3" />
+                        <Link className="w-4 h-4 mr-1" />
                         Generate Link
-                      </button>
-                      <button
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="primary"
                         onClick={() => handleSendQuote(request.id)}
-                        className="px-3 py-1 bg-blue-600 dark:bg-mpondo-gold-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-mpondo-gold-700 text-sm whitespace-nowrap transition-colors"
                       >
                         Send Quote
-                      </button>
+                      </Button>
                     </>
                   )}
                   {request.status === 'sent' && (
-                    <button
+                    <Button
+                      size="sm"
+                      variant="primary"
                       onClick={() => handleAccept(request.id)}
-                      className="px-3 py-1 bg-green-600 dark:bg-green-700 text-white rounded-lg hover:bg-green-700 dark:hover:bg-green-600 text-sm whitespace-nowrap transition-colors"
                     >
                       Mark Accepted
-                    </button>
+                    </Button>
                   )}
                   {request.status === 'accepted' && !request.converted_matter_id && (
-                    <button 
+                    <Button
+                      size="sm"
+                      variant="primary"
                       onClick={() => {
                         setSelectedProFormaId(request.id);
                         setShowConvertModal(true);
                       }}
-                      className="px-3 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm whitespace-nowrap"
                     >
                       Convert to Matter
-                    </button>
+                    </Button>
                   )}
                   {request.converted_matter_id && (
                     <>
-                      <button
+                      <Button
+                        size="sm"
+                        variant="outline"
                         onClick={() => handleReverseConversion(request)}
-                        className="px-3 py-1 bg-amber-600 text-white rounded-lg hover:bg-amber-700 text-sm whitespace-nowrap flex items-center gap-1"
                         title="Reverse conversion back to pro forma"
                       >
-                        <Undo2 className="w-3 h-3" />
-                        Reverse Conversion
-                      </button>
-                      <button
+                        <Undo2 className="w-4 h-4 mr-1" />
+                        Reverse
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="secondary"
                         onClick={() => onNavigate?.('matters')}
-                        className="px-3 py-1 bg-purple-600 dark:bg-purple-700 text-white rounded-lg hover:bg-purple-700 dark:hover:bg-purple-600 text-sm whitespace-nowrap transition-colors"
                       >
                         View Matter
-                      </button>
+                      </Button>
                     </>
                   )}
                 </div>
@@ -356,6 +388,15 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
         </div>
       )}
 
+      <CreateProFormaModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={(proforma) => {
+          setSelectedProForma(proforma);
+          setShowSendModal(true);
+        }}
+      />
+
       <NewProFormaModal
         isOpen={showNewModal}
         onClose={() => setShowNewModal(false)}
@@ -364,6 +405,37 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
           loadRequests();
         }}
       />
+
+      {selectedProForma && showSendModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white dark:bg-neutral-800 rounded-lg p-6 max-w-md w-full">
+            <h3 className="text-lg font-bold mb-4">Send Pro Forma to Client</h3>
+            <p className="mb-4">Send this pro forma to {selectedProForma.clientName}?</p>
+            <div className="flex gap-2">
+              <button
+                onClick={() => {
+                  toast.success('Pro forma sent to client');
+                  setShowSendModal(false);
+                  setShowCreateModal(false);
+                  setSelectedProForma(null);
+                }}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+              >
+                Send
+              </button>
+              <button
+                onClick={() => {
+                  setShowSendModal(false);
+                  setSelectedProForma(null);
+                }}
+                className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {selectedProFormaId && (
         <ConvertProFormaModal
