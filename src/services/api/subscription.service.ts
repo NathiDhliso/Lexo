@@ -36,12 +36,34 @@ class SubscriptionApiService {
   }
 
   /**
-   * Create a new subscription (typically for Admission tier)
+   * Create or update subscription (upsert logic)
    */
   async createSubscription(tier: SubscriptionTier): Promise<Subscription> {
     const user = (await this.supabase.auth.getUser()).data.user;
     if (!user) throw new Error('User not authenticated');
 
+    // Check if subscription already exists
+    const existing = await this.getCurrentSubscription();
+    
+    if (existing) {
+      // Update existing subscription
+      const { data, error } = await this.supabase
+        .from('subscriptions')
+        .update({
+          tier,
+          status: 'active',
+          cancel_at_period_end: false,
+          updated_at: new Date().toISOString()
+        })
+        .eq('user_id', user.id)
+        .select()
+        .single();
+
+      if (error) throw this.handleError(error);
+      return data;
+    }
+
+    // Create new subscription
     const { data, error } = await this.supabase
       .from('subscriptions')
       .insert({
@@ -67,6 +89,31 @@ class SubscriptionApiService {
     const user = (await this.supabase.auth.getUser()).data.user;
     if (!user) throw new Error('User not authenticated');
 
+    // Check if subscription exists
+    const existing = await this.getCurrentSubscription();
+    
+    if (!existing) {
+      // Create new subscription if none exists
+      const { data, error } = await this.supabase
+        .from('subscriptions')
+        .insert({
+          user_id: user.id,
+          tier: request.new_tier,
+          status: 'active',
+          current_period_start: new Date().toISOString(),
+          current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+          cancel_at_period_end: false,
+          additional_users: request.additional_users || 0,
+          payment_gateway: request.payment_gateway
+        })
+        .select()
+        .single();
+
+      if (error) throw this.handleError(error);
+      return data;
+    }
+
+    // Update existing subscription
     const { data, error } = await this.supabase
       .from('subscriptions')
       .update({
