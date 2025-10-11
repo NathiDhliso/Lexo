@@ -47,10 +47,10 @@ export const exportToCSV = (data: any[], filename: string = 'export'): void => {
  */
 export const exportToPDF = async (data: any[], filename: string = 'export', title?: string): Promise<void> => {
   // Dynamically import jsPDF to avoid bundle size issues
-  const { default: jsPDF } = await import('jspdf');
-  await import('jspdf-autotable'); // Import for side effects (extends jsPDF)
+  const jsPDF = (await import('jspdf')).default;
+  const autoTable = (await import('jspdf-autotable')).default;
   
-  const doc = new jsPDF();
+  const doc = new jsPDF() as any;
   const pageWidth = doc.internal.pageSize.getWidth();
   const pageHeight = doc.internal.pageSize.getHeight();
   
@@ -86,7 +86,7 @@ export const exportToPDF = async (data: any[], filename: string = 'export', titl
     );
     
     // Add table using autoTable
-    (doc as any).autoTable({
+    autoTable(doc, {
       head: [headers.map(h => h.replace(/_/g, ' ').toUpperCase())],
       body: tableData,
       startY: 40,

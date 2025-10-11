@@ -211,8 +211,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signIn = async (email: string, password: string) => {
     setOperationLoading(prev => ({ ...prev, signIn: true }));
     try {
-      const { error } = await authService.signIn(email, password);
-      return { error };
+      await authService.signIn(email, password);
+      return { error: null };
+    } catch (error) {
+      return { error: error as AuthError | Error };
     } finally {
       setOperationLoading(prev => ({ ...prev, signIn: false }));
     }
@@ -221,8 +223,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signInWithMagicLink = async (email: string) => {
     setOperationLoading(prev => ({ ...prev, signIn: true }));
     try {
-      const { error } = await authService.signInWithMagicLink(email);
-      return { error };
+      const result = await authService.signInWithMagicLink(email);
+      return result;
+    } catch (error) {
+      return { error: error as AuthError | Error };
     } finally {
       setOperationLoading(prev => ({ ...prev, signIn: false }));
     }
@@ -231,8 +235,10 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const signUp = async (email: string, password: string, metadata: UserMetadata) => {
     setOperationLoading(prev => ({ ...prev, signUp: true }));
     try {
-      const { error } = await authService.signUp(email, password, metadata);
-      return { error };
+      await authService.signUp(email, password, metadata);
+      return { error: null };
+    } catch (error) {
+      return { error: error as AuthError | Error };
     } finally {
       setOperationLoading(prev => ({ ...prev, signUp: false }));
     }

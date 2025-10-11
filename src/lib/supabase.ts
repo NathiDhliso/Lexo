@@ -45,6 +45,12 @@ export const supabase = createClient(resolvedUrl, supabaseAnonKey, {
 
       // Add our custom headers (preserving existing ones like Authorization)
       mergedHeaders.set('x-application-name', 'lexo');
+      
+      // Add Accept header for Supabase REST API (fixes 406 errors)
+      if (!mergedHeaders.has('Accept')) {
+        mergedHeaders.set('Accept', 'application/json');
+      }
+      
       try {
         const h = new URL(finalUrl).hostname;
         if (h.endsWith('.supabase.co')) {
@@ -77,7 +83,9 @@ export const supabase = createClient(resolvedUrl, supabaseAnonKey, {
     },
     headers: { 
       'x-application-name': 'lexo',
-      'apikey': supabaseAnonKey
+      'apikey': supabaseAnonKey,
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
     },
   },
 });

@@ -7,6 +7,7 @@ import React, { ReactNode } from 'react';
 import { useAuth } from '../../hooks/useAuth';
 import { LoadingSpinner } from '../design-system/components';
 import LoginPage from '../../pages/LoginPage';
+import { supabase } from '../../lib/supabase';
 
 interface ProtectedRouteProps {
   children: ReactNode;
@@ -35,7 +36,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
 
   // Redirect to login if not authenticated after initialization completes
   if (!isAuthenticated || !user) {
-    return <LoginPage />;
+    return <LoginPage supabase={supabase} />;
   }
 
   // Check permission if required

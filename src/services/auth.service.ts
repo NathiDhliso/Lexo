@@ -36,8 +36,11 @@ class AuthService {
   }
 
   async signUp(email: string, password: string, metadata: UserMetadata) {
-    // Use production URL if available, otherwise fall back to current origin
-    const redirectUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    // Use current origin for development, production URL for production
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const redirectUrl = isDevelopment ? window.location.origin : (import.meta.env.VITE_APP_URL || window.location.origin);
+    
+    console.log('[Auth] Sign up redirect URL:', redirectUrl);
     
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -86,8 +89,11 @@ class AuthService {
   }
 
   async signInWithMagicLink(email: string) {
-    // Use production URL if available, otherwise fall back to current origin
-    const redirectUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    // Use current origin for development, production URL for production
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const redirectUrl = isDevelopment ? window.location.origin : (import.meta.env.VITE_APP_URL || window.location.origin);
+    
+    console.log('[Auth] Magic link redirect URL:', redirectUrl);
     
     const { error } = await supabase.auth.signInWithOtp({
       email,
@@ -99,8 +105,11 @@ class AuthService {
   }
 
   async resetPassword(email: string) {
-    // Use production URL if available, otherwise fall back to current origin
-    const redirectUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    // Use current origin for development, production URL for production
+    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+    const redirectUrl = isDevelopment ? window.location.origin : (import.meta.env.VITE_APP_URL || window.location.origin);
+    
+    console.log('[Auth] Reset password redirect URL:', redirectUrl);
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
       redirectTo: `${redirectUrl}/#/reset-password`,
