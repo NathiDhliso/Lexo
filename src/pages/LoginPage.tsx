@@ -17,11 +17,192 @@ import {
   Sparkles
 } from 'lucide-react';
 import lexoLogo from '../Public/Assets/lexo-logo.png';
-import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import LexoHubBGhd from '../Public/Assets/LexoHubBGhd.jpg';
-import { validateEmail, validatePassword, validateName } from '../utils/validation';
 
+// ===========================================
+// AUTH UTILITIES - Token cleanup & validation
+// ===========================================
+const clearAuthStorage = async (supabase: any) => {
+  try {
+    await supabase.auth.signOut();
+    const keysToRemove: string[] = [];
+    for (let i = 0; i < localStorage.length; i++) {
+      const key = localStorage.key(i);
+      if (key && key.startsWith('sb-')) {
+        keysToRemove.push(key);
+      }
+    }
+    keysToRemove.forEach(key => localStorage.removeItem(key));
+    console.log('Auth storage cleared successfully');
+    return { success: true };
+  } catch (error) {
+    console.error('Error clearing auth storage:', error);
+    return { success: false, error };
+  }
+};
+
+// ===========================================
+// VALIDATION UTILITIES
+// ===========================================
+const validateEmail = (email: string) => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email) return { isValid: false, message: 'Email is required' };
+  if (!emailRegex.test(email)) return { isValid: false, message: 'Invalid email format' };
+  return { isValid: true };
+};
+
+const validatePassword = (password: string) => {
+  if (!password) return { isValid: false, message: 'Password is required', strength: 0 };
+  
+  let strength = 0;
+  if (password.length >= 8) strength++;
+  if (password.length >= 12) strength++;
+  if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
+  if (/\d/.test(password)) strength++;
+  if (/[^a-zA-Z0-9]/.test(password)) strength++;
+  
+  if (password.length < 6) return { isValid: false, message: 'Password must be at least 6 characters', strength };
+  if (password.length < 8) return { isValid: true, warning: 'Consider using 8+ characters for better security', strength };
+  
+  return { isValid: true, strength };
+};
+
+const validateName = (name: string) => {
+  if (!name) return { isValid: false, message: 'Full name is required' };
+  if (name.trim().length < 2) return { isValid: false, message: 'Name must be at least 2 characters' };
+  if (!/^[a-zA-Z\s]+$/.test(name)) return { isValid: false, message: 'Name should only contain letters' };
+  return { isValid: true };
+};
+
+// ===========================================
+// AUTH HOOK - Fixed with token error handling
+// ===========================================
+const useAuth = (supabase: any) => {
+  const [user, setUser] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const initializeAuth = async () => {
+      try {
+        const { data: { session }, error } = await supabase.auth.getSession();
+        
+        if (error) {
+          console.error('Session error:', error);
+          await clearAuthStorage(supabase);
+          setUser(null);
+        } else {
+          setUser(session?.user ?? null);
+        }
+      } catch (err) {
+        console.error('Auth initialization error:', err);
+        await clearAuthStorage(supabase);
+        setUser(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    initializeAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event: string, session: any) => {
+        console.log('Auth event:', event);
+        
+        if (event === 'TOKEN_REFRESHED' && !session) {
+          console.error('Token refresh failed, clearing session');
+          await clearAuthStorage(supabase);
+          setUser(null);
+        } else if (event === 'SIGNED_OUT' || event === 'USER_DELETED') {
+          setUser(null);
+        } else if (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') {
+          setUser(session?.user ?? null);
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
+
+  const signIn = async (email: string, password: string) => {
+    try {
+      await clearAuthStorage(supabase);
+      
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: email.trim().toLowerCase(),
+        password,
+      });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error: any) {
+      console.error('Sign in error:', error);
+      return { data: null, error };
+    }
+  };
+
+  const signUp = async (email: string, password: string, metadata: any) => {
+    try {
+      await clearAuthStorage(supabase);
+      
+      const { data, error } = await supabase.auth.signUp({
+        email: email.trim().toLowerCase(),
+        password,
+        options: {
+          data: {
+            user_type: metadata.user_type,
+            full_name: metadata.full_name,
+          },
+          emailRedirectTo: `${window.location.origin}/auth?confirmed=true`,
+        },
+      });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error: any) {
+      console.error('Sign up error:', error);
+      return { data: null, error };
+    }
+  };
+
+  const signInWithMagicLink = async (email: string) => {
+    try {
+      const { data, error } = await supabase.auth.signInWithOtp({
+        email: email.trim().toLowerCase(),
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
+        },
+      });
+
+      if (error) throw error;
+      return { data, error: null };
+    } catch (error: any) {
+      console.error('Magic link error:', error);
+      return { data: null, error };
+    }
+  };
+
+  const signOut = async () => {
+    try {
+      const { error } = await supabase.auth.signOut();
+      if (error) throw error;
+      setUser(null);
+      return { error: null };
+    } catch (error: any) {
+      console.error('Sign out error:', error);
+      setUser(null);
+      return { error };
+    }
+  };
+
+  return { user, loading, signIn, signUp, signInWithMagicLink, signOut };
+};
+
+// ===========================================
+// DEVICE TYPE HOOK
+// ===========================================
 const useDeviceType = () => {
   const [deviceType, setDeviceType] = useState({
     isMobile: typeof window !== 'undefined' ? window.innerWidth < 768 : false,
@@ -46,6 +227,9 @@ const useDeviceType = () => {
   return deviceType;
 };
 
+// ===========================================
+// GLOBAL STYLES
+// ===========================================
 const GlobalStyles = () => (
   <style>{`
     .glass-auth {
@@ -93,27 +277,6 @@ const GlobalStyles = () => (
     }
     .input-focus-glow:focus {
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3), 0 0 20px rgba(59, 130, 246, 0.2);
-    }
-    .btn-ripple {
-      position: relative;
-      overflow: hidden;
-    }
-    .btn-ripple::after {
-      content: '';
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 0;
-      height: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.5);
-      transform: translate(-50%, -50%);
-      transition: width 0.6s, height 0.6s;
-    }
-    .btn-ripple:active::after {
-      width: 300px;
-      height: 300px;
-      opacity: 0;
     }
     @media (max-width: 767px) {
       .glass-auth {
@@ -166,31 +329,16 @@ const GlobalStyles = () => (
   `}</style>
 );
 
-
-// --- Utility Function (previously in ./utils) ---
+// ===========================================
+// UTILITY FUNCTION
+// ===========================================
 function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-
-
-
-// --- Placeholder Components (previously in separate files) ---
-
-const Button = React.forwardRef<HTMLButtonElement, React.ButtonHTMLAttributes<HTMLButtonElement>>(({ className, ...props }, ref) => {
-  return (
-    <button
-      className={cn(
-        "inline-flex items-center justify-center rounded-md text-sm font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none ring-offset-background active:scale-[0.98]",
-        "px-4 py-2",
-        className
-      )}
-      ref={ref}
-      {...props}
-    />
-  );
-});
-
+// ===========================================
+// LOADING SPINNER
+// ===========================================
 interface LoadingSpinnerProps {
   size?: 'sm' | 'md' | 'lg';
   className?: string;
@@ -203,87 +351,9 @@ const LoadingSpinner: React.FC<LoadingSpinnerProps> = ({ size = 'md', className 
   );
 };
 
-
-const SignupBgImage = LexoHubBGhd;
-
-type AuthMode = 'signin' | 'signup';
-
-
-// Form Input Component
-interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-  placeholder: string; value: string; onChange: (e: React.ChangeEvent<HTMLInputElement>) => void; className?: string; required?: boolean; children?: React.ReactNode;
-  icon?: React.ComponentType<{ className?: string }>;
-  validation?: { isValid: boolean; message?: string; strength?: number; warning?: string };
-  showValidation?: boolean; id: string; autoComplete?: string;
-}
-
-const FormInput: React.FC<FormInputProps> = ({
-  type = 'text', placeholder, value, onChange, className, required = false, children, icon: Icon, validation, showValidation = false, id, autoComplete, ...props
-}) => {
-  const hasError = showValidation && validation && !validation.isValid;
-  const hasSuccess = showValidation && validation && validation.isValid && value && !validation.warning;
-  const hasWarning = showValidation && validation && validation.isValid && validation.warning;
-
-  return (
-    <div className="relative space-y-2">
-      <div className="relative">
-        {Icon && <Icon className="absolute left-1.5 sm:left-2 top-1/2 -translate-y-1/2 w-3 h-3 sm:w-4 sm:h-4 text-white/50 z-10" />}
-        <input id={id} type={type} placeholder={placeholder} value={value} onChange={onChange} autoComplete={autoComplete}
-          className={cn(
-            "w-full py-2 sm:py-2.5 bg-white/10 backdrop-blur-sm border border-white/20 rounded-lg text-white placeholder-white/60 transition-all duration-300",
-            "focus:outline-none focus:ring-2 focus:ring-opacity-75 focus:bg-white/15 hover:bg-white/12 text-sm font-medium input-focus-glow",
-            "shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)]",
-            Icon ? "pl-8 sm:pl-10 pr-10" : "px-3 sm:px-4 pr-10",
-            hasError && "border-red-400/50 focus:ring-red-400",
-            hasSuccess && "border-green-400/50 focus:ring-green-400",
-            hasWarning && "border-yellow-400/50 focus:ring-yellow-400",
-            className
-          )}
-          required={required} aria-invalid={hasError} aria-describedby={hasError ? `${id}-error` : (hasWarning ? `${id}-warning` : undefined)}
-          {...props}
-        />
-        {children}
-        {showValidation && (
-          <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2">
-            {hasError && <XCircle className="w-3 h-3 sm:w-4 sm:h-4 text-red-400" />}
-            {hasSuccess && <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-400" />}
-            {hasWarning && <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-yellow-400" />}
-          </div>
-        )}
-        {!showValidation && children && (
-          <div className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2">
-            {children}
-          </div>
-        )}
-      </div>
-
-      {showValidation && validation && !validation.isValid && validation.message && (
-        <p id={`${id}-error`} className="text-sm text-red-300 flex items-center gap-2 animate-in slide-in-from-top-2 duration-200">
-          <AlertCircle className="w-4 h-4" /> {validation.message}
-        </p>
-      )}
-      {showValidation && validation && validation.isValid && validation.warning && (
-        <p id={`${id}-warning`} className="text-sm text-yellow-300 flex items-center gap-2 animate-in slide-in-from-top-2 duration-200">
-          <AlertCircle className="w-4 h-4" /> {validation.warning}
-        </p>
-      )}
-
-      {type === 'password' && showValidation && validation && value && (
-        <div className="space-y-2">
-          <div className="flex gap-1.5">
-            {[1, 2, 3, 4, 5].map((level) => (
-              <div key={level} className={cn("h-1.5 flex-1 rounded-full transition-all duration-300",
-                (validation.strength ?? 0) >= level ? ((validation.strength ?? 0) <= 2 ? "bg-red-400" : (validation.strength ?? 0) <= 3 ? "bg-yellow-400" : "bg-green-400") : "bg-white/20"
-              )} />
-            ))}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-
+// ===========================================
+// SKELETON LOADING PAGE
+// ===========================================
 const SkeletonAuthPage = () => (
   <div className="min-h-[100svh] w-screen overflow-hidden flex flex-col bg-slate-900 font-sans">
     <div className="absolute inset-0 bg-black/70"></div>
@@ -304,6 +374,10 @@ const SkeletonAuthPage = () => (
   </div>
 );
 
+// ===========================================
+// AUTH TOGGLE COMPONENT
+// ===========================================
+type AuthMode = 'signin' | 'signup';
 
 interface AuthToggleProps {
   activeMode: AuthMode;
@@ -341,8 +415,15 @@ const AuthToggle: React.FC<AuthToggleProps> = ({ activeMode, onModeChange }) => 
   </div>
 );
 
-const LoginPage = () => {
-  const { signIn, signUp, signInWithMagicLink, loading } = useAuth();
+// ===========================================
+// MAIN LOGIN PAGE - REQUIRES supabase prop
+// ===========================================
+interface LoginPageProps {
+  supabase: any;
+}
+
+const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
+  const { signIn, signUp, signInWithMagicLink, loading } = useAuth(supabase);
   const { isMobile, isTablet, isDesktop } = useDeviceType();
   const [authMode, setAuthMode] = useState<AuthMode>('signin');
   const [showPassword, setShowPassword] = useState(false);
@@ -351,7 +432,14 @@ const LoginPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showValidation, setShowValidation] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
-  const [formData, setFormData] = useState({ email: '', password: '', fullName: '', confirmPassword: '', rememberMe: true, termsAccepted: false });
+  const [formData, setFormData] = useState({ 
+    email: '', 
+    password: '', 
+    fullName: '', 
+    confirmPassword: '', 
+    rememberMe: true, 
+    termsAccepted: false 
+  });
 
   const formRef = useRef<HTMLFormElement>(null);
   const loginPanelRef = useRef<HTMLDivElement>(null);
@@ -378,7 +466,6 @@ const LoginPage = () => {
 
   const isFormValid = emailValidation.isValid && passwordValidation.isValid && (authMode === 'signin' || (nameValidation.isValid && formData.termsAccepted));
 
-  // Check for email confirmation on mount
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
     const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
@@ -394,7 +481,6 @@ const LoginPage = () => {
         icon: '✅'
       });
 
-      // Clean up URL
       const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
       window.history.replaceState({}, document.title, cleanUrl);
     }
@@ -479,8 +565,6 @@ const LoginPage = () => {
       setTouchedFields(prev => new Set(prev).add(field));
     }
   };
-
-  const handleInputBlur = (field: string) => { setTouchedFields(prev => new Set(prev).add(field)); setShowValidation(true); };
 
   const [redirecting, setRedirecting] = useState(false);
 
@@ -575,6 +659,8 @@ const LoginPage = () => {
 
   if (loading) return <SkeletonAuthPage />;
 
+  const SignupBgImage = LexoHubBGhd;
+
   return (
     <div
       className="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
@@ -606,169 +692,61 @@ const LoginPage = () => {
           </p>
         </header>
 
-        {isMobile ? (
+        {isMobile || isTablet ? (
           <>
             <AuthToggle activeMode={authMode} onModeChange={setAuthMode} />
 
-            <div className="w-full max-w-md mx-auto px-4">
-              <div className="bg-white/10 backdrop-blur-md border-[3px] sm:border-[4px] border-white/30 rounded-[24px] sm:rounded-[32px] shadow-2xl p-5 sm:p-8 md:p-10 transition-all duration-500" style={{
-                backgroundImage: 'linear-gradient(to bottom right, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05))',
-                boxShadow: '0 30px 80px rgba(0,0,0,0.3), 0 15px 40px rgba(0,0,0,0.2), inset 0 2px 4px rgba(255,255,255,0.5), inset 0 -2px 4px rgba(0,0,0,0.1)',
-                borderTop: '2px solid rgba(255, 255, 255, 0.5)',
-                borderLeft: '2px solid rgba(255, 255, 255, 0.4)',
-                borderBottom: '2px solid rgba(0, 0, 0, 0.15)',
-                borderRight: '2px solid rgba(0, 0, 0, 0.1)'
-              }}>
-                <h2 className="text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-4 sm:mb-6 text-center" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)' }}>
-                  {authMode === 'signin' ? 'Welcome Back' : 'Create Account'}
-                </h2>
-
-                {authMode === 'signin' ? (
-                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5 relative z-10">
-                    {error && (
-                      <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 text-red-300" />
-                        <p className="text-xs text-red-200">{error}</p>
-                      </div>
-                    )}
-                    {success && (
-                      <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-300" />
-                        <p className="text-xs text-green-200">{success}</p>
-                      </div>
-                    )}
-
-                    <div className="space-y-1">
-                      <label htmlFor="email" className="block text-sm font-medium text-white/90 pl-1">Email</label>
-                      <input
-                        id="email"
-                        type="email"
-                        inputMode="email"
-                        autoComplete="email"
-                        placeholder="Enter your email"
-                        value={formData.email}
-                        onChange={e => handleInputChange('email', e.target.value)}
-                        className="w-full px-3 sm:px-4 py-3 sm:py-3.5 text-base rounded-xl sm:rounded-2xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
-                        style={{
-                          boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
-                          borderTop: '1px solid rgba(255, 255, 255, 0.5)',
-                          borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
-                          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-                          borderRight: '1px solid rgba(0, 0, 0, 0.1)',
-                          fontSize: '16px',
-                          minHeight: '44px'
-                        }}
-                        required
-                      />
+            <div className="w-full max-w-md mx-auto px-4 mb-8">
+              {authMode === 'signin' ? (
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5 relative z-10">
+                  {error && (
+                    <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-red-300" />
+                      <p className="text-xs text-red-200">{error}</p>
                     </div>
-
-                    <div className="space-y-1">
-                      <label htmlFor="password" className="block text-sm font-medium text-white/90 pl-1">Password</label>
-                      <div className="relative">
-                        <input
-                          id="password"
-                          type={showPassword ? 'text' : 'password'}
-                          autoComplete="current-password"
-                          placeholder="Enter your password"
-                          value={formData.password}
-                          onChange={e => handleInputChange('password', e.target.value)}
-                          className="w-full px-3 sm:px-4 py-3 sm:py-3.5 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
-                          style={{
-                            boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
-                            fontSize: '16px',
-                            minHeight: '44px'
-                          }}
-                          required
-                        />
-                        <button
-                          type="button"
-                          onClick={() => setShowPassword(!showPassword)}
-                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 hover:text-slate-900 transition-colors p-1"
-                          style={{ minWidth: '44px', minHeight: '44px' }}
-                          aria-label="Toggle password visibility"
-                        >
-                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                        </button>
-                      </div>
+                  )}
+                  {success && (
+                    <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-300" />
+                      <p className="text-xs text-green-200">{success}</p>
                     </div>
+                  )}
 
-                    <div className="flex items-center justify-between text-xs sm:text-sm">
-                      <button
-                        type="button"
-                        onClick={handleSendMagicLink}
-                        className="text-sky-200 hover:text-sky-100 font-medium underline underline-offset-2 transition-colors"
-                      >
-                        Forgot password?
-                      </button>
-                    </div>
-
-                    <button
-                      type="submit"
-                      disabled={isSubmitting}
-                      className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(59,130,246,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-blue-400/30"
-                    >
-                      <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
-                      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                    </button>
-                  </form>
-                ) : (
-                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5 md:space-y-4 relative z-10">
-                    {error && (
-                      <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
-                        <AlertCircle className="h-4 w-4 text-red-300" />
-                        <p className="text-xs text-red-200">{error}</p>
-                      </div>
-                    )}
-                    {success && (
-                      <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
-                        <CheckCircle className="h-4 w-4 text-green-300" />
-                        <p className="text-xs text-green-200">{success}</p>
-                      </div>
-                    )}
-
+                  <div className="space-y-1">
+                    <label htmlFor="email" className="block text-sm font-medium text-white/90 pl-1">Email</label>
                     <input
-                      id="fullName"
-                      type="text"
-                      autoComplete="name"
-                      placeholder="Full Name"
-                      value={formData.fullName}
-                      onChange={e => handleInputChange('fullName', e.target.value)}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
-                      style={{
-                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
-                        fontSize: '16px',
-                        minHeight: '44px'
-                      }}
-                      required
-                    />
-
-                    <input
-                      id="email-signup"
+                      id="email"
                       type="email"
                       inputMode="email"
                       autoComplete="email"
-                      placeholder="Email"
+                      placeholder="Enter your email"
                       value={formData.email}
                       onChange={e => handleInputChange('email', e.target.value)}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                      className="w-full px-3 sm:px-4 py-3 sm:py-3.5 text-base rounded-xl sm:rounded-2xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
                       style={{
-                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                        boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
+                        borderTop: '1px solid rgba(255, 255, 255, 0.5)',
+                        borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
+                        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+                        borderRight: '1px solid rgba(0, 0, 0, 0.1)',
                         fontSize: '16px',
                         minHeight: '44px'
                       }}
                       required
                     />
+                  </div>
 
+                  <div className="space-y-1">
+                    <label htmlFor="password" className="block text-sm font-medium text-white/90 pl-1">Password</label>
                     <div className="relative">
                       <input
-                        id="password-signup"
+                        id="password"
                         type={showPassword ? 'text' : 'password'}
-                        autoComplete="new-password"
-                        placeholder="New Password"
+                        autoComplete="current-password"
+                        placeholder="Enter your password"
                         value={formData.password}
                         onChange={e => handleInputChange('password', e.target.value)}
-                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                        className="w-full px-3 sm:px-4 py-3 sm:py-3.5 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
                         style={{
                           boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                           fontSize: '16px',
@@ -779,22 +757,92 @@ const LoginPage = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-1"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 hover:text-slate-900 transition-colors p-1"
                         style={{ minWidth: '44px', minHeight: '44px' }}
                         aria-label="Toggle password visibility"
                       >
                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                       </button>
                     </div>
+                  </div>
 
+                  <div className="flex items-center justify-between text-xs sm:text-sm">
+                    <button
+                      type="button"
+                      onClick={handleSendMagicLink}
+                      className="text-sky-200 hover:text-sky-100 font-medium underline underline-offset-2 transition-colors"
+                    >
+                      Forgot password?
+                    </button>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting}
+                    className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(59,130,246,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-blue-400/30"
+                  >
+                    <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  </button>
+                </form>
+              ) : (
+                <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5 md:space-y-4 relative z-10">
+                  {error && (
+                    <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-red-300" />
+                      <p className="text-xs text-red-200">{error}</p>
+                    </div>
+                  )}
+                  {success && (
+                    <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-green-300" />
+                      <p className="text-xs text-green-200">{success}</p>
+                    </div>
+                  )}
+
+                  <input
+                    id="fullName"
+                    type="text"
+                    autoComplete="name"
+                    placeholder="Full Name"
+                    value={formData.fullName}
+                    onChange={e => handleInputChange('fullName', e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                    style={{
+                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                      fontSize: '16px',
+                      minHeight: '44px'
+                    }}
+                    required
+                  />
+
+                  <input
+                    id="email-signup"
+                    type="email"
+                    inputMode="email"
+                    autoComplete="email"
+                    placeholder="Email"
+                    value={formData.email}
+                    onChange={e => handleInputChange('email', e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                    style={{
+                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                      fontSize: '16px',
+                      minHeight: '44px'
+                    }}
+                    required
+                  />
+
+                  <div className="relative">
                     <input
-                      id="confirmPassword"
+                      id="password-signup"
                       type={showPassword ? 'text' : 'password'}
                       autoComplete="new-password"
-                      placeholder="Confirm Password"
-                      value={formData.confirmPassword}
-                      onChange={e => handleInputChange('confirmPassword', e.target.value)}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                      placeholder="New Password"
+                      value={formData.password}
+                      onChange={e => handleInputChange('password', e.target.value)}
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
                       style={{
                         boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                         fontSize: '16px',
@@ -802,32 +850,57 @@ const LoginPage = () => {
                       }}
                       required
                     />
-
-                    <div className="flex items-center space-x-2">
-                      <input
-                        type="checkbox"
-                        id="terms"
-                        checked={formData.termsAccepted}
-                        onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
-                        className="rounded bg-white border-2 border-slate-300 text-green-600 focus:ring-green-500"
-                      />
-                      <label htmlFor="terms" className="text-xs text-white font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
-                        I agree to Terms & Conditions
-                      </label>
-                    </div>
-
                     <button
-                      type="submit"
-                      disabled={isSubmitting || !formData.termsAccepted}
-                      className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(34,197,94,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-green-400/30"
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-1"
+                      style={{ minWidth: '44px', minHeight: '44px' }}
+                      aria-label="Toggle password visibility"
                     >
-                      <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
-                      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
-                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                     </button>
-                  </form>
-                )}
-              </div>
+                  </div>
+
+                  <input
+                    id="confirmPassword"
+                    type={showPassword ? 'text' : 'password'}
+                    autoComplete="new-password"
+                    placeholder="Confirm Password"
+                    value={formData.confirmPassword}
+                    onChange={e => handleInputChange('confirmPassword', e.target.value)}
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                    style={{
+                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                      fontSize: '16px',
+                      minHeight: '44px'
+                    }}
+                    required
+                  />
+
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="checkbox"
+                      id="terms"
+                      checked={formData.termsAccepted}
+                      onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
+                      className="rounded bg-white border-2 border-slate-300 text-green-600 focus:ring-green-500"
+                    />
+                    <label htmlFor="terms" className="text-xs text-white font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                      I agree to Terms & Conditions
+                    </label>
+                  </div>
+
+                  <button
+                    type="submit"
+                    disabled={isSubmitting || !formData.termsAccepted}
+                    className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(34,197,94,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-green-400/30"
+                  >
+                    <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
+                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                  </button>
+                </form>
+              )}
             </div>
           </>
         ) : (
@@ -990,72 +1063,92 @@ const LoginPage = () => {
                       </div>
                     )}
 
-                    <input
-                      id="desktop-fullName"
-                      type="text"
-                      autoComplete="name"
-                      placeholder="Full Name"
-                      value={formData.fullName}
-                      onChange={e => handleInputChange('fullName', e.target.value)}
-                      className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
-                      style={{
-                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
-                      }}
-                      required
-                    />
-
-                    <input
-                      id="desktop-email-signup"
-                      type="email"
-                      inputMode="email"
-                      autoComplete="email"
-                      placeholder="Email"
-                      value={formData.email}
-                      onChange={e => handleInputChange('email', e.target.value)}
-                      className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
-                      style={{
-                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
-                      }}
-                      required
-                    />
-
-                    <div className="relative">
+                    <div className="space-y-1">
+                      <label htmlFor="desktop-fullName" className="block text-xs font-medium text-white/90 pl-1">Full Name</label>
                       <input
-                        id="desktop-password-signup"
+                        id="desktop-fullName"
+                        type="text"
+                        autoComplete="name"
+                        placeholder="Enter your full name"
+                        value={formData.fullName}
+                        onChange={e => handleInputChange('fullName', e.target.value)}
+                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        style={{
+                          boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
+                          borderTop: '1px solid rgba(255, 255, 255, 0.5)',
+                          borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+                          borderRight: '1px solid rgba(0, 0, 0, 0.1)'
+                        }}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label htmlFor="desktop-email-signup" className="block text-xs font-medium text-white/90 pl-1">Email</label>
+                      <input
+                        id="desktop-email-signup"
+                        type="email"
+                        inputMode="email"
+                        autoComplete="email"
+                        placeholder="Enter your email"
+                        value={formData.email}
+                        onChange={e => handleInputChange('email', e.target.value)}
+                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        style={{
+                          boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
+                          borderTop: '1px solid rgba(255, 255, 255, 0.5)',
+                          borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+                          borderRight: '1px solid rgba(0, 0, 0, 0.1)'
+                        }}
+                        required
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label htmlFor="desktop-password-signup" className="block text-xs font-medium text-white/90 pl-1">Password</label>
+                      <div className="relative">
+                        <input
+                          id="desktop-password-signup"
+                          type={showPassword ? 'text' : 'password'}
+                          autoComplete="new-password"
+                          placeholder="Create a password"
+                          value={formData.password}
+                          onChange={e => handleInputChange('password', e.target.value)}
+                          className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 pr-10 text-sm rounded-xl sm:rounded-xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                          style={{
+                            boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
+                          }}
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 hover:text-slate-900 transition-colors p-1"
+                          aria-label="Toggle password visibility"
+                        >
+                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      </div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label htmlFor="desktop-confirmPassword" className="block text-xs font-medium text-white/90 pl-1">Confirm Password</label>
+                      <input
+                        id="desktop-confirmPassword"
                         type={showPassword ? 'text' : 'password'}
                         autoComplete="new-password"
-                        placeholder="New Password"
-                        value={formData.password}
-                        onChange={e => handleInputChange('password', e.target.value)}
-                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 pr-10 text-sm rounded-xl sm:rounded-xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                        placeholder="Confirm your password"
+                        value={formData.confirmPassword}
+                        onChange={e => handleInputChange('confirmPassword', e.target.value)}
+                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
                         style={{
                           boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
                         }}
                         required
                       />
-                      <button
-                        type="button"
-                        onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-1"
-                        aria-label="Toggle password visibility"
-                      >
-                        {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                      </button>
                     </div>
-
-                    <input
-                      id="desktop-confirmPassword"
-                      type={showPassword ? 'text' : 'password'}
-                      autoComplete="new-password"
-                      placeholder="Confirm Password"
-                      value={formData.confirmPassword}
-                      onChange={e => handleInputChange('confirmPassword', e.target.value)}
-                      className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
-                      style={{
-                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
-                      }}
-                      required
-                    />
 
                     <div className="flex items-center space-x-2">
                       <input
@@ -1115,12 +1208,9 @@ const LoginPage = () => {
             </div>
           </>
         )}
-
-
       </div>
     </div>
   );
 };
 
 export default LoginPage;
-
