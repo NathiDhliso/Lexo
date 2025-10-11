@@ -7,11 +7,14 @@ import {
   Eye,
   Search,
   Edit,
-  Undo2
+  Undo2,
+  Zap,
+  ChevronDown
 } from 'lucide-react';
 import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
 import { MatterDetailModal } from '../components/matters/MatterDetailModal';
 import { EditMatterModal } from '../components/matters/EditMatterModal';
+import { QuickCreateMatterModal } from '../components/matters/QuickCreateMatterModal';
 import { matterApiService } from '../services/api';
 import { matterConversionService } from '../services/api/matter-conversion.service';
 import { useAuth } from '../hooks/useAuth';
@@ -31,6 +34,8 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
+  const [showQuickCreateModal, setShowQuickCreateModal] = useState(false);
+  const [showCreateDropdown, setShowCreateDropdown] = useState(false);
 
   const [matters, setMatters] = useState<Matter[]>([]);
   const [loadingMatters, setLoadingMatters] = useState(true);

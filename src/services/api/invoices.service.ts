@@ -1,9 +1,9 @@
 import { supabase } from '../../lib/supabase';
 import { z } from 'zod';
-import { 
-  Invoice, 
-  InvoiceStatus, 
-  TimeEntry, 
+import {
+  Invoice,
+  InvoiceStatus,
+  TimeEntry,
   Matter,
   BarPaymentRules,
   InvoiceGenerationRequest
@@ -59,23 +59,23 @@ export class InvoiceService {
     try {
       const validated = InvoiceGenerationValidation.parse(request);
       const { matterId, timeEntryIds, customNarrative, isProForma } = validated;
-      
+
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
         throw new Error('User not authenticated');
       }
-      
+
       const isTempProFormaMatter = matterId.startsWith('temp-pro-forma-');
-      
+
       if (isTempProFormaMatter && !isProForma) {
         throw new Error('Temporary matters can only generate pro forma invoices');
       }
-      
+
       if (isTempProFormaMatter) {
         return this.generateProFormaForTempMatter(request, user);
       }
-      
+
       // Fetch matter details
       const { data: matter, error: matterError } = await supabase
         .from('matters')
@@ -83,58 +83,58 @@ export class InvoiceService {
         .eq('id', matterId)
         .eq('advocate_id', user.id)
         .single();
-      
+
       if (matterError || !matter) {
         throw new Error('Matter not found or unauthorized');
       }
-      
+
       // Fetch unbilled time entries
       let timeEntriesQuery = supabase
         .from('time_entries')
         .select('*')
         .eq('matter_id', matterId)
         .eq('billed', false);
-      
+
       if (timeEntryIds && timeEntryIds.length > 0) {
         timeEntriesQuery = timeEntriesQuery.in('id', timeEntryIds);
       }
-      
+
       const { data: timeEntries, error: entriesError } = await timeEntriesQuery;
-      
+
       if (entriesError) throw entriesError;
       if (!timeEntries || timeEntries.length === 0) {
         throw new Error('No unbilled time entries found');
       }
-      
+
       // Calculate fees
       const totalFees = timeEntries.reduce((sum, entry) => {
         return sum + ((entry.duration / 60) * entry.rate);
       }, 0);
-      
+
       // Get disbursements
       const disbursements = matter.disbursements || 0;
-      
+
       // Generate fee narrative
       const narrative = customNarrative || await this.generateFeeNarrative(
         matter,
         timeEntries,
         disbursements
       );
-      
+
       // Generate invoice number
       const invoiceNumber = await this.generateInvoiceNumber(matter.bar);
-      
+
       // Calculate dates based on Bar rules
       const rules = BAR_PAYMENT_RULES[matter.bar];
       if (!rules) {
         throw new Error(`Payment rules not found for bar: ${matter.bar}`);
       }
-      
+
       const invoiceDate = new Date();
       const dueDate = addDays(invoiceDate, rules.paymentTermDays);
       const vatAmount = totalFees * rules.vatRate;
       const totalAmount = totalFees + vatAmount + disbursements;
-      
+
       // Create invoice
       const { data: invoice, error: invoiceError } = await supabase
         .from('invoices')
@@ -162,36 +162,36 @@ export class InvoiceService {
         })
         .select()
         .single();
-      
+
       if (invoiceError) throw invoiceError;
-      
+
       // Mark time entries as billed (only for final invoices, not pro forma)
       if (!isProForma) {
         await supabase
           .from('time_entries')
-          .update({ 
-            billed: true, 
+          .update({
+            billed: true,
             invoice_id: invoice.id,
             updated_at: new Date().toISOString()
           })
-        .in('id', timeEntries.map(e => e.id));
+          .in('id', timeEntries.map(e => e.id));
       }
-      
+
       // Update matter WIP value (only for final invoices, not pro forma)
       if (!isProForma) {
-      await supabase
-        .from('matters')
-        .update({ 
-          wip_value: Math.max(0, (matter.wip_value || 0) - totalFees),
-          actual_fee: (matter.actual_fee || 0) + totalFees,
-          updated_at: new Date().toISOString()
-        })
-        .eq('id', matterId);
+        await supabase
+          .from('matters')
+          .update({
+            wip_value: Math.max(0, (matter.wip_value || 0) - totalFees),
+            actual_fee: (matter.actual_fee || 0) + totalFees,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', matterId);
       }
-      
+
       toast.success(isProForma ? 'Pro forma invoice generated successfully' : 'Invoice generated successfully');
       return this.mapDatabaseToInvoice(invoice);
-      
+
     } catch (error) {
       console.error('Error generating invoice:', error);
       const message = error instanceof Error ? error.message : 'Failed to generate invoice';
@@ -202,52 +202,52 @@ export class InvoiceService {
 
   private static async generateProFormaForTempMatter(request: InvoiceGenerationRequest, user: any): Promise<Invoice> {
     const { matterId, customNarrative } = request;
-    
+
     const requestId = matterId.replace('temp-pro-forma-', '');
-    
+
     const { data: proFormaRequest, error: requestError } = await supabase
       .from('proforma_requests')
       .select('*')
       .eq('id', requestId)
       .single();
-    
+
     if (requestError || !proFormaRequest) {
       throw new Error('Pro forma request not found');
     }
-    
+
     const { data: existingMatters } = await supabase
       .from('matters')
       .select('id')
       .eq('advocate_id', user.id)
       .limit(1);
-    
+
     let tempMatterId: string;
-    
+
     if (existingMatters && existingMatters.length > 0) {
       tempMatterId = existingMatters[0].id;
     } else {
       tempMatterId = '00000000-0000-0000-0000-000000000000';
     }
-    
+
     const invoiceNumber = await this.generateInvoiceNumber('johannesburg');
     const invoiceDate = new Date();
     const dueDate = addDays(invoiceDate, 60);
-    
+
     // Import rate card service for pricing
     const { rateCardService } = await import('../rate-card.service');
-    
+
     // Get advocate's hourly rate
     const { data: advocate } = await supabase
       .from('advocates')
       .select('hourly_rate')
       .eq('id', user.id)
       .single();
-    
+
     const advocateHourlyRate = advocate?.hourly_rate || 2500;
-    
+
     // Determine matter type from request
     const matterType = proFormaRequest.matter_type || 'general';
-    
+
     // Generate pro forma estimate using rate card system
     let proFormaEstimate;
     try {
@@ -288,13 +288,13 @@ export class InvoiceService {
         matter_type: matterType
       };
     }
-    
+
     // Build detailed narrative with line items
     const lineItemsNarrative = proFormaEstimate.line_items
       .map(item => `${item.service_name}: ${item.description} - R${item.total_amount.toFixed(2)}`)
       .join('\n');
-    
-    const detailedNarrative = customNarrative || 
+
+    const detailedNarrative = customNarrative ||
       `Pro forma invoice for: ${proFormaRequest.matter_title || 'Legal Services'}\n\n` +
       `Matter Description: ${proFormaRequest.matter_description || ''}\n\n` +
       `SERVICES BREAKDOWN:\n${lineItemsNarrative}\n\n` +
@@ -302,7 +302,7 @@ export class InvoiceService {
       `Subtotal: R${proFormaEstimate.subtotal.toFixed(2)}\n` +
       `VAT (15%): R${proFormaEstimate.vat_amount.toFixed(2)}\n` +
       `Total Amount: R${proFormaEstimate.total_amount.toFixed(2)}`;
-    
+
     const { data: invoice, error: invoiceError } = await supabase
       .from('invoices')
       .insert({
@@ -326,12 +326,12 @@ export class InvoiceService {
       })
       .select()
       .single();
-    
+
     if (invoiceError) {
       console.error('Error creating pro forma invoice:', invoiceError);
       throw new Error('Failed to create pro forma invoice');
     }
-    
+
     await supabase
       .from('proforma_requests')
       .update({
@@ -339,7 +339,7 @@ export class InvoiceService {
         processed_at: new Date().toISOString()
       })
       .eq('id', requestId);
-    
+
     toast.success('Pro forma invoice generated successfully');
     return this.mapDatabaseToInvoice(invoice);
   }
@@ -356,7 +356,7 @@ export class InvoiceService {
     try {
       // Validate input
       const validated = InvoiceValidation.parse(data);
-      
+
       // Get current user
       const { data: { user }, error: userError } = await supabase.auth.getUser();
       if (userError || !user) {
@@ -385,14 +385,14 @@ export class InvoiceService {
 
       // Extract bar from advocate
       const bar = (matter.advocates as any)?.bar || 'johannesburg';
-      
+
       // Generate invoice number
       const invoiceNumber = await this.generateInvoiceNumber(bar);
-      
+
       // Calculate due date based on bar rules
       const invoiceDate = new Date();
       const dueDate = this.calculateDueDate(invoiceDate, bar);
-      
+
       // Create the invoice
       const { data: invoice, error } = await supabase
         .from('invoices')
@@ -413,7 +413,7 @@ export class InvoiceService {
         })
         .select()
         .single();
-        
+
       if (error) {
         console.error('Database error:', error);
         throw new Error(`Failed to create invoice: ${error.message}`);
@@ -423,16 +423,16 @@ export class InvoiceService {
       if (validated.timeEntryIds && validated.timeEntryIds.length > 0) {
         await supabase
           .from('time_entries')
-          .update({ 
-            billed: true, 
-            invoice_id: invoice.id 
+          .update({
+            billed: true,
+            invoice_id: invoice.id
           })
           .in('id', validated.timeEntryIds);
       }
-      
+
       toast.success('Invoice created successfully');
       return invoice as Invoice;
-      
+
     } catch (error) {
       console.error('Error creating invoice:', error);
       const message = error instanceof Error ? error.message : 'Failed to create invoice';
@@ -443,7 +443,7 @@ export class InvoiceService {
 
   // Update invoice status
   static async updateInvoiceStatus(
-    invoiceId: string, 
+    invoiceId: string,
     newStatus: InvoiceStatus
   ): Promise<Invoice> {
     try {
@@ -452,22 +452,22 @@ export class InvoiceService {
         .select('*')
         .eq('id', invoiceId)
         .single();
-        
+
       if (fetchError || !currentInvoice) {
         throw new Error('Invoice not found');
       }
-      
+
       // Validate status transition
       if (!this.isValidStatusTransition(currentInvoice.status as InvoiceStatus, newStatus)) {
         throw new Error(`Invalid status transition from ${currentInvoice.status} to ${newStatus}`);
       }
-      
+
       // Prepare update data
       const updateData: Record<string, unknown> = {
         status: newStatus,
         updated_at: new Date().toISOString()
       };
-      
+
       // Add status-specific fields
       if (newStatus === 'sent' && !currentInvoice.sent_at) {
         updateData.sent_at = new Date().toISOString();
@@ -475,21 +475,21 @@ export class InvoiceService {
         updateData.date_paid = new Date().toISOString().split('T')[0];
         updateData.amount_paid = currentInvoice.total_amount;
       }
-      
+
       const { data: updatedInvoice, error } = await supabase
         .from('invoices')
         .update(updateData)
         .eq('id', invoiceId)
         .select()
         .single();
-        
+
       if (error) {
         throw new Error(`Failed to update invoice: ${error.message}`);
       }
-      
+
       toast.success(`Invoice status updated to ${newStatus}`);
       return updatedInvoice as Invoice;
-      
+
     } catch (error) {
       console.error('Error updating invoice status:', error);
       const message = error instanceof Error ? error.message : 'Failed to update invoice status';
@@ -506,9 +506,9 @@ export class InvoiceService {
         .eq('advocate_id', advocateId)
         .eq('is_pro_forma', true)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
-      
+
       return (data || []).map(inv => this.mapDatabaseToInvoice(inv));
     } catch (error) {
       console.error('Error fetching pro forma invoice history:', error);
@@ -524,9 +524,9 @@ export class InvoiceService {
         .eq('external_id', requestId)
         .eq('is_pro_forma', true)
         .order('created_at', { ascending: false });
-      
+
       if (error) throw error;
-      
+
       return (data || []).map(inv => this.mapDatabaseToInvoice(inv));
     } catch (error) {
       console.error('Error fetching pro forma invoices for request:', error);
@@ -553,7 +553,7 @@ export class InvoiceService {
       sortOrder = 'desc',
       matterId
     } = options;
-    
+
     try {
       let query = supabase
         .from('invoices')
@@ -561,11 +561,11 @@ export class InvoiceService {
           *,
           matters!inner(title, client_name)
         `, { count: 'exact' });
-      
+
       // Apply filters
       if (status && status.length > 0) {
         // Only apply valid DB enum statuses to the query
-        const dbValidStatuses = ['draft','sent','viewed','paid','overdue','disputed','written_off'];
+        const dbValidStatuses = ['draft', 'sent', 'viewed', 'paid', 'overdue', 'disputed', 'written_off'];
         const hasProForma = status.includes('pro_forma' as any);
         const validStatuses = status
           .map(s => String(s))
@@ -584,21 +584,21 @@ export class InvoiceService {
       if (matterId) {
         query = query.eq('matter_id', matterId);
       }
-      
+
       if (search) {
         query = query.or(`invoice_number.ilike.%${search}%,fee_narrative.ilike.%${search}%`);
       }
-      
+
       // Apply sorting
       query = query.order(sortBy, { ascending: sortOrder === 'asc' });
-      
+
       // Apply pagination
       const from = (page - 1) * pageSize;
       const to = from + pageSize - 1;
       query = query.range(from, to);
-      
+
       const { data, error, count } = await query;
-      
+
       if (error) {
         // Log detailed Postgrest error information to aid RLS/schema debugging
         console.warn('[InvoicesService] Postgrest error fetching invoices', {
@@ -609,7 +609,7 @@ export class InvoiceService {
         });
         throw new Error(`Failed to fetch invoices: ${error.message}`);
       }
-      
+
       return {
         data: (data || []) as Invoice[],
         pagination: {
@@ -619,7 +619,7 @@ export class InvoiceService {
           totalPages: Math.ceil((count || 0) / pageSize)
         }
       };
-      
+
     } catch (error) {
       console.error('Error fetching invoices:', error);
       toast.error('Failed to fetch invoices');
@@ -826,7 +826,7 @@ export class InvoiceService {
         .eq('id', invoiceId)
         .eq('advocate_id', user.id)
         .single();
-      
+
       if (invoiceError || !invoice) {
         throw new Error('Invoice not found or unauthorized');
       }
@@ -851,15 +851,15 @@ export class InvoiceService {
 
       await supabase
         .from('invoices')
-        .update({ 
+        .update({
           status: 'sent',
           sent_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         })
         .eq('id', invoiceId);
-      
+
       toast.success('Invoice sent successfully');
-      
+
     } catch (error) {
       console.error('Error sending invoice:', error);
       const message = error instanceof Error ? error.message : 'Failed to send invoice';
@@ -1116,9 +1116,9 @@ export class InvoiceService {
       link.click();
       document.body.removeChild(link);
       window.URL.revokeObjectURL(url);
-      
+
       toast.success('Invoice downloaded. Open the file and use Print to PDF from your browser.');
-      
+
     } catch (error) {
       console.error('Error downloading invoice:', error);
       const message = error instanceof Error ? error.message : 'Failed to download invoice';
@@ -1145,13 +1145,13 @@ export class InvoiceService {
         .eq('advocate_id', user.id)
         .select()
         .single();
-        
+
       if (error || !invoice) {
         throw new Error('Invoice not found or unauthorized');
       }
-      
+
       return this.mapDatabaseToInvoice(invoice);
-      
+
     } catch (error) {
       console.error('Error updating invoice:', error);
       const message = error instanceof Error ? error.message : 'Failed to update invoice';
@@ -1176,11 +1176,11 @@ export class InvoiceService {
         })
         .eq('id', invoiceId)
         .eq('advocate_id', user.id);
-        
+
       if (error) {
         throw new Error(`Failed to delete invoice: ${error.message}`);
       }
-      
+
     } catch (error) {
       console.error('Error deleting invoice:', error);
       const message = error instanceof Error ? error.message : 'Failed to delete invoice';
@@ -1194,7 +1194,7 @@ export class InvoiceService {
     const year = new Date().getFullYear();
     const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
     const prefix = bar === 'johannesburg' ? 'JHB' : 'CPT';
-    
+
     try {
       // Get the last invoice number for this month and bar
       const { data } = await supabase
@@ -1203,14 +1203,14 @@ export class InvoiceService {
         .like('invoice_number', `${prefix}-${year}${month}-%`)
         .order('invoice_number', { ascending: false })
         .limit(1);
-      
+
       let nextNumber = 1;
       if (data && data.length > 0) {
         const lastInvoice = data[0].invoice_number;
         const lastNumber = parseInt(lastInvoice.split('-').pop() || '0');
         nextNumber = lastNumber + 1;
       }
-      
+
       return `${prefix}-${year}${month}-${nextNumber.toString().padStart(4, '0')}`;
     } catch (error) {
       console.error('Error generating invoice number:', error);
@@ -1252,41 +1252,41 @@ export class InvoiceService {
   ): Promise<string> {
     // Group time entries by type of work
     const workSummary = this.summarizeWork(timeEntries);
-    
+
     let narrative = `PROFESSIONAL SERVICES RENDERED\n\n`;
     narrative += `Matter: ${matter.title}\n`;
     narrative += `Client: ${matter.clientName}\n`;
     narrative += `Period: ${this.getPeriodDescription(timeEntries)}\n\n`;
     narrative += `SUMMARY OF SERVICES:\n`;
-    
+
     // Add detailed work descriptions
     workSummary.forEach(category => {
       narrative += `\n${category.description}:\n`;
       narrative += `${category.hours.toFixed(1)} hours @ R${category.averageRate.toFixed(2)}/hour\n`;
       narrative += `Subtotal: R${category.total.toFixed(2)}\n`;
     });
-    
+
     // Add disbursements if any
     if (disbursements > 0) {
       narrative += `\nDISBURSEMENTS:\n`;
       narrative += `Various expenses incurred: R${disbursements.toFixed(2)}\n`;
     }
-    
+
     // Add professional closing
     narrative += `\n---\n`;
     narrative += `Services rendered with care and diligence in accordance with `;
     narrative += `the standards of the ${matter.bar} Society of Advocates.\n`;
-    
+
     return narrative;
   }
 
-  
+
 
   // Automated reminder system (Phase 3)
   static async processReminders(): Promise<void> {
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
-      
+
       // Find invoices due for reminders
       const { data: invoices } = await supabase
         .from('invoices')
@@ -1294,17 +1294,17 @@ export class InvoiceService {
         .eq('status', 'sent')
         .lte('next_reminder_date', today)
         .is('deleted_at', null);
-      
+
       if (!invoices || invoices.length === 0) return;
-      
+
       for (const invoice of invoices) {
         await this.sendReminder(invoice);
-        
+
         // Update reminder tracking
         const rules = BAR_PAYMENT_RULES[invoice.bar];
         const reminderCount = invoice.reminders_sent + 1;
         const nextReminderIndex = reminderCount;
-        
+
         let nextReminderDate = null;
         if (nextReminderIndex < rules.reminderSchedule.length) {
           nextReminderDate = format(
@@ -1312,7 +1312,7 @@ export class InvoiceService {
             'yyyy-MM-dd'
           );
         }
-        
+
         await supabase
           .from('invoices')
           .update({
@@ -1324,7 +1324,7 @@ export class InvoiceService {
           })
           .eq('id', invoice.id);
       }
-      
+
     } catch (error) {
       console.error('Error processing reminders:', error);
     }
@@ -1333,10 +1333,10 @@ export class InvoiceService {
   // Helper: Summarize work for narrative
   private static summarizeWork(timeEntries: TimeEntry[]) {
     const categories = new Map<string, { hours: number; entries: TimeEntry[] }>();
-    
+
     timeEntries.forEach(entry => {
       const category = this.categorizeWork(entry.description);
-      
+
       if (!categories.has(category)) {
         categories.set(category, {
           description: category,
@@ -1346,7 +1346,7 @@ export class InvoiceService {
           entries: []
         });
       }
-      
+
       const cat = categories.get(category);
       const hours = entry.duration / 60;
       cat.hours += hours;
@@ -1354,35 +1354,35 @@ export class InvoiceService {
       cat.rates.push(entry.rate);
       cat.entries.push(entry);
     });
-    
+
     return Array.from(categories.values()).map(cat => ({
       ...cat,
       averageRate: cat.rates.reduce((a: number, b: number) => a + b, 0) / cat.rates.length
     }));
   }
-  
+
   // Helper: Categorize work type
   private static categorizeWork(description: string): string {
     const lower = description.toLowerCase();
-    
+
     if (lower.includes('draft') || lower.includes('review')) return 'Drafting & Review';
     if (lower.includes('consult') || lower.includes('meeting')) return 'Consultations';
     if (lower.includes('research')) return 'Legal Research';
     if (lower.includes('court') || lower.includes('hearing')) return 'Court Appearances';
     if (lower.includes('correspond') || lower.includes('email')) return 'Correspondence';
-    
+
     return 'General Legal Services';
   }
-  
+
   // Helper: Get period description
   private static getPeriodDescription(timeEntries: TimeEntry[]): string {
     const dates = timeEntries.map(e => new Date(e.date));
     const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
     const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
-    
+
     return `${format(minDate, 'dd MMMM yyyy')} to ${format(maxDate, 'dd MMMM yyyy')}`;
   }
-  
+
   // Helper: Send reminder (integrated with AWS SES)
   private static async sendReminder(invoice: Invoice): Promise<void> {
     try {
@@ -1418,11 +1418,11 @@ export class InvoiceService {
 
         if (emailResult.success) {
           console.log(`Payment reminder sent for invoice ${invoice.invoiceNumber}`);
-          
+
           // Update reminder tracking
           await supabase
             .from('invoices')
-            .update({ 
+            .update({
               last_reminder_sent: new Date().toISOString(),
               reminder_count: (invoice.reminderCount || 0) + 1,
               updated_at: new Date().toISOString()
@@ -1438,13 +1438,13 @@ export class InvoiceService {
       console.error(`Error sending reminder for invoice ${invoice.invoiceNumber}:`, error);
     }
   }
-  
+
   // Helper: Schedule reminders
   private static async scheduleReminders(invoice: Invoice): Promise<void> {
     // In production, integrate with job scheduler
     console.log(`Scheduling reminders for invoice ${invoice.invoiceNumber}`);
   }
-  
+
   // Helper: Map database record to Invoice type
   private static mapDatabaseToInvoice(dbInvoice: Record<string, unknown>): Invoice {
     return {

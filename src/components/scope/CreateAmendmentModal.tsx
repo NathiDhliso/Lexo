@@ -44,17 +44,13 @@ export const CreateAmendmentModal: React.FC<CreateAmendmentModalProps> = ({
 
       const { error } = await supabase.from('scope_amendments').insert({
         matter_id: matterId,
+        advocate_id: user.id,
         amendment_type: formData.amendmentType,
         reason: formData.reason,
         description: formData.description,
-        current_estimated_cost: currentEstimatedCost,
-        new_estimated_cost: parseFloat(formData.newEstimatedCost),
-        new_estimated_hours: parseFloat(formData.newEstimatedHours || '0'),
-        justification: formData.justification,
-        current_wip: currentWIP,
-        variance_percentage: costVariance,
+        original_estimate: currentEstimatedCost,
+        new_estimate: parseFloat(formData.newEstimatedCost),
         status: 'pending',
-        created_by: user.id,
       });
 
       if (error) throw error;

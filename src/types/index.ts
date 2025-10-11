@@ -325,6 +325,12 @@ export interface Matter {
   deleted_at?: string;
   days_active: number;
   is_overdue: boolean;
+  source_proforma_id?: string;
+  is_prepopulated?: boolean;
+  urgency?: 'routine' | 'standard' | 'urgent' | 'emergency';
+  creation_source?: MatterCreationSource;
+  is_quick_create?: boolean;
+  parent_matter_id?: string;
 }
 
 export interface Invoice {
@@ -1511,4 +1517,175 @@ export interface ComplianceAuditLog {
   ip_address?: string;
   user_agent?: string;
   created_at: string;
+}
+
+export enum BriefStatus {
+  PENDING = 'pending',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
+  CANCELLED = 'cancelled'
+}
+
+export enum BriefType {
+  OPINION = 'opinion',
+  DRAFTING = 'drafting',
+  CONSULTATION = 'consultation',
+  TRIAL = 'trial',
+  APPEAL = 'appeal',
+  APPLICATION = 'application',
+  MOTION = 'motion',
+  ARBITRATION = 'arbitration',
+  MEDIATION = 'mediation',
+  OTHER = 'other'
+}
+
+export interface Brief {
+  id: string;
+  matter_id: string;
+  advocate_id: string;
+  brief_number: string;
+  brief_title: string;
+  brief_type: BriefType;
+  description?: string;
+  date_received: string;
+  date_accepted?: string;
+  deadline?: string;
+  date_completed?: string;
+  fee_type: FeeType;
+  agreed_fee?: number;
+  fee_cap?: number;
+  status: BriefStatus;
+  priority: 'low' | 'medium' | 'high' | 'urgent';
+  wip_value: number;
+  billed_amount: number;
+  source_proforma_id?: string;
+  notes?: string;
+  tags: string[];
+  created_at: string;
+  updated_at: string;
+  deleted_at?: string;
+}
+
+export interface BriefFilters {
+  matter_id?: string;
+  status?: BriefStatus | BriefStatus[];
+  brief_type?: BriefType | BriefType[];
+  priority?: string[];
+  date_received_from?: string;
+  date_received_to?: string;
+  deadline_from?: string;
+  deadline_to?: string;
+  search?: string;
+}
+
+export interface BriefStats {
+  total: number;
+  pending: number;
+  active: number;
+  completed: number;
+  cancelled: number;
+  totalWipValue: number;
+  totalBilledAmount: number;
+  overdueCount: number;
+}
+
+export enum MatterCreationSource {
+  PROFORMA = 'proforma',
+  DIRECT = 'direct',
+  BRIEF_UPLOAD = 'brief_upload',
+  QUICK_CREATE = 'quick_create'
+}
+
+export interface MatterTemplate {
+  id: string;
+  advocate_id: string;
+  template_name: string;
+  template_description?: string;
+  matter_type?: string;
+  fee_type: FeeType;
+  default_fee?: number;
+  risk_level: RiskLevel;
+  urgency: 'routine' | 'standard' | 'urgent' | 'emergency';
+  use_count: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface QuickCreateMatterRequest {
+  title: string;
+  client_name: string;
+  instructing_attorney: string;
+  urgency?: 'routine' | 'standard' | 'urgent' | 'emergency';
+  description?: string;
+}
+
+export enum DisbursementType {
+  COURT_FEES = 'court_fees',
+  FILING_FEES = 'filing_fees',
+  EXPERT_WITNESS = 'expert_witness',
+  TRAVEL = 'travel',
+  ACCOMMODATION = 'accommodation',
+  COURIER = 'courier',
+  PHOTOCOPYING = 'photocopying',
+  RESEARCH = 'research',
+  TRANSLATION = 'translation',
+  OTHER = 'other'
+}
+
+export interface EnhancedExpense extends Expense {
+  disbursement_type?: DisbursementType;
+  payment_method?: 'cash' | 'eft' | 'credit_card' | 'cheque' | 'petty_cash';
+  payment_date?: string;
+  receipt_number?: string;
+  vendor_name?: string;
+  is_reimbursable: boolean;
+  reimbursed: boolean;
+  reimbursement_date?: string;
+  markup_percentage: number;
+  markup_amount: number;
+  client_charge_amount: number;
+  brief_id?: string;
+}
+
+export interface DisbursementSummary {
+  matter_id: string;
+  matter_title: string;
+  client_name: string;
+  total_disbursements: number;
+  total_amount: number;
+  total_client_charge: number;
+  unbilled_amount: number;
+  billed_amount: number;
+  unreimbursed_amount: number;
+  unbilled_count: number;
+  unreimbursed_count: number;
+}
+
+export interface QuickDisbursementRequest {
+  matter_id: string;
+  description: string;
+  amount: number;
+  disbursement_type: DisbursementType;
+  payment_date?: string;
+  receipt_number?: string;
+  vendor_name?: string;
+}
+
+export interface DisbursementApproval {
+  id: string;
+  expense_id: string;
+  matter_id: string;
+  advocate_id: string;
+  requested_amount: number;
+  approved_amount?: number;
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+  requested_by?: string;
+  approved_by?: string;
+  request_notes?: string;
+  approval_notes?: string;
+  requested_at: string;
+  approved_at?: string;
+  created_at: string;
+  updated_at: string;
 }

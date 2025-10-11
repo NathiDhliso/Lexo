@@ -26,7 +26,48 @@ const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   // TODO: Load quick actions from user preferences or database instead of hardcoded defaults
-  const defaultActions: QuickAction[] = [];
+  const defaultActions: QuickAction[] = [
+    {
+      id: 'create-proforma',
+      label: 'Create Pro Forma',
+      description: 'Generate a new pro forma invoice',
+      icon: FileText,
+      shortcut: 'Ctrl+Shift+P',
+      page: 'proforma-requests',
+      minTier: UserTier.JUNIOR_START,
+      usageCount: 0
+    },
+    {
+      id: 'add-matter',
+      label: 'New Matter',
+      description: 'Add a new matter to your portfolio',
+      icon: FolderPlus,
+      shortcut: 'Ctrl+Shift+M',
+      page: 'matters',
+      minTier: UserTier.JUNIOR_START,
+      usageCount: 0
+    },
+    {
+      id: 'analyze-brief',
+      label: 'Analyze Brief',
+      description: 'AI-powered brief analysis',
+      icon: Brain,
+      shortcut: 'Ctrl+Shift+A',
+      page: 'ai-tools',
+      minTier: UserTier.ADVOCATE_PRO,
+      usageCount: 0
+    },
+    {
+      id: 'quick-invoice',
+      label: 'Quick Invoice',
+      description: 'Generate an invoice quickly',
+      icon: Receipt,
+      shortcut: 'Ctrl+Shift+I',
+      page: 'invoices',
+      minTier: UserTier.JUNIOR_START,
+      usageCount: 0
+    }
+  ];
 
   // Filter actions based on user tier
   const getFilteredActions = () => {

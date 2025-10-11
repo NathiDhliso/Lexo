@@ -1,14 +1,15 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Search, Plus, ChevronDown, Bell, User, LogOut, Settings } from 'lucide-react';
 import lexoLogo from '../../Public/Assets/lexo-logo.png';
-import { Button, Icon } from '../design-system/components';
 import { MegaMenu } from './MegaMenu';
 import { MobileMegaMenu } from './MobileMegaMenu';
 import GlobalCommandBar from './GlobalCommandBar';
 import { RealTimeTicker } from './RealTimeTicker';
 import AlertsDropdown from '../notifications/AlertsDropdown';
+import { Button, Icon } from '../design-system/components';
 import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
 import { CreateProFormaModal } from '../proforma/CreateProFormaModal';
+import { GenerateInvoiceModal } from '../invoices/GenerateInvoiceModal';
 
 import { navigationConfig, getFilteredNavigationConfig } from '../../config/navigation.config';
 import { useKeyboardShortcuts, useClickOutside } from '../../hooks';
@@ -17,11 +18,9 @@ import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import { ThemeToggle } from '../common/ThemeToggle';
 import type { 
-  NavigationCategory, 
   NavigationState, 
   Page, 
-  UserTier,
-  NavigationA11y 
+  UserTier
 } from '../../types';
 import type { NotificationBadge, SmartNotification } from '../../services/smart-notifications.service';
 import { useNavigate } from 'react-router-dom';
@@ -30,16 +29,14 @@ interface NavigationBarProps {
   activePage: Page;
   onPageChange: (page: Page) => void;
   userTier: UserTier;
-  onToggleSidebar: () => void;
-  sidebarOpen: boolean;
+  onToggleSidebar?: () => void;
+  sidebarOpen?: boolean;
 }
 
 export const NavigationBar: React.FC<NavigationBarProps> = ({
   activePage,
   onPageChange,
   userTier,
-  onToggleSidebar,
-  sidebarOpen
 }) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -51,8 +48,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     hoveredCategory: null,
     megaMenuOpen: false,
     mobileMenuOpen: false,
-    searchOpen: false,
-    quickActionsOpen: false
   });
 
   // UI state
@@ -64,7 +59,8 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   // Modal state
   const [modalState, setModalState] = useState({
     createMatter: false,
-    createProForma: false
+    createProForma: false,
+    generateInvoice: false
   });
 
   // Notification state
@@ -185,8 +181,9 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       case 'create-proforma':
         setModalState(prev => ({ ...prev, createProForma: true }));
         break;
+      case 'quick-invoice':
       case 'create-invoice':
-        handlePageNavigation('invoices');
+        setModalState(prev => ({ ...prev, generateInvoice: true }));
         break;
       default:
         console.log('Action clicked:', action);
@@ -197,7 +194,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       ...prev,
       megaMenuOpen: false,
       mobileMenuOpen: false,
-      quickActionsOpen: false
     }));
     
     // Restore body scroll
@@ -526,13 +522,25 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         <CreateProFormaModal
           isOpen={modalState.createProForma}
           onClose={() => setModalState(prev => ({ ...prev, createProForma: false }))}
-          onComplete={(proForma) => {
+          onSuccess={() => {
             setModalState(prev => ({ ...prev, createProForma: false }));
             toast.success('Pro Forma request created successfully');
             handlePageNavigation('proforma-requests');
           }}
         />
       )}
-    </>
+
+      {modalState.generateInvoice && (
+        <GenerateInvoiceModal
+          isOpen={modalState.generateInvoice}
+          onClose={() => setModalState(prev => ({ ...prev, generateInvoice: false }))}
+          onSuccess={() => {
+            setModalState(prev => ({ ...prev, generateInvoice: false }));
+            toast.success('Invoice generated successfully');
+            handlePageNavigation('invoices');
+          }}
+        />
+      )}  
+  </>
   );
 };
