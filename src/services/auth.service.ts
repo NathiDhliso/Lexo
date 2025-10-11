@@ -36,12 +36,15 @@ class AuthService {
   }
 
   async signUp(email: string, password: string, metadata: UserMetadata) {
+    // Use production URL if available, otherwise fall back to current origin
+    const redirectUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: metadata,
-        emailRedirectTo: `${window.location.origin}/login?confirmed=true`,
+        emailRedirectTo: `${redirectUrl}/#/login?confirmed=true`,
       },
     });
 
@@ -83,18 +86,24 @@ class AuthService {
   }
 
   async signInWithMagicLink(email: string) {
+    // Use production URL if available, otherwise fall back to current origin
+    const redirectUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: window.location.origin,
+        emailRedirectTo: `${redirectUrl}/#/login`,
       },
     });
     return { error };
   }
 
   async resetPassword(email: string) {
+    // Use production URL if available, otherwise fall back to current origin
+    const redirectUrl = import.meta.env.VITE_APP_URL || window.location.origin;
+    
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/reset-password`,
+      redirectTo: `${redirectUrl}/#/reset-password`,
     });
     return { error };
   }

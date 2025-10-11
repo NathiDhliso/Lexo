@@ -378,6 +378,28 @@ const LoginPage = () => {
 
   const isFormValid = emailValidation.isValid && passwordValidation.isValid && (authMode === 'signin' || (nameValidation.isValid && formData.termsAccepted));
 
+  // Check for email confirmation on mount
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(window.location.hash.split('?')[1]);
+
+    const isConfirmed = urlParams.get('confirmed') === 'true' || hashParams.get('confirmed') === 'true';
+
+    if (isConfirmed) {
+      setAuthMode('signin');
+      const successMsg = '✅ Email confirmed successfully! You can now sign in with your credentials.';
+      setSuccess(successMsg);
+      toast.success('Email confirmed! Please sign in to continue.', {
+        duration: 6000,
+        icon: '✅'
+      });
+
+      // Clean up URL
+      const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
+      window.history.replaceState({}, document.title, cleanUrl);
+    }
+  }, []);
+
   useEffect(() => {
     setError(null);
     setSuccess(null);
