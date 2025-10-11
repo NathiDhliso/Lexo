@@ -54,26 +54,39 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
   };
 
   const handleSendInvoice = async () => {
+    const loadingToast = toast.loading('Sending invoice...');
+    
     try {
       setIsLoading(true);
       await InvoiceService.sendInvoice(invoice.id);
-      toast.success('Invoice sent successfully');
+      toast.success(`Invoice ${invoice.invoice_number} sent successfully`, { 
+        id: loadingToast,
+        duration: 4000 
+      });
       onInvoiceUpdated?.();
       onClose();
     } catch (error) {
       console.error('Error sending invoice:', error);
-      toast.error('Failed to send invoice');
+      toast.error('Failed to send invoice. Please try again.', { 
+        id: loadingToast,
+        duration: 5000 
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleDownloadPDF = async () => {
+    const loadingToast = toast.loading('Generating PDF...');
+    
     try {
       setIsLoading(true);
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        toast.error('User not authenticated');
+        toast.error('User not authenticated. Please sign in again.', { 
+          id: loadingToast,
+          duration: 4000 
+        });
         return;
       }
 
@@ -84,7 +97,10 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
         .single();
 
       if (advocateError || !advocate) {
-        toast.error('Failed to load advocate information');
+        toast.error('Failed to load advocate information', { 
+          id: loadingToast,
+          duration: 5000 
+        });
         return;
       }
 
@@ -135,25 +151,39 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
         advocate_id: user.id,
       });
 
-      toast.success('Invoice PDF downloaded successfully');
+      toast.success(`Invoice ${invoice.invoice_number} downloaded successfully`, { 
+        id: loadingToast,
+        duration: 3000 
+      });
     } catch (error) {
       console.error('Error downloading invoice:', error);
-      toast.error('Failed to download invoice');
+      toast.error('Failed to download invoice. Please try again.', { 
+        id: loadingToast,
+        duration: 5000 
+      });
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleUpdateNarrative = async () => {
+    const loadingToast = toast.loading('Updating narrative...');
+    
     try {
       setIsLoading(true);
       await InvoiceService.updateInvoice(invoice.id, { fee_narrative: editedNarrative });
-      toast.success('Invoice narrative updated successfully');
+      toast.success('Invoice narrative updated successfully', { 
+        id: loadingToast,
+        duration: 3000 
+      });
       setIsEditing(false);
       onInvoiceUpdated?.();
     } catch (error) {
       console.error('Error updating invoice:', error);
-      toast.error('Failed to update invoice');
+      toast.error('Failed to update invoice narrative. Please try again.', { 
+        id: loadingToast,
+        duration: 5000 
+      });
     } finally {
       setIsLoading(false);
     }

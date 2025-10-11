@@ -81,6 +81,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const fetchMatters = React.useCallback(async () => {
     if (loading || !isAuthenticated || !user?.id) return;
     setLoadingMatters(true);
+    
     try {
       console.log('[MattersPage] Fetching matters for user:', user.id);
       const { data, error } = await matterApiService.getByAdvocate(user.id);
@@ -88,49 +89,55 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
       
       if (error) {
         console.error('[MattersPage] Error fetching matters:', error);
-        toast.error('Failed to load matters');
+        toast.error('Failed to load matters. Please try again.', { duration: 5000 });
         setMatters([]);
-      } else {
-        // Fetch associated services for each matter
-        const mattersWithServices = await Promise.all(
-          (data || []).map(async (matter) => {
-            try {
-              const { data: matterServices } = await supabase
-                .from('matter_services')
-                .select(`
-                  service_id,
-                  services (
+        return;
+      }
+      
+      // Fetch associated services for each matter
+      const mattersWithServices = await Promise.all(
+        (data || []).map(async (matter) => {
+          try {
+            const { data: matterServices } = await supabase
+              .from('matter_services')
+              .select(`
+                service_id,
+                services (
+                  id,
+                  name,
+                  description,
+                  service_categories (
                     id,
-                    name,
-                    description,
-                    service_categories (
-                      id,
-                      name
-                    )
+                    name
                   )
-                `)
-                .eq('matter_id', matter.id);
-              
-              return {
-                ...matter,
-                associatedServices: matterServices?.map(ms => ms.services) || []
-              };
-            } catch (serviceError) {
-              console.error('Error fetching services for matter:', matter.id, serviceError);
-              return {
-                ...matter,
-                associatedServices: []
-              };
-            }
-          })
-        );
-        
-        console.log('[MattersPage] Setting matters:', mattersWithServices.length, 'matters');
-        setMatters(mattersWithServices);
+                )
+              `)
+              .eq('matter_id', matter.id);
+            
+            return {
+              ...matter,
+              associatedServices: matterServices?.map(ms => ms.services) || []
+            };
+          } catch (serviceError) {
+            console.error('Error fetching services for matter:', matter.id, serviceError);
+            // Don't fail the whole operation, just skip services for this matter
+            return {
+              ...matter,
+              associatedServices: []
+            };
+          }
+        })
+      );
+      
+      console.log('[MattersPage] Successfully loaded', mattersWithServices.length, 'matters');
+      setMatters(mattersWithServices);
+      
+      if (mattersWithServices.length > 0) {
+        toast.success(`Loaded ${mattersWithServices.length} matter${mattersWithServices.length > 1 ? 's' : ''}`, { duration: 2000 });
       }
     } catch (err) {
       console.error('[MattersPage] Unexpected error:', err);
-      toast.error('Unexpected error loading matters');
+      toast.error('Unexpected error loading matters. Please refresh the page.', { duration: 5000 });
       setMatters([]);
     } finally {
       setLoadingMatters(false);
@@ -199,13 +206,14 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     setShowEditModal(true);
   };
 
-  const handleSaveMatter = () => {
-    fetchMatters();
+  const handleSaveMatter = async () => {
+    toast.success('Matter updated successfully', { duration: 3000 });
+    await fetchMatters();
   };
 
   const handleReverseConversion = async (matter: Matter) => {
     if (!(matter as any).source_proforma_id) {
-      toast.error('This matter was not created from a pro forma conversion');
+      toast.error('This matter was not created from a pro forma conversion', { duration: 4000 });
       return;
     }
 
@@ -220,13 +228,22 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
 
     if (!confirmed) return;
 
+    const loadingToast = toast.loading('Reversing conversion...');
+    
     try {
       await matterConversionService.reverseConversion(matter.id);
       // Remove the matter from the local state
       setMatters(prev => prev.filter(m => m.id !== matter.id));
+      toast.success(`Successfully reversed conversion for "${matter.title}"`, { 
+        id: loadingToast,
+        duration: 4000 
+      });
     } catch (error) {
       console.error('Error reversing conversion:', error);
-      // Error is already handled in the service with toast
+      toast.error('Failed to reverse conversion. Please try again.', { 
+        id: loadingToast,
+        duration: 5000 
+      });
     }
   };
 
@@ -321,10 +338,9 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                       {/* Health Check Warning Icons */}
                       <div className="flex items-center gap-2">
                         {isHighWipInactive(matter) && (
-                          <div className="group relative">
+                          <div className="group relative" title="High WIP Inactive Matter">
                             <AlertTriangle 
-                              className="w-5 h-5 text-amber-500 cursor-help" 
-                              title="High WIP Inactive Matter"
+                              className="w-5 h-5 text-amber-500 cursor-help"
                             />
                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
                               <div className="text-sm font-medium text-amber-800 dark:text-amber-300">High WIP Inactive</div>
@@ -336,10 +352,9 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                         )}
                         
                         {isApproachingPrescription(matter) && (
-                          <div className="group relative">
+                          <div className="group relative" title="Approaching Prescription">
                             <Clock 
-                              className="w-5 h-5 text-amber-600 cursor-help" 
-                              title="Approaching Prescription"
+                              className="w-5 h-5 text-amber-600 cursor-help"
                             />
                             <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
                               <div className="text-sm font-medium text-amber-800 dark:text-amber-300">Prescription Warning</div>

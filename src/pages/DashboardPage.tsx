@@ -121,6 +121,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
   const loadInvoiceMetrics = async () => {
     setInvoiceMetrics(prev => ({ ...prev, isLoading: true }));
+    
     try {
       // Load recent invoices
       const invoicesResponse = await InvoiceService.getInvoices({ 
@@ -173,12 +174,14 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
     } catch (error) {
       console.error('Error loading invoice metrics:', error);
+      toast.error('Failed to load invoice metrics', { duration: 4000 });
       setInvoiceMetrics(prev => ({ ...prev, isLoading: false }));
     }
   };
 
   const loadDashboardData = async () => {
     setDashboardData(prev => ({ ...prev, isLoading: true }));
+    
     try {
       // Load recent matters from database
       if (!user?.id) {
@@ -191,7 +194,6 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
       if (recentMattersResponse.error) {
         console.error('Error loading matters:', recentMattersResponse.error);
-        // Don't throw error, just use empty array
         setRecentMatters([]);
       } else {
         setRecentMatters(recentMattersResponse.data || []);
@@ -244,9 +246,11 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         avgBillTime: Math.round(defaultPerformanceMetrics.timeManagement),
         isLoading: false 
       }));
+      
+      toast.success('Dashboard data loaded', { duration: 2000 });
     } catch (error) {
       console.error('Error loading dashboard data:', error);
-      toast.error('Failed to load dashboard data');
+      toast.error('Failed to load dashboard data. Please try again.', { duration: 5000 });
       setDashboardData(prev => ({ ...prev, isLoading: false }));
     }
   };
@@ -269,8 +273,13 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
   };
 
   const handleRefreshData = async () => {
-    toast.success('Refreshing dashboard data...');
-    await loadDashboardData();
+    const loadingToast = toast.loading('Refreshing dashboard data...');
+    try {
+      await Promise.all([loadDashboardData(), loadInvoiceMetrics()]);
+      toast.success('Dashboard refreshed successfully', { id: loadingToast, duration: 3000 });
+    } catch (error) {
+      toast.error('Failed to refresh dashboard', { id: loadingToast, duration: 4000 });
+    }
   };
 
   const handleViewMatter = (matterId: string) => {

@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import gsap from 'gsap';
-import { 
-  AlertCircle, 
-  Eye, 
-  EyeOff, 
+import {
+  AlertCircle,
+  Eye,
+  EyeOff,
   CheckCircle,
   XCircle,
   Mail,
@@ -217,13 +217,13 @@ interface FormInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   showValidation?: boolean; id: string; autoComplete?: string;
 }
 
-const FormInput: React.FC<FormInputProps> = ({ 
-  type = 'text', placeholder, value, onChange, className, required = false, children, icon: Icon, validation, showValidation = false, id, autoComplete, ...props 
+const FormInput: React.FC<FormInputProps> = ({
+  type = 'text', placeholder, value, onChange, className, required = false, children, icon: Icon, validation, showValidation = false, id, autoComplete, ...props
 }) => {
   const hasError = showValidation && validation && !validation.isValid;
   const hasSuccess = showValidation && validation && validation.isValid && value && !validation.warning;
   const hasWarning = showValidation && validation && validation.isValid && validation.warning;
-  
+
   return (
     <div className="relative space-y-2">
       <div className="relative">
@@ -256,25 +256,25 @@ const FormInput: React.FC<FormInputProps> = ({
           </div>
         )}
       </div>
-      
+
       {showValidation && validation && !validation.isValid && validation.message && (
         <p id={`${id}-error`} className="text-sm text-red-300 flex items-center gap-2 animate-in slide-in-from-top-2 duration-200">
           <AlertCircle className="w-4 h-4" /> {validation.message}
         </p>
       )}
-       {showValidation && validation && validation.isValid && validation.warning && (
+      {showValidation && validation && validation.isValid && validation.warning && (
         <p id={`${id}-warning`} className="text-sm text-yellow-300 flex items-center gap-2 animate-in slide-in-from-top-2 duration-200">
           <AlertCircle className="w-4 h-4" /> {validation.warning}
         </p>
       )}
-      
+
       {type === 'password' && showValidation && validation && value && (
         <div className="space-y-2">
           <div className="flex gap-1.5">
             {[1, 2, 3, 4, 5].map((level) => (
-              <div key={level} className={cn( "h-1.5 flex-1 rounded-full transition-all duration-300",
-                  (validation.strength ?? 0) >= level ? ((validation.strength ?? 0) <= 2 ? "bg-red-400" : (validation.strength ?? 0) <= 3 ? "bg-yellow-400" : "bg-green-400") : "bg-white/20"
-              )}/>
+              <div key={level} className={cn("h-1.5 flex-1 rounded-full transition-all duration-300",
+                (validation.strength ?? 0) >= level ? ((validation.strength ?? 0) <= 2 ? "bg-red-400" : (validation.strength ?? 0) <= 3 ? "bg-yellow-400" : "bg-green-400") : "bg-white/20"
+              )} />
             ))}
           </div>
         </div>
@@ -285,23 +285,23 @@ const FormInput: React.FC<FormInputProps> = ({
 
 
 const SkeletonAuthPage = () => (
-    <div className="min-h-[100svh] w-screen overflow-hidden flex flex-col bg-slate-900 font-sans">
-        <div className="absolute inset-0 bg-black/70"></div>
-        <div className="relative z-10 w-full h-full flex flex-col p-4">
-            <header className="text-center mb-6 flex-shrink-0">
-                <div className="h-9 w-40 bg-slate-700/50 rounded-md mx-auto mb-3 animate-pulse"></div>
-                <div className="h-5 w-80 bg-slate-700/50 rounded-md mx-auto animate-pulse"></div>
-            </header>
-            <main className="bg-black/40 rounded-xl border border-white/30 flex-1 flex items-center justify-center overflow-hidden w-full max-w-md mx-auto">
-                <div className="w-full p-8 animate-pulse">
-                    <div className="h-9 w-3/4 bg-slate-700/50 rounded-md mb-4 mx-auto"></div>
-                    <div className="h-12 w-full bg-slate-700/50 rounded-md mb-3"></div>
-                    <div className="h-12 w-full bg-slate-700/50 rounded-md mb-3"></div>
-                    <div className="h-12 w-full bg-slate-700/50 rounded-md"></div>
-                </div>
-            </main>
+  <div className="min-h-[100svh] w-screen overflow-hidden flex flex-col bg-slate-900 font-sans">
+    <div className="absolute inset-0 bg-black/70"></div>
+    <div className="relative z-10 w-full h-full flex flex-col p-4">
+      <header className="text-center mb-6 flex-shrink-0">
+        <div className="h-9 w-40 bg-slate-700/50 rounded-md mx-auto mb-3 animate-pulse"></div>
+        <div className="h-5 w-80 bg-slate-700/50 rounded-md mx-auto animate-pulse"></div>
+      </header>
+      <main className="bg-black/40 rounded-xl border border-white/30 flex-1 flex items-center justify-center overflow-hidden w-full max-w-md mx-auto">
+        <div className="w-full p-8 animate-pulse">
+          <div className="h-9 w-3/4 bg-slate-700/50 rounded-md mb-4 mx-auto"></div>
+          <div className="h-12 w-full bg-slate-700/50 rounded-md mb-3"></div>
+          <div className="h-12 w-full bg-slate-700/50 rounded-md mb-3"></div>
+          <div className="h-12 w-full bg-slate-700/50 rounded-md"></div>
         </div>
+      </main>
     </div>
+  </div>
 );
 
 
@@ -352,7 +352,7 @@ const LoginPage = () => {
   const [showValidation, setShowValidation] = useState(false);
   const [touchedFields, setTouchedFields] = useState<Set<string>>(new Set());
   const [formData, setFormData] = useState({ email: '', password: '', fullName: '', confirmPassword: '', rememberMe: true, termsAccepted: false });
-  
+
   const formRef = useRef<HTMLFormElement>(null);
   const loginPanelRef = useRef<HTMLDivElement>(null);
   const signupPanelRef = useRef<HTMLDivElement>(null);
@@ -379,11 +379,11 @@ const LoginPage = () => {
   const isFormValid = emailValidation.isValid && passwordValidation.isValid && (authMode === 'signin' || (nameValidation.isValid && formData.termsAccepted));
 
   useEffect(() => {
-    setError(null); 
+    setError(null);
     setSuccess(null);
     setFormData(prev => ({ ...prev, email: '', password: '', fullName: '', confirmPassword: '', termsAccepted: false }));
-    setShowValidation(false); 
-    setTouchedFields(new Set()); 
+    setShowValidation(false);
+    setTouchedFields(new Set());
     setShowPassword(false);
   }, [authMode]);
 
@@ -450,7 +450,7 @@ const LoginPage = () => {
   const handleInputChange = (field: string, value: string | boolean) => {
     let finalValue = value;
     if (field === 'fullName' && typeof value === 'string') {
-        finalValue = value.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
+      finalValue = value.split(' ').map(name => name.charAt(0).toUpperCase() + name.slice(1)).join(' ');
     }
     setFormData(prev => ({ ...prev, [field]: finalValue }));
     if (value && !touchedFields.has(field)) {
@@ -464,24 +464,32 @@ const LoginPage = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null); setShowValidation(true); setTouchedFields(new Set(['email', 'password', 'fullName']));
+    setError(null);
+    setSuccess(null);
+    setShowValidation(true);
+    setTouchedFields(new Set(['email', 'password', 'fullName']));
+
     if (!isFormValid) {
-      setError('Please fix the errors above before submitting.');
-      toast.error('Please fix the errors above before submitting.');
+      const message = 'Please fix the errors above before submitting.';
+      setError(message);
+      toast.error(message);
       setTimeout(() => { (formRef.current?.querySelector('[aria-invalid="true"]') as HTMLInputElement)?.focus(); }, 100);
       return;
     }
+
     setIsSubmitting(true);
+
     try {
       if (authMode === 'signin') {
         const { error } = await signIn(formData.email, formData.password);
         if (error) {
           const message = error.message || 'Failed to sign in. Please check your credentials.';
           setError(message);
-          toast.error(message);
+          toast.error(message, { duration: 5000 });
         } else {
-          setSuccess('Signed in successfully');
-          toast.success('Welcome back');
+          const successMsg = 'Signed in successfully';
+          setSuccess(successMsg);
+          toast.success('Welcome back!', { duration: 3000 });
           setRedirecting(true);
           setTimeout(() => { window.location.href = '/'; }, 300);
         }
@@ -491,17 +499,18 @@ const LoginPage = () => {
         if (error) {
           const message = error.message || 'Failed to create account. Please try again.';
           setError(message);
-          toast.error(message);
+          toast.error(message, { duration: 5000 });
         } else {
-          // Show confirmation when signup succeeds (email verification flow)
-          setSuccess('Account created. Please check your email to confirm your address.');
-          toast.success('Account created. Check your email to confirm.');
+          const successMsg = 'Account created successfully! Please check your email to confirm your address.';
+          setSuccess(successMsg);
+          toast.success('Account created! Check your email to confirm.', { duration: 6000 });
         }
       }
-    } catch {
+    } catch (err) {
       const message = 'An unexpected error occurred. Please try again.';
       setError(message);
-      toast.error(message);
+      toast.error(message, { duration: 5000 });
+      console.error('Authentication error:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -509,27 +518,34 @@ const LoginPage = () => {
 
   const handleSendMagicLink = async () => {
     setShowValidation(true);
+    setError(null);
+    setSuccess(null);
+
     if (!emailValidation.isValid) {
-      const msg = emailValidation.message || 'Please enter a valid email.';
+      const msg = emailValidation.message || 'Please enter a valid email address.';
       setError(msg);
-      toast.error(msg);
+      toast.error(msg, { duration: 4000 });
       return;
     }
+
     setIsSubmitting(true);
+
     try {
       const { error } = await signInWithMagicLink(formData.email);
       if (error) {
         const message = error.message || 'Failed to send magic link. Please try again.';
         setError(message);
-        toast.error(message);
+        toast.error(message, { duration: 5000 });
       } else {
-        setSuccess('Magic link sent. Check your email to sign in.');
-        toast.success('Magic link sent. Check your email.');
+        const successMsg = 'Magic link sent successfully! Check your email to sign in.';
+        setSuccess(successMsg);
+        toast.success('Magic link sent! Check your email.', { duration: 6000 });
       }
-    } catch (e) {
+    } catch (err) {
       const message = 'Failed to send magic link. Please try again.';
       setError(message);
-      toast.error(message);
+      toast.error(message, { duration: 5000 });
+      console.error('Magic link error:', err);
     } finally {
       setIsSubmitting(false);
     }
@@ -538,26 +554,26 @@ const LoginPage = () => {
   if (loading) return <SkeletonAuthPage />;
 
   return (
-    <div 
+    <div
       className="min-h-screen w-full flex items-center justify-center relative overflow-hidden"
-      style={{ 
+      style={{
         fontFamily: "Inter, sans-serif",
-        backgroundImage: `url(${SignupBgImage})`, 
-        backgroundSize: 'cover', 
+        backgroundImage: `url(${SignupBgImage})`,
+        backgroundSize: 'cover',
         backgroundPosition: 'center',
         backgroundAttachment: 'fixed'
       }}
     >
       <GlobalStyles />
-      
+
       <div className="relative z-10 w-full min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 py-8 sm:py-12 safe-area-inset">
         <header className="text-center mb-6 sm:mb-8 md:mb-12 header-entrance w-full max-w-md px-2">
           <div className="flex items-center justify-center gap-2 sm:gap-3 mb-3 sm:mb-4 group">
-            <img 
-              src={lexoLogo} 
-              alt="LexoHub Logo" 
-              className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 drop-shadow-2xl float-animation" 
-              style={{ background: 'transparent' }} 
+            <img
+              src={lexoLogo}
+              alt="LexoHub Logo"
+              className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 drop-shadow-2xl float-animation"
+              style={{ background: 'transparent' }}
             />
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-wider drop-shadow-2xl transition-all duration-300 group-hover:text-blue-100">
               lexo
@@ -584,57 +600,153 @@ const LoginPage = () => {
                 <h2 className="text-2xl sm:text-3xl md:text-4xl text-white font-bold mb-4 sm:mb-6 text-center" style={{ textShadow: '0 2px 8px rgba(0,0,0,0.5), 0 1px 3px rgba(0,0,0,0.3)' }}>
                   {authMode === 'signin' ? 'Welcome Back' : 'Create Account'}
                 </h2>
-                
+
                 {authMode === 'signin' ? (
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5 relative z-10">
-                  {error && (
-                    <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-red-300" />
-                      <p className="text-xs text-red-200">{error}</p>
+                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5 relative z-10">
+                    {error && (
+                      <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-300" />
+                        <p className="text-xs text-red-200">{error}</p>
+                      </div>
+                    )}
+                    {success && (
+                      <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-300" />
+                        <p className="text-xs text-green-200">{success}</p>
+                      </div>
+                    )}
+
+                    <div className="space-y-1">
+                      <label htmlFor="email" className="block text-sm font-medium text-white/90 pl-1">Email</label>
+                      <input
+                        id="email"
+                        type="email"
+                        inputMode="email"
+                        autoComplete="email"
+                        placeholder="Enter your email"
+                        value={formData.email}
+                        onChange={e => handleInputChange('email', e.target.value)}
+                        className="w-full px-3 sm:px-4 py-3 sm:py-3.5 text-base rounded-xl sm:rounded-2xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        style={{
+                          boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
+                          borderTop: '1px solid rgba(255, 255, 255, 0.5)',
+                          borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
+                          borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
+                          borderRight: '1px solid rgba(0, 0, 0, 0.1)',
+                          fontSize: '16px',
+                          minHeight: '44px'
+                        }}
+                        required
+                      />
                     </div>
-                  )}
-                  {success && (
-                    <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-300" />
-                      <p className="text-xs text-green-200">{success}</p>
+
+                    <div className="space-y-1">
+                      <label htmlFor="password" className="block text-sm font-medium text-white/90 pl-1">Password</label>
+                      <div className="relative">
+                        <input
+                          id="password"
+                          type={showPassword ? 'text' : 'password'}
+                          autoComplete="current-password"
+                          placeholder="Enter your password"
+                          value={formData.password}
+                          onChange={e => handleInputChange('password', e.target.value)}
+                          className="w-full px-3 sm:px-4 py-3 sm:py-3.5 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                          style={{
+                            boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                            fontSize: '16px',
+                            minHeight: '44px'
+                          }}
+                          required
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 hover:text-slate-900 transition-colors p-1"
+                          style={{ minWidth: '44px', minHeight: '44px' }}
+                          aria-label="Toggle password visibility"
+                        >
+                          {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                        </button>
+                      </div>
                     </div>
-                  )}
-                  
-                  <div className="space-y-1">
-                    <label htmlFor="email" className="block text-sm font-medium text-white/90 pl-1">Email</label>
+
+                    <div className="flex items-center justify-between text-xs sm:text-sm">
+                      <button
+                        type="button"
+                        onClick={handleSendMagicLink}
+                        className="text-sky-200 hover:text-sky-100 font-medium underline underline-offset-2 transition-colors"
+                      >
+                        Forgot password?
+                      </button>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting}
+                      className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(59,130,246,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-blue-400/30"
+                    >
+                      <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </form>
+                ) : (
+                  <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5 md:space-y-4 relative z-10">
+                    {error && (
+                      <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
+                        <AlertCircle className="h-4 w-4 text-red-300" />
+                        <p className="text-xs text-red-200">{error}</p>
+                      </div>
+                    )}
+                    {success && (
+                      <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
+                        <CheckCircle className="h-4 w-4 text-green-300" />
+                        <p className="text-xs text-green-200">{success}</p>
+                      </div>
+                    )}
+
                     <input
-                      id="email"
-                      type="email"
-                      inputMode="email"
-                      autoComplete="email"
-                      placeholder="Enter your email"
-                      value={formData.email}
-                      onChange={e => handleInputChange('email', e.target.value)}
-                      className="w-full px-3 sm:px-4 py-3 sm:py-3.5 text-base rounded-xl sm:rounded-2xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                      id="fullName"
+                      type="text"
+                      autoComplete="name"
+                      placeholder="Full Name"
+                      value={formData.fullName}
+                      onChange={e => handleInputChange('fullName', e.target.value)}
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
                       style={{
-                        boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
-                        borderTop: '1px solid rgba(255, 255, 255, 0.5)',
-                        borderLeft: '1px solid rgba(255, 255, 255, 0.4)',
-                        borderBottom: '1px solid rgba(0, 0, 0, 0.1)',
-                        borderRight: '1px solid rgba(0, 0, 0, 0.1)',
+                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                         fontSize: '16px',
                         minHeight: '44px'
                       }}
                       required
                     />
-                  </div>
-                  
-                  <div className="space-y-1">
-                    <label htmlFor="password" className="block text-sm font-medium text-white/90 pl-1">Password</label>
+
+                    <input
+                      id="email-signup"
+                      type="email"
+                      inputMode="email"
+                      autoComplete="email"
+                      placeholder="Email"
+                      value={formData.email}
+                      onChange={e => handleInputChange('email', e.target.value)}
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                      style={{
+                        boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
+                        fontSize: '16px',
+                        minHeight: '44px'
+                      }}
+                      required
+                    />
+
                     <div className="relative">
                       <input
-                        id="password"
+                        id="password-signup"
                         type={showPassword ? 'text' : 'password'}
-                        autoComplete="current-password"
-                        placeholder="Enter your password"
+                        autoComplete="new-password"
+                        placeholder="New Password"
                         value={formData.password}
                         onChange={e => handleInputChange('password', e.target.value)}
-                        className="w-full px-3 sm:px-4 py-3 sm:py-3.5 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
                         style={{
                           boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                           fontSize: '16px',
@@ -645,92 +757,22 @@ const LoginPage = () => {
                       <button
                         type="button"
                         onClick={() => setShowPassword(!showPassword)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-700 hover:text-slate-900 transition-colors p-1"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-1"
                         style={{ minWidth: '44px', minHeight: '44px' }}
                         aria-label="Toggle password visibility"
                       >
                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                       </button>
                     </div>
-                  </div>
-                  
-                  <div className="flex items-center justify-between text-xs sm:text-sm">
-                    <button
-                      type="button"
-                      onClick={handleSendMagicLink}
-                      className="text-sky-200 hover:text-sky-100 font-medium underline underline-offset-2 transition-colors"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
 
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(59,130,246,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-blue-400/30"
-                  >
-                    <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                  </button>
-                </form>
-            ) : (
-                <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5 md:space-y-4 relative z-10">
-                  {error && (
-                    <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-red-300" />
-                      <p className="text-xs text-red-200">{error}</p>
-                    </div>
-                  )}
-                  {success && (
-                    <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-300" />
-                      <p className="text-xs text-green-200">{success}</p>
-                    </div>
-                  )}
-
-                  <input
-                    id="fullName"
-                    type="text"
-                    autoComplete="name"
-                    placeholder="Full Name"
-                    value={formData.fullName}
-                    onChange={e => handleInputChange('fullName', e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
-                    style={{
-                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
-                      fontSize: '16px',
-                      minHeight: '44px'
-                    }}
-                    required
-                  />
-                  
-                  <input
-                    id="email-signup"
-                    type="email"
-                    inputMode="email"
-                    autoComplete="email"
-                    placeholder="Email"
-                    value={formData.email}
-                    onChange={e => handleInputChange('email', e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
-                    style={{
-                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
-                      fontSize: '16px',
-                      minHeight: '44px'
-                    }}
-                    required
-                  />
-                  
-                  <div className="relative">
                     <input
-                      id="password-signup"
+                      id="confirmPassword"
                       type={showPassword ? 'text' : 'password'}
                       autoComplete="new-password"
-                      placeholder="New Password"
-                      value={formData.password}
-                      onChange={e => handleInputChange('password', e.target.value)}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                      placeholder="Confirm Password"
+                      value={formData.confirmPassword}
+                      onChange={e => handleInputChange('confirmPassword', e.target.value)}
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
                       style={{
                         boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                         fontSize: '16px',
@@ -738,57 +780,31 @@ const LoginPage = () => {
                       }}
                       required
                     />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/70 hover:text-white transition-colors p-1"
-                      style={{ minWidth: '44px', minHeight: '44px' }}
-                      aria-label="Toggle password visibility"
-                    >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
-                    </button>
-                  </div>
-                  
-                  <input
-                    id="confirmPassword"
-                    type={showPassword ? 'text' : 'password'}
-                    autoComplete="new-password"
-                    placeholder="Confirm Password"
-                    value={formData.confirmPassword}
-                    onChange={e => handleInputChange('confirmPassword', e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
-                    style={{
-                      boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
-                      fontSize: '16px',
-                      minHeight: '44px'
-                    }}
-                    required
-                  />
 
-                  <div className="flex items-center space-x-2">
-                    <input
-                      type="checkbox"
-                      id="terms"
-                      checked={formData.termsAccepted}
-                      onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
-                      className="rounded bg-white border-2 border-slate-300 text-green-600 focus:ring-green-500"
-                    />
-                    <label htmlFor="terms" className="text-xs text-white font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
-                      I agree to Terms & Conditions
-                    </label>
-                  </div>
-                  
-                  <button
-                    type="submit"
-                    disabled={isSubmitting || !formData.termsAccepted}
-                    className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(34,197,94,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-green-400/30"
-                  >
-                    <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
-                  </button>
-                </form>
-            )}
+                    <div className="flex items-center space-x-2">
+                      <input
+                        type="checkbox"
+                        id="terms"
+                        checked={formData.termsAccepted}
+                        onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
+                        className="rounded bg-white border-2 border-slate-300 text-green-600 focus:ring-green-500"
+                      />
+                      <label htmlFor="terms" className="text-xs text-white font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
+                        I agree to Terms & Conditions
+                      </label>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isSubmitting || !formData.termsAccepted}
+                      className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(34,197,94,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-green-400/30"
+                    >
+                      <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
+                      <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           </>
@@ -841,7 +857,7 @@ const LoginPage = () => {
                         <p className="text-xs text-green-200">{success}</p>
                       </div>
                     )}
-                    
+
                     <div className="space-y-1">
                       <label htmlFor="desktop-email" className="block text-sm font-medium text-white/90 pl-1">Email</label>
                       <input
@@ -863,7 +879,7 @@ const LoginPage = () => {
                         required
                       />
                     </div>
-                    
+
                     <div className="space-y-1">
                       <label htmlFor="desktop-password" className="block text-sm font-medium text-white/90 pl-1">Password</label>
                       <div className="relative">
@@ -890,7 +906,7 @@ const LoginPage = () => {
                         </button>
                       </div>
                     </div>
-                    
+
                     <div className="flex items-center justify-between text-xs sm:text-sm">
                       <button
                         type="button"
@@ -965,7 +981,7 @@ const LoginPage = () => {
                       }}
                       required
                     />
-                    
+
                     <input
                       id="desktop-email-signup"
                       type="email"
@@ -980,7 +996,7 @@ const LoginPage = () => {
                       }}
                       required
                     />
-                    
+
                     <div className="relative">
                       <input
                         id="desktop-password-signup"
@@ -1004,7 +1020,7 @@ const LoginPage = () => {
                         {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
                       </button>
                     </div>
-                    
+
                     <input
                       id="desktop-confirmPassword"
                       type={showPassword ? 'text' : 'password'}
@@ -1031,7 +1047,7 @@ const LoginPage = () => {
                         I agree to Terms & Conditions
                       </label>
                     </div>
-                    
+
                     <button
                       type="submit"
                       disabled={isSubmitting || !formData.termsAccepted}
@@ -1050,20 +1066,20 @@ const LoginPage = () => {
 
         <footer className="text-center mt-4 sm:mt-6 md:mt-8 space-y-3 sm:space-y-4 px-4 header-entrance pb-safe">
           <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6 text-slate-200/90 flex-wrap">
-             <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
-               <Lock size={12} className="sm:w-3.5 sm:h-3.5 text-blue-300" />
-               <span className="text-[10px] sm:text-xs font-medium">256-bit SSL</span>
-             </div>
-             <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
-               <ShieldCheck size={12} className="sm:w-3.5 sm:h-3.5 text-green-300" />
-               <span className="text-[10px] sm:text-xs font-medium">POPIA Compliant</span>
-             </div>
-             <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
-               <Scale size={12} className="sm:w-3.5 sm:h-3.5 text-yellow-300" />
-               <span className="text-[10px] sm:text-xs font-medium">Legal Grade Security</span>
-             </div>
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+              <Lock size={12} className="sm:w-3.5 sm:h-3.5 text-blue-300" />
+              <span className="text-[10px] sm:text-xs font-medium">256-bit SSL</span>
+            </div>
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+              <ShieldCheck size={12} className="sm:w-3.5 sm:h-3.5 text-green-300" />
+              <span className="text-[10px] sm:text-xs font-medium">POPIA Compliant</span>
+            </div>
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+              <Scale size={12} className="sm:w-3.5 sm:h-3.5 text-yellow-300" />
+              <span className="text-[10px] sm:text-xs font-medium">Legal Grade Security</span>
+            </div>
           </div>
-            <p className="text-slate-300/80 text-[10px] sm:text-xs font-medium">&copy; {new Date().getFullYear()} lexo. All rights reserved. Data stored in South Africa.</p>
+          <p className="text-slate-300/80 text-[10px] sm:text-xs font-medium">&copy; {new Date().getFullYear()} lexo. All rights reserved. Data stored in South Africa.</p>
         </footer>
 
         {redirecting && (
