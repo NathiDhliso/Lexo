@@ -93,6 +93,10 @@ export {
   type RetainerSummary
 } from './retainer.service';
 
+export {
+  subscriptionService
+} from './subscription.service';
+
 // Re-export commonly used types from the main types file
 export type {
   Matter,

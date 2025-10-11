@@ -7,16 +7,16 @@
 ## 📋 Table of Contents
 
 1. [Getting Started](#getting-started)
-2. [The 3-Step Workflow](#the-3-step-workflow)
-3. [Dashboard](#dashboard)
-4. [Pro Forma Requests (Quotes)](#pro-forma-requests-quotes)
-5. [Matters Management](#matters-management)
-6. [Invoicing & Billing](#invoicing--billing)
-7. [Time Tracking](#time-tracking)
-8. [Payment Tracking](#payment-tracking)
-9. [Reports & Analytics](#reports--analytics)
-10. [Settings & Configuration](#settings--configuration)
-11. [Profile Management](#profile-management)
+2. [Dashboard](#dashboard)
+3. [Pro Forma Requests (Quotes)](#pro-forma-requests-quotes)
+4. [Matters Management](#matters-management)
+5. [Invoicing & Billing](#invoicing--billing)
+6. [Time Tracking](#time-tracking)
+7. [Payment Tracking](#payment-tracking)
+8. [Reports & Analytics](#reports--analytics)
+9. [Settings & Configuration](#settings--configuration)
+10. [Profile Management](#profile-management)
+11. [Navigation & Search](#navigation--search)
 12. [Tips & Best Practices](#tips--best-practices)
 
 ---
@@ -38,29 +38,22 @@ When you first log in, you'll see your Dashboard with quick access to all major 
 - **Profile** - Your professional information
 - **Settings** - System configuration
 
----
+### Key Features
 
-## The 3-Step Workflow
+- **3-Step Workflow**: Pro Forma → Matter → Invoice
+- **Real-time Notifications**: Stay updated on important events
+- **Smart Search**: Find anything with Ctrl+K
+- **Dark Mode**: Easy on the eyes for late-night work
+- **Mobile Responsive**: Work from anywhere
+- **VAT Compliant**: Automatic 15% VAT calculations
+- **Bar Compliant**: Professional legal formatting
 
-LexoHub follows a structured 3-step workflow that ensures proper documentation and billing:
-
-```
-Step 1: PRO FORMA (Quote) → Step 2: MATTER (Case) → Step 3: INVOICE (Billing)
-```
-
-### Why This Workflow?
-
-1. **Pro Forma First**: Always start with a quote to set client expectations
-2. **Matter Conversion**: Accepted quotes become active matters
-3. **Automated Billing**: All work is tracked and automatically flows into invoices
-
-**Important**: You cannot create matters directly - they must be converted from accepted pro forma requests.
 
 ---
 
 ## Dashboard
 
-Your Dashboard provides a real-time overview of your practice.
+Your Dashboard provides a real-time overview of your practice with intelligent insights and quick actions.
 
 ### Key Metrics
 
@@ -83,16 +76,29 @@ Your Dashboard provides a real-time overview of your practice.
 
 ### Quick Actions
 
-Click the quick action buttons to:
+The dashboard provides one-click access to common tasks:
 - **Pro Formas**: View and create quotes
 - **View Matters**: Access your active cases
 - **Invoices**: Generate and manage invoices
+- **Create**: Quick create button for new matters, pro formas, or invoices
 
 ### Recent Activity
 
 - **Recent Matters**: Your 5 most recent cases with status
 - **Recent Invoices**: Latest invoices with payment status
 - **Practice Performance**: Key performance metrics
+
+### Smart Notifications
+
+The bell icon in the navigation bar shows real-time notifications:
+- Pro forma status changes
+- Matter deadlines approaching
+- Invoice payment received
+- Overdue payment reminders
+- System updates
+
+Click on any notification to navigate directly to the relevant item.
+
 
 ---
 
@@ -102,7 +108,7 @@ Pro Forma requests are professional quotes you send to attorneys before starting
 
 ### Creating a Pro Forma
 
-1. Click **"New Pro Forma"** button
+1. Click **"New Pro Forma"** button or use the **Create** menu
 2. Fill in the details:
    - **Work Title**: Brief description of the work
    - **Attorney Information**: Instructing attorney name and firm
@@ -145,20 +151,34 @@ All pro forma amounts automatically show:
 - VAT (15%)
 - Total (including VAT)
 
+### Pro Forma Links
+
+Generate shareable links that attorneys can use to:
+- View the pro forma details
+- Accept or decline the quote
+- Sign engagement agreements
+- No login required for attorneys
+
+
 ---
 
 ## Matters Management
 
-Matters are your active legal cases, converted from accepted pro forma requests.
+Matters are your active legal cases. LexoHub provides flexible ways to create and manage matters.
 
 ### Creating a Matter
 
-**Important**: Matters can only be created by converting an accepted pro forma request.
-
+#### Option 1: Convert from Pro Forma (Recommended)
 1. Go to **Pro Forma** page
 2. Find an **Accepted** pro forma
 3. Click **"Convert to Matter"**
 4. Review and confirm the conversion
+
+#### Option 2: Matter Workbench (Direct Creation)
+1. Click **"New Matter"** button
+2. Use the Matter Workbench for comprehensive matter setup
+3. Enter all matter details
+4. Click **"Create Matter"**
 
 ### Matter Information
 
@@ -170,6 +190,7 @@ Each matter displays:
 - **Matter Type**: Category of legal work
 - **WIP Value**: Current unbilled work value
 - **Associated Services**: Linked service categories
+- **Creation Source**: How the matter was created
 
 ### Matter Status Indicators
 
@@ -196,7 +217,7 @@ LexoHub automatically monitors your matters:
 
 - **View**: See complete matter details
 - **Edit**: Update matter information
-- **Reverse**: Convert back to pro forma (if needed)
+- **Reverse**: Convert back to pro forma (if created from pro forma)
 
 ### Searching Matters
 
@@ -209,6 +230,7 @@ Use the search bar to find matters by:
 
 - **Active Matters**: Show only active cases
 - **All Matters**: Show all cases regardless of status
+
 
 ---
 
@@ -248,6 +270,7 @@ Generate and manage your invoices.
 - **Paid**: Payment received
 - **Overdue**: Past due date
 - **Partially Paid**: Some payment received
+- **Pro Forma**: Quote/estimate status
 
 #### Invoice Actions
 
@@ -263,6 +286,7 @@ View all your pro forma requests in one place:
 - Filter by status
 - Track conversion rates
 - Monitor pending quotes
+- Quick access to convert accepted quotes
 
 ### Tab 3: Time Entries
 
@@ -270,6 +294,7 @@ View all time entries grouped by matter:
 - See unbilled vs billed time
 - Review time by matter
 - Generate invoices directly from time entries
+- Track billable hours
 
 ### Tab 4: Payment Tracking
 
@@ -278,6 +303,7 @@ Monitor your payment status:
 - **Overdue Tracking**: Past due invoices
 - **Payment History**: Received payments
 - **Aging Report**: How long invoices have been outstanding
+
 
 ---
 
@@ -308,6 +334,13 @@ Go to **Invoices → Time Entries** tab to see:
 - Total unbilled hours
 - Total unbilled value
 - Quick invoice generation
+
+### Best Practices
+
+- Record time daily while work is fresh
+- Include detailed descriptions
+- Use consistent rate structures
+- Review unbilled time weekly
 
 ---
 
@@ -340,6 +373,15 @@ The Payment Tracking tab shows:
 - **Partially Paid**: Some payment received
 - **Unpaid**: No payment yet
 - **Overdue**: Past due date
+
+### Aging Analysis
+
+Track how long invoices have been outstanding:
+- 0-30 days
+- 31-60 days
+- 61-90 days
+- 90+ days (urgent follow-up required)
+
 
 ---
 
@@ -403,6 +445,15 @@ Generate insights about your practice.
 4. Click **"Generate Report"**
 5. Export to CSV or PDF
 
+### Report Features
+
+- **Real-time Data**: Always up-to-date
+- **Export Options**: CSV and PDF formats
+- **Custom Filters**: Narrow down results
+- **Visual Charts**: Easy-to-understand graphics
+- **Scheduled Reports**: Set up automatic generation (coming soon)
+
+
 ---
 
 ## Settings & Configuration
@@ -443,6 +494,7 @@ Create standardized pricing for your services.
 - **Consistent Pricing**: Same rates across all matters
 - **Quick Quoting**: Pre-filled rates for pro formas
 - **Professional**: Standardized service offerings
+- **Transparency**: Clear pricing for clients
 
 #### Standard Service Templates
 
@@ -451,9 +503,20 @@ LexoHub includes pre-configured South African legal service templates:
 - Research and drafting
 - Court appearances
 - Document review
+- Negotiation
+- Filing
+- Travel
 - And more
 
 Click **"Create from Template"** to use these.
+
+#### Rate Card Management
+
+- **View**: See all rate cards in card or list view
+- **Edit**: Update existing rate cards
+- **Duplicate**: Copy a rate card to create variations
+- **Delete**: Remove unused rate cards
+- **Filter**: By category or status
 
 ### PDF Templates
 
@@ -462,6 +525,8 @@ Customize your invoice and pro forma PDF appearance:
 - **Logo**: Upload your logo
 - **Footer**: Contact details and terms
 - **Colors**: Match your branding
+- **Layout**: Choose from professional templates
+
 
 ---
 
@@ -494,6 +559,64 @@ Maintain your professional information.
 - **Total Matters**: Lifetime matter count
 - **Total Recovered**: Total amounts recovered
 
+### Recent Activity
+
+Track your professional development:
+- Completed courses
+- Case wins
+- Profile updates
+- Certifications
+
+---
+
+## Navigation & Search
+
+LexoHub provides powerful navigation and search features.
+
+### Global Search (Ctrl+K)
+
+Press **Ctrl+K** (or **Cmd+K** on Mac) to open the command bar:
+- Search for matters by name or client
+- Find invoices by number
+- Navigate to any page
+- Execute quick actions
+- View recent items
+
+### Navigation Bar
+
+The top navigation bar provides:
+- **Logo**: Click to return to dashboard
+- **Category Menus**: Hover to see mega menus with all options
+- **Search**: Quick access to global search
+- **Create**: Quick create button for common tasks
+- **Notifications**: Real-time alerts and updates
+- **Theme Toggle**: Switch between light and dark mode
+- **User Menu**: Access settings and sign out
+
+### Mega Menus
+
+Hover over navigation categories to see organized menus:
+- **Matters**: All matter-related actions
+- **Billing**: Invoicing and payment features
+- **Reports**: Analytics and insights
+- **Settings**: Configuration options
+
+### Mobile Navigation
+
+On mobile devices:
+- Tap the menu icon to open the mobile menu
+- Swipe to navigate between sections
+- All features optimized for touch
+- Responsive design adapts to screen size
+
+### Keyboard Shortcuts
+
+- **Ctrl+K**: Open command bar
+- **Escape**: Close modals and menus
+- **Tab**: Navigate through form fields
+- **Enter**: Submit forms or confirm actions
+
+
 ---
 
 ## Tips & Best Practices
@@ -501,9 +624,9 @@ Maintain your professional information.
 ### Workflow Best Practices
 
 1. **Always Start with Pro Forma**
-   - Never skip the quote step
    - Sets clear expectations
    - Protects you and the client
+   - Creates proper documentation trail
 
 2. **Convert Promptly**
    - Convert accepted quotes to matters quickly
@@ -566,7 +689,7 @@ Maintain your professional information.
 
 ### System Usage
 
-1. **Use Search**
+1. **Use Search (Ctrl+K)**
    - Find matters quickly
    - Search by client or attorney
    - Save time navigating
@@ -580,6 +703,17 @@ Maintain your professional information.
    - Download reports regularly
    - Keep external backups
    - Share with stakeholders
+
+4. **Use Dark Mode**
+   - Easier on eyes for late work
+   - Toggle in navigation bar
+   - Automatic system preference detection
+
+5. **Mobile Access**
+   - Check status on the go
+   - Record time entries anywhere
+   - Respond to notifications quickly
+
 
 ---
 
@@ -595,12 +729,14 @@ Maintain your professional information.
 | Record Time | Matter → Add Time Entry → Fill Details → Save |
 | Record Payment | Invoices → Find Invoice → Record Payment → Enter Details |
 | View Reports | Reports → Select Report Type → Generate |
+| Search Anything | Press Ctrl+K → Type query → Select result |
 
 ### Keyboard Shortcuts
 
 - **Ctrl/Cmd + K**: Open command bar (quick navigation)
-- **Esc**: Close modals
+- **Esc**: Close modals and menus
 - **Tab**: Navigate form fields
+- **Enter**: Submit forms
 
 ### Status Colors
 
@@ -611,6 +747,21 @@ Maintain your professional information.
 - **Purple**: Converted
 - **Gray**: Draft, Inactive, Closed
 
+### VAT Calculations
+
+All amounts in LexoHub include 15% VAT:
+- **Subtotal**: Amount excluding VAT
+- **VAT**: 15% of subtotal
+- **Total**: Subtotal + VAT
+
+Example: R10,000 subtotal = R1,500 VAT = R11,500 total
+
+### Date Format
+
+LexoHub uses South African date format:
+- **Format**: DD/MM/YYYY
+- **Example**: 10/01/2025 (10 January 2025)
+
 ---
 
 ## Support & Help
@@ -620,14 +771,15 @@ Maintain your professional information.
 - **In-App Help**: Look for the (?) icon throughout the system
 - **Tooltips**: Hover over elements for quick tips
 - **Validation**: System will warn you of errors
+- **Notifications**: Real-time alerts for important events
 
 ### Common Questions
 
 **Q: Why can't I create a matter directly?**
-A: LexoHub enforces the 3-step workflow. All matters must start as pro forma requests to ensure proper documentation and client agreement.
+A: LexoHub recommends starting with a pro forma for proper documentation, but you can use the Matter Workbench for direct creation when needed.
 
 **Q: How do I handle rush work without a pro forma?**
-A: Create a pro forma first, mark it as "High Priority," and immediately accept and convert it. This maintains your audit trail.
+A: Use the Matter Workbench to create a matter directly, or create a pro forma, mark it as "High Priority," and immediately accept and convert it.
 
 **Q: What if a client disputes an invoice?**
 A: The system tracks all time entries and expenses linked to the matter, providing complete documentation for dispute resolution.
@@ -637,6 +789,16 @@ A: Yes, use the "Reverse" button on the matter. This will delete the matter and 
 
 **Q: How do I handle partial payments?**
 A: Record each payment separately. The system tracks the total paid and outstanding balance automatically.
+
+**Q: How do I switch between light and dark mode?**
+A: Click the theme toggle button in the navigation bar, or it will automatically follow your system preference.
+
+**Q: Can I access LexoHub on my phone?**
+A: Yes! LexoHub is fully responsive and optimized for mobile devices.
+
+**Q: How do I export my data?**
+A: Use the Reports section to generate and export data in CSV or PDF format.
+
 
 ---
 
@@ -660,6 +822,7 @@ A: Record each payment separately. The system tracks the total paid and outstand
 - Responsive design
 - Works on tablets and phones
 - Touch-optimized interface
+- Minimum 44x44px touch targets
 
 ---
 
@@ -667,15 +830,16 @@ A: Record each payment separately. The system tracks the total paid and outstand
 
 ### Your Data
 
-- Stored securely in the cloud
+- Stored securely in the cloud (Supabase)
 - Automatic backups
-- Encrypted connections
+- Encrypted connections (SSL/TLS)
+- Row-level security
 
 ### Privacy
 
 - Your data is private
 - Not shared with third parties
-- Compliant with POPIA
+- Compliant with POPIA (South African data protection)
 
 ### Backups
 
@@ -685,10 +849,92 @@ A: Record each payment separately. The system tracks the total paid and outstand
 
 ---
 
-**Version**: 1.0  
+## Feature Highlights
+
+### Smart Notifications
+
+- Real-time alerts for important events
+- Pro forma status changes
+- Matter deadlines
+- Payment received
+- Overdue reminders
+
+### Health Monitoring
+
+- High WIP warnings
+- Prescription alerts
+- Overdue invoice tracking
+- Performance metrics
+
+### Automation
+
+- Auto-import billable items to invoices
+- Automatic VAT calculations
+- Time tracking integration
+- Payment tracking
+
+### Professional Documents
+
+- Bar-compliant invoices
+- Professional pro forma PDFs
+- Customizable templates
+- Digital signatures (coming soon)
+
+### Analytics
+
+- Practice performance metrics
+- Revenue tracking
+- Client profitability
+- Matter pipeline analysis
+
+---
+
+## Upcoming Features
+
+LexoHub is constantly evolving. Here are some features in development:
+
+- **Calendar Integration**: Sync with Google Calendar and Outlook
+- **Document Management**: Upload and organize case documents
+- **Email Integration**: Send invoices and pro formas directly from LexoHub
+- **Retainer Management**: Track retainer balances and usage
+- **Trust Account Management**: Manage trust account transactions
+- **Client Portal**: Allow clients to view matters and invoices
+- **Mobile App**: Native iOS and Android apps
+- **Advanced Analytics**: AI-powered insights and predictions
+- **Automated Reminders**: Scheduled payment reminders
+- **Multi-currency Support**: Handle international clients
+
+---
+
+## Glossary
+
+**Pro Forma**: A preliminary invoice or quote sent before work begins
+
+**Matter**: An active legal case or engagement
+
+**WIP (Work in Progress)**: Unbilled work that has been completed
+
+**VAT**: Value Added Tax (15% in South Africa)
+
+**Prescription**: The legal time limit for pursuing a claim (typically 3 years)
+
+**Rate Card**: A standardized pricing structure for legal services
+
+**Aging**: How long an invoice has been outstanding
+
+**Bar Compliant**: Meets the standards of the Bar Council
+
+**Trust Account**: A separate account for holding client funds
+
+**Retainer**: An advance payment for legal services
+
+---
+
+**Version**: 2.0  
 **Last Updated**: January 2025  
 **For**: LexoHub Users
 
 ---
 
-*This guide covers the core features of LexoHub. For specific questions or advanced features, please contact support.*
+*This guide covers the core features of LexoHub. For specific questions or advanced features, please contact support or use the in-app help system.*
+

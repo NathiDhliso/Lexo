@@ -200,6 +200,11 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     setShowDetailModal(true);
   };
 
+  const handleViewDetails = (matter: Matter) => {
+    setSelectedMatter(matter);
+    setShowDetailModal(true);
+  };
+
   const handleEditMatter = (matter: Matter) => {
     setSelectedMatter(matter);
     setShowDetailModal(false);
