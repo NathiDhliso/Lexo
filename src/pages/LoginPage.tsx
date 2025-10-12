@@ -17,7 +17,7 @@ import {
   Sparkles
 } from 'lucide-react';
 import lexoLogo from '../Public/Assets/lexo-logo.png';
-import { toast } from 'react-hot-toast';
+// Toast messages removed per user request
 import LexoHubBGhd from '../Public/Assets/LexoHubBGhd.jpg';
 
 // ===========================================
@@ -476,10 +476,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
       setAuthMode('signin');
       const successMsg = '✅ Email confirmed successfully! You can now sign in with your credentials.';
       setSuccess(successMsg);
-      toast.success('Email confirmed! Please sign in to continue.', {
-        duration: 6000,
-        icon: '✅'
-      });
 
       const cleanUrl = window.location.pathname + window.location.hash.split('?')[0];
       window.history.replaceState({}, document.title, cleanUrl);
@@ -586,7 +582,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
     if (!isFormValid) {
       const message = 'Please fix the errors above before submitting.';
       setError(message);
-      toast.error(message);
       setTimeout(() => { (formRef.current?.querySelector('[aria-invalid="true"]') as HTMLInputElement)?.focus(); }, 100);
       return;
     }
@@ -599,11 +594,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
         if (error) {
           const message = error.message || 'Failed to sign in. Please check your credentials.';
           setError(message);
-          toast.error(message, { duration: 5000 });
         } else {
           const successMsg = 'Signed in successfully';
           setSuccess(successMsg);
-          toast.success('Welcome back!', { duration: 3000 });
           setRedirecting(true);
           setTimeout(() => { window.location.href = '/'; }, 300);
         }
@@ -613,17 +606,14 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
         if (error) {
           const message = error.message || 'Failed to create account. Please try again.';
           setError(message);
-          toast.error(message, { duration: 5000 });
         } else {
           const successMsg = 'Account created successfully! Please check your email to confirm your address.';
           setSuccess(successMsg);
-          toast.success('Account created! Check your email to confirm.', { duration: 6000 });
         }
       }
     } catch (err) {
       const message = 'An unexpected error occurred. Please try again.';
       setError(message);
-      toast.error(message, { duration: 5000 });
       console.error('Authentication error:', err);
     } finally {
       setIsSubmitting(false);
@@ -638,7 +628,6 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
     if (!emailValidation.isValid) {
       const msg = emailValidation.message || 'Please enter a valid email address.';
       setError(msg);
-      toast.error(msg, { duration: 4000 });
       return;
     }
 
@@ -649,16 +638,13 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
       if (error) {
         const message = error.message || 'Failed to send magic link. Please try again.';
         setError(message);
-        toast.error(message, { duration: 5000 });
       } else {
         const successMsg = 'Magic link sent successfully! Check your email to sign in.';
         setSuccess(successMsg);
-        toast.success('Magic link sent! Check your email.', { duration: 6000 });
       }
     } catch (err) {
       const message = 'Failed to send magic link. Please try again.';
       setError(message);
-      toast.error(message, { duration: 5000 });
       console.error('Magic link error:', err);
     } finally {
       setIsSubmitting(false);

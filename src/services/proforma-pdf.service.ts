@@ -56,20 +56,20 @@ export class ProFormaPDFService {
     const pageHeight = doc.internal.pageSize.getHeight();
     let yPosition = 20;
 
-    // Header title with template primary color
-    doc.setFontSize(template?.header?.titleStyle?.fontSize || 24);
+    // Header title - Changed to "INVOICE" and "Professional Legal Services"
+    doc.setFontSize(template?.header?.titleStyle?.fontSize || 28);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.text(template?.header?.title || 'PRO FORMA INVOICE', pageWidth / 2, yPosition, { align: 'center' });
+    doc.setTextColor(218, 165, 32); // Gold color
+    doc.text('INVOICE', pageWidth / 2, yPosition, { align: 'center' });
     
-    yPosition += 15;
-    doc.setFontSize(template?.header?.subtitleStyle?.fontSize || 10);
-    doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
-    doc.text(template?.header?.subtitle || 'Estimate for Legal Services', pageWidth / 2, yPosition, { align: 'center' });
+    yPosition += 10;
+    doc.setFontSize(template?.header?.subtitleStyle?.fontSize || 11);
+    doc.setTextColor(218, 165, 32); // Gold color
+    doc.text('Professional Legal Services', pageWidth / 2, yPosition, { align: 'center' });
 
-    yPosition += 15;
-    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
-    doc.setLineWidth(template?.header?.borderWidth || 0.5);
+    yPosition += 10;
+    doc.setDrawColor(218, 165, 32); // Gold color
+    doc.setLineWidth(1);
     doc.line(20, yPosition, pageWidth - 20, yPosition);
 
     yPosition += 10;
@@ -158,11 +158,11 @@ export class ProFormaPDFService {
 
     yPosition += 12;
 
-    // Only show matter title, not the long description
+    // Matter section with gold color
     if (proforma.work_title) {
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+      doc.setFontSize(11);
+      doc.setTextColor(218, 165, 32); // Gold color
       doc.text('Matter:', 20, yPosition);
       yPosition += 7;
       doc.setFont('helvetica', 'normal');
@@ -170,21 +170,19 @@ export class ProFormaPDFService {
       doc.setTextColor(0, 0, 0);
       const titleLines = doc.splitTextToSize(proforma.work_title, pageWidth - 40);
       doc.text(titleLines, 20, yPosition);
-      yPosition += titleLines.length * 5 + 5;
+      yPosition += titleLines.length * 5 + 3;
     }
 
-    // Description section removed - keep PDF clean and focused on services
-
-    yPosition += 5;
+    yPosition += 3;
 
     const services = (proforma.metadata as any)?.services || [];
     
     if (services.length > 0) {
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+      doc.setFontSize(11);
+      doc.setTextColor(218, 165, 32); // Gold color
       doc.text('Services & Pricing:', 20, yPosition);
-      yPosition += 10;
+      yPosition += 8;
 
       const tableData = services.map((service: ProFormaService) => {
         const quantity = service.quantity || 1;
@@ -204,9 +202,9 @@ export class ProFormaPDFService {
         return [
           service.name || service.service_name || 'Service',
           service.description || service.service_description || '',
-          service.pricing_type === 'hourly' ? `R${rate.toFixed(2)}/hr × ${hours}h` : `R${rate.toFixed(2)}`,
+          service.pricing_type === 'hourly' ? `R${rate.toFixed(2)}` : `R${rate.toFixed(2)}`,
           quantity.toString(),
-          `R${amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          `R ${amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
         ];
       });
 
@@ -214,23 +212,29 @@ export class ProFormaPDFService {
         startY: yPosition,
         head: [['Service', 'Description', 'Rate', 'Qty', 'Amount']],
         body: tableData,
-        theme: 'striped',
+        theme: 'grid',
         headStyles: {
-          fillColor: primaryColor as [number, number, number],
+          fillColor: [218, 165, 32] as [number, number, number], // Gold color
           textColor: [255, 255, 255],
           fontStyle: 'bold',
-          fontSize: template?.table?.headerStyle?.fontSize || 10
+          fontSize: 10,
+          halign: 'left'
         },
         bodyStyles: {
-          fontSize: template?.table?.cellStyle?.fontSize || 9,
-          textColor: [50, 50, 50]
+          fontSize: 9,
+          textColor: [0, 0, 0],
+          lineColor: [200, 200, 200],
+          lineWidth: 0.1
+        },
+        alternateRowStyles: {
+          fillColor: [250, 250, 250]
         },
         columnStyles: {
-          0: { cellWidth: 45 },  // Wider for service name
-          1: { cellWidth: 55 },  // Description
-          2: { cellWidth: 35 },  // Rate
+          0: { cellWidth: 40, fontStyle: 'bold' },  // Service name
+          1: { cellWidth: 60 },  // Description
+          2: { cellWidth: 30, halign: 'right' },  // Rate
           3: { cellWidth: 15, halign: 'center' },  // Qty
-          4: { cellWidth: 30, halign: 'right' }    // Amount
+          4: { cellWidth: 35, halign: 'right', fontStyle: 'bold' }    // Amount
         },
         margin: { left: 20, right: 20 },
         didDrawPage: (data) => {
@@ -258,21 +262,23 @@ export class ProFormaPDFService {
       const vatAmount = subtotal * vatRate;
       const total = subtotal + vatAmount;
 
-      doc.setFont('helvetica', 'bold');
+      doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
+      doc.setTextColor(0, 0, 0);
       
-      doc.text('Subtotal:', pageWidth - 80, yPosition);
-      doc.text(`R${subtotal.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
+      doc.text('Subtotal:', pageWidth - 90, yPosition);
+      doc.text(`R ${subtotal.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
       
-      yPosition += 7;
-      doc.text('VAT (15%):', pageWidth - 80, yPosition);
-      doc.text(`R${vatAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
+      yPosition += 6;
+      doc.text('VAT (15%):', pageWidth - 90, yPosition);
+      doc.text(`R ${vatAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
       
-      yPosition += 10;
+      yPosition += 8;
       doc.setFontSize(12);
-      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-      doc.text('TOTAL ESTIMATE:', pageWidth - 80, yPosition);
-      doc.text(`R${total.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(218, 165, 32); // Gold color
+      doc.text('TOTAL ESTIMATE:', pageWidth - 90, yPosition);
+      doc.text(`R ${total.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
     }
 
     yPosition += 20;
