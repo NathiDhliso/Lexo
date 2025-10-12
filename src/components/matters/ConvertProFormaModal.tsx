@@ -57,7 +57,7 @@ export const ConvertProFormaModal: React.FC<ConvertProFormaModalProps> = ({
   if (loading || !prepopulatedData) {
     return (
       <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50">
-        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-xl p-8">
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-xl p-8">
           <div className="flex items-center gap-3">
             <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600"></div>
             <p className="text-neutral-900 dark:text-neutral-100">Loading pro forma data...</p>

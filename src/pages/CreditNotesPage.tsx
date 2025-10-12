@@ -112,7 +112,7 @@ export const CreditNotesPage: React.FC = () => {
             key={creditNote.id}
             data-credit-note-id={creditNote.id}
             data-credit-note-status={creditNote.status}
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:theme-shadow-md transition-shadow"
             onClick={() => setSelectedCreditNote(creditNote)}
           >
             <CardContent className="p-4">

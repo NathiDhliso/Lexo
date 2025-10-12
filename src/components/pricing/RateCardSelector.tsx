@@ -280,7 +280,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
     return (
       <div className={`${compact ? 'space-y-3' : 'space-y-4'} ${className}`}>
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-1/4 mb-2"></div>
+          <div className="h-4 bg-gray-200 dark:bg-metallic-gray-700 rounded w-1/4 mb-2"></div>
           <div className={`${compact ? 'h-24' : 'h-32'} bg-gray-200 rounded`}></div>
         </div>
       </div>
@@ -330,7 +330,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
           ) : (
             <div className={`grid grid-cols-1 ${compact ? 'gap-3' : 'md:grid-cols-2 lg:grid-cols-3 gap-4'}`}>
               {rateCards.map(rateCard => (
-                <div key={rateCard.id} className={`border rounded-lg ${compact ? 'p-3' : 'p-4'} hover:shadow-md transition-shadow`}>
+                <div key={rateCard.id} className={`border rounded-lg ${compact ? 'p-3' : 'p-4'} hover:theme-shadow-md transition-shadow`}>
                   <div className={`flex justify-between items-start ${compact ? 'mb-1' : 'mb-2'}`}>
                     <h4 className={`font-medium ${compact ? 'text-sm' : ''}`}>{rateCard.service_name}</h4>
                     <Badge className={getCategoryColor(rateCard.service_category)}>
@@ -339,7 +339,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                   </div>
                   
                   {rateCard.service_description && !compact && (
-                    <p className="text-sm text-gray-600 mb-2">{rateCard.service_description}</p>
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">{rateCard.service_description}</p>
                   )}
                   
                   <div className={`flex items-center gap-2 ${compact ? 'mb-2' : 'mb-3'}`}>
@@ -353,7 +353,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                     {rateCard.estimated_hours_min && (
                       <>
                         <Clock className="h-4 w-4 text-blue-600 ml-2" />
-                        <span className="text-sm text-gray-600">
+                        <span className="text-sm text-gray-600 dark:text-neutral-400">
                           {rateCard.estimated_hours_min}h
                         </span>
                       </>
@@ -393,11 +393,11 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
           </CardHeader>
           <CardContent>
             {templates.length === 0 ? (
-              <p className="text-gray-500 text-center py-4">No templates available for the selected criteria.</p>
+              <p className="text-gray-500 dark:text-neutral-500 text-center py-4">No templates available for the selected criteria.</p>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {templates.map(template => (
-                  <div key={template.id} className="border rounded-lg p-4 hover:shadow-md transition-shadow">
+                  <div key={template.id} className="border rounded-lg p-4 hover:theme-shadow-md transition-shadow">
                     <div className="flex justify-between items-start mb-2">
                       <h4 className="font-medium">{template.template_name}</h4>
                       <Badge className={getCategoryColor(template.service_category)}>
@@ -406,7 +406,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                     </div>
                     
                     {template.template_description && (
-                      <p className="text-sm text-gray-600 mb-2">{template.template_description}</p>
+                      <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">{template.template_description}</p>
                     )}
                     
                     <div className="flex items-center gap-2 mb-3">
@@ -420,7 +420,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                       {template.estimated_hours && (
                         <>
                           <Clock className="h-4 w-4 text-blue-600 ml-2" />
-                          <span className="text-sm text-gray-600">
+                          <span className="text-sm text-gray-600 dark:text-neutral-400">
                             {template.estimated_hours}h
                           </span>
                         </>
@@ -578,7 +578,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                         )}
                       </div>
                       {service.service_description && (
-                        <p className="text-sm text-gray-600">{service.service_description}</p>
+                        <p className="text-sm text-gray-600 dark:text-neutral-400">{service.service_description}</p>
                       )}
                     </div>
                     <Button
@@ -694,7 +694,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                 <span>Total:</span>
                 <span>{formatCurrency(estimate.total_amount)}</span>
               </div>
-              <div className="flex justify-between text-sm text-gray-600">
+              <div className="flex justify-between text-sm text-gray-600 dark:text-neutral-400">
                 <span>Estimated Hours:</span>
                 <span>{estimate.estimated_hours}h</span>
               </div>

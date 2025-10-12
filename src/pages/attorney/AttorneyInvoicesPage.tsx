@@ -98,7 +98,7 @@ export const AttorneyInvoicesPage: React.FC = () => {
             key={invoice.id}
             data-invoice-id={invoice.id}
             data-invoice-status={invoice.status}
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:theme-shadow-md transition-shadow"
             onClick={() => setSelectedInvoice(invoice)}
           >
             <CardContent className="p-4">

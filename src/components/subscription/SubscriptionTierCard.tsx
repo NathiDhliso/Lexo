@@ -30,19 +30,19 @@ export const SubscriptionTierCard: React.FC<SubscriptionTierCardProps> = ({
       ${isCurrent ? 'border-primary-500 bg-primary-50' : 'border-gray-200 hover:border-primary-300'}
     `}>
       <div className="mb-4">
-        <h3 className="text-xl font-bold text-gray-900">{tier.name}</h3>
-        <p className="mt-2 text-sm text-gray-600">{tier.description}</p>
+        <h3 className="text-xl font-bold text-gray-900 dark:text-neutral-100">{tier.name}</h3>
+        <p className="mt-2 text-sm text-gray-600 dark:text-neutral-400">{tier.description}</p>
       </div>
 
       <div className="mb-6">
         <div className="flex items-baseline">
-          <span className="text-4xl font-bold text-gray-900">
+          <span className="text-4xl font-bold text-gray-900 dark:text-neutral-100">
             {formatPrice(tier.monthlyPrice)}
           </span>
-          {!isFree && <span className="ml-2 text-gray-600">/month</span>}
+          {!isFree && <span className="ml-2 text-gray-600 dark:text-neutral-400">/month</span>}
         </div>
         {tier.features.additionalUserPrice > 0 && (
-          <p className="mt-1 text-sm text-gray-600">
+          <p className="mt-1 text-sm text-gray-600 dark:text-neutral-400">
             + {formatPrice(tier.features.additionalUserPrice)} per additional user
           </p>
         )}
@@ -51,7 +51,7 @@ export const SubscriptionTierCard: React.FC<SubscriptionTierCardProps> = ({
       <ul className="mb-6 space-y-3">
         <li className="flex items-start">
           <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-gray-700 dark:text-neutral-300">
             {tier.features.maxActiveMatters 
               ? `Up to ${tier.features.maxActiveMatters} active matters`
               : 'Unlimited active matters'}
@@ -59,43 +59,43 @@ export const SubscriptionTierCard: React.FC<SubscriptionTierCardProps> = ({
         </li>
         <li className="flex items-start">
           <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-gray-700 dark:text-neutral-300">
             {tier.features.maxUsers} user{tier.features.maxUsers > 1 ? 's' : ''} included
           </span>
         </li>
         {tier.features.timeTracking && (
           <li className="flex items-start">
             <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-            <span className="text-sm text-gray-700">Time tracking</span>
+            <span className="text-sm text-gray-700 dark:text-neutral-300">Time tracking</span>
           </li>
         )}
         {tier.features.invoicing && (
           <li className="flex items-start">
             <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-            <span className="text-sm text-gray-700">Invoicing & billing</span>
+            <span className="text-sm text-gray-700 dark:text-neutral-300">Invoicing & billing</span>
           </li>
         )}
         {tier.features.matterPipeline && (
           <li className="flex items-start">
             <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-            <span className="text-sm text-gray-700">Matter pipeline</span>
+            <span className="text-sm text-gray-700 dark:text-neutral-300">Matter pipeline</span>
           </li>
         )}
         {tier.features.matterProfitability && (
           <li className="flex items-start">
             <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-            <span className="text-sm text-gray-700">Matter profitability analysis</span>
+            <span className="text-sm text-gray-700 dark:text-neutral-300">Matter profitability analysis</span>
           </li>
         )}
         {tier.features.teamCollaboration && (
           <li className="flex items-start">
             <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-            <span className="text-sm text-gray-700">Team collaboration</span>
+            <span className="text-sm text-gray-700 dark:text-neutral-300">Team collaboration</span>
           </li>
         )}
         <li className="flex items-start">
           <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
-          <span className="text-sm text-gray-700">
+          <span className="text-sm text-gray-700 dark:text-neutral-300">
             {tier.features.prioritySupport === 'phone_email' 
               ? 'Priority phone & email support'
               : 'Email support'}

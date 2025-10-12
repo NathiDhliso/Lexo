@@ -102,8 +102,8 @@ export const InvoiceListAttorney: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Invoices</h1>
-          <p className="text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-neutral-100">Invoices</h1>
+          <p className="text-gray-600 dark:text-neutral-400">
             {invoices.length} invoices • {formatRand(getTotalOutstanding())} outstanding
           </p>
         </div>
@@ -142,11 +142,11 @@ export const InvoiceListAttorney: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow divide-y divide-gray-200">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow divide-y divide-gray-200">
         {invoices.length === 0 ? (
           <div className="px-6 py-12 text-center">
-            <FileText className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-600">No invoices found</p>
+            <FileText className="h-12 w-12 text-gray-400 dark:text-neutral-500 mx-auto mb-3" />
+            <p className="text-gray-600 dark:text-neutral-400">No invoices found</p>
           </div>
         ) : (
           invoices.map((invoice) => (
@@ -211,42 +211,42 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ invoice, onDownload }) => {
       <div className="flex items-start justify-between gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-3 mb-2">
-            <h3 className="text-lg font-semibold text-gray-900">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">
               {invoice.invoice_number}
             </h3>
             {getStatusBadge()}
-            <span className="text-sm text-gray-500 capitalize">
+            <span className="text-sm text-gray-500 dark:text-neutral-500 capitalize">
               {invoice.invoice_type} #{invoice.invoice_sequence}
             </span>
           </div>
 
-          <p className="text-sm text-gray-600 mb-3">
+          <p className="text-sm text-gray-600 dark:text-neutral-400 mb-3">
             {invoice.matters?.title} - {invoice.matters?.client_name}
           </p>
 
           <div className="grid grid-cols-4 gap-4 text-sm">
             <div>
-              <p className="text-gray-600">Issue Date</p>
-              <p className="font-medium text-gray-900">
+              <p className="text-gray-600 dark:text-neutral-400">Issue Date</p>
+              <p className="font-medium text-gray-900 dark:text-neutral-100">
                 {new Date(invoice.issue_date).toLocaleDateString()}
               </p>
             </div>
             <div>
-              <p className="text-gray-600">Due Date</p>
+              <p className="text-gray-600 dark:text-neutral-400">Due Date</p>
               <p className={`font-medium ${isOverdue ? 'text-red-600' : 'text-gray-900'}`}>
                 {new Date(invoice.due_date).toLocaleDateString()}
                 {isOverdue && ' (Overdue)'}
               </p>
             </div>
             <div>
-              <p className="text-gray-600">Total Amount</p>
-              <p className="font-medium text-gray-900">
+              <p className="text-gray-600 dark:text-neutral-400">Total Amount</p>
+              <p className="font-medium text-gray-900 dark:text-neutral-100">
                 {formatRand(invoice.total_amount)}
               </p>
             </div>
             <div>
-              <p className="text-gray-600">Balance Due</p>
-              <p className="font-semibold text-gray-900">
+              <p className="text-gray-600 dark:text-neutral-400">Balance Due</p>
+              <p className="font-semibold text-gray-900 dark:text-neutral-100">
                 {formatRand(invoice.balance_due)}
               </p>
             </div>
@@ -256,7 +256,7 @@ const InvoiceCard: React.FC<InvoiceCardProps> = ({ invoice, onDownload }) => {
         <div className="flex flex-col gap-2">
           <button
             onClick={() => onDownload(invoice.id, invoice.invoice_number)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 bg-white dark:bg-metallic-gray-800 border border-gray-300 dark:border-metallic-gray-600 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900"
           >
             <Download className="h-4 w-4" />
             Download PDF

@@ -132,7 +132,7 @@ export const GenerateInvoiceModal: React.FC<GenerateInvoiceModalProps> = ({
               </div>
               <button
                 onClick={onClose}
-                className="text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300"
+                className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-300"
               >
                 <X className="w-6 h-6" />
               </button>
@@ -141,7 +141,7 @@ export const GenerateInvoiceModal: React.FC<GenerateInvoiceModalProps> = ({
             <div className="p-6 flex-1 overflow-y-auto">
               <div className="mb-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-neutral-500" />
                   <input
                     type="text"
                     placeholder="Search matters..."
@@ -158,7 +158,7 @@ export const GenerateInvoiceModal: React.FC<GenerateInvoiceModalProps> = ({
                 </div>
               ) : filteredMatters.length === 0 ? (
                 <div className="text-center py-12">
-                  <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                  <FileText className="w-12 h-12 text-gray-400 dark:text-neutral-500 mx-auto mb-3" />
                   <p className="text-gray-600 dark:text-neutral-400">
                     {searchQuery ? 'No matters found matching your search' : 'No active matters found'}
                   </p>
@@ -190,7 +190,7 @@ export const GenerateInvoiceModal: React.FC<GenerateInvoiceModalProps> = ({
                             )}
                           </div>
                         </div>
-                        <FileText className="w-5 h-5 text-gray-400" />
+                        <FileText className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
                       </div>
                     </button>
                   ))}

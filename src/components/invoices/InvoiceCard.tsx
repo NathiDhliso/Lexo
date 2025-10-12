@@ -127,7 +127,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
               </Button>
               
               {/* Dropdown Menu */}
-              <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
+              <div className="absolute right-0 top-full mt-1 w-48 bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg theme-shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10">
                 <div className="py-1">
                   {onView && (
                     <button

@@ -42,7 +42,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
                     action.onClick();
                     setIsOpen(false);
                   }}
-                  className="flex items-center gap-3 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 px-4 py-3 rounded-full shadow-lg hover:shadow-xl transition-all min-h-[56px] border border-neutral-200 dark:border-metallic-gray-700"
+                  className="flex items-center gap-3 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 px-4 py-3 rounded-full theme-shadow-lg hover:theme-shadow-xl transition-all min-h-[56px] border border-neutral-200 dark:border-metallic-gray-700"
                 >
                   <Icon className="w-5 h-5" />
                   <span className="text-sm font-medium whitespace-nowrap">{action.label}</span>

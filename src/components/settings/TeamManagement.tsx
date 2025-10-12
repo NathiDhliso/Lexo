@@ -64,12 +64,12 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
       <div>
         <label
           htmlFor="invite-email"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2"
         >
           Email Address <span className="text-red-500">*</span>
         </label>
         <div className="relative">
-          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 pointer-events-none" />
+          <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-neutral-500 pointer-events-none" />
           <input
             id="invite-email"
             type="email"
@@ -79,8 +79,8 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
             required
             autoFocus
             autoComplete="email"
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-metallic-gray-400 rounded-lg 
+                     bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 text-gray-900 dark:text-white
                      placeholder-gray-400 dark:placeholder-gray-500
                      focus:ring-2 focus:ring-primary-500 focus:border-primary-500 
                      transition-colors duration-200
@@ -95,7 +95,7 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
         <div>
           <label
             htmlFor="invite-first-name"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2"
           >
             First Name <span className="text-red-500">*</span>
           </label>
@@ -107,8 +107,8 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
             placeholder="John"
             required
             autoComplete="given-name"
-            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+            className="w-full px-4 py-2.5 border border-gray-300 dark:border-metallic-gray-400 rounded-lg 
+                     bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 text-gray-900 dark:text-white
                      placeholder-gray-400 dark:placeholder-gray-500
                      focus:ring-2 focus:ring-primary-500 focus:border-primary-500 
                      transition-colors duration-200
@@ -119,7 +119,7 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
         <div>
           <label
             htmlFor="invite-last-name"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+            className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2"
           >
             Last Name <span className="text-red-500">*</span>
           </label>
@@ -131,8 +131,8 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
             placeholder="Doe"
             required
             autoComplete="family-name"
-            className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg 
-                     bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+            className="w-full px-4 py-2.5 border border-gray-300 dark:border-metallic-gray-400 rounded-lg 
+                     bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 text-gray-900 dark:text-white
                      placeholder-gray-400 dark:placeholder-gray-500
                      focus:ring-2 focus:ring-primary-500 focus:border-primary-500 
                      transition-colors duration-200
@@ -146,7 +146,7 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
       <div>
         <label
           htmlFor="invite-role"
-          className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+          className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2"
         >
           Role <span className="text-red-500">*</span>
         </label>
@@ -155,8 +155,8 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
           value={role}
           onChange={onRoleChange}
           required
-          className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-lg 
-                   bg-white dark:bg-gray-800 text-gray-900 dark:text-white
+          className="w-full px-4 py-2.5 border border-gray-300 dark:border-metallic-gray-400 rounded-lg 
+                   bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 text-gray-900 dark:text-white
                    focus:ring-2 focus:ring-primary-500 focus:border-primary-500 
                    transition-colors duration-200 cursor-pointer
                    disabled:opacity-50 disabled:cursor-not-allowed"
@@ -168,12 +168,12 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
         </select>
 
         {/* Role Description */}
-        <div className="mt-2.5 p-3 rounded-lg bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+        <div className="mt-2.5 p-3 rounded-lg bg-gray-50 dark:bg-metallic-gray-800 dark:bg-metallic-gray-200/50 border border-gray-200 dark:border-metallic-gray-700">
           <div className="flex items-start gap-2">
             {role === 'admin' && <Shield className="h-4 w-4 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />}
             {role === 'advocate' && <UserIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />}
-            {role === 'secretary' && <UserIcon className="h-4 w-4 text-gray-600 dark:text-gray-400 mt-0.5 flex-shrink-0" />}
-            <p className="text-xs text-gray-600 dark:text-gray-400 leading-relaxed">
+            {role === 'secretary' && <UserIcon className="h-4 w-4 text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mt-0.5 flex-shrink-0" />}
+            <p className="text-xs text-gray-600 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">
               {role === 'admin' && 'Full access to all features, settings, billing, and team management'}
               {role === 'advocate' && 'Can manage matters, clients, time entries, invoices, and documents'}
               {role === 'secretary' && 'Can assist with administrative tasks, scheduling, and basic matter management'}
@@ -387,7 +387,7 @@ export const TeamManagement: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Team Members</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mt-1">
             {currentUsers} of {additionalUsersAllowed} users
           </p>
         </div>
@@ -419,10 +419,10 @@ export const TeamManagement: React.FC = () => {
       {isLoading ? (
         <div className="text-center py-8">Loading team members...</div>
       ) : teamMembers.length === 0 ? (
-        <div className="text-center py-12 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
-          <UserIcon className="mx-auto h-12 w-12 text-gray-400" />
+        <div className="text-center py-12 border-2 border-dashed border-gray-300 dark:border-metallic-gray-400 rounded-lg">
+          <UserIcon className="mx-auto h-12 w-12 text-gray-400 dark:text-neutral-500" />
           <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">No team members</h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400 dark:text-neutral-500">
             Get started by inviting your first team member.
           </p>
         </div>
@@ -431,7 +431,7 @@ export const TeamManagement: React.FC = () => {
           {teamMembers.map((member) => (
             <div
               key={member.id}
-              className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50"
+              className="flex items-center justify-between p-4 border border-gray-200 dark:border-metallic-gray-700 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900 dark:hover:bg-gray-700 dark:bg-metallic-gray-300/50"
             >
               <div className="flex items-center gap-4">
                 <div className="h-10 w-10 rounded-full bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center">
@@ -443,7 +443,7 @@ export const TeamManagement: React.FC = () => {
                   <p className="font-medium text-gray-900 dark:text-white">
                     {member.first_name} {member.last_name}
                   </p>
-                  <p className="text-sm text-gray-600 dark:text-gray-400">{member.email}</p>
+                  <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500">{member.email}</p>
                 </div>
               </div>
 
@@ -452,7 +452,7 @@ export const TeamManagement: React.FC = () => {
                   px-3 py-1 rounded-full text-xs font-medium
                   ${member.role === 'admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400' :
                     member.role === 'advocate' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400' :
-                      'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}
+                      'bg-gray-100 text-gray-700 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 dark:text-neutral-300 dark:text-neutral-600'}
                 `}>
                   {member.role === 'admin' && <Shield className="inline h-3 w-3 mr-1" />}
                   {member.role.charAt(0).toUpperCase() + member.role.slice(1)}
@@ -462,7 +462,7 @@ export const TeamManagement: React.FC = () => {
                   px-3 py-1 rounded-full text-xs font-medium
                   ${member.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
                     member.status === 'pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' :
-                      'bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300'}
+                      'bg-gray-100 text-gray-700 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 dark:text-neutral-300 dark:text-neutral-600'}
                 `}>
                   {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
                 </span>

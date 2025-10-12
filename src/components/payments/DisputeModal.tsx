@@ -76,7 +76,7 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300"
+            className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-300"
           >
             <X className="w-6 h-6" />
           </button>
@@ -162,7 +162,7 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
               Supporting Evidence
             </label>
             <div className="border-2 border-dashed border-gray-300 dark:border-metallic-gray-600 rounded-lg p-6 text-center">
-              <Upload className="w-8 h-8 text-gray-400 mx-auto mb-2" />
+              <Upload className="w-8 h-8 text-gray-400 dark:text-neutral-500 mx-auto mb-2" />
               <p className="text-sm text-gray-600 dark:text-neutral-400">
                 Upload documents, emails, or other evidence
               </p>
@@ -184,7 +184,7 @@ export const DisputeModal: React.FC<DisputeModalProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:hover:bg-metallic-gray-800 transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900 dark:hover:bg-metallic-gray-800 transition-colors"
             >
               Cancel
             </button>

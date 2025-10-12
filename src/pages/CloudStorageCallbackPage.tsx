@@ -57,15 +57,15 @@ export const CloudStorageCallbackPage: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-      <div className="max-w-md w-full bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-8 text-center">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-metallic-gray-950 dark:bg-metallic-gray-100">
+      <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg theme-theme-shadow-lg border border-gray-200 dark:border-metallic-gray-700 p-8 text-center">
         {status === 'processing' && (
           <>
             <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600 dark:border-primary-400 mx-auto mb-4"></div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Connecting Cloud Storage
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-neutral-400 dark:text-neutral-500">
               Please wait while we complete the connection...
             </p>
           </>
@@ -77,7 +77,7 @@ export const CloudStorageCallbackPage: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Successfully Connected!
             </h2>
-            <p className="text-gray-600 dark:text-gray-400">
+            <p className="text-gray-600 dark:text-neutral-400 dark:text-neutral-500">
               Your cloud storage has been connected. Redirecting...
             </p>
           </>
@@ -89,8 +89,8 @@ export const CloudStorageCallbackPage: React.FC = () => {
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Connection Failed
             </h2>
-            <p className="text-gray-600 dark:text-gray-400 mb-4">{error}</p>
-            <p className="text-sm text-gray-500 dark:text-gray-500">
+            <p className="text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mb-4">{error}</p>
+            <p className="text-sm text-gray-500 dark:text-neutral-500 dark:text-neutral-500">
               Redirecting to settings...
             </p>
           </>

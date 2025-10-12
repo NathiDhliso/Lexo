@@ -358,7 +358,7 @@ export const PDFTemplateEditor: React.FC = () => {
                             showLogo: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Logo</span>
                     </label>
@@ -539,7 +539,7 @@ export const PDFTemplateEditor: React.FC = () => {
                     onClick={() => setLayoutMode('presets')}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       layoutMode === 'presets'
-                        ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+                        ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 theme-shadow-sm'
                         : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
                     }`}
                   >
@@ -549,7 +549,7 @@ export const PDFTemplateEditor: React.FC = () => {
                     onClick={() => setLayoutMode('advanced')}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${
                       layoutMode === 'advanced'
-                        ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+                        ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 theme-shadow-sm'
                         : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
                     }`}
                   >
@@ -622,7 +622,7 @@ export const PDFTemplateEditor: React.FC = () => {
                       <button
                         key={preset.name}
                         onClick={() => applyLayoutPreset(preset.name)}
-                        className="p-4 border-2 border-neutral-300 dark:border-metallic-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-mpondo-gold-500 hover:shadow-md transition-all text-left group"
+                        className="p-4 border-2 border-neutral-300 dark:border-metallic-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-mpondo-gold-500 hover:theme-shadow-md transition-all text-left group"
                       >
                         <div className="flex items-start gap-3">
                           <span className="text-3xl">{preset.icon}</span>
@@ -948,7 +948,7 @@ export const PDFTemplateEditor: React.FC = () => {
                             showBorder: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Border</span>
                     </label>
@@ -1193,7 +1193,7 @@ export const PDFTemplateEditor: React.FC = () => {
                             showBorders: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Table Borders</span>
                     </label>
@@ -1402,7 +1402,7 @@ export const PDFTemplateEditor: React.FC = () => {
                             showFooter: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Footer</span>
                     </label>
@@ -1417,7 +1417,7 @@ export const PDFTemplateEditor: React.FC = () => {
                             showPageNumbers: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Page Numbers</span>
                     </label>
@@ -1432,7 +1432,7 @@ export const PDFTemplateEditor: React.FC = () => {
                             showTimestamp: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Timestamp</span>
                     </label>
@@ -1477,7 +1477,7 @@ export const PDFTemplateEditor: React.FC = () => {
                             showLegalDisclaimer: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Always Show Terms & Conditions</span>
                     </label>
@@ -1523,7 +1523,7 @@ export const PDFTemplateEditor: React.FC = () => {
                             showThankYouNote: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Thank You Note</span>
                     </label>
@@ -1568,7 +1568,7 @@ export const PDFTemplateEditor: React.FC = () => {
                             showBankDetails: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Bank/Payment Details</span>
                     </label>
@@ -1640,7 +1640,7 @@ export const PDFTemplateEditor: React.FC = () => {
         <div className="p-4 md:p-6">
           {/* Preview Container */}
           <div 
-            className="rounded-lg shadow-lg border border-neutral-200 relative overflow-hidden" 
+            className="rounded-lg theme-shadow-lg border border-neutral-200 relative overflow-hidden" 
             style={{ 
               minHeight: '400px',
               backgroundColor: template.colorScheme.background || '#FFFFFF',

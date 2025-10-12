@@ -81,7 +81,7 @@ export const DisputesPage: React.FC = () => {
           <Card
             key={dispute.id}
             data-dispute-status={dispute.status}
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:theme-shadow-md transition-shadow"
             onClick={() => setSelectedDispute(dispute)}
           >
             <CardContent className="p-4">

@@ -285,7 +285,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
 
           {/* Hover overlay with all items */}
           {isHovered && (
-            <div className="absolute top-full left-0 right-0 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 shadow-lg z-50 max-h-64 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 theme-shadow-lg z-50 max-h-64 overflow-y-auto">
               {tickerItems.map((item, index) => {
                 const itemStyles = getUrgencyStyles(item.urgency);
                 return (

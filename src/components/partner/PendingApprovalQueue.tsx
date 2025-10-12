@@ -165,7 +165,7 @@ export const PendingApprovalQueue: React.FC = () => {
           {matters.map((matter) => (
             <div
               key={matter.id}
-              className="bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:theme-shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">

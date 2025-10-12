@@ -133,8 +133,8 @@ export const NotificationCenter: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Notifications</h1>
-          <p className="text-gray-600">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-neutral-100">Notifications</h1>
+          <p className="text-gray-600 dark:text-neutral-400">
             {unreadCount > 0 ? `${unreadCount} unread notifications` : 'All caught up!'}
           </p>
         </div>
@@ -142,14 +142,14 @@ export const NotificationCenter: React.FC = () => {
           <button
             onClick={markAllAsRead}
             disabled={unreadCount === 0}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 bg-white dark:bg-metallic-gray-800 border border-gray-300 dark:border-metallic-gray-600 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <CheckCheck className="h-4 w-4" />
             Mark all as read
           </button>
           <button
             onClick={() => setShowSettings(!showSettings)}
-            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
+            className="inline-flex items-center gap-2 px-4 py-2 text-sm font-medium text-gray-700 dark:text-neutral-300 bg-white dark:bg-metallic-gray-800 border border-gray-300 dark:border-metallic-gray-600 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900"
           >
             <Settings className="h-4 w-4" />
             Settings
@@ -180,11 +180,11 @@ export const NotificationCenter: React.FC = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow divide-y divide-gray-200">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow divide-y divide-gray-200">
         {notifications.length === 0 ? (
           <div className="px-6 py-12 text-center">
-            <Bell className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-600">No notifications</p>
+            <Bell className="h-12 w-12 text-gray-400 dark:text-neutral-500 mx-auto mb-3" />
+            <p className="text-gray-600 dark:text-neutral-400">No notifications</p>
           </div>
         ) : (
           notifications.map((notification) => (
@@ -234,15 +234,15 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
           <span className="text-2xl">{getNotificationIcon(notification.notification_type)}</span>
           <div className="flex-1">
             <div className="flex items-center gap-2">
-              <h3 className="font-medium text-gray-900">{notification.title}</h3>
+              <h3 className="font-medium text-gray-900 dark:text-neutral-100">{notification.title}</h3>
               {isUnread && (
                 <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                   New
                 </span>
               )}
             </div>
-            <p className="text-sm text-gray-600 mt-1">{notification.message}</p>
-            <p className="text-xs text-gray-500 mt-2">
+            <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">{notification.message}</p>
+            <p className="text-xs text-gray-500 dark:text-neutral-500 mt-2">
               {new Date(notification.created_at).toLocaleString()}
             </p>
           </div>
@@ -250,7 +250,7 @@ const NotificationItem: React.FC<NotificationItemProps> = ({ notification, onMar
         {isUnread && (
           <button
             onClick={() => onMarkAsRead(notification.id)}
-            className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+            className="p-2 text-gray-400 dark:text-neutral-500 hover:text-blue-600 transition-colors"
             title="Mark as read"
           >
             <Check className="h-5 w-5" />

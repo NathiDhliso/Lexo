@@ -133,7 +133,7 @@ export const DocumentRelationship: React.FC<DocumentRelationshipProps> = ({
               className={`inline-flex items-center gap-2 px-3 py-2 rounded-lg border transition-all ${
                 isCurrent
                   ? `${colorClass} ring-2 ring-offset-2 ring-mpondo-gold-300`
-                  : `${colorClass} hover:shadow-sm`
+                  : `${colorClass} hover:theme-shadow-sm transition-shadow`
               }`}
               disabled={!onDocumentClick}
             >

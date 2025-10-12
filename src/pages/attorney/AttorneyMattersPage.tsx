@@ -69,7 +69,7 @@ export const AttorneyMattersPage: React.FC = () => {
           <Card
             key={matter.id}
             data-matter-id={matter.id}
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:theme-shadow-md transition-shadow"
             onClick={() => setSelectedMatter(matter)}
           >
             <CardContent className="p-4">

@@ -61,7 +61,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
   const getStatusIcon = (status: ProFormaRequestStatus) => {
     switch (status) {
       case 'draft':
-        return <FileText className="w-5 h-5 text-gray-400" />;
+        return <FileText className="w-5 h-5 text-gray-400 dark:text-neutral-500" />;
       case 'sent':
         return <Clock className="w-5 h-5 text-blue-500" />;
       case 'accepted':
@@ -71,7 +71,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
       case 'converted':
         return <ArrowRight className="w-5 h-5 text-purple-500" />;
       default:
-        return <FileText className="w-5 h-5 text-gray-400" />;
+        return <FileText className="w-5 h-5 text-gray-400 dark:text-neutral-500" />;
     }
   };
 
@@ -246,7 +246,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
           {requests.map((request) => (
             <div
               key={request.id}
-              className="bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-6 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-6 hover:theme-shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-4 flex-1">
@@ -428,7 +428,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
                   setShowSendModal(false);
                   setSelectedProForma(null);
                 }}
-                className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 rounded-lg hover:bg-gray-400"
+                className="flex-1 px-4 py-2 bg-gray-300 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-400"
               >
                 Cancel
               </button>

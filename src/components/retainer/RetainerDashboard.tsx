@@ -40,10 +40,10 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
 
   if (!summary) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow p-6">
         <div className="text-center py-8">
-          <DollarSign className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-          <p className="text-gray-600">No retainer agreement for this matter</p>
+          <DollarSign className="h-12 w-12 text-gray-400 dark:text-neutral-500 mx-auto mb-3" />
+          <p className="text-gray-600 dark:text-neutral-400">No retainer agreement for this matter</p>
         </div>
       </div>
     );
@@ -53,10 +53,10 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
 
   return (
     <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-metallic-gray-700">
           <div className="flex items-center justify-between">
-            <h2 className="text-lg font-semibold text-gray-900">Trust Account Balance</h2>
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">Trust Account Balance</h2>
             <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
               retainer.status === 'active' ? 'bg-green-100 text-green-800' :
               retainer.status === 'depleted' ? 'bg-red-100 text-red-800' :
@@ -70,27 +70,27 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
         <div className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-2">Original Retainer</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">Original Retainer</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-neutral-100">
                 {formatRand(retainer.retainer_amount)}
               </p>
             </div>
 
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-2">Current Balance</p>
+              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">Current Balance</p>
               <p className={`text-3xl font-bold ${
                 isLowBalance ? 'text-red-600' : 'text-green-600'
               }`}>
                 {formatRand(currentBalance)}
               </p>
-              <p className="text-sm text-gray-500 mt-1">
+              <p className="text-sm text-gray-500 dark:text-neutral-500 mt-1">
                 {percentageRemaining.toFixed(1)}% remaining
               </p>
             </div>
 
             <div className="text-center">
-              <p className="text-sm text-gray-600 mb-2">Total Drawn</p>
-              <p className="text-2xl font-bold text-gray-900">
+              <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">Total Drawn</p>
+              <p className="text-2xl font-bold text-gray-900 dark:text-neutral-100">
                 {formatRand(totalDrawdowns)}
               </p>
             </div>
@@ -111,21 +111,21 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
             </div>
           )}
 
-          <div className="mt-6 pt-6 border-t border-gray-200">
+          <div className="mt-6 pt-6 border-t border-gray-200 dark:border-metallic-gray-700">
             <div className="flex items-center justify-between text-sm">
-              <span className="text-gray-600">Retainer Type</span>
-              <span className="font-medium text-gray-900 capitalize">{retainer.retainer_type}</span>
+              <span className="text-gray-600 dark:text-neutral-400">Retainer Type</span>
+              <span className="font-medium text-gray-900 dark:text-neutral-100 capitalize">{retainer.retainer_type}</span>
             </div>
             <div className="flex items-center justify-between text-sm mt-2">
-              <span className="text-gray-600">Start Date</span>
-              <span className="font-medium text-gray-900">
+              <span className="text-gray-600 dark:text-neutral-400">Start Date</span>
+              <span className="font-medium text-gray-900 dark:text-neutral-100">
                 {new Date(retainer.start_date).toLocaleDateString()}
               </span>
             </div>
             {retainer.end_date && (
               <div className="flex items-center justify-between text-sm mt-2">
-                <span className="text-gray-600">End Date</span>
-                <span className="font-medium text-gray-900">
+                <span className="text-gray-600 dark:text-neutral-400">End Date</span>
+                <span className="font-medium text-gray-900 dark:text-neutral-100">
                   {new Date(retainer.end_date).toLocaleDateString()}
                 </span>
               </div>
@@ -134,18 +134,18 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h3 className="text-lg font-semibold text-gray-900">Recent Transactions</h3>
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-metallic-gray-700">
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">Recent Transactions</h3>
         </div>
         <div className="divide-y divide-gray-200">
           {summary.recentTransactions.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
+            <div className="px-6 py-8 text-center text-gray-500 dark:text-neutral-500">
               No transactions yet
             </div>
           ) : (
             summary.recentTransactions.map((transaction) => (
-              <div key={transaction.id} className="px-6 py-4 hover:bg-gray-50">
+              <div key={transaction.id} className="px-6 py-4 hover:bg-gray-50 dark:bg-metallic-gray-900">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${
@@ -158,15 +158,15 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
                       ) : transaction.transaction_type === 'drawdown' ? (
                         <TrendingDown className="h-5 w-5 text-blue-600" />
                       ) : (
-                        <DollarSign className="h-5 w-5 text-gray-600" />
+                        <DollarSign className="h-5 w-5 text-gray-600 dark:text-neutral-400" />
                       )}
                     </div>
                     <div>
-                      <p className="font-medium text-gray-900 capitalize">
+                      <p className="font-medium text-gray-900 dark:text-neutral-100 capitalize">
                         {transaction.transaction_type}
                       </p>
-                      <p className="text-sm text-gray-600">{transaction.description}</p>
-                      <p className="text-xs text-gray-500 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-neutral-400">{transaction.description}</p>
+                      <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
                         {new Date(transaction.transaction_date).toLocaleDateString()}
                       </p>
                     </div>
@@ -180,7 +180,7 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
                       {transaction.transaction_type === 'deposit' ? '+' : '-'}
                       {formatRand(transaction.amount)}
                     </p>
-                    <p className="text-sm text-gray-500 mt-1">
+                    <p className="text-sm text-gray-500 dark:text-neutral-500 mt-1">
                       Balance: {formatRand(transaction.balance_after)}
                     </p>
                   </div>
@@ -191,8 +191,8 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
         </div>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Summary</h3>
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow p-6">
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-4">Summary</h3>
         <div className="grid grid-cols-2 gap-4">
           <div className="bg-green-50 rounded-lg p-4">
             <div className="flex items-center gap-2 text-green-700 mb-2">

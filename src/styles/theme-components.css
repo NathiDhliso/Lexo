@@ -362,3 +362,40 @@
   border-top: none;
   border-radius: 0 0 0.5rem 0.5rem;
 }
+
+/* Theme-aware shadow utilities */
+.theme-shadow-sm {
+  box-shadow: var(--theme-shadow-sm);
+}
+
+.theme-shadow-md {
+  box-shadow: var(--theme-shadow-md);
+}
+
+.theme-shadow-lg {
+  box-shadow: var(--theme-shadow-lg);
+}
+
+.theme-shadow-xl {
+  box-shadow: var(--theme-shadow-xl);
+}
+
+.hover\:theme-shadow-sm:hover {
+  box-shadow: var(--theme-shadow-sm);
+}
+
+.hover\:theme-shadow-md:hover {
+  box-shadow: var(--theme-shadow-md);
+}
+
+.hover\:theme-shadow-lg:hover {
+  box-shadow: var(--theme-shadow-lg);
+}
+
+.hover\:theme-shadow-xl:hover {
+  box-shadow: var(--theme-shadow-xl);
+}
+
+.transition-shadow {
+  transition: box-shadow var(--theme-transition-base) ease;
+}

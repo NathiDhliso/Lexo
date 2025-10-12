@@ -198,7 +198,7 @@ const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
         variant="primary"
         size="sm"
         onClick={toggleMenu}
-        className="relative bg-judicial-blue-600 hover:bg-judicial-blue-700 text-white border-0 shadow-md hover:shadow-lg transition-all duration-200"
+        className="relative bg-judicial-blue-600 hover:bg-judicial-blue-700 text-white border-0 theme-shadow-md hover:theme-shadow-lg transition-all duration-200"
         aria-label="Quick Actions (Ctrl+Shift+N)"
         aria-expanded={state.isOpen}
         aria-haspopup="menu"
@@ -211,7 +211,7 @@ const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
       {state.isOpen && (
         <div
           ref={dropdownRef}
-          className="absolute top-full right-0 mt-2 w-80 bg-white border border-neutral-200 rounded-lg shadow-lg z-50 overflow-hidden"
+          className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-metallic-gray-800 border border-neutral-200 rounded-lg theme-shadow-lg z-50 overflow-hidden"
           role="menu"
           aria-label="Quick Actions Menu"
         >
@@ -289,7 +289,7 @@ const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
           {/* Footer */}
           <div className="px-4 py-3 border-t border-neutral-100 bg-neutral-50">
             <p className="text-xs text-neutral-500">
-              Press <kbd className="px-1 py-0.5 bg-white border border-neutral-200 rounded text-xs font-mono">Ctrl+Shift+N</kbd> to open this menu
+              Press <kbd className="px-1 py-0.5 bg-white dark:bg-metallic-gray-800 border border-neutral-200 rounded text-xs font-mono">Ctrl+Shift+N</kbd> to open this menu
             </p>
           </div>
         </div>

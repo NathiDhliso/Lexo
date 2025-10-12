@@ -155,12 +155,12 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
   return (
     <div className="space-y-6">
       {/* Mode Selector */}
-      <div className="flex gap-2 p-1 bg-gray-100 rounded-lg">
+      <div className="flex gap-2 p-1 bg-gray-100 dark:bg-metallic-gray-800 rounded-lg">
         <button
           onClick={() => setSelectedMode('bundles')}
           className={`flex-1 py-2 px-4 rounded-md transition-colors ${
             selectedMode === 'bundles'
-              ? 'bg-white text-blue-600 shadow-sm'
+              ? 'bg-white text-blue-600 theme-shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -171,7 +171,7 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
           onClick={() => setSelectedMode('suggestions')}
           className={`flex-1 py-2 px-4 rounded-md transition-colors ${
             selectedMode === 'suggestions'
-              ? 'bg-white text-blue-600 shadow-sm'
+              ? 'bg-white text-blue-600 theme-shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -182,7 +182,7 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
           onClick={() => setSelectedMode('manual')}
           className={`flex-1 py-2 px-4 rounded-md transition-colors ${
             selectedMode === 'manual'
-              ? 'bg-white text-blue-600 shadow-sm'
+              ? 'bg-white text-blue-600 theme-shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -194,7 +194,7 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
       {/* Service Bundles Mode */}
       {selectedMode === 'bundles' && (
         <div className="space-y-3">
-          <h3 className="font-semibold text-gray-900">
+          <h3 className="font-semibold text-gray-900 dark:text-neutral-100">
             {matterType ? `Recommended for ${matterType} matters` : 'Available Service Bundles'}
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -202,27 +202,27 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
               <button
                 key={bundle.id}
                 onClick={() => applyBundle(bundle)}
-                className="text-left p-4 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all group"
+                className="text-left p-4 border-2 border-gray-200 dark:border-metallic-gray-700 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all group"
               >
                 <div className="flex items-start justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">{bundle.icon}</span>
                     <div>
-                      <h4 className="font-semibold text-gray-900 group-hover:text-blue-600">
+                      <h4 className="font-semibold text-gray-900 dark:text-neutral-100 group-hover:text-blue-600">
                         {bundle.name}
                       </h4>
-                      <p className="text-xs text-gray-600">{bundle.description}</p>
+                      <p className="text-xs text-gray-600 dark:text-neutral-400">{bundle.description}</p>
                     </div>
                   </div>
-                  <ChevronRight className="w-5 h-5 text-gray-400 group-hover:text-blue-600" />
+                  <ChevronRight className="w-5 h-5 text-gray-400 dark:text-neutral-500 group-hover:text-blue-600" />
                 </div>
-                <div className="flex items-center justify-between text-sm mt-3 pt-3 border-t border-gray-200">
+                <div className="flex items-center justify-between text-sm mt-3 pt-3 border-t border-gray-200 dark:border-metallic-gray-700">
                   <div className="flex items-center gap-4">
-                    <span className="flex items-center gap-1 text-gray-600">
+                    <span className="flex items-center gap-1 text-gray-600 dark:text-neutral-400">
                       <Clock className="w-4 h-4" />
                       {bundle.estimatedHours}h
                     </span>
-                    <span className="flex items-center gap-1 text-gray-600">
+                    <span className="flex items-center gap-1 text-gray-600 dark:text-neutral-400">
                       <Package className="w-4 h-4" />
                       {bundle.services.length} services
                     </span>
@@ -241,7 +241,7 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
       {selectedMode === 'suggestions' && (
         <div className="space-y-3">
           <div className="flex items-center justify-between">
-            <h3 className="font-semibold text-gray-900">Recommended Services</h3>
+            <h3 className="font-semibold text-gray-900 dark:text-neutral-100">Recommended Services</h3>
             <button
               onClick={applySuggestions}
               className="text-sm text-blue-600 hover:text-blue-700 font-medium"
@@ -253,19 +253,19 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
             {suggestions.map((service, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-3 bg-gray-50 dark:bg-metallic-gray-900 rounded-lg"
               >
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">{service.rateCard.service_name}</h4>
-                  <p className="text-sm text-gray-600 capitalize">
+                  <h4 className="font-medium text-gray-900 dark:text-neutral-100">{service.rateCard.service_name}</h4>
+                  <p className="text-sm text-gray-600 dark:text-neutral-400 capitalize">
                     {service.rateCard.service_category.replace('_', ' ')}
                   </p>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm text-gray-600">
+                  <div className="text-sm text-gray-600 dark:text-neutral-400">
                     {service.hours}h × R{service.rateCard.hourly_rate?.toFixed(2)}
                   </div>
-                  <div className="font-semibold text-gray-900">
+                  <div className="font-semibold text-gray-900 dark:text-neutral-100">
                     R{service.total.toFixed(2)}
                   </div>
                 </div>
@@ -278,12 +278,12 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
       {/* Manual Selection Mode */}
       {selectedMode === 'manual' && (
         <div className="space-y-3">
-          <h3 className="font-semibold text-gray-900">Select Services Manually</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-neutral-100">Select Services Manually</h3>
           <div className="max-h-96 overflow-y-auto space-y-2">
             {rateCards.map(card => (
               <label
                 key={card.id}
-                className="flex items-center gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer"
+                className="flex items-center gap-3 p-3 border border-gray-200 dark:border-metallic-gray-700 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900 cursor-pointer"
               >
                 <input
                   type="checkbox"
@@ -301,16 +301,16 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
                       setSelectedServices(selectedServices.filter(s => s.rateCard.id !== card.id));
                     }
                   }}
-                  className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                  className="rounded border-gray-300 dark:border-metallic-gray-600 text-blue-600 focus:ring-blue-500"
                 />
                 <div className="flex-1">
-                  <h4 className="font-medium text-gray-900">{card.service_name}</h4>
-                  <p className="text-sm text-gray-600 capitalize">
+                  <h4 className="font-medium text-gray-900 dark:text-neutral-100">{card.service_name}</h4>
+                  <p className="text-sm text-gray-600 dark:text-neutral-400 capitalize">
                     {card.service_category.replace('_', ' ')}
                   </p>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold text-gray-900">
+                  <div className="font-semibold text-gray-900 dark:text-neutral-100">
                     {card.pricing_type === 'hourly' && card.hourly_rate && `R${card.hourly_rate.toFixed(2)}/hr`}
                     {card.pricing_type === 'fixed' && card.fixed_fee && `R${card.fixed_fee.toFixed(2)}`}
                   </div>
@@ -355,7 +355,7 @@ export const SmartServiceSelector: React.FC<SmartServiceSelectorProps> = ({
         {onClose && (
           <button
             onClick={onClose}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 font-medium"
+            className="flex-1 px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900 font-medium"
           >
             Cancel
           </button>

@@ -145,7 +145,7 @@ export const PaymentInterface: React.FC<PaymentInterfaceProps> = ({
 
   if (!invoice) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-gray-500 dark:text-neutral-500">
         Invoice not found
       </div>
     );
@@ -153,25 +153,25 @@ export const PaymentInterface: React.FC<PaymentInterfaceProps> = ({
 
   return (
     <div className="max-w-4xl mx-auto space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">Payment Details</h2>
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow p-6">
+        <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-100 mb-4">Payment Details</h2>
         
         <div className="grid grid-cols-2 gap-4 mb-6">
           <div>
-            <p className="text-sm text-gray-600">Invoice Number</p>
-            <p className="font-medium text-gray-900">{invoice.invoice_number}</p>
+            <p className="text-sm text-gray-600 dark:text-neutral-400">Invoice Number</p>
+            <p className="font-medium text-gray-900 dark:text-neutral-100">{invoice.invoice_number}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Matter</p>
-            <p className="font-medium text-gray-900">{invoice.matters?.title}</p>
+            <p className="text-sm text-gray-600 dark:text-neutral-400">Matter</p>
+            <p className="font-medium text-gray-900 dark:text-neutral-100">{invoice.matters?.title}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Total Amount</p>
-            <p className="font-medium text-gray-900">{formatRand(invoice.total_amount)}</p>
+            <p className="text-sm text-gray-600 dark:text-neutral-400">Total Amount</p>
+            <p className="font-medium text-gray-900 dark:text-neutral-100">{formatRand(invoice.total_amount)}</p>
           </div>
           <div>
-            <p className="text-sm text-gray-600">Amount Due</p>
-            <p className="text-2xl font-bold text-gray-900">{formatRand(invoice.balance_due)}</p>
+            <p className="text-sm text-gray-600 dark:text-neutral-400">Amount Due</p>
+            <p className="text-2xl font-bold text-gray-900 dark:text-neutral-100">{formatRand(invoice.balance_due)}</p>
           </div>
         </div>
 
@@ -212,8 +212,8 @@ export const PaymentInterface: React.FC<PaymentInterfaceProps> = ({
               </div>
             </div>
 
-            <div className="bg-gray-50 rounded-lg p-6 space-y-4">
-              <h3 className="font-semibold text-gray-900 mb-4">Banking Details</h3>
+            <div className="bg-gray-50 dark:bg-metallic-gray-900 rounded-lg p-6 space-y-4">
+              <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-4">Banking Details</h3>
               
               <BankDetailRow
                 label="Account Name"
@@ -243,7 +243,7 @@ export const PaymentInterface: React.FC<PaymentInterfaceProps> = ({
 
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                   Payment Amount
                 </label>
                 <input
@@ -253,12 +253,12 @@ export const PaymentInterface: React.FC<PaymentInterfaceProps> = ({
                   step="0.01"
                   min="0"
                   max={invoice.balance_due}
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
+                <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                   Payment Reference
                 </label>
                 <input
@@ -266,9 +266,9 @@ export const PaymentInterface: React.FC<PaymentInterfaceProps> = ({
                   value={reference}
                   onChange={(e) => setReference(e.target.value)}
                   placeholder="e.g., EFT-12345"
-                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
                   Enter your bank reference number after making the transfer
                 </p>
               </div>
@@ -284,9 +284,9 @@ export const PaymentInterface: React.FC<PaymentInterfaceProps> = ({
           </div>
         ) : (
           <div className="text-center py-12">
-            <CreditCard className="h-16 w-16 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">Card Payment Coming Soon</h3>
-            <p className="text-gray-600 mb-6">
+            <CreditCard className="h-16 w-16 text-gray-400 dark:text-neutral-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-gray-900 dark:text-neutral-100 mb-2">Card Payment Coming Soon</h3>
+            <p className="text-gray-600 dark:text-neutral-400 mb-6">
               Online card payment integration is currently in development.
               Please use EFT for now.
             </p>
@@ -314,12 +314,12 @@ const BankDetailRow: React.FC<BankDetailRowProps> = ({ label, value, onCopy, cop
   return (
     <div className="flex items-center justify-between py-2">
       <div>
-        <p className="text-sm text-gray-600">{label}</p>
-        <p className="font-medium text-gray-900">{value}</p>
+        <p className="text-sm text-gray-600 dark:text-neutral-400">{label}</p>
+        <p className="font-medium text-gray-900 dark:text-neutral-100">{value}</p>
       </div>
       <button
         onClick={() => onCopy(value, label)}
-        className="p-2 text-gray-400 hover:text-blue-600 transition-colors"
+        className="p-2 text-gray-400 dark:text-neutral-500 hover:text-blue-600 transition-colors"
         title={`Copy ${label}`}
       >
         {copied === label ? (

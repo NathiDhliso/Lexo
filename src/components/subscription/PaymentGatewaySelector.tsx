@@ -32,7 +32,7 @@ export const PaymentGatewaySelector: React.FC<PaymentGatewaySelectorProps> = ({
 
   return (
     <div className="space-y-3">
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
         Select Payment Method
       </label>
       {gateways.map((gateway) => (
@@ -49,8 +49,8 @@ export const PaymentGatewaySelector: React.FC<PaymentGatewaySelectorProps> = ({
           <div className="flex items-center gap-3">
             <span className="text-2xl">{gateway.logo}</span>
             <div className="flex-1">
-              <p className="font-semibold text-gray-900">{gateway.name}</p>
-              <p className="text-sm text-gray-600">{gateway.description}</p>
+              <p className="font-semibold text-gray-900 dark:text-neutral-100">{gateway.name}</p>
+              <p className="text-sm text-gray-600 dark:text-neutral-400">{gateway.description}</p>
             </div>
             {selectedGateway === gateway.id && (
               <CreditCard className="h-5 w-5 text-primary-500" />

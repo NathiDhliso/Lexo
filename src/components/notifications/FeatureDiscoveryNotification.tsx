@@ -104,7 +104,7 @@ export const FeatureDiscoveryNotification: React.FC<FeatureDiscoveryNotification
 
   return (
     <div className={`fixed top-4 right-4 z-50 max-w-sm ${className}`}>
-      <Card className="shadow-lg border-l-4 border-l-mpondo-gold-500 bg-gradient-to-r from-mpondo-gold-50 to-white">
+      <Card className="theme-shadow-lg border-l-4 border-l-mpondo-gold-500 bg-gradient-to-r from-mpondo-gold-50 to-white">
         <CardContent className="p-4">
           <div className="flex items-start justify-between mb-3">
             <div className="flex items-center gap-2">

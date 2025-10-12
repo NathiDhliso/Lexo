@@ -96,28 +96,28 @@ export const MattersList: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">My Matters</h1>
-        <p className="text-gray-600">
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-neutral-100">My Matters</h1>
+        <p className="text-gray-600 dark:text-neutral-400">
           {counts.all} total matters • {counts.active} active • {counts.completed} completed
         </p>
       </div>
 
       <div className="flex flex-col sm:flex-row gap-4">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-neutral-500" />
           <input
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             placeholder="Search matters..."
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
         </div>
 
         <select
           value={stateFilter}
           onChange={(e) => setStateFilter(e.target.value as MatterState | 'all')}
-          className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          className="px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
         >
           <option value="all">All States</option>
           <option value="active">Active</option>
@@ -132,8 +132,8 @@ export const MattersList: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {filteredMatters.length === 0 ? (
           <div className="col-span-full text-center py-12">
-            <Briefcase className="h-12 w-12 text-gray-400 mx-auto mb-3" />
-            <p className="text-gray-600">No matters found</p>
+            <Briefcase className="h-12 w-12 text-gray-400 dark:text-neutral-500 mx-auto mb-3" />
+            <p className="text-gray-600 dark:text-neutral-400">No matters found</p>
           </div>
         ) : (
           filteredMatters.map((matter) => (
@@ -199,13 +199,13 @@ const MatterCard: React.FC<MatterCardProps> = ({ matter }) => {
   return (
     <a
       href={`/attorney/matters/${matter.id}`}
-      className="block bg-white rounded-lg shadow hover:shadow-lg transition-shadow"
+      className="block bg-white dark:bg-metallic-gray-800 rounded-lg shadow hover:theme-shadow-lg transition-shadow"
     >
       <div className="p-6">
         <div className="flex items-start justify-between mb-3">
           <div className="flex-1">
-            <p className="text-sm text-gray-600 mb-1">{matter.reference_number}</p>
-            <h3 className="font-semibold text-gray-900 mb-2 line-clamp-2">
+            <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">{matter.reference_number}</p>
+            <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-2 line-clamp-2">
               {matter.title}
             </h3>
           </div>
@@ -217,38 +217,38 @@ const MatterCard: React.FC<MatterCardProps> = ({ matter }) => {
 
         <div className="space-y-2 mb-4">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Client</span>
-            <span className="font-medium text-gray-900">{matter.client_name}</span>
+            <span className="text-gray-600 dark:text-neutral-400">Client</span>
+            <span className="font-medium text-gray-900 dark:text-neutral-100">{matter.client_name}</span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Advocate</span>
-            <span className="font-medium text-gray-900">{matter.advocates?.full_name}</span>
+            <span className="text-gray-600 dark:text-neutral-400">Advocate</span>
+            <span className="font-medium text-gray-900 dark:text-neutral-100">{matter.advocates?.full_name}</span>
           </div>
         </div>
 
-        <div className="pt-4 border-t border-gray-200 space-y-2">
+        <div className="pt-4 border-t border-gray-200 dark:border-metallic-gray-700 space-y-2">
           <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2 text-gray-600">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-neutral-400">
               <TrendingUp className="h-4 w-4" />
               <span>Unbilled WIP</span>
             </div>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-gray-900 dark:text-neutral-100">
               {formatRand(unbilledWIP)}
             </span>
           </div>
           <div className="flex items-center justify-between text-sm">
-            <div className="flex items-center gap-2 text-gray-600">
+            <div className="flex items-center gap-2 text-gray-600 dark:text-neutral-400">
               <CheckCircle className="h-4 w-4" />
               <span>Invoices</span>
             </div>
-            <span className="font-semibold text-gray-900">
+            <span className="font-semibold text-gray-900 dark:text-neutral-100">
               {invoiceCount}
             </span>
           </div>
         </div>
 
-        <div className="mt-4 pt-4 border-t border-gray-200">
-          <div className="flex items-center gap-2 text-xs text-gray-500">
+        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-metallic-gray-700">
+          <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-neutral-500">
             <Clock className="h-3 w-3" />
             <span>Created {new Date(matter.created_at).toLocaleDateString()}</span>
           </div>

@@ -288,20 +288,20 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
       <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-2 border-blue-200 rounded-lg p-4">
         <div className="flex items-center gap-2 mb-2">
           <Sparkles className="w-5 h-5 text-blue-600" />
-          <h3 className="font-semibold text-gray-900">Select Services & See Pricing</h3>
+          <h3 className="font-semibold text-gray-900 dark:text-neutral-100">Select Services & See Pricing</h3>
         </div>
-        <p className="text-sm text-gray-600">
+        <p className="text-sm text-gray-600 dark:text-neutral-400">
           Choose from pre-configured packages or browse individual services. Pricing is estimated and may be adjusted by the advocate.
         </p>
       </div>
 
       {/* View Mode Toggle */}
-      <div className="flex gap-2 p-1 bg-gray-100 rounded-lg">
+      <div className="flex gap-2 p-1 bg-gray-100 dark:bg-metallic-gray-800 rounded-lg">
         <button
           onClick={() => setViewMode('bundles')}
           className={`flex-1 py-2 px-4 rounded-md transition-colors ${
             viewMode === 'bundles'
-              ? 'bg-white text-blue-600 shadow-sm font-medium'
+              ? 'bg-white text-blue-600 theme-shadow-sm font-medium'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -312,7 +312,7 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
           onClick={() => setViewMode('browse')}
           className={`flex-1 py-2 px-4 rounded-md transition-colors ${
             viewMode === 'browse'
-              ? 'bg-white text-blue-600 shadow-sm font-medium'
+              ? 'bg-white text-blue-600 theme-shadow-sm font-medium'
               : 'text-gray-600 hover:text-gray-900'
           }`}
         >
@@ -327,15 +327,15 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
             bundles.map(bundle => (
               <div
                 key={bundle.id}
-                className="border-2 border-gray-200 rounded-lg p-4 hover:border-blue-400 transition-colors cursor-pointer"
+                className="border-2 border-gray-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:border-blue-400 transition-colors cursor-pointer"
                 onClick={() => selectBundle(bundle)}
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <span className="text-3xl">{bundle.icon}</span>
                     <div>
-                      <h4 className="font-semibold text-gray-900">{bundle.name}</h4>
-                      <p className="text-sm text-gray-600">{bundle.description}</p>
+                      <h4 className="font-semibold text-gray-900 dark:text-neutral-100">{bundle.name}</h4>
+                      <p className="text-sm text-gray-600 dark:text-neutral-400">{bundle.description}</p>
                     </div>
                   </div>
                   <button
@@ -351,9 +351,9 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
                 
                 <div className="space-y-2 mb-3">
                   {bundle.services.map(service => (
-                    <div key={service.id} className="flex items-center justify-between text-sm bg-gray-50 rounded p-2">
-                      <span className="text-gray-700">• {service.template_name}</span>
-                      <span className="text-gray-600">
+                    <div key={service.id} className="flex items-center justify-between text-sm bg-gray-50 dark:bg-metallic-gray-900 rounded p-2">
+                      <span className="text-gray-700 dark:text-neutral-300">• {service.template_name}</span>
+                      <span className="text-gray-600 dark:text-neutral-400">
                         {service.default_hourly_rate && `R${service.default_hourly_rate.toFixed(0)}/hr`}
                         {service.default_fixed_fee && `R${service.default_fixed_fee.toFixed(0)}`}
                       </span>
@@ -361,8 +361,8 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
                   ))}
                 </div>
 
-                <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
+                <div className="flex items-center justify-between pt-3 border-t border-gray-200 dark:border-metallic-gray-700">
+                  <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-neutral-400">
                     <span className="flex items-center gap-1">
                       <Clock className="w-4 h-4" />
                       ~{bundle.totalHours}h
@@ -373,7 +373,7 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
                     </span>
                   </div>
                   <div className="text-right">
-                    <div className="text-xs text-gray-500">Estimated Total</div>
+                    <div className="text-xs text-gray-500 dark:text-neutral-500">Estimated Total</div>
                     <div className="text-xl font-bold text-blue-600">
                       R{bundle.totalEstimate.toLocaleString()}
                     </div>
@@ -382,8 +382,8 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
               </div>
             ))
           ) : (
-            <div className="text-center py-8 text-gray-500">
-              <Package className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+            <div className="text-center py-8 text-gray-500 dark:text-neutral-500">
+              <Package className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-neutral-500" />
               <p>No pre-configured packages available for this matter type.</p>
               <p className="text-sm mt-1">Switch to "Browse All Services" to select individual services.</p>
             </div>
@@ -395,19 +395,19 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
       {viewMode === 'browse' && (
         <div className="space-y-3">
           {Object.entries(categorizedServices).map(([category, services]) => (
-            <div key={category} className="border border-gray-200 rounded-lg overflow-hidden">
+            <div key={category} className="border border-gray-200 dark:border-metallic-gray-700 rounded-lg overflow-hidden">
               <button
                 onClick={() => setExpandedCategory(expandedCategory === category ? null : category)}
-                className="w-full flex items-center justify-between p-4 bg-gray-50 hover:bg-gray-100 transition-colors"
+                className="w-full flex items-center justify-between p-4 bg-gray-50 dark:bg-metallic-gray-900 hover:bg-gray-100 dark:bg-metallic-gray-800 transition-colors"
               >
                 <div className="flex items-center gap-2">
-                  <h4 className="font-medium text-gray-900">{formatCategoryName(category)}</h4>
-                  <span className="text-sm text-gray-500">({services.length} services)</span>
+                  <h4 className="font-medium text-gray-900 dark:text-neutral-100">{formatCategoryName(category)}</h4>
+                  <span className="text-sm text-gray-500 dark:text-neutral-500">({services.length} services)</span>
                 </div>
                 {expandedCategory === category ? (
-                  <ChevronUp className="w-5 h-5 text-gray-400" />
+                  <ChevronUp className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
                 ) : (
-                  <ChevronDown className="w-5 h-5 text-gray-400" />
+                  <ChevronDown className="w-5 h-5 text-gray-400 dark:text-neutral-500" />
                 )}
               </button>
               
@@ -433,23 +433,23 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
                             type="checkbox"
                             checked={isSelected}
                             onChange={() => toggleService(service.id)}
-                            className="w-5 h-5 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                            className="w-5 h-5 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                           />
                         </div>
                         <div className="flex-1">
                           <div className="flex items-start justify-between">
                             <div>
-                              <h5 className="font-medium text-gray-900">{service.template_name}</h5>
+                              <h5 className="font-medium text-gray-900 dark:text-neutral-100">{service.template_name}</h5>
                               {service.template_description && (
-                                <p className="text-sm text-gray-600 mt-1">{service.template_description}</p>
+                                <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">{service.template_description}</p>
                               )}
                             </div>
                             <div className="text-right ml-4">
-                              <div className="text-sm text-gray-600">
+                              <div className="text-sm text-gray-600 dark:text-neutral-400">
                                 {service.default_hourly_rate && `R${rate.toFixed(0)}/hr × ${hours}h`}
                                 {service.default_fixed_fee && `Fixed fee`}
                               </div>
-                              <div className="font-semibold text-gray-900">
+                              <div className="font-semibold text-gray-900 dark:text-neutral-100">
                                 R{serviceTotal.toLocaleString()}
                               </div>
                             </div>
@@ -499,8 +499,8 @@ export const AttorneyServiceSelector: React.FC<AttorneyServiceSelectorProps> = (
       )}
 
       {selectedServices.length === 0 && (
-        <div className="text-center py-8 text-gray-500">
-          <DollarSign className="w-12 h-12 mx-auto mb-3 text-gray-400" />
+        <div className="text-center py-8 text-gray-500 dark:text-neutral-500">
+          <DollarSign className="w-12 h-12 mx-auto mb-3 text-gray-400 dark:text-neutral-500" />
           <p>Select services above to see pricing estimate</p>
         </div>
       )}

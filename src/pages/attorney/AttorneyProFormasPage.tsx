@@ -53,7 +53,7 @@ export const AttorneyProFormasPage: React.FC = () => {
           <Card
             key={proForma.id}
             data-proforma-status={proForma.status}
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:theme-shadow-md transition-shadow"
             onClick={() => setSelectedProForma(proForma)}
           >
             <CardContent className="p-4">

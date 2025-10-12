@@ -155,7 +155,7 @@ export const Modal: React.FC<ModalProps> = ({ children, isOpen, onClose, size = 
       <div className="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
         <div className="fixed inset-0 transition-opacity bg-black/50 dark:bg-black/80 backdrop-blur-sm" onClick={onClose}></div>
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div className={`inline-block w-full ${sizeClasses[size]} p-6 sm:p-8 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-metallic-gray-800 shadow-xl rounded-lg border border-neutral-200 dark:border-metallic-gray-700 ${className}`} {...props}>
+        <div className={`inline-block w-full ${sizeClasses[size]} p-6 sm:p-8 my-8 overflow-hidden text-left align-middle transition-all transform bg-white dark:bg-metallic-gray-800 theme-shadow-xl rounded-lg border border-neutral-200 dark:border-metallic-gray-700 ${className}`} {...props}>
           {children}
         </div>
       </div>
@@ -232,7 +232,7 @@ export const SelectValue: React.FC<CardProps> = ({ children, className = '', ...
 );
 
 export const SelectContent: React.FC<CardProps> = ({ children, className = '', ...props }) => (
-  <div className={`absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg ${className}`} {...props}>
+  <div className={`absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg theme-shadow-lg ${className}`} {...props}>
     {children}
   </div>
 );

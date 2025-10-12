@@ -166,7 +166,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
           {documents.map((doc) => (
             <div
               key={doc.id}
-              className="bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:theme-shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">

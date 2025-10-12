@@ -342,7 +342,7 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-neutral-200 dark:border-metallic-gray-700 bg-gradient-to-r from-mpondo-gold-500 to-judicial-blue-600 dark:from-mpondo-gold-600 dark:to-judicial-blue-700">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-white dark:bg-metallic-gray-900 rounded-lg flex items-center justify-center shadow-sm">
+            <div className="w-8 h-8 bg-white dark:bg-metallic-gray-900 rounded-lg flex items-center justify-center theme-shadow-sm">
               <span className="text-mpondo-gold-600 dark:text-mpondo-gold-400 font-bold text-lg">L</span>
             </div>
             <div>
@@ -354,7 +354,7 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
           </div>
           <button
             onClick={onClose}
-            className="p-2 rounded-lg bg-white/20 dark:bg-black/20 hover:bg-white/30 dark:hover:bg-black/30 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
+            className="p-2 rounded-lg bg-white/20 dark:bg-black/20 hover:bg-white dark:bg-metallic-gray-800/30 dark:hover:bg-black/30 transition-colors min-h-[44px] min-w-[44px] flex items-center justify-center"
             aria-label="Close menu"
           >
             <X className="w-5 h-5 text-white" />

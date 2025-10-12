@@ -102,8 +102,8 @@ export const AttorneyDashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Attorney Dashboard</h1>
-        <p className="text-gray-600">Overview of your matters and invoices</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-neutral-100">Attorney Dashboard</h1>
+        <p className="text-gray-600 dark:text-neutral-400">Overview of your matters and invoices</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -136,13 +136,13 @@ export const AttorneyDashboard: React.FC = () => {
         />
       </div>
 
-      <div className="bg-white rounded-lg shadow">
-        <div className="px-6 py-4 border-b border-gray-200">
-          <h2 className="text-lg font-semibold text-gray-900">Recent Activity</h2>
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow">
+        <div className="px-6 py-4 border-b border-gray-200 dark:border-metallic-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">Recent Activity</h2>
         </div>
         <div className="divide-y divide-gray-200">
           {recentActivity.length === 0 ? (
-            <div className="px-6 py-8 text-center text-gray-500">
+            <div className="px-6 py-8 text-center text-gray-500 dark:text-neutral-500">
               No recent activity
             </div>
           ) : (
@@ -156,17 +156,17 @@ export const AttorneyDashboard: React.FC = () => {
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <h3 className="font-medium text-gray-900">{activity.title}</h3>
+                      <h3 className="font-medium text-gray-900 dark:text-neutral-100">{activity.title}</h3>
                       {!activity.read_at && (
                         <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800">
                           New
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-gray-600 mt-1">{activity.message}</p>
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">{activity.message}</p>
                     <div className="flex items-center gap-2 mt-2">
-                      <Clock className="h-4 w-4 text-gray-400" />
-                      <span className="text-xs text-gray-500">
+                      <Clock className="h-4 w-4 text-gray-400 dark:text-neutral-500" />
+                      <span className="text-xs text-gray-500 dark:text-neutral-500">
                         {new Date(activity.created_at).toLocaleString()}
                       </span>
                     </div>
@@ -218,8 +218,8 @@ const StatCard: React.FC<StatCardProps> = ({ icon: Icon, label, value, color, al
     <div className={`bg-white rounded-lg shadow p-6 ${alert ? 'ring-2 ring-orange-500' : ''}`}>
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600">{label}</p>
-          <p className="text-2xl font-bold text-gray-900 mt-2">{value}</p>
+          <p className="text-sm font-medium text-gray-600 dark:text-neutral-400">{label}</p>
+          <p className="text-2xl font-bold text-gray-900 dark:text-neutral-100 mt-2">{value}</p>
         </div>
         <div className={`p-3 rounded-lg ${colorClasses[color]}`}>
           <Icon className="h-6 w-6" />
@@ -245,11 +245,11 @@ const QuickActionCard: React.FC<QuickActionCardProps> = ({
   count
 }) => {
   return (
-    <div className="bg-white rounded-lg shadow p-6">
+    <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow p-6">
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
-          <p className="text-sm text-gray-600 mt-1">{description}</p>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">{title}</h3>
+          <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">{description}</p>
         </div>
         {count !== undefined && count > 0 && (
           <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-orange-100 text-orange-800">

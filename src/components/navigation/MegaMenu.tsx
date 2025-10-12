@@ -169,7 +169,7 @@ const MegaMenuSection: React.FC<MegaMenuSectionProps> = ({
   }
 
   return (
-    <div className="space-y-2 bg-white dark:bg-metallic-gray-800 rounded-xl border border-neutral-200 dark:border-metallic-gray-700 p-5 shadow-sm hover:shadow-md transition-shadow">
+    <div className="space-y-2 bg-white dark:bg-metallic-gray-800 rounded-xl border border-neutral-200 dark:border-metallic-gray-700 p-5 theme-shadow-sm hover:theme-shadow-md transition-shadow">
       <h3 className="text-xs font-bold text-judicial-blue-600 dark:text-judicial-blue-400 uppercase tracking-wider mb-4 pb-2 border-b border-neutral-100 dark:border-metallic-gray-700">
         {section.title}
       </h3>

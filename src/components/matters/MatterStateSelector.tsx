@@ -81,7 +81,7 @@ export const MatterStateSelector: React.FC<MatterStateSelectorProps> = ({
 
   return (
     <div className="space-y-2">
-      <label className="block text-sm font-medium text-gray-700">
+      <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300">
         Matter State
       </label>
       <div className="relative">

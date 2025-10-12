@@ -111,7 +111,7 @@ export const EngagementSigningPage: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-metallic-gray-900 flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
       </div>
     );
@@ -119,11 +119,11 @@ export const EngagementSigningPage: React.FC = () => {
 
   if (!agreement) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-metallic-gray-900 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-lg p-8 max-w-md w-full text-center">
           <AlertCircle className="h-16 w-16 text-red-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Agreement Not Found</h1>
-          <p className="text-gray-600">The engagement agreement you're looking for doesn't exist or has expired.</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-neutral-100 mb-2">Agreement Not Found</h1>
+          <p className="text-gray-600 dark:text-neutral-400">The engagement agreement you're looking for doesn't exist or has expired.</p>
         </div>
       </div>
     );
@@ -131,14 +131,14 @@ export const EngagementSigningPage: React.FC = () => {
 
   if (agreement.client_signed_at) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md w-full text-center">
+      <div className="min-h-screen bg-gray-50 dark:bg-metallic-gray-900 flex items-center justify-center p-4">
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-lg p-8 max-w-md w-full text-center">
           <CheckCircle className="h-16 w-16 text-green-500 mx-auto mb-4" />
-          <h1 className="text-2xl font-bold text-gray-900 mb-2">Already Signed</h1>
-          <p className="text-gray-600 mb-4">
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-neutral-100 mb-2">Already Signed</h1>
+          <p className="text-gray-600 dark:text-neutral-400 mb-4">
             You have already signed this engagement agreement.
           </p>
-          <p className="text-sm text-gray-500">
+          <p className="text-sm text-gray-500 dark:text-neutral-500">
             Signed on: {new Date(agreement.client_signed_at).toLocaleString()}
           </p>
         </div>
@@ -147,9 +147,9 @@ export const EngagementSigningPage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8 px-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-metallic-gray-900 py-8 px-4">
       <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-lg overflow-hidden">
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-8 py-6">
             <div className="flex items-center gap-3 mb-2">
               <FileText className="h-8 w-8 text-white" />
@@ -160,8 +160,8 @@ export const EngagementSigningPage: React.FC = () => {
 
           <div className="p-8 space-y-6">
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">{agreement.matter_title}</h2>
-              <div className="flex items-center gap-4 text-sm text-gray-600">
+              <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-100 mb-2">{agreement.matter_title}</h2>
+              <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-neutral-400">
                 <span>Agreement ID: {agreement.id.slice(0, 8)}</span>
                 <span>•</span>
                 <span>Created: {new Date(agreement.created_at).toLocaleDateString()}</span>
@@ -169,20 +169,20 @@ export const EngagementSigningPage: React.FC = () => {
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Scope of Work</h3>
-              <div className="bg-gray-50 rounded-lg p-4">
-                <p className="text-gray-700 whitespace-pre-wrap">{agreement.scope_of_work}</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-3">Scope of Work</h3>
+              <div className="bg-gray-50 dark:bg-metallic-gray-900 rounded-lg p-4">
+                <p className="text-gray-700 dark:text-neutral-300 whitespace-pre-wrap">{agreement.scope_of_work}</p>
               </div>
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Fee Structure</h3>
-              <div className="bg-gray-50 rounded-lg p-4">
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-3">Fee Structure</h3>
+              <div className="bg-gray-50 dark:bg-metallic-gray-900 rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-gray-700">Estimated Fee:</span>
-                  <span className="text-xl font-bold text-gray-900">{formatRand(agreement.estimated_fee)}</span>
+                  <span className="text-gray-700 dark:text-neutral-300">Estimated Fee:</span>
+                  <span className="text-xl font-bold text-gray-900 dark:text-neutral-100">{formatRand(agreement.estimated_fee)}</span>
                 </div>
-                <div className="text-sm text-gray-600 mt-2">
+                <div className="text-sm text-gray-600 dark:text-neutral-400 mt-2">
                   <p className="font-medium mb-1">Payment Terms:</p>
                   <p>{agreement.payment_terms}</p>
                 </div>
@@ -190,9 +190,9 @@ export const EngagementSigningPage: React.FC = () => {
             </div>
 
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-3">Terms and Conditions</h3>
-              <div className="bg-gray-50 rounded-lg p-4 max-h-96 overflow-y-auto">
-                <p className="text-gray-700 whitespace-pre-wrap text-sm">{agreement.terms_and_conditions}</p>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-3">Terms and Conditions</h3>
+              <div className="bg-gray-50 dark:bg-metallic-gray-900 rounded-lg p-4 max-h-96 overflow-y-auto">
+                <p className="text-gray-700 dark:text-neutral-300 whitespace-pre-wrap text-sm">{agreement.terms_and_conditions}</p>
               </div>
             </div>
 
@@ -201,8 +201,8 @@ export const EngagementSigningPage: React.FC = () => {
                 <div className="flex items-start gap-3">
                   <AlertCircle className="h-5 w-5 text-yellow-600 mt-0.5" />
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900 mb-1">Important Notice</p>
-                    <p className="text-sm text-gray-700">
+                    <p className="font-medium text-gray-900 dark:text-neutral-100 mb-1">Important Notice</p>
+                    <p className="text-sm text-gray-700 dark:text-neutral-300">
                       By signing this agreement, you acknowledge that you have read, understood, and agree to all terms and conditions outlined above.
                     </p>
                   </div>
@@ -215,9 +215,9 @@ export const EngagementSigningPage: React.FC = () => {
                   id="terms"
                   checked={agreedToTerms}
                   onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  className="mt-1 h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-metallic-gray-600 rounded"
                 />
-                <label htmlFor="terms" className="text-sm text-gray-700">
+                <label htmlFor="terms" className="text-sm text-gray-700 dark:text-neutral-300">
                   I have read and agree to the terms and conditions of this engagement agreement
                 </label>
               </div>
@@ -234,7 +234,7 @@ export const EngagementSigningPage: React.FC = () => {
               ) : (
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">
+                    <label className="block text-sm font-medium text-gray-900 dark:text-neutral-100 mb-2">
                       Your Signature
                     </label>
                     <SignatureCanvas 

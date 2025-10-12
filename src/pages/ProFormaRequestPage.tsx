@@ -193,7 +193,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
   if (error) {
     return (
       <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg shadow-lg p-8 text-center">
+        <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-lg p-8 text-center">
           <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Access Error</h1>
           <p className="text-neutral-600 dark:text-neutral-300 mb-6">{error}</p>
@@ -208,7 +208,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
   if (submitted) {
     return (
       <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center px-4">
-        <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg shadow-lg p-8 text-center">
+        <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-lg p-8 text-center">
           <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Request Submitted</h1>
           <p className="text-neutral-600 dark:text-neutral-300 mb-6">
@@ -233,7 +233,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
     <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-metallic-gray-950 py-8">
       <div className="max-w-4xl mx-auto px-4 w-full">
         {/* Header */}
-        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6 mb-6">
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6 mb-6">
           <div className="flex items-start gap-3 mb-4">
             <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400 flex-shrink-0" />
             <div className="min-w-0 flex-1">
@@ -253,7 +253,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Request Details */}
           <div className="lg:col-span-1">
-            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6">
+            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">Request Details</h2>
               
               <div className="space-y-4">
@@ -294,7 +294,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
 
           {/* Submission Form */}
           <div className="lg:col-span-2">
-            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6">
+            <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6">
               <h2 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-6">Your Information</h2>
 
               <div className="mb-6">
@@ -304,7 +304,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                     onClick={() => handleModeSwitch('manual')}
                     className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-md font-medium text-sm sm:text-base transition-all ${
                       inputMode === 'manual'
-                        ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 shadow-sm'
+                        ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 theme-shadow-sm'
                         : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
                     }`}
                   >
@@ -316,7 +316,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                     onClick={() => handleModeSwitch('upload')}
                     className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-md font-medium text-sm sm:text-base transition-all ${
                       inputMode === 'upload'
-                        ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 shadow-sm'
+                        ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 theme-shadow-sm'
                         : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
                     }`}
                   >
@@ -334,7 +334,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
               <form onSubmit={handleSubmit} className="space-y-6">
                 {inputMode === 'upload' && (
                   <div className="space-y-4">
-                    <h3 className="font-medium text-gray-900 dark:text-gray-100 flex items-center gap-2">
+                    <h3 className="font-medium text-gray-900 dark:text-neutral-100 flex items-center gap-2">
                       <Upload className="w-4 h-4" />
                       Document Upload
                     </h3>

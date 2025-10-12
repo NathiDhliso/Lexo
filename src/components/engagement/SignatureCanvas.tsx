@@ -96,14 +96,14 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 dark:hover:text-neutral-300"
+            className="text-gray-400 hover:text-gray-600 dark:text-neutral-400 dark:hover:text-neutral-300"
           >
             <X className="w-6 h-6" />
           </button>
         </div>
 
         <div className="p-6 space-y-4">
-          <div className="border-2 border-gray-300 dark:border-metallic-gray-600 rounded-lg overflow-hidden bg-white">
+          <div className="border-2 border-gray-300 dark:border-metallic-gray-600 rounded-lg overflow-hidden bg-white dark:bg-metallic-gray-800">
             <canvas
               ref={canvasRef}
               width={700}
@@ -127,7 +127,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
             <button
               type="button"
               onClick={clearCanvas}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:hover:bg-metallic-gray-800 transition-colors"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900 dark:hover:bg-metallic-gray-800 transition-colors"
             >
               <RotateCcw className="w-4 h-4" />
               Clear
@@ -135,7 +135,7 @@ export const SignatureCanvas: React.FC<SignatureCanvasProps> = ({
             <button
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:hover:bg-metallic-gray-800 transition-colors"
+              className="flex-1 px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900 dark:hover:bg-metallic-gray-800 transition-colors"
             >
               Cancel
             </button>

@@ -49,7 +49,7 @@ export const SubscriptionGuard: React.FC<SubscriptionGuardProps> = ({
       <div className="flex h-64 items-center justify-center">
         <div className="text-center">
           <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary-500 border-t-transparent"></div>
-          <p className="text-gray-600">Checking subscription...</p>
+          <p className="text-gray-600 dark:text-neutral-400">Checking subscription...</p>
         </div>
       </div>
     );

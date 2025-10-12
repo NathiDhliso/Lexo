@@ -147,8 +147,8 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Total Rate Cards</p>
-                <p className="text-3xl font-bold text-gray-900">{stats.totalCards}</p>
+                <p className="text-sm text-gray-600 dark:text-neutral-400">Total Rate Cards</p>
+                <p className="text-3xl font-bold text-gray-900 dark:text-neutral-100">{stats.totalCards}</p>
               </div>
               <DollarSign className="h-10 w-10 text-blue-600" />
             </div>
@@ -159,7 +159,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Active Cards</p>
+                <p className="text-sm text-gray-600 dark:text-neutral-400">Active Cards</p>
                 <p className="text-3xl font-bold text-green-600">{stats.activeCards}</p>
               </div>
               <CheckCircle className="h-10 w-10 text-green-600" />
@@ -171,7 +171,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
           <CardContent className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600">Avg Hourly Rate</p>
+                <p className="text-sm text-gray-600 dark:text-neutral-400">Avg Hourly Rate</p>
                 <p className="text-3xl font-bold text-purple-600">
                   {formatCurrency(stats.avgHourlyRate)}
                 </p>
@@ -207,8 +207,8 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
           </div>
 
           {templates.length === 0 ? (
-            <div className="text-center py-8 text-gray-500">
-              <FileText className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+            <div className="text-center py-8 text-gray-500 dark:text-neutral-500">
+              <FileText className="h-12 w-12 mx-auto mb-3 text-gray-300 dark:text-neutral-600" />
               <p>No templates available</p>
             </div>
           ) : (
@@ -216,17 +216,17 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
               {templates.slice(0, 6).map(template => (
                 <div 
                   key={template.id} 
-                  className="border rounded-lg p-4 hover:shadow-md transition-shadow bg-white"
+                  className="border rounded-lg p-4 hover:theme-shadow-md transition-shadow bg-white dark:bg-metallic-gray-800"
                 >
                   <div className="flex justify-between items-start mb-3">
-                    <h4 className="font-medium text-gray-900">{template.template_name}</h4>
+                    <h4 className="font-medium text-gray-900 dark:text-neutral-100">{template.template_name}</h4>
                     <Badge className={getCategoryColor(template.service_category)}>
                       {template.service_category.replace('_', ' ')}
                     </Badge>
                   </div>
                   
                   {template.template_description && (
-                    <p className="text-sm text-gray-600 mb-3 line-clamp-2">
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 mb-3 line-clamp-2">
                       {template.template_description}
                     </p>
                   )}
@@ -242,7 +242,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                     {template.estimated_hours && (
                       <>
                         <Clock className="h-4 w-4 text-blue-600 ml-2" />
-                        <span className="text-gray-600">{template.estimated_hours}h</span>
+                        <span className="text-gray-600 dark:text-neutral-400">{template.estimated_hours}h</span>
                       </>
                     )}
                   </div>
@@ -286,9 +286,9 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
         <CardContent>
           {rateCards.length === 0 ? (
             <div className="text-center py-12">
-              <DollarSign className="h-16 w-16 mx-auto mb-4 text-gray-300" />
-              <h3 className="text-lg font-medium text-gray-900 mb-2">No Rate Cards Yet</h3>
-              <p className="text-gray-600 mb-6">
+              <DollarSign className="h-16 w-16 mx-auto mb-4 text-gray-300 dark:text-neutral-600" />
+              <h3 className="text-lg font-medium text-gray-900 dark:text-neutral-100 mb-2">No Rate Cards Yet</h3>
+              <p className="text-gray-600 dark:text-neutral-400 mb-6">
                 Create your first rate card from a template or start from scratch
               </p>
               <Button onClick={onCreateNew}>
@@ -301,12 +301,12 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
               {rateCards.map(card => (
                 <div 
                   key={card.id} 
-                  className="border rounded-lg p-4 hover:shadow-sm transition-shadow"
+                  className="border rounded-lg p-4 hover:theme-shadow-sm transition-shadow"
                 >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h4 className="font-medium text-gray-900">{card.service_name}</h4>
+                        <h4 className="font-medium text-gray-900 dark:text-neutral-100">{card.service_name}</h4>
                         <Badge className={getCategoryColor(card.service_category)}>
                           {card.service_category.replace('_', ' ')}
                         </Badge>
@@ -316,7 +316,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                             Active
                           </Badge>
                         ) : (
-                          <Badge variant="outline" className="text-gray-600">
+                          <Badge variant="outline" className="text-gray-600 dark:text-neutral-400">
                             <XCircle className="h-3 w-3 mr-1" />
                             Inactive
                           </Badge>
@@ -327,7 +327,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                       </div>
                       
                       {card.service_description && (
-                        <p className="text-sm text-gray-600 mb-3">{card.service_description}</p>
+                        <p className="text-sm text-gray-600 dark:text-neutral-400 mb-3">{card.service_description}</p>
                       )}
                       
                       <div className="flex items-center gap-6 text-sm">
@@ -344,7 +344,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                         {card.estimated_hours_min && (
                           <div className="flex items-center gap-2">
                             <Clock className="h-4 w-4 text-blue-600" />
-                            <span className="text-gray-600">
+                            <span className="text-gray-600 dark:text-neutral-400">
                               {card.estimated_hours_min}
                               {card.estimated_hours_max && card.estimated_hours_max !== card.estimated_hours_min 
                                 ? `-${card.estimated_hours_max}` 
@@ -370,7 +370,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                         title={card.is_active ? 'Deactivate' : 'Activate'}
                       >
                         {card.is_active ? (
-                          <XCircle className="h-4 w-4 text-gray-600" />
+                          <XCircle className="h-4 w-4 text-gray-600 dark:text-neutral-400" />
                         ) : (
                           <CheckCircle className="h-4 w-4 text-green-600" />
                         )}

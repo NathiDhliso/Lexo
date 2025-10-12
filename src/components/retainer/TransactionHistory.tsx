@@ -55,7 +55,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ retainer
       case 'refund':
         return <RefreshCw className="w-5 h-5 text-purple-500" />;
       default:
-        return <DollarSign className="w-5 h-5 text-gray-500" />;
+        return <DollarSign className="w-5 h-5 text-gray-500 dark:text-neutral-500" />;
     }
   };
 
@@ -68,7 +68,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ retainer
       case 'refund':
         return 'text-purple-600 dark:text-purple-400';
       default:
-        return 'text-gray-600 dark:text-gray-400';
+        return 'text-gray-600 dark:text-neutral-400';
     }
   };
 
@@ -83,7 +83,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ retainer
   if (transactions.length === 0) {
     return (
       <div className="text-center py-12">
-        <DollarSign className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+        <DollarSign className="w-12 h-12 text-gray-400 dark:text-neutral-500 mx-auto mb-4" />
         <p className="text-gray-600 dark:text-neutral-400">No transactions yet</p>
       </div>
     );
@@ -108,7 +108,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ retainer
         {transactions.map((transaction) => (
           <div
             key={transaction.id}
-            className="bg-white dark:bg-metallic-gray-800 border border-gray-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+            className="bg-white dark:bg-metallic-gray-800 border border-gray-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:theme-shadow-md transition-shadow"
           >
             <div className="flex items-start justify-between">
               <div className="flex items-start gap-3 flex-1">

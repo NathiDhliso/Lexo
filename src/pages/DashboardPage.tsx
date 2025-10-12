@@ -398,7 +398,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
     {/* Invoice Metrics Row */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-      <Card hoverable onClick={() => navigatePage('invoices')} className="cursor-pointer hover:shadow-lg transition-shadow">
+      <Card hoverable onClick={() => navigatePage('invoices')} className="cursor-pointer hover:theme-shadow-lg transition-shadow">
         <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={FileText} className="w-6 h-6 mx-auto" noGradient />
@@ -413,7 +413,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-      <Card hoverable onClick={() => navigatePage('proforma-requests')} className="cursor-pointer hover:shadow-lg transition-shadow">
+      <Card hoverable onClick={() => navigatePage('proforma-requests')} className="cursor-pointer hover:theme-shadow-lg transition-shadow">
         <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={Calculator} className="w-6 h-6 mx-auto" noGradient />
@@ -428,7 +428,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-      <Card hoverable onClick={handleOverdueInvoicesClick} className="cursor-pointer hover:shadow-lg transition-shadow">
+      <Card hoverable onClick={handleOverdueInvoicesClick} className="cursor-pointer hover:theme-shadow-lg transition-shadow">
         <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={AlertTriangle} className="w-6 h-6 mx-auto" noGradient />
@@ -443,7 +443,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-      <Card hoverable onClick={() => navigatePage('reports')} className="cursor-pointer hover:shadow-lg transition-shadow">
+      <Card hoverable onClick={() => navigatePage('reports')} className="cursor-pointer hover:theme-shadow-lg transition-shadow">
         <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={DollarSign} className="w-6 h-6 mx-auto" noGradient />
@@ -462,7 +462,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
     {/* Practice Metrics Row */}
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {/* Quick Stats with click handlers */}
-        <Card hoverable onClick={handleViewAllMatters} className="cursor-pointer hover:shadow-lg transition-shadow">
+        <Card hoverable onClick={handleViewAllMatters} className="cursor-pointer hover:theme-shadow-lg transition-shadow">
           <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={Briefcase} className="w-6 h-6 mx-auto" noGradient />
@@ -475,7 +475,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-        <Card hoverable onClick={handleWipReportClick} className="cursor-pointer hover:shadow-lg transition-shadow">
+        <Card hoverable onClick={handleWipReportClick} className="cursor-pointer hover:theme-shadow-lg transition-shadow">
           <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={FileText} className="w-6 h-6 mx-auto" noGradient />
@@ -488,7 +488,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-        <Card hoverable onClick={handleBillingReportClick} className="cursor-pointer hover:shadow-lg transition-shadow">
+        <Card hoverable onClick={handleBillingReportClick} className="cursor-pointer hover:theme-shadow-lg transition-shadow">
           <CardContent className="p-4 text-center">
           <div className="mb-2">
             <Icon icon={BarChart3} className="w-6 h-6 mx-auto" noGradient />
@@ -501,7 +501,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         </CardContent>
       </Card>
 
-        <Card hoverable onClick={handleOverdueInvoicesClick} className="cursor-pointer hover:shadow-lg transition-shadow">
+        <Card hoverable onClick={handleOverdueInvoicesClick} className="cursor-pointer hover:theme-shadow-lg transition-shadow">
           <CardContent className="p-4 text-center">
           <div className="mb-2">
               <Icon icon={AlertTriangle} className="w-6 h-6 mx-auto" noGradient />
@@ -680,7 +680,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       {/* New Invoice Modal */}
       {quickActions.newInvoiceModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-6 max-w-md w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Generate Invoice</h3>
             <p className="text-neutral-600 mb-4">
               Create professional invoices with automated fee calculations and Bar-compliant formatting.
@@ -713,7 +713,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       {/* Quick Time Entry Modal */}
       {quickActions.quickTimeEntry && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-6 max-w-lg w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Quick Time Entry</h3>
             <div className="space-y-4">
               <div>
@@ -780,7 +780,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       {/* WIP Report Modal */}
       {showDetailedView.wipReport && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Work in Progress Report</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-4">
@@ -824,7 +824,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       {/* Billing Report Modal */}
       {showDetailedView.billingReport && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full mx-4">
+          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Monthly Billing Report</h3>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
@@ -860,7 +860,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       {/* Overdue Invoices Modal */}
       {showDetailedView.overdueInvoices && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-lg w-full mx-4">
+          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-6 max-w-lg w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">Overdue Invoices</h3>
             <div className="space-y-3">
               <div className="p-3 bg-status-warning-50 border-l-4 border-status-warning-500 rounded">

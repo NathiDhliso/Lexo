@@ -205,7 +205,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-xl max-w-2xl w-full mx-4">
         <div className="border-b border-neutral-200 dark:border-metallic-gray-700 px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Generate Pro Forma Link
@@ -243,7 +243,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
                     id="includeRateCards"
                     checked={includeRateCards}
                     onChange={(e) => setIncludeRateCards(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
                   />
                   <label htmlFor="includeRateCards" className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
                     <Calculator className="w-4 h-4" />

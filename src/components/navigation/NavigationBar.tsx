@@ -234,7 +234,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       <nav 
          className={`sticky top-0 z-50 w-full transition-all duration-300 ${
            isScrolled 
-             ? 'bg-white/95 dark:bg-metallic-gray-900/95 backdrop-blur-md shadow-lg border-b border-neutral-200/50 dark:border-metallic-gray-700/50' 
+             ? 'bg-white/95 dark:bg-metallic-gray-900/95 backdrop-blur-md theme-shadow-lg border-b border-neutral-200/50 dark:border-metallic-gray-700/50' 
              : 'bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700'
          }`}
         role="navigation"
@@ -320,7 +320,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
               <Button
                 variant="ghost"
                 size="sm"
-                className="hidden md:flex items-center gap-2 min-h-[44px] bg-mpondo-gold-500 hover:bg-mpondo-gold-600 dark:bg-mpondo-gold-600 dark:hover:bg-mpondo-gold-700 text-white dark:text-metallic-gray-900 shadow-sm hover:shadow-md transition-all"
+                className="hidden md:flex items-center gap-2 min-h-[44px] bg-mpondo-gold-500 hover:bg-mpondo-gold-600 dark:bg-mpondo-gold-600 dark:hover:bg-mpondo-gold-700 text-white dark:text-metallic-gray-900 theme-shadow-sm hover:theme-shadow-md transition-all"
                 onClick={() => handleActionClick('create-matter')}
                 aria-label="Quick create"
               >
@@ -349,7 +349,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                   <Icon icon={ChevronDown} className={`w-3 h-3 transition-transform duration-200 ${userMenuOpen ? 'rotate-180' : ''}`} />
                 </Button>
                 {userMenuOpen && (
-                   <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg z-50">
+                   <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg theme-shadow-lg z-50">
                      <div className="py-1">
                        <button
                          onClick={() => {
@@ -377,7 +377,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
               {/* Mobile Menu Toggle - Enhanced */}
               <button
                 onClick={handleMobileMenuToggle}
-                className="md:hidden mobile-menu-toggle relative z-50 flex items-center justify-center min-h-[48px] min-w-[48px] rounded-xl bg-gradient-to-br from-mpondo-gold-500 to-mpondo-gold-600 dark:from-mpondo-gold-600 dark:to-mpondo-gold-700 hover:from-mpondo-gold-600 hover:to-mpondo-gold-700 dark:hover:from-mpondo-gold-500 dark:hover:to-mpondo-gold-600 shadow-md hover:shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 dark:focus:ring-mpondo-gold-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-metallic-gray-900"
+                className="md:hidden mobile-menu-toggle relative z-50 flex items-center justify-center min-h-[48px] min-w-[48px] rounded-xl bg-gradient-to-br from-mpondo-gold-500 to-mpondo-gold-600 dark:from-mpondo-gold-600 dark:to-mpondo-gold-700 hover:from-mpondo-gold-600 hover:to-mpondo-gold-700 dark:hover:from-mpondo-gold-500 dark:hover:to-mpondo-gold-600 theme-shadow-md hover:theme-shadow-lg transition-all duration-300 ease-in-out focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 dark:focus:ring-mpondo-gold-400 focus:ring-offset-2 focus:ring-offset-white dark:focus:ring-offset-metallic-gray-900"
                 aria-label={navigationState.mobileMenuOpen ? 'Close menu' : 'Open menu'}
                 aria-expanded={navigationState.mobileMenuOpen}
               >

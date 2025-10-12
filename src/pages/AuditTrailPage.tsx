@@ -157,7 +157,7 @@ export const AuditTrailPage: React.FC = () => {
           <Card
             key={entry.id}
             data-audit-entry={entry.id}
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:theme-shadow-md transition-shadow"
             onClick={() => setSelectedEntry(entry)}
           >
             <CardContent className="p-4">

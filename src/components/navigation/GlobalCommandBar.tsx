@@ -211,7 +211,7 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
 
       {/* Search Dropdown */}
       {(
-        <div className="bg-white dark:bg-metallic-gray-900 border-t-0 border border-neutral-200 dark:border-metallic-gray-700 rounded-b-lg shadow-xl max-h-96 overflow-y-auto">
+        <div className="bg-white dark:bg-metallic-gray-900 border-t-0 border border-neutral-200 dark:border-metallic-gray-700 rounded-b-lg theme-shadow-xl max-h-96 overflow-y-auto">
           {searchState.query === '' ? (
             /* Empty State - Recent Searches */
             <div className="p-4">

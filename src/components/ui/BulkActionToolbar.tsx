@@ -125,7 +125,7 @@ export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
             size="sm"
             icon={action.icon}
             onClick={action.onClick}
-            className="text-white border-white/20 hover:bg-white/10"
+            className="text-white border-white/20 hover:bg-white dark:bg-metallic-gray-800/10"
             aria-label={action.label}
           >
             <span className="hidden sm:inline">{action.label}</span>
@@ -138,7 +138,7 @@ export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
           size="sm"
           icon={<X className="w-4 h-4" />}
           onClick={onClearSelection}
-          className="text-white border-white/20 hover:bg-white/10 ml-2"
+          className="text-white border-white/20 hover:bg-white dark:bg-metallic-gray-800/10 ml-2"
           aria-label="Clear selection"
         >
           <span className="hidden sm:inline">Clear</span>

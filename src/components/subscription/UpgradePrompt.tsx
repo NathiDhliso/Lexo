@@ -61,15 +61,15 @@ export const UpgradePrompt: React.FC<UpgradePromptProps> = ({
 
     if (variant === 'modal') {
         return (
-            <div className="rounded-lg bg-white p-6 shadow-xl">
+            <div className="rounded-lg bg-white dark:bg-metallic-gray-800 p-6 theme-shadow-xl">
                 <div className="mb-4 flex items-center justify-center">
                     <ArrowUpCircle className="h-12 w-12 text-primary-500" />
                 </div>
-                <h3 className="mb-2 text-center text-xl font-bold text-gray-900">{title}</h3>
-                <p className="mb-6 text-center text-gray-600">{message}</p>
+                <h3 className="mb-2 text-center text-xl font-bold text-gray-900 dark:text-neutral-100">{title}</h3>
+                <p className="mb-6 text-center text-gray-600 dark:text-neutral-400">{message}</p>
                 {feature && (
-                    <div className="mb-6 rounded-md bg-gray-50 p-3">
-                        <p className="text-center text-sm text-gray-700">
+                    <div className="mb-6 rounded-md bg-gray-50 dark:bg-metallic-gray-900 p-3">
+                        <p className="text-center text-sm text-gray-700 dark:text-neutral-300">
                             Required for: <span className="font-medium">{feature}</span>
                         </p>
                     </div>

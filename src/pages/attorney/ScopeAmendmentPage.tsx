@@ -194,7 +194,7 @@ export const ScopeAmendmentPage: React.FC = () => {
                   </button>
                   <button
                     disabled={processing}
-                    className="px-6 py-3 border border-gray-300 dark:border-metallic-gray-600 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:hover:bg-metallic-gray-800 transition-colors disabled:opacity-50"
+                    className="px-6 py-3 border border-gray-300 dark:border-metallic-gray-600 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900 dark:hover:bg-metallic-gray-800 transition-colors disabled:opacity-50"
                   >
                     Contact Advocate
                   </button>
@@ -263,7 +263,7 @@ export const ScopeAmendmentPage: React.FC = () => {
 
       {pendingAmendments.length === 0 && approvedAmendments.length === 0 && (
         <div className="text-center py-12 bg-white dark:bg-metallic-gray-900 rounded-lg border border-gray-200 dark:border-metallic-gray-700">
-          <CheckCircle className="w-16 h-16 text-gray-400 mx-auto mb-4" />
+          <CheckCircle className="w-16 h-16 text-gray-400 dark:text-neutral-500 mx-auto mb-4" />
           <p className="text-gray-600 dark:text-neutral-400">No scope amendments</p>
         </div>
       )}

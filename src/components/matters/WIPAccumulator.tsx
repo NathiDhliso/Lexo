@@ -107,28 +107,28 @@ export const WIPAccumulator: React.FC<WIPAccumulatorProps> = ({ matterId }) => {
 
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow p-6">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow p-6">
         <div className="animate-pulse space-y-4">
-          <div className="h-4 bg-gray-200 rounded w-1/4"></div>
-          <div className="h-8 bg-gray-200 rounded w-1/2"></div>
+          <div className="h-4 bg-gray-200 dark:bg-metallic-gray-700 rounded w-1/4"></div>
+          <div className="h-8 bg-gray-200 dark:bg-metallic-gray-700 rounded w-1/2"></div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-metallic-gray-700">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-semibold text-gray-900">Work In Progress (WIP)</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">Work In Progress (WIP)</h3>
           <TrendingUp className="h-5 w-5 text-blue-600" />
         </div>
       </div>
 
       <div className="p-6">
         <div className="mb-6">
-          <p className="text-sm text-gray-600 mb-2">Total Unbilled WIP</p>
-          <p className="text-3xl font-bold text-gray-900">
+          <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">Total Unbilled WIP</p>
+          <p className="text-3xl font-bold text-gray-900 dark:text-neutral-100">
             {formatRand(wip.totalWIP)}
           </p>
         </div>
@@ -150,10 +150,10 @@ export const WIPAccumulator: React.FC<WIPAccumulatorProps> = ({ matterId }) => {
           />
         </div>
 
-        <div className="mt-6 pt-6 border-t border-gray-200">
+        <div className="mt-6 pt-6 border-t border-gray-200 dark:border-metallic-gray-700">
           <div className="flex items-center justify-between text-sm">
-            <span className="text-gray-600">Ready to bill</span>
-            <span className="font-semibold text-gray-900">
+            <span className="text-gray-600 dark:text-neutral-400">Ready to bill</span>
+            <span className="font-semibold text-gray-900 dark:text-neutral-100">
               {wip.timeEntriesCount + wip.expensesCount} items
             </span>
           </div>
@@ -179,17 +179,17 @@ const WIPItem: React.FC<WIPItemProps> = ({ icon: Icon, label, count, amount, col
   };
 
   return (
-    <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+    <div className="flex items-center justify-between p-4 bg-gray-50 dark:bg-metallic-gray-900 rounded-lg">
       <div className="flex items-center gap-3">
         <div className={`p-2 rounded-lg ${colorClasses[color]}`}>
           <Icon className="h-5 w-5" />
         </div>
         <div>
-          <p className="font-medium text-gray-900">{label}</p>
-          <p className="text-sm text-gray-600">{count} items</p>
+          <p className="font-medium text-gray-900 dark:text-neutral-100">{label}</p>
+          <p className="text-sm text-gray-600 dark:text-neutral-400">{count} items</p>
         </div>
       </div>
-      <p className="text-lg font-semibold text-gray-900">
+      <p className="text-lg font-semibold text-gray-900 dark:text-neutral-100">
         {formatRand(amount)}
       </p>
     </div>

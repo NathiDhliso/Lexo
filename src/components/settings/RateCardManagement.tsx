@@ -327,7 +327,7 @@ export const RateCardManagement: React.FC = () => {
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div>
           <h2 className="text-xl font-bold text-gray-900 dark:text-white">Rate Cards</h2>
-          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+          <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mt-1">
             Manage your service rates and pricing templates
           </p>
         </div>
@@ -346,13 +346,13 @@ export const RateCardManagement: React.FC = () => {
       {/* Controls Bar */}
       <div className="flex flex-col lg:flex-row gap-4">
         {/* Source Toggle */}
-        <div className="flex gap-2 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+        <div className="flex gap-2 bg-gray-100 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 p-1 rounded-lg">
           <button
             onClick={() => setDataSource('my-cards')}
             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               dataSource === 'my-cards'
-                ? 'bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                ? 'bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 text-primary-600 dark:text-primary-400 theme-shadow-sm'
+                : 'text-gray-600 dark:text-neutral-400 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
           >
             <Star className="h-4 w-4" />
@@ -362,8 +362,8 @@ export const RateCardManagement: React.FC = () => {
             onClick={() => setDataSource('templates')}
             className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               dataSource === 'templates'
-                ? 'bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400 shadow-sm'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                ? 'bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 text-primary-600 dark:text-primary-400 theme-shadow-sm'
+                : 'text-gray-600 dark:text-neutral-400 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
           >
             <LayoutTemplate className="h-4 w-4" />
@@ -373,13 +373,13 @@ export const RateCardManagement: React.FC = () => {
 
         {/* Search */}
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400 dark:text-neutral-500" />
           <input
             type="text"
             placeholder="Search rate cards..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+            className="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-metallic-gray-400 rounded-lg bg-white dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 text-gray-900 dark:text-white"
           />
         </div>
 
@@ -387,7 +387,7 @@ export const RateCardManagement: React.FC = () => {
         <select
           value={selectedCategory}
           onChange={(e) => setSelectedCategory(e.target.value)}
-          className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+          className="px-4 py-2 border border-gray-300 dark:border-metallic-gray-400 rounded-lg bg-white dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 text-gray-900 dark:text-white"
         >
           {categories.map((cat) => (
             <option key={cat.value} value={cat.value}>
@@ -397,13 +397,13 @@ export const RateCardManagement: React.FC = () => {
         </select>
 
         {/* View Mode Toggle */}
-        <div className="flex gap-1 bg-gray-100 dark:bg-gray-700 p-1 rounded-lg">
+        <div className="flex gap-1 bg-gray-100 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 p-1 rounded-lg">
           <button
             onClick={() => setViewMode('grid')}
             className={`p-2 rounded transition-colors ${
               viewMode === 'grid'
-                ? 'bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                ? 'bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 text-primary-600 dark:text-primary-400'
+                : 'text-gray-600 dark:text-neutral-400 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
             title="Grid view"
           >
@@ -413,8 +413,8 @@ export const RateCardManagement: React.FC = () => {
             onClick={() => setViewMode('list')}
             className={`p-2 rounded transition-colors ${
               viewMode === 'list'
-                ? 'bg-white dark:bg-gray-800 text-primary-600 dark:text-primary-400'
-                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                ? 'bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 text-primary-600 dark:text-primary-400'
+                : 'text-gray-600 dark:text-neutral-400 dark:text-neutral-500 hover:text-gray-900 dark:hover:text-gray-200'
             }`}
             title="List view"
           >
@@ -432,7 +432,7 @@ export const RateCardManagement: React.FC = () => {
             onChange={(e) => setShowActiveOnly(e.target.checked)}
             className="rounded"
           />
-          <span className="text-gray-700 dark:text-gray-300">Show active only</span>
+          <span className="text-gray-700 dark:text-neutral-300 dark:text-neutral-600">Show active only</span>
         </label>
       )}
 
@@ -440,12 +440,12 @@ export const RateCardManagement: React.FC = () => {
       {isLoading ? (
         <div className="text-center py-8">Loading...</div>
       ) : filteredData.length === 0 ? (
-        <div className="text-center py-12 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
-          <DollarSign className="mx-auto h-12 w-12 text-gray-400" />
+        <div className="text-center py-12 border-2 border-dashed border-gray-300 dark:border-metallic-gray-400 rounded-lg">
+          <DollarSign className="mx-auto h-12 w-12 text-gray-400 dark:text-neutral-500" />
           <h3 className="mt-2 text-sm font-medium text-gray-900 dark:text-white">
             {dataSource === 'my-cards' ? 'No rate cards' : 'No templates found'}
           </h3>
-          <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400 dark:text-neutral-500">
             {dataSource === 'my-cards' 
               ? 'Get started by creating your first rate card or use a template.'
               : 'Try adjusting your search or filters.'}
@@ -457,7 +457,7 @@ export const RateCardManagement: React.FC = () => {
             filteredData.map((card) => (
             <div
               key={(card as RateCard).id}
-              className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow"
+              className="border border-gray-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:theme-shadow-md transition-shadow"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex-1">
@@ -465,7 +465,7 @@ export const RateCardManagement: React.FC = () => {
                     {(card as RateCard).service_name}
                   </h3>
                   {(card as RateCard).service_description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mt-1">
                       {(card as RateCard).service_description}
                     </p>
                   )}
@@ -503,7 +503,7 @@ export const RateCardManagement: React.FC = () => {
                     {(card as RateCard).service_category.replace('_', ' ')}
                   </span>
                   {(card as RateCard).matter_type && (
-                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded text-xs">
+                    <span className="px-2 py-1 bg-gray-100 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 text-gray-700 dark:text-neutral-300 dark:text-neutral-600 rounded text-xs">
                       {(card as RateCard).matter_type}
                     </span>
                   )}
@@ -512,7 +512,7 @@ export const RateCardManagement: React.FC = () => {
                 <div className="flex items-center gap-4 text-sm">
                   {(card as RateCard).pricing_type === 'hourly' && (card as RateCard).hourly_rate && (
                     <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4 text-gray-400" />
+                      <Clock className="h-4 w-4 text-gray-400 dark:text-neutral-500" />
                       <span className="font-medium text-gray-900 dark:text-white">
                         {formatCurrency((card as RateCard).hourly_rate)}/hr
                       </span>
@@ -520,7 +520,7 @@ export const RateCardManagement: React.FC = () => {
                   )}
                   {(card as RateCard).pricing_type === 'fixed' && (card as RateCard).fixed_fee && (
                     <div className="flex items-center gap-1">
-                      <DollarSign className="h-4 w-4 text-gray-400" />
+                      <DollarSign className="h-4 w-4 text-gray-400 dark:text-neutral-500" />
                       <span className="font-medium text-gray-900 dark:text-white">
                         {formatCurrency((card as RateCard).fixed_fee)}
                       </span>
@@ -529,7 +529,7 @@ export const RateCardManagement: React.FC = () => {
                 </div>
 
                 {((card as RateCard).minimum_fee || (card as RateCard).maximum_fee) && (
-                  <div className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="text-xs text-gray-500 dark:text-neutral-400 dark:text-neutral-500">
                     Range: {formatCurrency((card as RateCard).minimum_fee)} - {formatCurrency((card as RateCard).maximum_fee)}
                   </div>
                 )}
@@ -541,7 +541,7 @@ export const RateCardManagement: React.FC = () => {
                     </span>
                   )}
                   {!(card as RateCard).is_active && (
-                    <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded text-xs">
+                    <span className="px-2 py-1 bg-gray-100 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 text-gray-600 dark:text-neutral-400 dark:text-neutral-500 rounded text-xs">
                       Inactive
                     </span>
                   )}
@@ -554,7 +554,7 @@ export const RateCardManagement: React.FC = () => {
             filteredData.map((template) => (
               <div
                 key={(template as ServiceTemplate).id}
-                className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 hover:shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10"
+                className="border border-gray-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:theme-shadow-md transition-shadow bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/10 dark:to-indigo-900/10"
               >
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
@@ -565,7 +565,7 @@ export const RateCardManagement: React.FC = () => {
                       </h3>
                     </div>
                     {(template as ServiceTemplate).template_description && (
-                      <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                      <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mt-1">
                         {(template as ServiceTemplate).template_description}
                       </p>
                     )}
@@ -588,7 +588,7 @@ export const RateCardManagement: React.FC = () => {
                   <div className="flex items-center gap-4 text-sm mt-2">
                     {(template as ServiceTemplate).default_hourly_rate && (
                       <div className="flex items-center gap-1">
-                        <Clock className="h-4 w-4 text-gray-400" />
+                        <Clock className="h-4 w-4 text-gray-400 dark:text-neutral-500" />
                         <span className="font-medium text-gray-900 dark:text-white">
                           {formatCurrency((template as ServiceTemplate).default_hourly_rate)}/hr
                         </span>
@@ -596,7 +596,7 @@ export const RateCardManagement: React.FC = () => {
                     )}
                     {(template as ServiceTemplate).default_fixed_fee && (
                       <div className="flex items-center gap-1">
-                        <DollarSign className="h-4 w-4 text-gray-400" />
+                        <DollarSign className="h-4 w-4 text-gray-400 dark:text-neutral-500" />
                         <span className="font-medium text-gray-900 dark:text-white">
                           {formatCurrency((template as ServiceTemplate).default_fixed_fee)}
                         </span>
@@ -605,7 +605,7 @@ export const RateCardManagement: React.FC = () => {
                   </div>
 
                   {(template as ServiceTemplate).estimated_hours && (
-                    <div className="text-xs text-gray-600 dark:text-gray-400">
+                    <div className="text-xs text-gray-600 dark:text-neutral-400 dark:text-neutral-500">
                       Est. {(template as ServiceTemplate).estimated_hours} hours
                     </div>
                   )}
@@ -621,7 +621,7 @@ export const RateCardManagement: React.FC = () => {
             filteredData.map((card) => (
               <div
                 key={(card as RateCard).id}
-                className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50"
+                className="flex items-center justify-between p-4 border border-gray-200 dark:border-metallic-gray-700 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900 dark:hover:bg-gray-700 dark:bg-metallic-gray-300/50"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
@@ -637,13 +637,13 @@ export const RateCardManagement: React.FC = () => {
                       </span>
                     )}
                     {!(card as RateCard).is_active && (
-                      <span className="px-2 py-1 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded text-xs">
+                      <span className="px-2 py-1 bg-gray-100 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 text-gray-600 dark:text-neutral-400 dark:text-neutral-500 rounded text-xs">
                         Inactive
                       </span>
                     )}
                   </div>
                   {(card as RateCard).service_description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mt-1">
                       {(card as RateCard).service_description}
                     </p>
                   )}
@@ -687,7 +687,7 @@ export const RateCardManagement: React.FC = () => {
             filteredData.map((template) => (
               <div
                 key={(template as ServiceTemplate).id}
-                className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/10"
+                className="flex items-center justify-between p-4 border border-gray-200 dark:border-metallic-gray-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/10"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
@@ -700,7 +700,7 @@ export const RateCardManagement: React.FC = () => {
                     </span>
                   </div>
                   {(template as ServiceTemplate).template_description && (
-                    <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+                    <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mt-1">
                       {(template as ServiceTemplate).template_description}
                     </p>
                   )}
@@ -754,13 +754,13 @@ export const RateCardManagement: React.FC = () => {
           />
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+            <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2">
               Service Description
             </label>
             <textarea
               value={formData.service_description}
               onChange={(e) => setFormData({ ...formData, service_description: e.target.value })}
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              className="w-full px-3 py-2 border border-gray-300 dark:border-metallic-gray-400 rounded-lg bg-white dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 text-gray-900 dark:text-white"
               rows={3}
               placeholder="Brief description of the service"
             />
@@ -768,13 +768,13 @@ export const RateCardManagement: React.FC = () => {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2">
                 Category
               </label>
               <select
                 value={formData.service_category}
                 onChange={(e) => setFormData({ ...formData, service_category: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-metallic-gray-400 rounded-lg bg-white dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 text-gray-900 dark:text-white"
               >
                 <option value="consultation">Consultation</option>
                 <option value="research">Research</option>
@@ -790,13 +790,13 @@ export const RateCardManagement: React.FC = () => {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2">
                 Pricing Type
               </label>
               <select
                 value={formData.pricing_type}
                 onChange={(e) => setFormData({ ...formData, pricing_type: e.target.value as any })}
-                className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-metallic-gray-400 rounded-lg bg-white dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 text-gray-900 dark:text-white"
               >
                 <option value="hourly">Hourly Rate</option>
                 <option value="fixed">Fixed Fee</option>
@@ -855,7 +855,7 @@ export const RateCardManagement: React.FC = () => {
                 onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })}
                 className="rounded"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">Active</span>
+              <span className="text-sm text-gray-700 dark:text-neutral-300 dark:text-neutral-600">Active</span>
             </label>
             <label className="flex items-center gap-2">
               <input
@@ -864,7 +864,7 @@ export const RateCardManagement: React.FC = () => {
                 onChange={(e) => setFormData({ ...formData, is_default: e.target.checked })}
                 className="rounded"
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">Set as Default</span>
+              <span className="text-sm text-gray-700 dark:text-neutral-300 dark:text-neutral-600">Set as Default</span>
             </label>
           </div>
 

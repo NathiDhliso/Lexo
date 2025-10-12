@@ -51,7 +51,7 @@ export const NotificationsPage: React.FC = () => {
               Filter by Type
             </Button>
             {showFilterMenu && (
-              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-neutral-800 rounded-lg shadow-lg z-10">
+              <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-metallic-gray-800 rounded-lg theme-theme-shadow-lg border border-gray-200 dark:border-metallic-gray-700 z-10">
                 <button
                   onClick={() => {
                     setFilterType('invoice');
@@ -90,7 +90,7 @@ export const NotificationsPage: React.FC = () => {
           <Card
             key={notification.id}
             data-notification-read={notification.read}
-            className="cursor-pointer hover:shadow-md transition-shadow"
+            className="cursor-pointer hover:theme-theme-shadow-md transition-shadow"
           >
             <CardContent className="flex items-center justify-between p-4">
               <div className="flex items-center gap-4">

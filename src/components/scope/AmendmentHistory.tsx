@@ -54,7 +54,7 @@ export const AmendmentHistory: React.FC<AmendmentHistoryProps> = ({ matterId }) 
       case 'pending':
         return <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />;
       default:
-        return <AlertCircle className="w-5 h-5 text-gray-600 dark:text-gray-400" />;
+        return <AlertCircle className="w-5 h-5 text-gray-600 dark:text-neutral-400 dark:text-neutral-500" />;
     }
   };
 
@@ -64,7 +64,7 @@ export const AmendmentHistory: React.FC<AmendmentHistoryProps> = ({ matterId }) 
       rejected: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300',
       pending: 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300',
     };
-    return styles[status as keyof typeof styles] || 'bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300';
+    return styles[status as keyof typeof styles] || 'bg-gray-100 dark:bg-metallic-gray-950/30 text-gray-800 dark:text-neutral-300';
   };
 
   const formatDate = (dateString: string) => {
@@ -92,7 +92,7 @@ export const AmendmentHistory: React.FC<AmendmentHistoryProps> = ({ matterId }) 
   if (amendments.length === 0) {
     return (
       <div className="text-center py-8">
-        <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+        <AlertCircle className="w-12 h-12 text-gray-400 dark:text-neutral-500 mx-auto mb-3" />
         <p className="text-gray-600 dark:text-neutral-400">No scope amendments yet</p>
       </div>
     );

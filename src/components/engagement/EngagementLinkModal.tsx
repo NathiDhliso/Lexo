@@ -112,7 +112,7 @@ export const EngagementLinkModal: React.FC<EngagementLinkModalProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50">
-      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-xl max-w-2xl w-full mx-4">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-xl max-w-2xl w-full mx-4">
         <div className="border-b border-neutral-200 dark:border-metallic-gray-700 px-6 py-4 flex items-center justify-between">
           <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
             Send Engagement Agreement for Signature

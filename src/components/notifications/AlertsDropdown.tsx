@@ -62,7 +62,7 @@ export const AlertsDropdown: React.FC<AlertsDropdownProps> = ({ onNavigate, onCl
   }, [onNavigate, onClose]);
 
   return (
-    <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg z-50">
+    <div className="absolute right-0 mt-2 w-96 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg theme-shadow-lg z-50">
       <div className="flex items-center justify-between px-3 py-2 border-b border-neutral-200 dark:border-metallic-gray-700">
         <div className="flex items-center gap-2">
           <Bell className="w-4 h-4 text-neutral-700 dark:text-neutral-300" />

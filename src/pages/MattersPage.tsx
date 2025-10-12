@@ -291,7 +291,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
             onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
               activeTab === tab
-                ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+                ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 theme-shadow-sm'
                 : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
             }`}
           >
@@ -347,9 +347,9 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                             <AlertTriangle 
                               className="w-5 h-5 text-amber-500 cursor-help"
                             />
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg theme-theme-shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
                               <div className="text-sm font-medium text-amber-800 dark:text-amber-300">High WIP Inactive</div>
-                              <div className="text-xs text-amber-700">
+                              <div className="text-xs text-amber-700 dark:text-amber-400">
                                 WIP: R{(matter.wip_value || 0).toLocaleString()} • No recent activity
                               </div>
                             </div>
@@ -361,9 +361,9 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                             <Clock 
                               className="w-5 h-5 text-amber-600 cursor-help"
                             />
-                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-amber-50 border border-amber-200 rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
+                            <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700 rounded-lg theme-theme-shadow-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-10 whitespace-nowrap">
                               <div className="text-sm font-medium text-amber-800 dark:text-amber-300">Prescription Warning</div>
-                              <div className="text-xs text-amber-700">
+                              <div className="text-xs text-amber-700 dark:text-amber-400">
                                 Matter approaching 3-year prescription period
                               </div>
                             </div>

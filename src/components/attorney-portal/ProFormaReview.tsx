@@ -200,25 +200,25 @@ export const ProFormaReview: React.FC<ProFormaReviewProps> = ({
 
   if (!proforma) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="text-center py-8 text-gray-500 dark:text-neutral-500">
         Pro forma not found
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-lg max-w-4xl mx-auto">
-      <div className="px-6 py-4 border-b border-gray-200">
+    <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-lg max-w-4xl mx-auto">
+      <div className="px-6 py-4 border-b border-gray-200 dark:border-metallic-gray-700">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-xl font-bold text-gray-900">Pro Forma Review</h2>
-            <p className="text-sm text-gray-600 mt-1">
+            <h2 className="text-xl font-bold text-gray-900 dark:text-neutral-100">Pro Forma Review</h2>
+            <p className="text-sm text-gray-600 dark:text-neutral-400 mt-1">
               {proforma.matters?.title} - {proforma.matters?.client_name}
             </p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 hover:text-gray-600 dark:text-neutral-400"
           >
             <X className="h-6 w-6" />
           </button>
@@ -228,38 +228,38 @@ export const ProFormaReview: React.FC<ProFormaReviewProps> = ({
       <div className="px-6 py-4 space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="text-sm font-medium text-gray-700">Advocate</label>
-            <p className="text-gray-900">{proforma.matters?.advocates?.full_name}</p>
+            <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">Advocate</label>
+            <p className="text-gray-900 dark:text-neutral-100">{proforma.matters?.advocates?.full_name}</p>
           </div>
           <div>
-            <label className="text-sm font-medium text-gray-700">Estimated Total</label>
-            <p className="text-2xl font-bold text-gray-900">
+            <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">Estimated Total</label>
+            <p className="text-2xl font-bold text-gray-900 dark:text-neutral-100">
               {formatRand(proforma.estimated_total || 0)}
             </p>
           </div>
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700">Matter Description</label>
-          <p className="text-gray-900 mt-1">{proforma.matter_description}</p>
+          <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">Matter Description</label>
+          <p className="text-gray-900 dark:text-neutral-100 mt-1">{proforma.matter_description}</p>
         </div>
 
         <div>
-          <label className="text-sm font-medium text-gray-700">Scope of Work</label>
-          <p className="text-gray-900 mt-1 whitespace-pre-wrap">{proforma.scope_of_work}</p>
+          <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">Scope of Work</label>
+          <p className="text-gray-900 dark:text-neutral-100 mt-1 whitespace-pre-wrap">{proforma.scope_of_work}</p>
         </div>
 
         {proforma.negotiation_history && proforma.negotiation_history.length > 0 && (
           <div>
-            <label className="text-sm font-medium text-gray-700">Negotiation History</label>
+            <label className="text-sm font-medium text-gray-700 dark:text-neutral-300">Negotiation History</label>
             <div className="mt-2 space-y-2">
               {proforma.negotiation_history.map((entry: any, index: number) => (
-                <div key={index} className="bg-gray-50 rounded-lg p-3">
-                  <div className="flex items-center gap-2 text-xs text-gray-500">
+                <div key={index} className="bg-gray-50 dark:bg-metallic-gray-900 rounded-lg p-3">
+                  <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-neutral-500">
                     <Clock className="h-3 w-3" />
                     {new Date(entry.date).toLocaleString()} - {entry.by}
                   </div>
-                  <p className="text-sm text-gray-900 mt-1">{entry.comments}</p>
+                  <p className="text-sm text-gray-900 dark:text-neutral-100 mt-1">{entry.comments}</p>
                 </div>
               ))}
             </div>
@@ -293,7 +293,7 @@ export const ProFormaReview: React.FC<ProFormaReviewProps> = ({
         ) : (
           <div className="space-y-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-2">
                 {action === 'approve' && 'Approval Comments (Optional)'}
                 {action === 'reject' && 'Rejection Reason (Required)'}
                 {action === 'negotiate' && 'Negotiation Comments (Required)'}
@@ -302,7 +302,7 @@ export const ProFormaReview: React.FC<ProFormaReviewProps> = ({
                 value={comments}
                 onChange={(e) => setComments(e.target.value)}
                 rows={4}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-3 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 placeholder={
                   action === 'approve' ? 'Optional comments...' :
                   action === 'reject' ? 'Please explain why you are rejecting this pro forma...' :
@@ -324,7 +324,7 @@ export const ProFormaReview: React.FC<ProFormaReviewProps> = ({
                   setAction(null);
                   setComments('');
                 }}
-                className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 text-gray-700 dark:text-neutral-300 rounded-lg hover:bg-gray-50 dark:bg-metallic-gray-900"
               >
                 Cancel
               </button>

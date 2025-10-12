@@ -22,7 +22,7 @@ const InvoicesPage: React.FC = () => {
           onClick={() => setActiveTab('invoices')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'invoices'
-              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 theme-shadow-sm'
               : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
           }`}
           data-testid="invoices-tab"
@@ -34,7 +34,7 @@ const InvoicesPage: React.FC = () => {
           onClick={() => setActiveTab('proforma')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'proforma'
-              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 theme-shadow-sm'
               : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
           }`}
           data-testid="proforma-tab"
@@ -46,7 +46,7 @@ const InvoicesPage: React.FC = () => {
           onClick={() => setActiveTab('time-entries')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'time-entries'
-              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 theme-shadow-sm'
               : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
           }`}
           data-testid="time-entries-tab"
@@ -58,7 +58,7 @@ const InvoicesPage: React.FC = () => {
           onClick={() => setActiveTab('tracking')}
           className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
             activeTab === 'tracking'
-              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 shadow-sm'
+              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 theme-shadow-sm'
               : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
           }`}
           data-testid="tracking-tab"

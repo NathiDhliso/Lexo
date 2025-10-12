@@ -164,7 +164,7 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
         <div className="p-6">
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-6">Create New Matter</h2>
           
@@ -200,8 +200,8 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
                   {currentStep.id === 'document' && (
                     <>
                       <div className="text-center mb-6">
-                        <h3 className="text-lg font-medium text-gray-900 mb-2">Upload Attorney's Brief (Optional)</h3>
-                        <p className="text-gray-600">Upload the attorney's soft copy to automatically extract client and case details</p>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-neutral-100 mb-2">Upload Attorney's Brief (Optional)</h3>
+                        <p className="text-gray-600 dark:text-neutral-400">Upload the attorney's soft copy to automatically extract client and case details</p>
                       </div>
                       
                       <FileUpload
@@ -238,7 +238,7 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
                               <button
                                 type="button"
                                 onClick={() => setShowExtractedDataPreview(false)}
-                                className="px-3 py-1 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300"
+                                className="px-3 py-1 bg-gray-200 dark:bg-metallic-gray-700 text-gray-700 dark:text-neutral-300 text-sm rounded hover:bg-gray-300"
                               >
                                 Dismiss
                               </button>

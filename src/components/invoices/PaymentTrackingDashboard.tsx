@@ -163,7 +163,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="bg-white p-6 rounded-lg border border-neutral-200">
+        <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-error-100 rounded-lg">
               <RandIcon size={20} className="text-error-600" />
@@ -177,7 +177,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-neutral-200">
+        <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-error-100 rounded-lg">
               <AlertTriangle className="w-5 h-5 text-error-600" />
@@ -191,7 +191,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-neutral-200">
+        <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-neutral-100 rounded-lg">
               <Clock className="w-5 h-5 text-neutral-600" />
@@ -205,7 +205,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-lg border border-neutral-200">
+        <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${
               metrics.paymentRate >= 80 ? 'bg-success-100' : 
@@ -228,7 +228,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Overdue Invoices */}
-        <div className="bg-white rounded-lg border border-neutral-200">
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200">
           <div className="p-4 border-b border-neutral-200">
             <h3 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
               <AlertTriangle className="w-5 h-5 text-error-600" />
@@ -292,7 +292,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
         </div>
 
         {/* Upcoming Due Dates */}
-        <div className="bg-white rounded-lg border border-neutral-200">
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200">
           <div className="p-4 border-b border-neutral-200">
             <h3 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
               <Calendar className="w-5 h-5 text-warning-600" />
@@ -352,7 +352,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
 
       {/* Upcoming Reminders */}
       {upcomingReminders.length > 0 && (
-        <div className="bg-white rounded-lg border border-neutral-200">
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200">
           <div className="p-4 border-b border-neutral-200">
             <h3 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
               <Bell className="w-5 h-5 text-mpondo-gold-600" />

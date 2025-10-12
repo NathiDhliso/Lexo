@@ -117,10 +117,10 @@ const FileUpload: React.FC<FileUploadProps> = ({
     <div className={`space-y-4 ${className}`}>
       {/* Label and Description */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">
+        <label className="block text-sm font-medium text-gray-700 dark:text-neutral-300 mb-1">
           {label}
         </label>
-        <p className="text-sm text-gray-500">{description}</p>
+        <p className="text-sm text-gray-500 dark:text-neutral-500">{description}</p>
       </div>
 
       {/* Upload Area */}
@@ -153,28 +153,28 @@ const FileUpload: React.FC<FileUploadProps> = ({
           }`} />
 
           <div className="space-y-2">
-            <p className="text-lg font-medium text-gray-900">
+            <p className="text-lg font-medium text-gray-900 dark:text-neutral-100">
               {isDragOver ? 'Drop your file here' : 'Upload your document'}
             </p>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-neutral-500">
               Drag and drop or click to browse
             </p>
-            <p className="text-xs text-gray-400">
+            <p className="text-xs text-gray-400 dark:text-neutral-500">
               Supported formats: {acceptedTypes.join(', ')} • Max size: {maxSizeInMB}MB
             </p>
           </div>
         </div>
       ) : (
         /* File Preview */
-        <div className="border border-gray-200 rounded-lg p-4">
+        <div className="border border-gray-200 dark:border-metallic-gray-700 rounded-lg p-4">
           <div className="flex items-start justify-between">
             <div className="flex items-start space-x-3">
               {getFileIcon(currentFile.name)}
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-gray-900 truncate">
+                <p className="text-sm font-medium text-gray-900 dark:text-neutral-100 truncate">
                   {currentFile.name}
                 </p>
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-neutral-500">
                   {formatFileSize(currentFile.size)}
                 </p>
                 
@@ -187,13 +187,13 @@ const FileUpload: React.FC<FileUploadProps> = ({
                     </div>
                     {processingProgress > 0 && (
                       <div className="mt-1">
-                        <div className="w-full bg-gray-200 rounded-full h-2">
+                        <div className="w-full bg-gray-200 dark:bg-metallic-gray-700 rounded-full h-2">
                           <div 
                             className="bg-blue-600 h-2 rounded-full transition-all duration-300"
                             style={{ width: `${processingProgress}%` }}
                           />
                         </div>
-                        <p className="text-xs text-gray-500 mt-1">
+                        <p className="text-xs text-gray-500 dark:text-neutral-500 mt-1">
                           {processingProgress}% complete
                         </p>
                       </div>
@@ -206,7 +206,7 @@ const FileUpload: React.FC<FileUploadProps> = ({
             {!isProcessing && (
               <button
                 onClick={handleRemoveFile}
-                className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                className="p-1 text-gray-400 dark:text-neutral-500 hover:text-red-500 transition-colors"
                 title="Remove file"
               >
                 <X className="w-4 h-4" />

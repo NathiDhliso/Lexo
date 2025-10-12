@@ -774,7 +774,7 @@ export function UnifiedInvoiceWizard({
       <div className="bg-white dark:bg-metallic-gray-800 rounded-xl shadow-2xl max-w-6xl w-full max-h-[90vh] overflow-hidden flex flex-col">
         <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-metallic-gray-700 bg-gradient-to-r from-amber-50 to-yellow-50 dark:from-amber-900/20 dark:to-yellow-900/20">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-amber-500 rounded-xl shadow-md">
+            <div className="p-3 bg-amber-500 rounded-xl theme-shadow-md">
               <FileText className="w-6 h-6 text-white" />
             </div>
             <div>

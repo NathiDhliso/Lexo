@@ -88,7 +88,7 @@ export const CloudStorageSettings: React.FC = () => {
       <div className="flex items-center justify-between">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Cloud Storage</h2>
-          <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+          <p className="mt-1 text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500">
             Connect your cloud storage accounts to store documents
           </p>
         </div>
@@ -106,7 +106,7 @@ export const CloudStorageSettings: React.FC = () => {
             return (
               <div
                 key={connection.id}
-                className="bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg p-6"
+                className="bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 border border-gray-200 dark:border-metallic-gray-700 rounded-lg p-6"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex items-start space-x-4">
@@ -127,14 +127,14 @@ export const CloudStorageSettings: React.FC = () => {
                           </span>
                         )}
                       </div>
-                      <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                      <p className="mt-1 text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500">
                         {connection.providerAccountEmail || connection.providerAccountName}
                       </p>
-                      <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
+                      <p className="mt-1 text-xs text-gray-500 dark:text-neutral-500 dark:text-neutral-500">
                         Connected {new Date(connection.createdAt).toLocaleDateString()}
                       </p>
                       {connection.lastSyncAt && (
-                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-500">
+                        <p className="mt-1 text-xs text-gray-500 dark:text-neutral-500 dark:text-neutral-500">
                           Last synced {new Date(connection.lastSyncAt).toLocaleString()}
                         </p>
                       )}
@@ -197,12 +197,12 @@ export const CloudStorageSettings: React.FC = () => {
           })}
         </div>
       ) : (
-        <div className="text-center py-12 bg-gray-50 dark:bg-gray-800/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-gray-600">
+        <div className="text-center py-12 bg-gray-50 dark:bg-metallic-gray-800 dark:bg-metallic-gray-200/50 rounded-lg border-2 border-dashed border-gray-300 dark:border-metallic-gray-400">
           <div className="text-4xl mb-4">☁️</div>
           <h3 className="text-lg font-medium text-gray-900 dark:text-white mb-2">
             No cloud storage connected
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
+          <p className="text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mb-4">
             Connect a cloud storage provider to store your documents
           </p>
           <Button onClick={() => setShowAddModal(true)}>
@@ -218,7 +218,7 @@ export const CloudStorageSettings: React.FC = () => {
         title="Connect Cloud Storage"
       >
         <div className="space-y-4">
-          <p className="text-sm text-gray-600 dark:text-gray-400">
+          <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500">
             Choose a cloud storage provider to connect your account
           </p>
 
@@ -236,8 +236,8 @@ export const CloudStorageSettings: React.FC = () => {
                 disabled={!provider.isAvailable}
                 className={`w-full flex items-start p-4 border rounded-lg text-left transition-colors ${
                   provider.isAvailable
-                    ? 'border-gray-200 dark:border-gray-700 hover:border-primary-500 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20'
-                    : 'border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 opacity-50 cursor-not-allowed'
+                    ? 'border-gray-200 dark:border-metallic-gray-700 hover:border-primary-500 dark:hover:border-primary-500 hover:bg-primary-50 dark:hover:bg-primary-900/20'
+                    : 'border-gray-200 dark:border-metallic-gray-700 bg-gray-50 dark:bg-metallic-gray-800 dark:bg-metallic-gray-200/50 opacity-50 cursor-not-allowed'
                 }`}
               >
                 <div className="text-3xl mr-4">{provider.icon}</div>
@@ -245,15 +245,15 @@ export const CloudStorageSettings: React.FC = () => {
                   <div className="flex items-center justify-between">
                     <h4 className="font-semibold text-gray-900 dark:text-white">{provider.name}</h4>
                     {!provider.isAvailable && (
-                      <span className="text-xs text-gray-500 dark:text-gray-500">Coming Soon</span>
+                      <span className="text-xs text-gray-500 dark:text-neutral-500 dark:text-neutral-500">Coming Soon</span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">{provider.description}</p>
+                  <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mt-1">{provider.description}</p>
                   <div className="mt-2 flex flex-wrap gap-2">
                     {provider.features.slice(0, 3).map((feature, idx) => (
                       <span
                         key={idx}
-                        className="text-xs text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded"
+                        className="text-xs text-gray-500 dark:text-neutral-400 dark:text-neutral-500 bg-gray-100 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 px-2 py-1 rounded"
                       >
                         {feature}
                       </span>

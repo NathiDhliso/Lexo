@@ -386,7 +386,7 @@ interface AuthToggleProps {
 
 const AuthToggle: React.FC<AuthToggleProps> = ({ activeMode, onModeChange }) => (
   <div className="w-full max-w-md mx-auto mb-4 sm:mb-6 md:mb-8 px-4">
-    <div className="bg-white/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-1.5 flex gap-2 shadow-lg">
+    <div className="bg-white dark:bg-metallic-gray-800/10 backdrop-blur-sm border-2 border-white/20 rounded-2xl p-1.5 flex gap-2 theme-shadow-lg">
       <button
         type="button"
         onClick={() => onModeChange('signin')}
@@ -687,7 +687,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
               lexo
             </h1>
           </div>
-          <p className="text-sm sm:text-base md:text-lg text-slate-100 leading-tight font-medium drop-shadow-lg px-4">
+          <p className="text-sm sm:text-base md:text-lg text-slate-100 leading-tight font-medium drop-theme-shadow-lg px-4">
             Where Strategy Meets Practice.
           </p>
         </header>
@@ -722,7 +722,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                       placeholder="Enter your email"
                       value={formData.email}
                       onChange={e => handleInputChange('email', e.target.value)}
-                      className="w-full px-3 sm:px-4 py-3 sm:py-3.5 text-base rounded-xl sm:rounded-2xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                      className="w-full px-3 sm:px-4 py-3 sm:py-3.5 text-base rounded-xl sm:rounded-2xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800 theme-shadow-lg"
                       style={{
                         boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
                         borderTop: '1px solid rgba(255, 255, 255, 0.5)',
@@ -746,7 +746,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                         placeholder="Enter your password"
                         value={formData.password}
                         onChange={e => handleInputChange('password', e.target.value)}
-                        className="w-full px-3 sm:px-4 py-3 sm:py-3.5 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        className="w-full px-3 sm:px-4 py-3 sm:py-3.5 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800 theme-shadow-lg"
                         style={{
                           boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                           fontSize: '16px',
@@ -781,7 +781,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                     disabled={isSubmitting}
                     className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(59,130,246,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-blue-400/30"
                   >
-                    <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
+                    <span className="relative z-10 drop-theme-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
                     <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
@@ -808,7 +808,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                     placeholder="Full Name"
                     value={formData.fullName}
                     onChange={e => handleInputChange('fullName', e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800/45"
                     style={{
                       boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                       fontSize: '16px',
@@ -825,7 +825,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                     placeholder="Email"
                     value={formData.email}
                     onChange={e => handleInputChange('email', e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800/45"
                     style={{
                       boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                       fontSize: '16px',
@@ -842,7 +842,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                       placeholder="New Password"
                       value={formData.password}
                       onChange={e => handleInputChange('password', e.target.value)}
-                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                      className="w-full px-3 sm:px-4 py-2.5 sm:py-3 pr-12 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800/45"
                       style={{
                         boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                         fontSize: '16px',
@@ -868,7 +868,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                     placeholder="Confirm Password"
                     value={formData.confirmPassword}
                     onChange={e => handleInputChange('confirmPassword', e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white/45"
+                    className="w-full px-3 sm:px-4 py-2.5 sm:py-3 text-base rounded-xl sm:rounded-2xl bg-white/40 border-2 border-white/70 text-slate-800 placeholder-slate-500 focus:ring-2 focus:ring-green-400/70 focus:border-green-400/60 focus:bg-white/50 outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800/45"
                     style={{
                       boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)',
                       fontSize: '16px',
@@ -883,7 +883,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                       id="terms"
                       checked={formData.termsAccepted}
                       onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
-                      className="rounded bg-white border-2 border-slate-300 text-green-600 focus:ring-green-500"
+                      className="rounded bg-white dark:bg-metallic-gray-800 border-2 border-slate-300 text-green-600 focus:ring-green-500"
                     />
                     <label htmlFor="terms" className="text-xs text-white font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
                       I agree to Terms & Conditions
@@ -895,7 +895,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                     disabled={isSubmitting || !formData.termsAccepted}
                     className="w-full py-3 sm:py-3.5 md:py-4 text-base sm:text-lg rounded-xl sm:rounded-2xl bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 text-white font-bold mt-2 sm:mt-3 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(34,197,94,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-green-400/30"
                   >
-                    <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
+                    <span className="relative z-10 drop-theme-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
                     <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
                     <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                   </button>
@@ -963,7 +963,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                         placeholder="Enter your email"
                         value={formData.email}
                         onChange={e => handleInputChange('email', e.target.value)}
-                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800 theme-shadow-lg"
                         style={{
                           boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
                           borderTop: '1px solid rgba(255, 255, 255, 0.5)',
@@ -985,7 +985,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                           placeholder="Enter your password"
                           value={formData.password}
                           onChange={e => handleInputChange('password', e.target.value)}
-                          className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 pr-10 text-sm rounded-xl sm:rounded-xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                          className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 pr-10 text-sm rounded-xl sm:rounded-xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-sky-500 focus:border-sky-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800 theme-shadow-lg"
                           style={{
                             boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
                           }}
@@ -1017,7 +1017,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                       disabled={isSubmitting}
                       className="w-full py-2.5 sm:py-3 md:py-3 text-sm sm:text-base rounded-xl sm:rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-blue-700 text-white font-bold mt-2 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(59,130,246,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-blue-400/30"
                     >
-                      <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
+                      <span className="relative z-10 drop-theme-shadow-lg">{isSubmitting ? 'Signing In...' : 'Sign In'}</span>
                       <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
                       <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                     </button>
@@ -1072,7 +1072,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                         placeholder="Enter your full name"
                         value={formData.fullName}
                         onChange={e => handleInputChange('fullName', e.target.value)}
-                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800 theme-shadow-lg"
                         style={{
                           boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
                           borderTop: '1px solid rgba(255, 255, 255, 0.5)',
@@ -1094,7 +1094,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                         placeholder="Enter your email"
                         value={formData.email}
                         onChange={e => handleInputChange('email', e.target.value)}
-                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800 theme-shadow-lg"
                         style={{
                           boxShadow: 'inset 0 2px 3px rgba(0,0,0,0.2), inset 0 -1px 2px rgba(255,255,255,0.3), 0 1px 2px rgba(255,255,255,0.2)',
                           borderTop: '1px solid rgba(255, 255, 255, 0.5)',
@@ -1116,7 +1116,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                           placeholder="Create a password"
                           value={formData.password}
                           onChange={e => handleInputChange('password', e.target.value)}
-                          className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 pr-10 text-sm rounded-xl sm:rounded-xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                          className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 pr-10 text-sm rounded-xl sm:rounded-xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800 theme-shadow-lg"
                           style={{
                             boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
                           }}
@@ -1142,7 +1142,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                         placeholder="Confirm your password"
                         value={formData.confirmPassword}
                         onChange={e => handleInputChange('confirmPassword', e.target.value)}
-                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white shadow-lg"
+                        className="w-full px-3 sm:px-3.5 py-2 sm:py-2.5 text-sm rounded-xl sm:rounded-xl bg-white/95 border-2 border-white/90 text-slate-900 placeholder-slate-500 focus:ring-2 focus:ring-green-500 focus:border-green-500 focus:bg-white outline-none transition-all duration-300 hover:bg-white dark:bg-metallic-gray-800 theme-shadow-lg"
                         style={{
                           boxShadow: 'inset 0 2px 8px rgba(0,0,0,0.15), inset 0 -1px 2px rgba(255,255,255,0.1), 0 1px 2px rgba(255,255,255,0.2)'
                         }}
@@ -1156,7 +1156,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                         id="desktop-terms"
                         checked={formData.termsAccepted}
                         onChange={(e) => handleInputChange('termsAccepted', e.target.checked)}
-                        className="rounded bg-white border-2 border-slate-300 text-green-600 focus:ring-green-500"
+                        className="rounded bg-white dark:bg-metallic-gray-800 border-2 border-slate-300 text-green-600 focus:ring-green-500"
                       />
                       <label htmlFor="desktop-terms" className="text-xs text-white font-medium" style={{ textShadow: '0 2px 4px rgba(0,0,0,0.8)' }}>
                         I agree to Terms & Conditions
@@ -1168,7 +1168,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
                       disabled={isSubmitting || !formData.termsAccepted}
                       className="w-full py-2.5 sm:py-3 md:py-3 text-sm sm:text-base rounded-xl sm:rounded-xl bg-gradient-to-br from-green-500 via-green-600 to-emerald-700 text-white font-bold mt-2 hover:scale-[1.02] hover:shadow-[0_12px_40px_rgba(0,0,0,0.6),0_6px_20px_rgba(34,197,94,0.4),inset_0_1px_2px_rgba(255,255,255,0.3)] transition-all duration-300 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_4px_16px_rgba(0,0,0,0.4)] disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden border border-green-400/30"
                     >
-                      <span className="relative z-10 drop-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
+                      <span className="relative z-10 drop-theme-shadow-lg">{isSubmitting ? 'Creating Account...' : 'Register'}</span>
                       <div className="absolute inset-0 bg-gradient-to-t from-transparent via-white/10 to-white/20 pointer-events-none"></div>
                       <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                     </button>
@@ -1181,15 +1181,15 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
 
         <footer className="text-center mt-4 sm:mt-6 md:mt-8 space-y-3 sm:space-y-4 px-4 header-entrance pb-safe">
           <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6 text-slate-200/90 flex-wrap">
-            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white dark:bg-metallic-gray-800/10 transition-all">
               <Lock size={12} className="sm:w-3.5 sm:h-3.5 text-blue-300" />
               <span className="text-[10px] sm:text-xs font-medium">256-bit SSL</span>
             </div>
-            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white dark:bg-metallic-gray-800/10 transition-all">
               <ShieldCheck size={12} className="sm:w-3.5 sm:h-3.5 text-green-300" />
               <span className="text-[10px] sm:text-xs font-medium">POPIA Compliant</span>
             </div>
-            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white/10 transition-all">
+            <div className="flex items-center gap-1.5 sm:gap-2 bg-white/5 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full border border-white/10 hover:bg-white dark:bg-metallic-gray-800/10 transition-all">
               <Scale size={12} className="sm:w-3.5 sm:h-3.5 text-yellow-300" />
               <span className="text-[10px] sm:text-xs font-medium">Legal Grade Security</span>
             </div>
@@ -1201,7 +1201,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
           <>
             <div role="alert" aria-live="polite" className="sr-only">Redirecting...</div>
             <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm flex items-center justify-center">
-              <div className="bg-black/50 border border-white/30 rounded-lg px-4 py-3 text-white flex items-center gap-3 shadow-xl">
+              <div className="bg-black/50 border border-white/30 rounded-lg px-4 py-3 text-white flex items-center gap-3 theme-shadow-xl">
                 <LoadingSpinner size="md" />
                 <span className="text-sm">Redirecting…</span>
               </div>
