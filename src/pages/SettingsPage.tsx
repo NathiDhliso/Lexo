@@ -38,7 +38,7 @@ const SettingsPage: React.FC = () => {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Sidebar Navigation */}
         <div className="lg:w-64 flex-shrink-0">
-          <nav className="space-y-1 bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 rounded-lg border border-gray-200 dark:border-metallic-gray-700 p-2">
+          <nav className="space-y-1 bg-white dark:bg-metallic-gray-800 rounded-lg border border-gray-200 dark:border-metallic-gray-700 p-2">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
@@ -49,7 +49,7 @@ const SettingsPage: React.FC = () => {
                     w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left transition-colors
                     ${activeTab === tab.id
                       ? 'bg-primary-50 dark:bg-primary-900/20 text-primary-700 dark:text-primary-400 font-medium'
-                      : 'text-gray-700 dark:text-neutral-300 dark:text-neutral-600 hover:bg-gray-50 dark:hover:bg-gray-700 dark:bg-metallic-gray-300/50'}
+                      : 'text-gray-700 dark:text-neutral-300 hover:bg-gray-50 dark:hover:bg-metallic-gray-700/50'}
                   `}
                 >
                   <Icon className="h-5 w-5" />
@@ -62,7 +62,7 @@ const SettingsPage: React.FC = () => {
 
         {/* Content Area */}
         <div className="flex-1 min-w-0">
-          <div className="bg-white dark:bg-metallic-gray-800 dark:bg-metallic-gray-200 rounded-lg border border-gray-200 dark:border-metallic-gray-700 p-6">
+          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-gray-200 dark:border-metallic-gray-700 p-6">
             {activeTab === 'profile' && <ProfileSettings />}
             {activeTab === 'subscription' && <SubscriptionManagement />}
             {activeTab === 'team' && <TeamManagement />}

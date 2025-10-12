@@ -64,13 +64,16 @@ export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
     fixed: 'fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 shadow-2xl',
   };
 
+  // Note: Default actions are examples only. Pass custom actions via props for real functionality.
   const defaultActions: BulkAction[] = [
     {
       id: 'delete',
       label: 'Delete',
       icon: <Trash2 className="w-4 h-4" />,
       variant: 'danger',
-      onClick: () => console.log('Delete action'),
+      onClick: () => {
+        console.warn('BulkActionToolbar: Delete action not implemented. Pass custom actions via props.');
+      },
       requiresConfirmation: true,
       confirmationMessage: `Are you sure you want to delete ${selectedCount} item(s)?`,
     },
@@ -79,14 +82,18 @@ export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
       label: 'Archive',
       icon: <Archive className="w-4 h-4" />,
       variant: 'secondary',
-      onClick: () => console.log('Archive action'),
+      onClick: () => {
+        console.warn('BulkActionToolbar: Archive action not implemented. Pass custom actions via props.');
+      },
     },
     {
       id: 'export',
       label: 'Export',
       icon: <Download className="w-4 h-4" />,
       variant: 'ghost',
-      onClick: () => console.log('Export action'),
+      onClick: () => {
+        console.warn('BulkActionToolbar: Export action not implemented. Pass custom actions via props.');
+      },
     },
   ];
 

@@ -116,7 +116,7 @@ export const ProfileSettings: React.FC = () => {
     <div className="space-y-6">
       <div>
         <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">Profile Information</h2>
-        <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500">
+        <p className="text-sm text-gray-600 dark:text-neutral-400">
           Update your personal and practice information
         </p>
       </div>
@@ -127,13 +127,13 @@ export const ProfileSettings: React.FC = () => {
           <div className="h-20 w-20 rounded-full bg-primary-100 dark:bg-primary-900/20 flex items-center justify-center text-2xl font-bold text-primary-700 dark:text-primary-400">
             {profileData.first_name?.[0]}{profileData.last_name?.[0]}
           </div>
-          <button className="absolute bottom-0 right-0 p-1.5 bg-white dark:bg-metallic-gray-300 rounded-full border-2 border-gray-200 dark:border-metallic-gray-400 hover:bg-gray-50 dark:bg-metallic-gray-900 dark:hover:bg-gray-600 dark:bg-metallic-gray-400">
-            <Camera className="h-4 w-4 text-gray-600 dark:text-neutral-300 dark:text-neutral-600" />
+          <button className="absolute bottom-0 right-0 p-1.5 bg-white dark:bg-metallic-gray-700 rounded-full border-2 border-gray-200 dark:border-metallic-gray-600 hover:bg-gray-50 dark:hover:bg-metallic-gray-600">
+            <Camera className="h-4 w-4 text-gray-600 dark:text-neutral-300" />
           </button>
         </div>
         <div>
           <p className="text-sm font-medium text-gray-900 dark:text-white">Profile Photo</p>
-          <p className="text-xs text-gray-500 dark:text-neutral-400 dark:text-neutral-500">JPG, PNG or GIF. Max 2MB.</p>
+          <p className="text-xs text-gray-500 dark:text-neutral-400">JPG, PNG or GIF. Max 2MB.</p>
         </div>
       </div>
 

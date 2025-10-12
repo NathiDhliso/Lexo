@@ -9,17 +9,24 @@ import {
   Edit,
   Undo2,
   Zap,
-  ChevronDown
+  ChevronDown,
+  Trash2,
+  Download,
+  Archive
 } from 'lucide-react';
 import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
 import { MatterDetailModal } from '../components/matters/MatterDetailModal';
 import { EditMatterModal } from '../components/matters/EditMatterModal';
 import { QuickCreateMatterModal } from '../components/matters/QuickCreateMatterModal';
+import { BulkActionToolbar, SelectionCheckbox } from '../components/ui/BulkActionToolbar';
 import { matterApiService } from '../services/api';
 import { matterConversionService } from '../services/api/matter-conversion.service';
 import { useAuth } from '../hooks/useAuth';
+import { useSelection } from '../hooks/useSelection';
+import { useConfirmation } from '../hooks/useConfirmation';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
+import { exportToCSV, exportToPDF } from '../utils/export.utils';
 import type { Matter, Page } from '../types';
 import { MatterStatus } from '../types';
 import { useNavigate } from 'react-router-dom';
@@ -41,6 +48,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [loadingMatters, setLoadingMatters] = useState(true);
   const { user, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
+  const { confirm } = useConfirmation();
 
   const navigatePage = (page: Page) => {
     if (onNavigate) {
@@ -191,6 +199,19 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     });
   }, [matters, searchTerm, activeTab]);
 
+  // Selection management
+  const {
+    selectedItems,
+    isSelected,
+    selectedCount,
+    totalCount,
+    toggleSelection,
+    clearSelection,
+  } = useSelection({
+    items: filteredMatters,
+    getItemId: (matter) => matter.id,
+  });
+
   const handleNewMatterClick = () => {
     navigatePage('matter-workbench');
   };
@@ -252,6 +273,117 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     }
   };
 
+  // Bulk action handlers
+  const handleBulkDelete = async () => {
+    const confirmed = await confirm({
+      title: 'Delete Matters',
+      message: `Are you sure you want to delete ${selectedCount} matter(s)? This action cannot be undone.`,
+      confirmText: 'Delete',
+      variant: 'danger',
+    });
+
+    if (!confirmed) return;
+
+    const loadingToast = toast.loading(`Deleting ${selectedCount} matter(s)...`);
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      for (const matter of selectedItems) {
+        try {
+          const { error } = await supabase
+            .from('matters')
+            .delete()
+            .eq('id', matter.id);
+
+          if (error) throw error;
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to delete matter ${matter.id}:`, error);
+          errorCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success(`Successfully deleted ${successCount} matter(s)`, { id: loadingToast });
+        await fetchMatters();
+        clearSelection();
+      } else {
+        toast.error('Failed to delete matters', { id: loadingToast });
+      }
+
+      if (errorCount > 0) {
+        toast.error(`Failed to delete ${errorCount} matter(s)`);
+      }
+    } catch (error) {
+      console.error('Bulk delete error:', error);
+      toast.error('An error occurred during bulk delete', { id: loadingToast });
+    }
+  };
+
+  const handleBulkArchive = async () => {
+    const confirmed = await confirm({
+      title: 'Archive Matters',
+      message: `Archive ${selectedCount} matter(s)? They will be moved to closed status.`,
+      confirmText: 'Archive',
+    });
+
+    if (!confirmed) return;
+
+    const loadingToast = toast.loading(`Archiving ${selectedCount} matter(s)...`);
+    let successCount = 0;
+
+    try {
+      for (const matter of selectedItems) {
+        try {
+          await matterApiService.updateStatus(matter.id, MatterStatus.CLOSED);
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to archive matter ${matter.id}:`, error);
+        }
+      }
+
+      toast.success(`Successfully archived ${successCount} matter(s)`, { id: loadingToast });
+      await fetchMatters();
+      clearSelection();
+    } catch (error) {
+      console.error('Bulk archive error:', error);
+      toast.error('An error occurred during bulk archive', { id: loadingToast });
+    }
+  };
+
+  const handleBulkExport = async () => {
+    try {
+      const exportData = selectedItems.map(matter => ({
+        Title: matter.title,
+        Client: matter.client_name,
+        Attorney: matter.instructing_attorney,
+        Status: matter.status,
+        'WIP Value': matter.wip_value || 0,
+        'Created Date': new Date(matter.created_at).toLocaleDateString(),
+        Type: (matter as any).brief_type || '',
+      }));
+
+      const format = await confirm({
+        title: 'Export Format',
+        message: 'Choose export format:',
+        confirmText: 'CSV',
+        cancelText: 'PDF',
+      });
+
+      if (format) {
+        exportToCSV(exportData, 'matters-export');
+        toast.success(`Exported ${selectedCount} matter(s) to CSV`);
+      } else {
+        await exportToPDF(exportData, 'matters-export', 'Matters Export');
+        toast.success(`Exported ${selectedCount} matter(s) to PDF`);
+      }
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to export matters');
+    }
+  };
+
   return (
     <div className="w-full space-y-6 min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 p-6">
       {/* Header */}
@@ -300,6 +432,37 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         ))}
       </div>
 
+      {/* Bulk Action Toolbar */}
+      <BulkActionToolbar
+        selectedCount={selectedCount}
+        totalCount={totalCount}
+        onClearSelection={clearSelection}
+        actions={[
+          {
+            id: 'archive',
+            label: 'Archive',
+            icon: <Archive className="w-4 h-4" />,
+            variant: 'secondary',
+            onClick: handleBulkArchive,
+          },
+          {
+            id: 'export',
+            label: 'Export',
+            icon: <Download className="w-4 h-4" />,
+            variant: 'ghost',
+            onClick: handleBulkExport,
+          },
+          {
+            id: 'delete',
+            label: 'Delete',
+            icon: <Trash2 className="w-4 h-4" />,
+            variant: 'danger',
+            onClick: handleBulkDelete,
+            requiresConfirmation: true,
+          },
+        ]}
+      />
+
       {/* Content */}
       <div className="space-y-4">
         {loadingMatters ? (
@@ -327,7 +490,16 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           filteredMatters.map((matter) => (
             <Card key={matter.id} variant="default" hoverable>
               <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
+                <div className="flex items-start gap-4">
+                  {/* Selection Checkbox */}
+                  <SelectionCheckbox
+                    checked={isSelected(matter.id)}
+                    onChange={() => toggleSelection(matter.id)}
+                    label={`Select ${matter.title}`}
+                    className="mt-1"
+                  />
+                  
+                  <div className="flex-1 flex items-start justify-between">
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{matter.title}</h3>
@@ -404,6 +576,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                         </div>
                       </div>
                     )}
+                  </div>
                   </div>
                 </div>
               </CardHeader>

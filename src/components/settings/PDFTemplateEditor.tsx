@@ -1637,10 +1637,10 @@ export const PDFTemplateEditor: React.FC = () => {
           </p>
         </div>
         
-        <div className="p-4 md:p-6">
+        <div className="p-4 md:p-6 bg-neutral-100 dark:bg-metallic-gray-900 rounded-lg">
           {/* Preview Container */}
           <div 
-            className="rounded-lg theme-shadow-lg border border-neutral-200 relative overflow-hidden" 
+            className="rounded-lg theme-shadow-lg border border-neutral-300 dark:border-metallic-gray-600 relative overflow-hidden" 
             style={{ 
               minHeight: '400px',
               backgroundColor: template.colorScheme.background || '#FFFFFF',

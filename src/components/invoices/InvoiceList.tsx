@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Plus, FileText, AlertCircle, TrendingUp } from 'lucide-react';
+import { Plus, FileText, AlertCircle, TrendingUp, Mail, Download, Trash2 } from 'lucide-react';
 import { InvoiceCard } from './InvoiceCard';
 import { InvoiceFilters } from './InvoiceFilters';
 import { MatterSelectionModal } from './MatterSelectionModal';
 import { UnifiedInvoiceWizard } from './UnifiedInvoiceWizard';
 import { PaymentModal } from './PaymentModal';
 import { InvoiceDetailsModal } from './InvoiceDetailsModal';
+import { BulkActionToolbar, SelectionCheckbox } from '../ui/BulkActionToolbar';
 import { InvoiceService } from '@/services/api/invoices.service';
 import { invoicePDFService } from '../../services/invoice-pdf.service';
 import { supabase } from '../../lib/supabase';
 import { formatRand } from '../../lib/currency';
 import { toast } from 'react-hot-toast';
 import { Button, EmptyState, SkeletonCard } from '../design-system/components';
+import { useSelection } from '@/hooks/useSelection';
 import type { Invoice, BarAssociation } from '@/types';
 import { InvoiceStatus } from '@/types';
 
@@ -43,6 +45,19 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
     status: [],
     bar: [],
     dateRange: null
+  });
+
+  // Selection management
+  const {
+    selectedItems,
+    isSelected,
+    selectedCount,
+    totalCount,
+    toggleSelection,
+    clearSelection,
+  } = useSelection({
+    items: filteredInvoices,
+    getItemId: (invoice) => invoice.id,
   });
 
   useEffect(() => {
@@ -287,6 +302,94 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
     });
   };
 
+  // Bulk action handlers
+  const handleBulkDelete = async () => {
+    if (!confirm(`Are you sure you want to delete ${selectedCount} invoice(s)? This action cannot be undone.`)) {
+      return;
+    }
+
+    const loadingToast = toast.loading(`Deleting ${selectedCount} invoice(s)...`);
+    let successCount = 0;
+    let errorCount = 0;
+
+    try {
+      for (const invoice of selectedItems) {
+        try {
+          await InvoiceService.deleteInvoice(invoice.id);
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to delete invoice ${invoice.id}:`, error);
+          errorCount++;
+        }
+      }
+
+      if (successCount > 0) {
+        toast.success(`Successfully deleted ${successCount} invoice(s)`, { id: loadingToast });
+        await loadInvoices();
+        clearSelection();
+      } else {
+        toast.error('Failed to delete invoices', { id: loadingToast });
+      }
+
+      if (errorCount > 0) {
+        toast.error(`Failed to delete ${errorCount} invoice(s)`);
+      }
+    } catch (error) {
+      console.error('Bulk delete error:', error);
+      toast.error('An error occurred during bulk delete', { id: loadingToast });
+    }
+  };
+
+  const handleBulkSend = async () => {
+    if (!confirm(`Send ${selectedCount} invoice(s) to clients?`)) {
+      return;
+    }
+
+    const loadingToast = toast.loading(`Sending ${selectedCount} invoice(s)...`);
+    let successCount = 0;
+
+    try {
+      for (const invoice of selectedItems) {
+        try {
+          await InvoiceService.sendInvoice(invoice.id);
+          successCount++;
+        } catch (error) {
+          console.error(`Failed to send invoice ${invoice.id}:`, error);
+        }
+      }
+
+      toast.success(`Successfully sent ${successCount} invoice(s)`, { id: loadingToast });
+      await loadInvoices();
+      clearSelection();
+    } catch (error) {
+      console.error('Bulk send error:', error);
+      toast.error('An error occurred during bulk send', { id: loadingToast });
+    }
+  };
+
+  const handleBulkExport = async () => {
+    try {
+      const exportData = selectedItems.map(invoice => ({
+        'Invoice Number': invoice.invoiceNumber ?? invoice.invoice_number ?? '',
+        'Client': invoice.clientName ?? '',
+        'Status': invoice.status,
+        'Date Issued': new Date(invoice.dateIssued).toLocaleDateString(),
+        'Total Amount': invoice.totalAmount ?? invoice.total_amount ?? 0,
+        'Amount Paid': invoice.amountPaid ?? invoice.amount_paid ?? 0,
+        'Balance': (invoice.totalAmount ?? invoice.total_amount ?? 0) - (invoice.amountPaid ?? invoice.amount_paid ?? 0),
+      }));
+
+      const { exportToCSV, exportToPDF } = await import('@/utils/export.utils');
+      
+      // For now, default to CSV. Could add a modal to choose format
+      exportToCSV(exportData, 'invoices-export');
+      toast.success(`Exported ${selectedCount} invoice(s) to CSV`);
+    } catch (error) {
+      console.error('Export error:', error);
+      toast.error('Failed to export invoices');
+    }
+  };
+
   // Summary statistics
   const totalAmount = filteredInvoices.reduce((sum, inv) => sum + (inv.totalAmount ?? inv.total_amount ?? 0), 0);
   const paidAmount = filteredInvoices.reduce((sum, inv) => sum + (inv.amountPaid ?? inv.amount_paid ?? 0), 0);
@@ -390,6 +493,37 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
         onClearFilters={clearFilters}
       />
 
+      {/* Bulk Action Toolbar */}
+      <BulkActionToolbar
+        selectedCount={selectedCount}
+        totalCount={totalCount}
+        onClearSelection={clearSelection}
+        actions={[
+          {
+            id: 'send',
+            label: 'Send',
+            icon: <Mail className="w-4 h-4" />,
+            variant: 'primary',
+            onClick: handleBulkSend,
+          },
+          {
+            id: 'export',
+            label: 'Export',
+            icon: <Download className="w-4 h-4" />,
+            variant: 'ghost',
+            onClick: handleBulkExport,
+          },
+          {
+            id: 'delete',
+            label: 'Delete',
+            icon: <Trash2 className="w-4 h-4" />,
+            variant: 'danger',
+            onClick: handleBulkDelete,
+            requiresConfirmation: true,
+          },
+        ]}
+      />
+
       {/* Invoice List */}
       <div className="space-y-4">
         {filteredInvoices.length === 0 ? (
@@ -413,16 +547,27 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
         ) : (
           <div className="grid gap-4">
             {filteredInvoices.map((invoice) => (
-              <InvoiceCard
-                key={invoice.id}
-                invoice={invoice}
-                onView={() => handleViewInvoice(invoice)}
-                onSend={() => handleSendInvoice(invoice)}
-                onDownload={() => handleDownloadInvoice(invoice)}
-                onRecordPayment={() => handleRecordPayment(invoice)}
-                onUpdateStatus={(status) => handleUpdateInvoiceStatus(invoice.id, status)}
-                onDelete={() => handleDeleteInvoice(invoice.id)}
-              />
+              <div key={invoice.id} className="flex items-start gap-4">
+                {/* Selection Checkbox */}
+                <SelectionCheckbox
+                  checked={isSelected(invoice.id)}
+                  onChange={() => toggleSelection(invoice.id)}
+                  label={`Select invoice ${invoice.invoiceNumber ?? invoice.invoice_number}`}
+                  className="mt-4"
+                />
+                
+                <div className="flex-1">
+                  <InvoiceCard
+                    invoice={invoice}
+                    onView={() => handleViewInvoice(invoice)}
+                    onSend={() => handleSendInvoice(invoice)}
+                    onDownload={() => handleDownloadInvoice(invoice)}
+                    onRecordPayment={() => handleRecordPayment(invoice)}
+                    onUpdateStatus={(status) => handleUpdateInvoiceStatus(invoice.id, status)}
+                    onDelete={() => handleDeleteInvoice(invoice.id)}
+                  />
+                </div>
+              </div>
             ))}
           </div>
         )}
