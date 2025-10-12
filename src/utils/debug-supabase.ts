@@ -20,7 +20,7 @@ export const debugSupabaseConnection = async () => {
     // Test basic connection with a simple query
     console.log('Testing basic connection...');
     const { data, error } = await supabase
-      .from('advocates')
+      .from('user_profiles')
       .select('count')
       .limit(1);
     

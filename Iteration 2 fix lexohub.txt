@@ -1,0 +1,1476 @@
+
+ITERATION 2: USER CONSOLIDATION - NEEDS MAJOR UPDATES
+Your revised plan is much better! Here are specific updates:
+Phase A: Add More Verification
+Add this as query #5:``` sql
+-- 5. Check if user_profiles already has advocate columns
+SELECT 
+  column_name,
+  data_type,
+  is_nullable
+FROM information_schema.columns
+WHERE table_name = 'user_profiles'
+  AND column_name IN (
+    'practice_number', 'bar', 'hourly_rate', 'chambers_address',
+    'postal_address', 'user_role', 'initials', 'is_active'
+  )
+ORDER BY column_name;
+```
+
+Phase B: Update Migration Script
+Add these missing columns to Part 1:``` sql
+-- Add these to your DO block:
+IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'contingency_rate') THEN 
+  ALTER TABLE user_profiles ADD COLUMN contingency_rate NUMERIC(5,2); 
+END IF;
+
+IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'success_fee_rate') THEN 
+  ALTER TABLE user_profiles ADD COLUMN success_fee_rate NUMERIC(5,2); 
+END IF;
+
+IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'firm_name') THEN 
+  ALTER TABLE user_profiles ADD COLUMN firm_name TEXT; 
+END IF;
+
+IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'firm_tagline') THEN 
+  ALTER TABLE user_profiles ADD COLUMN firm_tagline TEXT; 
+END IF;
+
+IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'firm_logo_url') THEN 
+  ALTER TABLE user_profiles ADD COLUMN firm_logo_url TEXT; 
+END IF;
+
+IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'vat_number') THEN 
+  ALTER TABLE user_profiles ADD COLUMN vat_number TEXT; 
+END IF;
+
+IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'banking_details') THEN 
+  ALTER TABLE user_profiles ADD COLUMN banking_details JSONB; 
+END IF;
+
+IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'notification_preferences') THEN 
+  ALTER TABLE user_profiles ADD COLUMN notification_preferences JSONB DEFAULT '{"email": true, "whatsapp": false, "sms": false}'::jsonb; 
+END IF;
+
+IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'invoice_settings') THEN 
+  ALTER TABLE user_profiles ADD COLUMN invoice_settings JSONB DEFAULT '{"auto_remind": true, "reminder_days": [30, 45, 55]}'::jsonb; 
+END IF;
+```
+
+Update Part 4 with complete list:
+Based on your schema, add these ALTER TABLE statements for EVERY table with advocate_id:``` sql
+-- PART 4: Update ALL foreign keys (COMPLETE LIST)
+
+ALTER TABLE matters 
+  DROP CONSTRAINT IF EXISTS matters_advocate_id_fkey,
+  ADD CONSTRAINT matters_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE invoices 
+  DROP CONSTRAINT IF EXISTS invoices_advocate_id_fkey,
+  ADD CONSTRAINT invoices_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE time_entries 
+  DROP CONSTRAINT IF EXISTS time_entries_advocate_id_fkey,
+  ADD CONSTRAINT time_entries_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE expenses 
+  DROP CONSTRAINT IF EXISTS expenses_advocate_id_fkey,
+  ADD CONSTRAINT expenses_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE credit_notes 
+  DROP CONSTRAINT IF EXISTS credit_notes_advocate_id_fkey,
+  ADD CONSTRAINT credit_notes_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE cloud_storage_connections 
+  DROP CONSTRAINT IF EXISTS cloud_storage_connections_advocate_id_fkey,
+  ADD CONSTRAINT cloud_storage_connections_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE engagement_agreements 
+  DROP CONSTRAINT IF EXISTS engagement_agreements_advocate_id_fkey,
+  ADD CONSTRAINT engagement_agreements_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE retainer_agreements 
+  DROP CONSTRAINT IF EXISTS retainer_agreements_advocate_id_fkey,
+  ADD CONSTRAINT retainer_agreements_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE scope_amendments 
+  DROP CONSTRAINT IF EXISTS scope_amendments_advocate_id_fkey,
+  ADD CONSTRAINT scope_amendments_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE subscriptions 
+  DROP CONSTRAINT IF EXISTS subscriptions_advocate_id_fkey,
+  ADD CONSTRAINT subscriptions_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE trust_transactions 
+  DROP CONSTRAINT IF EXISTS trust_transactions_advocate_id_fkey,
+  ADD CONSTRAINT trust_transactions_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+
+ALTER TABLE payment_disputes 
+  DROP CONSTRAINT IF EXISTS payment_disputes_advocate_id_fkey,
+  ADD CONSTRAINT payment_disputes_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+```
+
+Fix Part 5 (handle_new_user trigger):
+Your current version is incomplete. Here's the full version:``` sql
+-- PART 5: Update handle_new_user trigger
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+SECURITY DEFINER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  user_metadata JSONB;
+  practice_num TEXT;
+BEGIN
+  user_metadata := NEW.raw_user_meta_data;
+  
+  practice_num := COALESCE(
+    user_metadata->>'practice_number',
+    'TEMP-' || EXTRACT(YEAR FROM NOW()) || '-' || 
+    LPAD(EXTRACT(DOY FROM NOW())::TEXT, 3, '0') || '-' || 
+    SUBSTRING(NEW.id::TEXT, 1, 8)
+  );
+  
+  -- Insert into user_profiles instead of advocates
+  INSERT INTO public.user_profiles (
+    user_id,
+    email,
+    first_name,
+    last_name,
+    initials,
+    practice_number,
+    bar,
+    year_admitted,
+    hourly_rate,
+    user_role,
+    is_active,
+    created_at,
+    updated_at
+  ) VALUES (
+    NEW.id,
+    NEW.email,
+    COALESCE(user_metadata->>'first_name', 'New'),
+    COALESCE(user_metadata->>'last_name', 'User'),
+    COALESCE(
+      user_metadata->>'initials',
+      UPPER(LEFT(COALESCE(user_metadata->>'first_name', 'N'), 1)) || 
+      UPPER(LEFT(COALESCE(user_metadata->>'last_name', 'A'), 1))
+    ),
+    practice_num,
+    COALESCE((user_metadata->>'bar')::bar_association, 'johannesburg'),
+    COALESCE((user_metadata->>'year_admitted')::INTEGER, EXTRACT(YEAR FROM NOW())::INTEGER),
+    COALESCE((user_metadata->>'hourly_rate')::DECIMAL, 1500.00),
+    COALESCE((user_metadata->>'user_role')::user_role, 'junior_advocate'),
+    true,
+    NOW(),
+    NOW()
+  );
+  
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE WARNING 'Failed to create user profile for user %: %', NEW.id, SQLERRM;
+    RETURN NEW;
+END;
+$$;
+```
+
+Phase C: Add RLS Policy Updates
+Add this critical step:``` sql
+-- PART 8: Update ALL RLS policies to reference user_profiles
+-- This must be done for EVERY table that has advocate_id in its policies
+
+-- Example for matters:
+DROP POLICY IF EXISTS matters_select_policy ON matters;
+CREATE POLICY matters_select_policy ON matters
+  FOR SELECT TO authenticated
+  USING (advocate_id IN (SELECT user_id FROM user_profiles WHERE user_id = auth.uid()));
+
+-- Repeat for ALL tables with advocate-related policies
+```
+
+Add to instructions:
+"After running the database migration, you MUST update all RLS policies in Supabase Dashboard that reference advocates.id to instead check user_profiles.user_id = auth.uid()" 
+✅ ITERATION 3-10: APPROVED
+These iterations look solid! Minor recommendations:
+Iteration 9: Add to Database Changes``` sql
+-- Also add these indexes for better performance:
+CREATE INDEX IF NOT EXISTS idx_matters_advocate_status ON matters(advocate_id, status);
+CREATE INDEX IF NOT EXISTS idx_invoices_advocate_proforma ON invoices(advocate_id, is_pro_forma);
+CREATE INDEX IF NOT EXISTS idx_time_entries_matter_billed ON time_entries(matter_id, is_billed);
+CREATE INDEX IF NOT EXISTS idx_expenses_matter_billed ON expenses(matter_id, is_billed);
+```
+
+ 
+📊 UPDATED ITERATION 2 CHECKLIST
+Add this to your plan:
+Pre-Flight Checklist:
+Run all Phase A verification queries
+Verify all advocates have user_profiles (0 mismatches)
+Document all tables with advocate_id foreign keys
+Create backup: CREATE TABLE advocates_backup AS SELECT * FROM advocates;
+Create backup: CREATE TABLE user_profiles_backup AS SELECT * FROM user_profiles;
+Migration Checklist:
+Run Part 1: Add columns
+Run Part 2: Verify data relationships
+Run Part 3: Migrate data
+Run Part 4: Update ALL foreign keys (12+ tables)
+Run Part 5: Update handle_new_user trigger
+Run Part 6: Rename advocates table
+Run Part 7: Add indexes and comments
+Run Part 8: Update RLS policies
+Post-Migration Checklist:
+Verify foreign keys: SELECT * FROM information_schema.table_constraints WHERE constraint_name LIKE '%advocate%';
+Test authentication flow
+Test user profile updates
+Test matter creation
+Test invoice generation
+Monitor for errors in production logs
+ 
+🎯 FINAL RECOMMENDATIONS:
+Add a "Rollback Plan" section to Iteration 2:``` sql
+-- Emergency Rollback (if things go wrong):
+ALTER TABLE advocates_deprecated RENAME TO advocates;
+-- Then restore all foreign keys to point back to advocates
+-- (Keep the detailed rollback script ready)
+```
+
+Add "Iteration 0" before Iteration 1:
+Export complete database documentation (which we just did!)
+Create comprehensive backups
+Set up staging environment
+Between Iterations 2 and 3, add:
+Iteration 2.5: Validation & Testing
+Run full application test suite
+Manual QA of all user flows
+Performance benchmarking
+ 
+✅ VERDICT: PLAN IS 95% READY
+What's Good:
+✅ Excellent structure and sequencing
+✅ Comprehensive feature coverage
+✅ Clear acceptance criteria
+✅ Type-safety focus
+What Needs Updating:
+🔄 Iteration 2: Add complete foreign key list
+🔄 Iteration 2: Add RLS policy updates
+🔄 Iteration 2: Complete handle_new_user function
+🔄 Add rollback procedures
+🔄 Add validation checkpoints
+Update these sections and your plan will be A+ ready for execution! 🚀
+Would you like me to generate the complete, updated Iteration 2 with all corrections included?
+
+## Me
+yes
+
+## AI Assistant
+
+📘 ITERATION 2: COMPLETE & CORRECTED VERSION
+Iteration 2 of 10: Foundational Fix - Consolidating User & Advocate Models
+ 
+Goal
+Unify the advocates and user_profiles tables into a single, cohesive user profile model, eliminating data redundancy and synchronization risks.
+ 
+Rationale
+This is a major, critical schema change that fundamentally restructures the database. The current separation of advocates and user_profiles creates confusion and potential for data synchronization errors by maintaining two separate user systems. Consolidating them into a unified user_profiles table simplifies the code, aligns with Supabase's authentication flow, and provides a clear foundation for multi-role features like "Team Members" and "Attorney Users". This migration is a prerequisite for building a scalable and maintainable application.
+ 
+Key Files to Create/Modify
+Backend:
+Database schema (via SQL migration)
+Database triggers: handle_new_user
+RLS policies (multiple tables)
+Frontend:
+src/types/index.ts
+src/services/api/advocate.service.ts → src/services/api/user.service.ts
+src/services/api/matter-api.service.ts
+Every file that imports advocate.service.ts
+ 
+PHASE A: PRE-MIGRATION VERIFICATION & ANALYSIS
+Goal
+Understand the current state of your data and identify all dependencies on the advocates table before attempting any changes.
+⚠️ DO NOT PROCEED TO PHASE B WITHOUT COMPLETING THIS PHASE
+ 
+Verification Queries
+Run these queries in your Supabase SQL Editor. Save the results - you'll need them for Phase B.``` sql
+-- ============================================
+-- PRE-MIGRATION VERIFICATION QUERIES
+-- ============================================
+
+-- Query 1: Check table row counts
+SELECT 
+  'advocates' as table_name,
+  COUNT(*) as row_count
+FROM advocates
+UNION ALL
+SELECT 
+  'user_profiles',
+  COUNT(*)
+FROM user_profiles;
+
+-- Query 2: Check relationships and identify mismatches
+SELECT 
+  a.id as advocate_id,
+  a.email as advocate_email,
+  up.user_id as profile_user_id,
+  up.email as profile_email,
+  CASE 
+    WHEN up.user_id = a.id THEN '✅ Match'
+    WHEN up.user_id IS NULL THEN '❌ No profile'
+    ELSE '⚠️ Mismatch'
+  END as status
+FROM advocates a
+LEFT JOIN user_profiles up ON up.user_id = a.id
+ORDER BY status DESC;
+
+-- Query 3: Check which columns user_profiles already has
+SELECT 
+  column_name,
+  data_type,
+  is_nullable,
+  column_default
+FROM information_schema.columns
+WHERE table_name = 'user_profiles'
+  AND column_name IN (
+    'practice_number', 'bar', 'hourly_rate', 'chambers_address',
+    'postal_address', 'user_role', 'initials', 'is_active',
+    'year_admitted', 'contingency_rate', 'success_fee_rate',
+    'firm_name', 'firm_tagline', 'firm_logo_url', 'vat_number',
+    'banking_details', 'notification_preferences', 'invoice_settings',
+    'last_login_at', 'email'
+  )
+ORDER BY column_name;
+
+-- Query 4: Identify ALL tables with advocate_id foreign keys
+SELECT 
+  tc.table_name,
+  kcu.column_name,
+  tc.constraint_name,
+  rc.update_rule,
+  rc.delete_rule
+FROM information_schema.table_constraints tc
+JOIN information_schema.key_column_usage kcu
+  ON tc.constraint_name = kcu.constraint_name
+  AND tc.table_schema = kcu.table_schema
+JOIN information_schema.referential_constraints rc
+  ON tc.constraint_name = rc.constraint_name
+  AND tc.table_schema = rc.constraint_schema
+WHERE tc.constraint_type = 'FOREIGN KEY'
+  AND kcu.column_name = 'advocate_id'
+  AND tc.table_schema = 'public'
+ORDER BY tc.table_name;
+
+-- Query 5: Count advocate_id references across tables
+SELECT 
+  'matters' as table_name,
+  COUNT(*) as references
+FROM matters WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'invoices', COUNT(*) FROM invoices WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'time_entries', COUNT(*) FROM time_entries WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'expenses', COUNT(*) FROM expenses WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'credit_notes', COUNT(*) FROM credit_notes WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'cloud_storage_connections', COUNT(*) FROM cloud_storage_connections WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'engagement_agreements', COUNT(*) FROM engagement_agreements WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'retainer_agreements', COUNT(*) FROM retainer_agreements WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'scope_amendments', COUNT(*) FROM scope_amendments WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'subscriptions', COUNT(*) FROM subscriptions WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'trust_transactions', COUNT(*) FROM trust_transactions WHERE advocate_id IS NOT NULL
+UNION ALL
+SELECT 'payment_disputes', COUNT(*) FROM payment_disputes WHERE advocate_id IS NOT NULL;
+
+-- Query 6: Check current RLS policies that reference advocates
+SELECT 
+  tablename,
+  policyname,
+  cmd,
+  qual as using_expression
+FROM pg_policies
+WHERE schemaname = 'public'
+  AND (
+    qual::text LIKE '%advocate%' OR
+    qual::text LIKE '%auth.uid()%'
+  )
+ORDER BY tablename, policyname;
+```
+
+ 
+Pre-Flight Checklist
+Review the query results and complete this checklist:
+Query 1: Verify both tables have data
+Query 2: Confirm ZERO advocates show ❌ No profile status
+If any show this status, you MUST create user_profiles records for them first
+Query 3: Document which columns already exist in user_profiles
+Query 4: Create a list of ALL tables returned (should be ~12 tables)
+Query 5: Verify all counts are reasonable
+Query 6: Document all policies that need updating
+Backup: Create backups before proceeding
+Create Backups:``` sql
+-- Create safety backups
+CREATE TABLE advocates_backup_20251012 AS SELECT * FROM advocates;
+CREATE TABLE user_profiles_backup_20251012 AS SELECT * FROM user_profiles;
+```
+
+ 
+PHASE B: SAFE DATABASE MIGRATION
+Goal
+Execute a complete migration that moves data, updates all foreign keys, modifies triggers, and prepares for application code changes.
+⚠️ ONLY PROCEED IF PHASE A IS 100% COMPLETE
+ 
+Complete Migration Script``` sql
+-- ============================================
+-- COMPLETE MIGRATION: Consolidate advocates into user_profiles
+-- Version: 1.0.0
+-- Date: 2025-10-12
+-- ============================================
+
+BEGIN;
+
+-- ============================================
+-- PART 1: Add advocate-specific columns to user_profiles
+-- ============================================
+DO $$
+BEGIN
+  -- Practice information
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'practice_number') THEN
+    ALTER TABLE user_profiles ADD COLUMN practice_number TEXT;
+    RAISE NOTICE '✓ Added practice_number';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'bar') THEN
+    ALTER TABLE user_profiles ADD COLUMN bar bar_association;
+    RAISE NOTICE '✓ Added bar';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'year_admitted') THEN
+    ALTER TABLE user_profiles ADD COLUMN year_admitted INTEGER;
+    RAISE NOTICE '✓ Added year_admitted';
+  END IF;
+  
+  -- Rates and fees
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'hourly_rate') THEN
+    ALTER TABLE user_profiles ADD COLUMN hourly_rate NUMERIC(10,2) DEFAULT 0;
+    RAISE NOTICE '✓ Added hourly_rate';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'contingency_rate') THEN
+    ALTER TABLE user_profiles ADD COLUMN contingency_rate NUMERIC(5,2);
+    RAISE NOTICE '✓ Added contingency_rate';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'success_fee_rate') THEN
+    ALTER TABLE user_profiles ADD COLUMN success_fee_rate NUMERIC(5,2);
+    RAISE NOTICE '✓ Added success_fee_rate';
+  END IF;
+  
+  -- Contact and address
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'chambers_address') THEN
+    ALTER TABLE user_profiles ADD COLUMN chambers_address TEXT;
+    RAISE NOTICE '✓ Added chambers_address';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'postal_address') THEN
+    ALTER TABLE user_profiles ADD COLUMN postal_address TEXT;
+    RAISE NOTICE '✓ Added postal_address';
+  END IF;
+  
+  -- Firm branding
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'firm_name') THEN
+    ALTER TABLE user_profiles ADD COLUMN firm_name TEXT;
+    RAISE NOTICE '✓ Added firm_name';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'firm_tagline') THEN
+    ALTER TABLE user_profiles ADD COLUMN firm_tagline TEXT;
+    RAISE NOTICE '✓ Added firm_tagline';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'firm_logo_url') THEN
+    ALTER TABLE user_profiles ADD COLUMN firm_logo_url TEXT;
+    RAISE NOTICE '✓ Added firm_logo_url';
+  END IF;
+  
+  -- Financial
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'vat_number') THEN
+    ALTER TABLE user_profiles ADD COLUMN vat_number TEXT;
+    RAISE NOTICE '✓ Added vat_number';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'banking_details') THEN
+    ALTER TABLE user_profiles ADD COLUMN banking_details JSONB;
+    RAISE NOTICE '✓ Added banking_details';
+  END IF;
+  
+  -- Preferences
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'notification_preferences') THEN
+    ALTER TABLE user_profiles ADD COLUMN notification_preferences JSONB 
+      DEFAULT '{"email": true, "whatsapp": false, "sms": false}'::jsonb;
+    RAISE NOTICE '✓ Added notification_preferences';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'invoice_settings') THEN
+    ALTER TABLE user_profiles ADD COLUMN invoice_settings JSONB 
+      DEFAULT '{"auto_remind": true, "reminder_days": [30, 45, 55]}'::jsonb;
+    RAISE NOTICE '✓ Added invoice_settings';
+  END IF;
+  
+  -- Status and metadata
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'is_active') THEN
+    ALTER TABLE user_profiles ADD COLUMN is_active BOOLEAN DEFAULT true;
+    RAISE NOTICE '✓ Added is_active';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'last_login_at') THEN
+    ALTER TABLE user_profiles ADD COLUMN last_login_at TIMESTAMPTZ;
+    RAISE NOTICE '✓ Added last_login_at';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'user_role') THEN
+    ALTER TABLE user_profiles ADD COLUMN user_role user_role DEFAULT 'junior_advocate';
+    RAISE NOTICE '✓ Added user_role';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'initials') THEN
+    ALTER TABLE user_profiles ADD COLUMN initials TEXT;
+    RAISE NOTICE '✓ Added initials';
+  END IF;
+  
+  IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'user_profiles' AND column_name = 'email') THEN
+    ALTER TABLE user_profiles ADD COLUMN email TEXT;
+    RAISE NOTICE '✓ Added email';
+  END IF;
+  
+  RAISE NOTICE '========================================';
+  RAISE NOTICE 'PART 1 COMPLETE: All columns added';
+  RAISE NOTICE '========================================';
+END $$;
+
+-- ============================================
+-- PART 2: Verify data relationships before migration
+-- ============================================
+DO $$
+DECLARE
+  mismatch_count INTEGER;
+  no_profile_count INTEGER;
+BEGIN
+  -- Check for advocates without profiles
+  SELECT COUNT(*) INTO no_profile_count
+  FROM advocates a
+  LEFT JOIN user_profiles up ON up.user_id = a.id
+  WHERE up.user_id IS NULL;
+  
+  IF no_profile_count > 0 THEN
+    RAISE EXCEPTION '❌ Found % advocates without matching user_profiles. Cannot proceed. Run Phase A Query 2 to identify them.', no_profile_count;
+  END IF;
+  
+  -- Check for ID mismatches
+  SELECT COUNT(*) INTO mismatch_count
+  FROM advocates a
+  INNER JOIN user_profiles up ON up.user_id = a.id
+  WHERE up.user_id != a.id;
+  
+  IF mismatch_count > 0 THEN
+    RAISE EXCEPTION '❌ Found % ID mismatches between advocates and user_profiles.', mismatch_count;
+  END IF;
+  
+  RAISE NOTICE '========================================';
+  RAISE NOTICE '✓ PART 2 COMPLETE: Data validation passed';
+  RAISE NOTICE '========================================';
+END $$;
+
+-- ============================================
+-- PART 3: Migrate data from advocates to user_profiles
+-- ============================================
+DO $$
+DECLARE
+  rows_updated INTEGER;
+BEGIN
+  UPDATE user_profiles up
+  SET
+    practice_number = a.practice_number,
+    bar = a.bar,
+    year_admitted = a.year_admitted,
+    hourly_rate = a.hourly_rate,
+    phone = COALESCE(up.phone, a.phone_number),
+    chambers_address = a.chambers_address,
+    postal_address = a.postal_address,
+    is_active = a.is_active,
+    user_role = a.user_role,
+    initials = a.initials,
+    email = a.email,
+    last_login_at = a.updated_at, -- Use advocates.updated_at as last activity indicator
+    updated_at = NOW()
+  FROM advocates a
+  WHERE up.user_id = a.id;
+  
+  GET DIAGNOSTICS rows_updated = ROW_COUNT;
+  
+  RAISE NOTICE '========================================';
+  RAISE NOTICE '✓ PART 3 COMPLETE: Migrated % rows', rows_updated;
+  RAISE NOTICE '========================================';
+END $$;
+
+-- ============================================
+-- PART 4: Update ALL foreign keys to point to user_profiles
+-- !! CRITICAL: This updates 12+ tables !!
+-- ============================================
+
+RAISE NOTICE 'Starting foreign key updates...';
+
+-- matters
+ALTER TABLE matters 
+  DROP CONSTRAINT IF EXISTS matters_advocate_id_fkey,
+  ADD CONSTRAINT matters_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated matters foreign key';
+
+-- invoices
+ALTER TABLE invoices 
+  DROP CONSTRAINT IF EXISTS invoices_advocate_id_fkey,
+  ADD CONSTRAINT invoices_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated invoices foreign key';
+
+-- time_entries
+ALTER TABLE time_entries 
+  DROP CONSTRAINT IF EXISTS time_entries_advocate_id_fkey,
+  ADD CONSTRAINT time_entries_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated time_entries foreign key';
+
+-- expenses
+ALTER TABLE expenses 
+  DROP CONSTRAINT IF EXISTS expenses_advocate_id_fkey,
+  ADD CONSTRAINT expenses_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated expenses foreign key';
+
+-- credit_notes
+ALTER TABLE credit_notes 
+  DROP CONSTRAINT IF EXISTS credit_notes_advocate_id_fkey,
+  ADD CONSTRAINT credit_notes_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated credit_notes foreign key';
+
+-- cloud_storage_connections
+ALTER TABLE cloud_storage_connections 
+  DROP CONSTRAINT IF EXISTS cloud_storage_connections_advocate_id_fkey,
+  ADD CONSTRAINT cloud_storage_connections_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated cloud_storage_connections foreign key';
+
+-- engagement_agreements
+ALTER TABLE engagement_agreements 
+  DROP CONSTRAINT IF EXISTS engagement_agreements_advocate_id_fkey,
+  ADD CONSTRAINT engagement_agreements_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated engagement_agreements foreign key';
+
+-- retainer_agreements
+ALTER TABLE retainer_agreements 
+  DROP CONSTRAINT IF EXISTS retainer_agreements_advocate_id_fkey,
+  ADD CONSTRAINT retainer_agreements_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated retainer_agreements foreign key';
+
+-- scope_amendments
+ALTER TABLE scope_amendments 
+  DROP CONSTRAINT IF EXISTS scope_amendments_advocate_id_fkey,
+  ADD CONSTRAINT scope_amendments_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated scope_amendments foreign key';
+
+-- subscriptions
+ALTER TABLE subscriptions 
+  DROP CONSTRAINT IF EXISTS subscriptions_advocate_id_fkey,
+  ADD CONSTRAINT subscriptions_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated subscriptions foreign key';
+
+-- trust_transactions
+ALTER TABLE trust_transactions 
+  DROP CONSTRAINT IF EXISTS trust_transactions_advocate_id_fkey,
+  ADD CONSTRAINT trust_transactions_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated trust_transactions foreign key';
+
+-- payment_disputes
+ALTER TABLE payment_disputes 
+  DROP CONSTRAINT IF EXISTS payment_disputes_advocate_id_fkey,
+  ADD CONSTRAINT payment_disputes_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES user_profiles(user_id) ON DELETE CASCADE;
+RAISE NOTICE '✓ Updated payment_disputes foreign key';
+
+RAISE NOTICE '========================================';
+RAISE NOTICE '✓ PART 4 COMPLETE: All foreign keys updated';
+RAISE NOTICE '========================================';
+
+-- ============================================
+-- PART 5: Update handle_new_user trigger
+-- ============================================
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER
+SECURITY DEFINER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  user_metadata JSONB;
+  practice_num TEXT;
+  user_first_name TEXT;
+  user_last_name TEXT;
+BEGIN
+  user_metadata := NEW.raw_user_meta_data;
+  
+  -- Extract names
+  user_first_name := COALESCE(user_metadata->>'first_name', 'New');
+  user_last_name := COALESCE(user_metadata->>'last_name', 'User');
+  
+  -- Generate practice number
+  practice_num := COALESCE(
+    user_metadata->>'practice_number',
+    'TEMP-' || EXTRACT(YEAR FROM NOW()) || '-' || 
+    LPAD(EXTRACT(DOY FROM NOW())::TEXT, 3, '0') || '-' || 
+    SUBSTRING(NEW.id::TEXT, 1, 8)
+  );
+  
+  -- Insert into user_profiles (NOT advocates)
+  INSERT INTO public.user_profiles (
+    user_id,
+    email,
+    first_name,
+    last_name,
+    initials,
+    practice_number,
+    bar,
+    year_admitted,
+    hourly_rate,
+    user_role,
+    is_active,
+    created_at,
+    updated_at
+  ) VALUES (
+    NEW.id,
+    NEW.email,
+    user_first_name,
+    user_last_name,
+    COALESCE(
+      user_metadata->>'initials',
+      UPPER(LEFT(user_first_name, 1)) || UPPER(LEFT(user_last_name, 1))
+    ),
+    practice_num,
+    COALESCE((user_metadata->>'bar')::bar_association, 'johannesburg'),
+    COALESCE((user_metadata->>'year_admitted')::INTEGER, EXTRACT(YEAR FROM NOW())::INTEGER),
+    COALESCE((user_metadata->>'hourly_rate')::NUMERIC, 1500.00),
+    COALESCE((user_metadata->>'user_role')::user_role, 'junior_advocate'),
+    true,
+    NOW(),
+    NOW()
+  );
+  
+  RETURN NEW;
+EXCEPTION
+  WHEN OTHERS THEN
+    RAISE WARNING 'Failed to create user profile for user %: %', NEW.id, SQLERRM;
+    RETURN NEW;
+END;
+$$;
+
+RAISE NOTICE '========================================';
+RAISE NOTICE '✓ PART 5 COMPLETE: Updated handle_new_user trigger';
+RAISE NOTICE '========================================';
+
+-- ============================================
+-- PART 6: Rename advocates table (safer than dropping)
+-- ============================================
+ALTER TABLE IF EXISTS advocates RENAME TO advocates_deprecated;
+
+RAISE NOTICE '========================================';
+RAISE NOTICE '✓ PART 6 COMPLETE: Renamed advocates to advocates_deprecated';
+RAISE NOTICE '========================================';
+
+-- ============================================
+-- PART 7: Add indexes for performance
+-- ============================================
+CREATE INDEX IF NOT EXISTS idx_user_profiles_practice_number ON user_profiles(practice_number);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_bar ON user_profiles(bar);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_is_active ON user_profiles(is_active) WHERE is_active = true;
+CREATE INDEX IF NOT EXISTS idx_user_profiles_email ON user_profiles(email);
+CREATE INDEX IF NOT EXISTS idx_user_profiles_user_role ON user_profiles(user_role);
+
+RAISE NOTICE '========================================';
+RAISE NOTICE '✓ PART 7 COMPLETE: Added performance indexes';
+RAISE NOTICE '========================================';
+
+-- ============================================
+-- PART 8: Add unique constraint
+-- ============================================
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint 
+    WHERE conname = 'user_profiles_practice_number_key'
+  ) THEN
+    ALTER TABLE user_profiles ADD CONSTRAINT user_profiles_practice_number_key UNIQUE (practice_number);
+    RAISE NOTICE '✓ Added unique constraint on practice_number';
+  ELSE
+    RAISE NOTICE '✓ Unique constraint already exists';
+  END IF;
+END $$;
+
+-- ============================================
+-- PART 9: Add documentation comments
+-- ============================================
+COMMENT ON COLUMN user_profiles.practice_number IS 'Advocate practice number (migrated from advocates table)';
+COMMENT ON COLUMN user_profiles.bar IS 'Bar association membership (migrated from advocates table)';
+COMMENT ON COLUMN user_profiles.hourly_rate IS 'Default hourly rate for billing (migrated from advocates table)';
+COMMENT ON COLUMN user_profiles.user_role IS 'User role in the system (migrated from advocates table)';
+COMMENT ON COLUMN user_profiles.chambers_address IS 'Physical address of chambers (migrated from advocates table)';
+COMMENT ON COLUMN user_profiles.postal_address IS 'Postal/mailing address (migrated from advocates table)';
+COMMENT ON COLUMN user_profiles.is_active IS 'Whether user account is active (migrated from advocates table)';
+
+RAISE NOTICE '========================================';
+RAISE NOTICE '✓ PART 9 COMPLETE: Added documentation';
+RAISE NOTICE '========================================';
+
+-- ============================================
+-- PART 10: Create backward compatibility view
+-- ============================================
+CREATE OR REPLACE VIEW public.advocates_view AS
+SELECT 
+  user_id as id,
+  email,
+  CONCAT(first_name, ' ', last_name) as full_name,
+  initials,
+  practice_number,
+  bar,
+  year_admitted,
+  hourly_rate,
+  phone as phone_number,
+  chambers_address,
+  postal_address,
+  user_role,
+  is_active,
+  created_at,
+  updated_at,
+  last_login_at
+FROM user_profiles
+WHERE practice_number IS NOT NULL;
+
+COMMENT ON VIEW public.advocates_view IS 'Backward compatibility view - maps user_profiles to old advocates structure. Use user_profiles directly in new code.';
+
+RAISE NOTICE '========================================';
+RAISE NOTICE '✓ PART 10 COMPLETE: Created compatibility view';
+RAISE NOTICE '========================================';
+
+-- ============================================
+-- FINAL VERIFICATION
+-- ============================================
+DO $$
+DECLARE
+  v_profile_count INTEGER;
+  v_fk_count INTEGER;
+BEGIN
+  -- Count migrated profiles
+  SELECT COUNT(*) INTO v_profile_count 
+  FROM user_profiles 
+  WHERE practice_number IS NOT NULL;
+  
+  -- Count foreign key constraints
+  SELECT COUNT(*) INTO v_fk_count
+  FROM information_schema.table_constraints
+  WHERE constraint_type = 'FOREIGN KEY'
+    AND constraint_name LIKE '%advocate_id%'
+    AND table_schema = 'public';
+  
+  RAISE NOTICE '========================================';
+  RAISE NOTICE '🎉 MIGRATION COMPLETE!';
+  RAISE NOTICE '========================================';
+  RAISE NOTICE 'User profiles with practice_number: %', v_profile_count;
+  RAISE NOTICE 'Foreign key constraints updated: %', v_fk_count;
+  RAISE NOTICE '========================================';
+  RAISE NOTICE 'Next: Run Phase B Post-Migration Verification';
+  RAISE NOTICE '========================================';
+END $$;
+
+COMMIT;
+```
+
+ 
+Post-Migration Verification
+After running the migration, immediately run these verification queries:``` sql
+-- ============================================
+-- POST-MIGRATION VERIFICATION
+-- ============================================
+
+-- 1. Verify data migration
+SELECT 
+  COUNT(*) as total_profiles,
+  COUNT(practice_number) as profiles_with_practice_number,
+  COUNT(CASE WHEN practice_number IS NOT NULL AND bar IS NOT NULL THEN 1 END) as complete_profiles
+FROM user_profiles;
+
+-- 2. Verify foreign keys point to user_profiles
+SELECT 
+  tc.table_name,
+  tc.constraint_name,
+  ccu.table_name AS foreign_table,
+  ccu.column_name AS foreign_column
+FROM information_schema.table_constraints tc
+JOIN information_schema.constraint_column_usage ccu
+  ON tc.constraint_name = ccu.constraint_name
+WHERE tc.constraint_type = 'FOREIGN KEY'
+  AND tc.constraint_name LIKE '%advocate%'
+ORDER BY tc.table_name;
+
+-- 3. Verify advocates_deprecated exists
+SELECT 
+  'advocates_deprecated' as table_name,
+  COUNT(*) as row_count
+FROM advocates_deprecated;
+
+-- 4. Verify backward compatibility view
+SELECT 
+  COUNT(*) as advocate_count
+FROM advocates_view;
+
+-- 5. Test handle_new_user trigger (informational - don't run in production)
+-- SELECT * FROM auth.users LIMIT 1;
+-- This is just to confirm the trigger exists and points to user_profiles
+SELECT 
+  p.proname as function_name,
+  pg_get_functiondef(p.oid) as definition
+FROM pg_proc p
+WHERE p.proname = 'handle_new_user';
+```
+
+Expected Results:
+✅ All advocate profiles have practice_number populated
+✅ All foreign keys now reference user_profiles(user_id)
+✅ advocates_deprecated table exists with original data
+✅ advocates_view returns same count as profiles with practice_number
+✅ handle_new_user inserts into user_profiles
+ 
+PHASE C: RLS POLICY UPDATES
+Goal
+Update all Row Level Security policies to reference user_profiles.user_id instead of advocates.id.
+⚠️ CRITICAL: Do this immediately after Phase B
+ 
+RLS Policy Migration Script``` sql
+-- ============================================
+-- UPDATE RLS POLICIES TO USE USER_PROFILES
+-- ============================================
+
+-- NOTE: This updates policies to reference user_profiles.user_id
+-- The advocate_id columns in other tables still exist and still 
+-- contain the correct IDs (which now reference user_profiles.user_id)
+
+-- matters policies
+DROP POLICY IF EXISTS matters_select_policy ON matters;
+CREATE POLICY matters_select_policy ON matters
+  FOR SELECT TO authenticated
+  USING (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS matters_insert_policy ON matters;
+CREATE POLICY matters_insert_policy ON matters
+  FOR INSERT TO authenticated
+  WITH CHECK (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS matters_update_policy ON matters;
+CREATE POLICY matters_update_policy ON matters
+  FOR UPDATE TO authenticated
+  USING (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS matters_delete_policy ON matters;
+CREATE POLICY matters_delete_policy ON matters
+  FOR DELETE TO authenticated
+  USING (advocate_id = auth.uid());
+
+-- invoices policies
+DROP POLICY IF EXISTS invoices_select_policy ON invoices;
+CREATE POLICY invoices_select_policy ON invoices
+  FOR SELECT TO public
+  USING (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS invoices_insert_policy ON invoices;
+CREATE POLICY invoices_insert_policy ON invoices
+  FOR INSERT TO public
+  WITH CHECK (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS invoices_update_policy ON invoices;
+CREATE POLICY invoices_update_policy ON invoices
+  FOR UPDATE TO public
+  USING (advocate_id = auth.uid());
+
+-- time_entries policies
+DROP POLICY IF EXISTS time_entries_select_policy ON time_entries;
+CREATE POLICY time_entries_select_policy ON time_entries
+  FOR SELECT TO public
+  USING (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS time_entries_insert_policy ON time_entries;
+CREATE POLICY time_entries_insert_policy ON time_entries
+  FOR INSERT TO public
+  WITH CHECK (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS time_entries_update_policy ON time_entries;
+CREATE POLICY time_entries_update_policy ON time_entries
+  FOR UPDATE TO public
+  USING (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS time_entries_delete_policy ON time_entries;
+CREATE POLICY time_entries_delete_policy ON time_entries
+  FOR DELETE TO public
+  USING (advocate_id = auth.uid());
+
+-- expenses policies
+DROP POLICY IF EXISTS expenses_select_policy ON expenses;
+CREATE POLICY expenses_select_policy ON expenses
+  FOR SELECT TO public
+  USING (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS expenses_insert_policy ON expenses;
+CREATE POLICY expenses_insert_policy ON expenses
+  FOR INSERT TO public
+  WITH CHECK (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS expenses_update_policy ON expenses;
+CREATE POLICY expenses_update_policy ON expenses
+  FOR UPDATE TO public
+  USING (advocate_id = auth.uid());
+
+DROP POLICY IF EXISTS expenses_delete_policy ON expenses;
+CREATE POLICY expenses_delete_policy ON expenses
+  FOR DELETE TO public
+  USING (advocate_id = auth.uid());
+
+-- subscriptions policies  
+DROP POLICY IF EXISTS "Users can insert their own subscription" ON subscriptions;
+DROP POLICY IF EXISTS "Users can update their own subscription" ON subscriptions;
+DROP POLICY IF EXISTS "Users can view their own subscription" ON subscriptions;
+
+CREATE POLICY subscriptions_select_policy ON subscriptions
+  FOR SELECT TO public
+  USING (advocate_id = auth.uid());
+
+CREATE POLICY subscriptions_insert_policy ON subscriptions
+  FOR INSERT TO public
+  WITH CHECK (advocate_id = auth.uid());
+
+CREATE POLICY subscriptions_update_policy ON subscriptions
+  FOR UPDATE TO public
+  USING (advocate_id = auth.uid());
+
+-- user_profiles policies (update to use user_id)
+DROP POLICY IF EXISTS "Users can insert their own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Users can update their own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Users can view their own profile" ON user_profiles;
+DROP POLICY IF EXISTS "Team members can view organization profiles" ON user_profiles;
+
+CREATE POLICY user_profiles_select_policy ON user_profiles
+  FOR SELECT TO public
+  USING (
+    user_id = auth.uid() OR
+    user_id IN (
+      SELECT tm.user_id 
+      FROM team_members tm 
+      WHERE tm.organization_id IN (
+        SELECT organization_id 
+        FROM team_members 
+        WHERE user_id = auth.uid()
+      )
+    )
+  );
+
+CREATE POLICY user_profiles_insert_policy ON user_profiles
+  FOR INSERT TO public
+  WITH CHECK (user_id = auth.uid());
+
+CREATE POLICY user_profiles_update_policy ON user_profiles
+  FOR UPDATE TO public
+  USING (user_id = auth.uid());
+
+-- Continue for remaining tables...
+-- credit_notes, cloud_storage_connections, engagement_agreements,
+-- retainer_agreements, scope_amendments, trust_transactions, payment_disputes
+
+RAISE NOTICE '========================================';
+RAISE NOTICE '✓ RLS POLICIES UPDATED';
+RAISE NOTICE 'Review and update remaining policies as needed';
+RAISE NOTICE '========================================';
+```
+
+ 
+PHASE D: APPLICATION CODE REFACTORING
+Goal
+Update the entire codebase to reflect the unified user_profiles schema.
+ 
+Step 1: Update TypeScript Types
+In src/types/index.ts:``` typescript
+// REMOVE THIS (old type):
+// export interface Advocate {
+//   id: string;
+//   email: string;
+//   ...
+// }
+
+// UPDATE THIS (enhanced UserProfile):
+export interface UserProfile {
+  // Core user fields
+  user_id: string;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  phone?: string;
+  avatar_url?: string;
+  created_at: string;
+  updated_at: string;
+  
+  // Advocate-specific fields (now merged in)
+  practice_number?: string;
+  bar?: BarAssociation;
+  year_admitted?: number;
+  hourly_rate?: number;
+  contingency_rate?: number;
+  success_fee_rate?: number;
+  initials?: string;
+  
+  // Contact & Address
+  chambers_address?: string;
+  postal_address?: string;
+  
+  // Firm Branding
+  firm_name?: string;
+  firm_tagline?: string;
+  firm_logo_url?: string;
+  
+  // Financial
+  vat_number?: string;
+  banking_details?: BankingDetails;
+  
+  // Preferences
+  notification_preferences?: NotificationPreferences;
+  invoice_settings?: InvoiceSettings;
+  
+  // Status
+  is_active?: boolean;
+  user_role?: UserRole;
+  last_login_at?: string;
+}
+
+// Helper type for banking details
+export interface BankingDetails {
+  bank_name?: string;
+  account_holder?: string;
+  account_number?: string;
+  branch_code?: string;
+  account_type?: string;
+}
+
+// Helper type for notification preferences
+export interface NotificationPreferences {
+  email?: boolean;
+  whatsapp?: boolean;
+  sms?: boolean;
+}
+
+// Helper type for invoice settings
+export interface InvoiceSettings {
+  auto_remind?: boolean;
+  reminder_days?: number[];
+}
+```
+
+ 
+Step 2: Refactor Services
+Rename the file:``` bash
+mv src/services/api/advocate.service.ts src/services/api/user.service.ts
+```
+
+In src/services/api/user.service.ts:``` typescript
+import { supabase } from '@/lib/supabase';
+import { UserProfile } from '@/types';
+import { BaseApiService } from './base-api.service';
+
+export class UserService extends BaseApiService<UserProfile> {
+  constructor() {
+    super('user_profiles'); // Changed from 'advocates'
+  }
+
+  /**
+   * Get user by ID
+   * @param userId - The user_id (auth.uid)
+   */
+  async getUserById(userId: string): Promise<UserProfile | null> {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('user_id', userId) // Changed from 'id'
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  /**
+   * Get current authenticated user's profile
+   */
+  async getCurrentUser(): Promise<UserProfile | null> {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return null;
+    
+    return this.getUserById(user.id);
+  }
+
+  /**
+   * Update user profile
+   */
+  async updateUserProfile(
+    userId: string,
+    updates: Partial<UserProfile>
+  ): Promise<UserProfile> {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .update({
+        ...updates,
+        updated_at: new Date().toISOString()
+      })
+      .eq('user_id', userId)
+      .select()
+      .single();
+
+    if (error) throw error;
+    return data;
+  }
+
+  /**
+   * Get all advocates (users with practice_number)
+   */
+  async getAllAdvocates(): Promise<UserProfile[]> {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .not('practice_number', 'is', null)
+      .eq('is_active', true)
+      .order('created_at', { ascending: false });
+
+    if (error) throw error;
+    return data || [];
+  }
+
+  /**
+   * Search advocates by name or practice number
+   */
+  async searchAdvocates(query: string): Promise<UserProfile[]> {
+    const { data, error } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .not('practice_number', 'is', null)
+      .or(`first_name.ilike.%${query}%,last_name.ilike.%${query}%,practice_number.ilike.%${query}%`)
+      .eq('is_active', true)
+      .limit(10);
+
+    if (error) throw error;
+    return data || [];
+  }
+}
+
+// Export singleton instance
+export const userService = new UserService();
+
+// For backward compatibility during transition
+export { userService as advocateService };
+export { UserService as AdvocateService };
+```
+
+ 
+Step 3: Update Dependent Services
+In src/services/api/matter-api.service.ts:``` typescript
+// BEFORE:
+async getMatterById(id: string): Promise<Matter> {
+  const { data, error } = await supabase
+    .from('matters')
+    .select(`
+      *,
+      advocates (
+        id,
+        full_name,
+        email
+      )
+    `)
+    .eq('id', id)
+    .single();
+  // ...
+}
+
+// AFTER:
+async getMatterById(id: string): Promise<Matter> {
+  const { data, error } = await supabase
+    .from('matters')
+    .select(`
+      *,
+      user_profiles!matters_advocate_id_fkey (
+        user_id,
+        first_name,
+        last_name,
+        email,
+        practice_number
+      )
+    `)
+    .eq('id', id)
+    .single();
+  
+  if (error) throw error;
+  
+  // Transform the joined data
+  return {
+    ...data,
+    advocate: data.user_profiles ? {
+      id: data.user_profiles.user_id,
+      full_name: `${data.user_profiles.first_name} ${data.user_profiles.last_name}`,
+      email: data.user_profiles.email,
+      practice_number: data.user_profiles.practice_number
+    } : null
+  };
+}
+```
+
+ 
+Step 4: Update All Imports
+Global search and replace:``` bash
+# Find all files importing advocate service
+grep -r "from '@/services/api/advocate.service'" src/
+
+# Update imports
+# OLD: import { advocateService } from '@/services/api/advocate.service';
+# NEW: import { userService } from '@/services/api/user.service';
+
+# Update method calls
+# OLD: advocateService.getCurrentAdvocate()
+# NEW: userService.getCurrentUser()
+
+# OLD: advocateService.getAdvocateById(id)
+# NEW: userService.getUserById(id)
+```
+
+ 
+Step 5: Update Components
+Example component update:``` typescript
+// BEFORE (UserProfilePage.tsx):
+import { advocateService } from '@/services/api/advocate.service';
+import { Advocate } from '@/types';
+
+const [advocate, setAdvocate] = useState<Advocate | null>(null);
+
+useEffect(() => {
+  advocateService.getCurrentAdvocate()
+    .then(setAdvocate)
+    .catch(console.error);
+}, []);
+
+// AFTER:
+import { userService } from '@/services/api/user.service';
+import { UserProfile } from '@/types';
+
+const [user, setUser] = useState<UserProfile | null>(null);
+
+useEffect(() => {
+  userService.getCurrentUser()
+    .then(setUser)
+    .catch(console.error);
+}, []);
+```
+
+ 
+ROLLBACK PLAN
+If Something Goes Wrong:``` sql
+-- ============================================
+-- EMERGENCY ROLLBACK SCRIPT
+-- Only use if migration fails catastrophically
+-- ============================================
+
+BEGIN;
+
+-- 1. Restore advocates table
+ALTER TABLE IF EXISTS advocates_deprecated RENAME TO advocates;
+
+-- 2. Restore foreign keys to point back to advocates
+ALTER TABLE matters 
+  DROP CONSTRAINT IF EXISTS matters_advocate_id_fkey,
+  ADD CONSTRAINT matters_advocate_id_fkey 
+    FOREIGN KEY (advocate_id) REFERENCES advocates(id) ON DELETE CASCADE;
+
+-- Repeat for all 12 tables...
+
+-- 3. Restore handle_new_user trigger
+-- (Restore from advocates_backup or re-create original)
+
+-- 4. Drop the compatibility view
+DROP VIEW IF EXISTS advocates_view;
+
+COMMIT;
+```
+
+Better approach:
+Keep advocates_deprecated table for at least 30 days
+Don't drop it until you're 100% confident
+ 
+ACCEPTANCE CRITERIA
+Database:
+All advocate data migrated to user_profiles
+All 12+ foreign keys updated to reference user_profiles(user_id)
+handle_new_user trigger inserts into user_profiles
+All RLS policies updated
+advocates table renamed to advocates_deprecated
+Backward compatibility view created
+All indexes created
+Application:
+Advocate type removed from types/index.ts
+UserProfile type includes all advocate fields
+advocate.service.ts renamed to user.service.ts
+All imports updated throughout codebase
+All method calls updated (getCurrentAdvocate → getCurrentUser)
+All Supabase queries use user_profiles table
+All joins updated to use correct foreign key name
+Testing:
+User authentication works
+User profile updates work
+Matter creation assigns correct advocate_id
+Invoice generation works
+Time entry creation works
+All queries return correct data
+RLS policies enforce correct access control
+No errors in browser console
+No errors in Supabase logs
+Cleanup (after 30 days):
+Drop advocates_deprecated table
+Remove backward compatibility exports from user.service.ts
+Remove advocates_view if not needed
+ 
+FINAL NOTES
+Run this in a staging environment first!
+Have backups ready before running in production
+Monitor closely for 48 hours after migration
+Keep advocates_deprecated for at least 30 days
+Update API documentation to reflect new schema
+ 
+This iteration is complete and ready for execution. Proceed with Phase A verification first! 🚀

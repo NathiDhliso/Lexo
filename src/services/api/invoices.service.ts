@@ -150,10 +150,10 @@ export class InvoiceService {
           vat_amount: vatAmount,
           total_amount: totalAmount,
           disbursements: disbursements,
-          // Always use a valid DB enum value for status
-          status: 'draft',
-          // Tag pro forma using internal_notes so we can filter server-side
-          internal_notes: isProForma ? 'pro_forma' : null,
+          // Set proper status and flag for pro forma invoices
+          status: isProForma ? 'pro_forma' : 'draft',
+          is_pro_forma: isProForma,
+          internal_notes: null,
           fee_narrative: narrative,
           reminders_sent: 0,
           next_reminder_date: format(addDays(invoiceDate, rules.reminderSchedule[0]), 'yyyy-MM-dd'),
@@ -236,14 +236,14 @@ export class InvoiceService {
     // Import rate card service for pricing
     const { rateCardService } = await import('../rate-card.service');
 
-    // Get advocate's hourly rate
-    const { data: advocate } = await supabase
-      .from('advocates')
+    // Get user's hourly rate from profile
+    const { data: userProfile } = await supabase
+      .from('user_profiles')
       .select('hourly_rate')
-      .eq('id', user.id)
+      .eq('user_id', user.id)
       .single();
 
-    const advocateHourlyRate = advocate?.hourly_rate || 2500;
+    const advocateHourlyRate = userProfile?.hourly_rate || 2500;
 
     // Determine matter type from request
     const matterType = proFormaRequest.matter_type || 'general';
@@ -316,9 +316,9 @@ export class InvoiceService {
         disbursements_amount: 0,
         vat_rate: 0.15,
         amount_paid: 0,
-        status: 'draft',
+        status: 'pro_forma',
         is_pro_forma: true,
-        internal_notes: `pro_forma_request:${requestId}`,
+        internal_notes: `Generated from pro forma request ${requestId}`,
         external_id: requestId,
         fee_narrative: detailedNarrative,
         reminders_sent: 0,
@@ -575,9 +575,9 @@ export class InvoiceService {
           query = query.in('status', validStatuses);
         }
 
-        // Special handling: filter pro formas by internal_notes tag
+        // Filter pro formas by is_pro_forma flag
         if (hasProForma) {
-          query = query.ilike('internal_notes', '%pro_forma%');
+          query = query.eq('is_pro_forma', true);
         }
       }
 
@@ -705,8 +705,8 @@ export class InvoiceService {
         .select('*')
         .eq('id', proFormaId)
         .eq('advocate_id', user.id)
-        // Identify pro forma by internal_notes tag set during generation
-        .ilike('internal_notes', '%pro_forma%')
+        // Identify pro forma by is_pro_forma flag
+        .eq('is_pro_forma', true)
         .single();
 
       if (proFormaError || !proForma) {
@@ -756,6 +756,7 @@ export class InvoiceService {
           vat_amount: proForma.vat_amount,
           total_amount: proForma.total_amount,
           status: 'draft',
+          is_pro_forma: false,
           fee_narrative: proForma.fee_narrative,
           internal_notes: `Converted from pro forma ${proForma.invoice_number}`,
           reminders_sent: 0,

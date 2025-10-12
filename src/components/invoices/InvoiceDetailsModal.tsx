@@ -91,9 +91,9 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
       }
 
       const { data: advocate, error: advocateError } = await supabase
-        .from('advocates')
-        .select('full_name, practice_number, email, phone_number')
-        .eq('id', user.id)
+        .from('user_profiles')
+        .select('full_name, practice_number, email, phone')
+        .eq('user_id', user.id)
         .single();
 
       if (advocateError || !advocate) {
@@ -147,7 +147,7 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
         full_name: advocate.full_name,
         practice_number: advocate.practice_number,
         email: advocate.email || undefined,
-        phone: advocate.phone_number || undefined,
+        phone: advocate.phone || undefined,
         advocate_id: user.id,
       });
 

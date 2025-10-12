@@ -509,6 +509,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
             opacity: 1,
             filter: 'blur(0px) brightness(1)',
             zIndex: 10,
+            pointerEvents: 'auto',
+            visibility: 'visible',
             boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 15px 40px rgba(0,0,0,0.6), 0 5px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.15)',
             duration: 0.8,
             ease: 'power4.out'
@@ -521,6 +523,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
             opacity: 0.6,
             filter: 'blur(1.5px) brightness(0.75)',
             zIndex: 1,
+            pointerEvents: 'auto',
+            visibility: 'visible',
             boxShadow: '0 10px 30px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.4)',
             duration: 0.8,
             ease: 'power4.out'
@@ -535,6 +539,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
             opacity: 1,
             filter: 'blur(0px) brightness(1)',
             zIndex: 10,
+            pointerEvents: 'auto',
+            visibility: 'visible',
             boxShadow: '0 30px 80px rgba(0,0,0,0.8), 0 15px 40px rgba(0,0,0,0.6), 0 5px 15px rgba(0,0,0,0.5), inset 0 2px 4px rgba(255,255,255,0.15)',
             duration: 0.8,
             ease: 'power4.out'
@@ -547,6 +553,8 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
             opacity: 0.6,
             filter: 'blur(1.5px) brightness(0.75)',
             zIndex: 1,
+            pointerEvents: 'auto',
+            visibility: 'visible',
             boxShadow: '0 10px 30px rgba(0,0,0,0.5), 0 5px 15px rgba(0,0,0,0.4)',
             duration: 0.8,
             ease: 'power4.out'
@@ -922,7 +930,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
               style={{
                 left: '50%',
                 top: '50%',
-                transform: 'translate(-50%, -50%)'
+                transform: 'translate(-50%, -50%)',
+                pointerEvents: authMode === 'signin' ? 'auto' : 'auto',
+                visibility: 'visible'
               }}
               onClick={() => setAuthMode('signin')}
             >
@@ -1032,7 +1042,9 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
               style={{
                 left: '50%',
                 top: '50%',
-                transform: 'translate(-50%, -50%)'
+                transform: 'translate(-50%, -50%)',
+                pointerEvents: authMode === 'signup' ? 'auto' : 'auto',
+                visibility: 'visible'
               }}
               onClick={() => setAuthMode('signup')}
             >

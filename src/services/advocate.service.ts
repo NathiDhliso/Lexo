@@ -26,9 +26,9 @@ class AdvocateService {
   async getAdvocateProfile(userId: string): Promise<AdvocateProfile | null> {
     try {
       const { data, error } = await supabase
-        .from('advocates')
+        .from('user_profiles')
         .select('*')
-        .eq('id', userId)
+        .eq('user_id', userId)
         .single();
 
       if (error) {
@@ -65,23 +65,22 @@ class AdvocateService {
         : `${nameParts[0][0]}A`.toUpperCase();
 
       const advocateData = {
-        id: user.id,
+        user_id: user.id,
         email: user.email!,
         full_name: fullName,
         initials,
         practice_number: practiceNumber,
-        bar: (metadata.chambers === 'cape_town' ? 'cape_town' : 'johannesburg') as 'johannesburg' | 'cape_town',
-        year_admitted: metadata.year_admitted || new Date().getFullYear(),
-        hourly_rate: metadata.hourly_rate || 1500.00,
-        phone_number: metadata.phone_number || null,
-        chambers_address: metadata.chambers_address || null,
-        postal_address: metadata.postal_address || null,
-        user_role: (metadata.user_type === 'senior' ? 'senior_advocate' : 'junior_advocate') as 'junior_advocate' | 'senior_advocate',
+        year_admitted: (metadata as any).year_admitted || new Date().getFullYear(),
+        hourly_rate: (metadata as any).hourly_rate || 1500.00,
+        phone: (metadata as any).phone_number || null,
+        chambers_address: (metadata as any).chambers_address || null,
+        postal_address: (metadata as any).postal_address || null,
+        user_role: ((metadata as any).user_type === 'senior' ? 'senior_advocate' : 'junior_advocate') as 'junior_advocate' | 'senior_advocate',
         is_active: true
       };
 
       const { data, error } = await supabase
-        .from('advocates')
+        .from('user_profiles')
         .insert(advocateData)
         .select()
         .single();
@@ -125,12 +124,12 @@ class AdvocateService {
   async updateAdvocateProfile(userId: string, updates: Partial<AdvocateProfile>): Promise<AdvocateProfile | null> {
     try {
       const { data, error } = await supabase
-        .from('advocates')
+        .from('user_profiles')
         .update({
           ...updates,
           updated_at: new Date().toISOString()
         })
-        .eq('id', userId)
+        .eq('user_id', userId)
         .select()
         .single();
 

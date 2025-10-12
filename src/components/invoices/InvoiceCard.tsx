@@ -47,6 +47,12 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
           icon: FileText,
           label: 'Draft'
         };
+      case InvoiceStatus.PRO_FORMA:
+        return {
+          color: 'bg-purple-100 text-purple-700',
+          icon: FileText,
+          label: 'Pro Forma'
+        };
       case InvoiceStatus.SENT:
         return {
           color: 'bg-blue-100 text-blue-700',
@@ -64,6 +70,24 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
           color: 'bg-error-100 text-error-700',
           icon: AlertTriangle,
           label: 'Overdue'
+        };
+      case InvoiceStatus.DISPUTED:
+        return {
+          color: 'bg-orange-100 text-orange-700',
+          icon: AlertTriangle,
+          label: 'Disputed'
+        };
+      case InvoiceStatus.WRITTEN_OFF:
+        return {
+          color: 'bg-gray-100 text-gray-700',
+          icon: FileText,
+          label: 'Written Off'
+        };
+      case InvoiceStatus.CONVERTED:
+        return {
+          color: 'bg-green-100 text-green-700',
+          icon: CheckCircle,
+          label: 'Converted'
         };
       default:
         return {

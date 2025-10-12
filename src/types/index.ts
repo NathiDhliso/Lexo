@@ -12,6 +12,8 @@ export type Page =
 
 // Export integration types
 export * from './integrations';
+// Export unified user types
+export * from './user.types';
 export type ModalType =
   | 'new-brief'
   | 'edit-matter'
@@ -177,7 +179,8 @@ export enum InvoiceStatus {
   DISPUTED = 'disputed',
   WRITTEN_OFF = 'written_off',
   PRO_FORMA = 'pro_forma',
-  CONVERTED = 'converted'
+  CONVERTED = 'converted',
+  CANCELLED = 'cancelled'
 }
 
 export enum PaymentMethod {
@@ -348,6 +351,7 @@ export interface Invoice {
   vat_amount: number;
   total_amount: number;
   status: InvoiceStatus;
+  is_pro_forma: boolean;
   amount_paid: number;
   balance_due: number;
   datePaid?: string;

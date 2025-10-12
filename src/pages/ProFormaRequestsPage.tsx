@@ -159,9 +159,9 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
   const handleDownloadPDF = async (request: ProFormaRequest) => {
     try {
       const { data: advocate, error } = await supabase
-        .from('advocates')
-        .select('full_name, practice_number, email, phone_number')
-        .eq('id', user?.id)
+        .from('user_profiles')
+        .select('full_name, practice_number, email, phone')
+        .eq('user_id', user?.id)
         .single();
 
       if (error || !advocate) {
@@ -173,7 +173,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
         full_name: advocate.full_name,
         practice_number: advocate.practice_number,
         email: advocate.email || undefined,
-        phone: advocate.phone_number || undefined,
+        phone: advocate.phone || undefined,
       });
 
       toast.success('Pro forma PDF downloaded successfully');

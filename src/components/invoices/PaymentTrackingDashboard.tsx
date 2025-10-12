@@ -92,8 +92,17 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
   };
 
   const getStatusColor = (status: InvoiceStatus | string) => {
-    const normalized = typeof status === 'string' ? status.toLowerCase() : String(status);
+    const normalized = typeof status === 'string' ? status.toLowerCase() : String(status).toLowerCase();
     switch (normalized) {
+      case 'pro_forma':
+      case 'pro forma':
+        return 'bg-purple-100 text-purple-700';
+      case 'disputed':
+        return 'bg-orange-100 text-orange-700';
+      case 'written_off':
+        return 'bg-gray-100 text-gray-700';
+      case 'converted':
+        return 'bg-green-100 text-green-700';
       case InvoiceStatus.PAID:
       case 'paid':
         return 'text-success-600 bg-success-100';
