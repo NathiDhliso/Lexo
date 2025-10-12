@@ -112,6 +112,7 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 const AppContent: React.FC = () => {
   return (
     <Routes>
+      {/* Public Attorney Routes - No Authentication Required */}
       <Route path="/attorney/register" element={<AttorneyRegisterPage />} />
       <Route path="/attorney/login" element={<AttorneyLoginPage />} />
       <Route path="/pro-forma-request/:token" element={<ProFormaRequestPage token="" />} />
@@ -294,7 +295,12 @@ const AppContent: React.FC = () => {
         </ProtectedRoute>
       } />
       
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* Catch-all route - redirect to dashboard for authenticated users */}
+      <Route path="*" element={
+        <ProtectedRoute>
+          <Navigate to="/dashboard" replace />
+        </ProtectedRoute>
+      } />
     </Routes>
   );
 };

@@ -51,6 +51,25 @@ export const AttorneyLoginPage: React.FC = () => {
             <Button type="submit" variant="primary" className="w-full">
               Login
             </Button>
+
+            <div className="mt-4 text-center text-sm">
+              <span className="text-neutral-600">Don't have an account? </span>
+              <a 
+                href="#/attorney/register" 
+                className="text-primary-600 hover:text-primary-700 font-medium"
+              >
+                Register here
+              </a>
+            </div>
+
+            <div className="mt-2 text-center text-sm">
+              <a 
+                href="#/" 
+                className="text-neutral-600 hover:text-neutral-700"
+              >
+                ← Back to Advocate Login
+              </a>
+            </div>
           </form>
         </CardContent>
       </Card>

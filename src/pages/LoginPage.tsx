@@ -838,6 +838,28 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
             </div>
 
         <footer className="text-center mt-4 sm:mt-6 md:mt-8 space-y-3 sm:space-y-4 px-4 header-entrance pb-safe">
+          {/* Attorney Portal Link */}
+          <div className="text-center">
+            <a 
+              href="#/attorney/login"
+              className="text-sm font-medium transition-colors inline-block px-4 py-2 rounded-lg"
+              style={{ 
+                color: '#c9a961',
+                textShadow: '0 1px 2px rgba(0, 0, 0, 0.5)',
+                background: 'linear-gradient(145deg, rgba(30, 58, 95, 0.2), rgba(44, 62, 80, 0.2))',
+                border: '1px solid rgba(201, 169, 97, 0.3)'
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(145deg, rgba(30, 58, 95, 0.3), rgba(44, 62, 80, 0.3))';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = 'linear-gradient(145deg, rgba(30, 58, 95, 0.2), rgba(44, 62, 80, 0.2))';
+              }}
+            >
+              Client Portal Access →
+            </a>
+          </div>
+
           <div className="flex items-center justify-center gap-3 sm:gap-4 md:gap-6 flex-wrap">
             <div 
               className="flex items-center gap-1.5 sm:gap-2 backdrop-blur-sm px-2 sm:px-3 py-1 sm:py-1.5 rounded-full transition-all"
