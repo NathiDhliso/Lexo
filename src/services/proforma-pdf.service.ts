@@ -46,11 +46,11 @@ export class ProFormaPDFService {
     // Get current user's PDF template
     const { data: { user } } = await supabase.auth.getUser();
     const template = user ? await this.pdfTemplateService.getDefaultTemplate(user.id) : null;
-    
-    // Use template colors or fallback to defaults
-    const primaryColor = template?.colorScheme?.primary ? this.hexToRgb(template.colorScheme.primary) : [41, 98, 255];
+
+    // Use template colors or fallback to gold theme
+    const primaryColor = template?.colorScheme?.primary ? this.hexToRgb(template.colorScheme.primary) : [218, 165, 32]; // Gold
     const secondaryColor = template?.colorScheme?.secondary ? this.hexToRgb(template.colorScheme.secondary) : [100, 100, 100];
-    const accentColor = template?.colorScheme?.accent ? this.hexToRgb(template.colorScheme.accent) : [41, 98, 255];
+    const accentColor = template?.colorScheme?.accent ? this.hexToRgb(template.colorScheme.accent) : [218, 165, 32]; // Gold
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
@@ -59,16 +59,16 @@ export class ProFormaPDFService {
     // Header title - Changed to "INVOICE" and "Professional Legal Services"
     doc.setFontSize(template?.header?.titleStyle?.fontSize || 28);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(218, 165, 32); // Gold color
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text('INVOICE', pageWidth / 2, yPosition, { align: 'center' });
-    
+
     yPosition += 10;
     doc.setFontSize(template?.header?.subtitleStyle?.fontSize || 11);
-    doc.setTextColor(218, 165, 32); // Gold color
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.text('Professional Legal Services', pageWidth / 2, yPosition, { align: 'center' });
 
     yPosition += 10;
-    doc.setDrawColor(218, 165, 32); // Gold color
+    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
     doc.setLineWidth(1);
     doc.line(20, yPosition, pageWidth - 20, yPosition);
 
@@ -78,7 +78,7 @@ export class ProFormaPDFService {
     doc.setFont('helvetica', 'bold');
     doc.setTextColor(0, 0, 0);
     doc.text('FROM:', 20, yPosition);
-    
+
     yPosition += 7;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
@@ -96,11 +96,11 @@ export class ProFormaPDFService {
 
     const rightColumnX = pageWidth - 80;
     let rightYPosition = yPosition - (advocateInfo.phone ? 22 : advocateInfo.email ? 17 : 12);
-    
+
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(11);
     doc.text('TO:', rightColumnX, rightYPosition);
-    
+
     rightYPosition += 7;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(10);
@@ -158,11 +158,11 @@ export class ProFormaPDFService {
 
     yPosition += 12;
 
-    // Matter section with gold color
+    // Matter section with template accent color
     if (proforma.work_title) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      doc.setTextColor(218, 165, 32); // Gold color
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.text('Matter:', 20, yPosition);
       yPosition += 7;
       doc.setFont('helvetica', 'normal');
@@ -176,21 +176,21 @@ export class ProFormaPDFService {
     yPosition += 3;
 
     const services = (proforma.metadata as any)?.services || [];
-    
+
     if (services.length > 0) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(11);
-      doc.setTextColor(218, 165, 32); // Gold color
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.text('Services & Pricing:', 20, yPosition);
       yPosition += 8;
 
       const tableData = services.map((service: ProFormaService) => {
         const quantity = service.quantity || 1;
         const hours = service.estimated_hours || 0;
-        
+
         let rate = 0;
         let amount = 0;
-        
+
         if (service.pricing_type === 'hourly') {
           rate = service.hourly_rate || 0;
           amount = rate * hours * quantity;
@@ -214,7 +214,7 @@ export class ProFormaPDFService {
         body: tableData,
         theme: 'grid',
         headStyles: {
-          fillColor: [218, 165, 32] as [number, number, number], // Gold color
+          fillColor: primaryColor as [number, number, number],
           textColor: [255, 255, 255],
           fontStyle: 'bold',
           fontSize: 10,
@@ -265,18 +265,18 @@ export class ProFormaPDFService {
       doc.setFont('helvetica', 'normal');
       doc.setFontSize(10);
       doc.setTextColor(0, 0, 0);
-      
+
       doc.text('Subtotal:', pageWidth - 90, yPosition);
       doc.text(`R ${subtotal.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
-      
+
       yPosition += 6;
       doc.text('VAT (15%):', pageWidth - 90, yPosition);
       doc.text(`R ${vatAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
-      
+
       yPosition += 8;
       doc.setFontSize(12);
       doc.setFont('helvetica', 'bold');
-      doc.setTextColor(218, 165, 32); // Gold color
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.text('TOTAL ESTIMATE:', pageWidth - 90, yPosition);
       doc.text(`R ${total.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
     }
@@ -290,13 +290,13 @@ export class ProFormaPDFService {
 
     doc.setFillColor(245, 247, 250);
     doc.rect(20, yPosition, pageWidth - 40, 30, 'F');
-    
+
     yPosition += 8;
     doc.setFont('helvetica', 'bold');
     doc.setFontSize(10);
     doc.setTextColor(0, 0, 0);
     doc.text('Important Notes:', 25, yPosition);
-    
+
     yPosition += 6;
     doc.setFont('helvetica', 'normal');
     doc.setFontSize(9);
@@ -312,11 +312,11 @@ export class ProFormaPDFService {
     // Footer with template settings
     doc.setFontSize(template?.footer?.textStyle?.fontSize || 8);
     doc.setTextColor(150, 150, 150);
-    
+
     if (template?.footer?.text) {
       doc.text(template.footer.text, pageWidth / 2, pageHeight - 15, { align: 'center' });
     }
-    
+
     if (template?.footer?.showTimestamp !== false) {
       doc.text(
         `Generated on ${new Date().toLocaleDateString('en-ZA')} at ${new Date().toLocaleTimeString('en-ZA')}`,
