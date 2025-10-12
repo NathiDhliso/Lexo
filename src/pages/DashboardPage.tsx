@@ -247,7 +247,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         isLoading: false 
       }));
       
-      toast.success('Dashboard data loaded', { duration: 2000 });
+      // toast.success('Dashboard data loaded', { duration: 2000 });
     } catch (error) {
       console.error('Error loading dashboard data:', error);
       toast.error('Failed to load dashboard data. Please try again.', { duration: 5000 });
@@ -259,15 +259,15 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
     switch (action) {
       case 'new-matter':
         setQuickActions(prev => ({ ...prev, newMatterModal: true }));
-        toast.success('Opening new matter form...');
+        // toast.success('Opening new matter form...');
         break;
       case 'new-invoice':
         navigatePage('invoices');
-        toast.success('Navigating to invoice generation...');
+        // toast.success('Navigating to invoice generation...');
         break;
       case 'time-entry':
         setQuickActions(prev => ({ ...prev, quickTimeEntry: true }));
-        toast.success('Opening quick time entry...');
+        // toast.success('Opening quick time entry...');
         break;
     }
   };
@@ -276,7 +276,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
     const loadingToast = toast.loading('Refreshing dashboard data...');
     try {
       await Promise.all([loadDashboardData(), loadInvoiceMetrics()]);
-      toast.success('Dashboard refreshed successfully', { id: loadingToast, duration: 3000 });
+      // toast.success('Dashboard refreshed successfully', { id: loadingToast, duration: 3000 });
     } catch (error) {
       toast.error('Failed to refresh dashboard', { id: loadingToast, duration: 4000 });
     }
@@ -285,7 +285,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
   const handleViewMatter = (matterId: string) => {
     const matter = recentMatters.find(m => m.id === matterId);
     if (matter) {
-      toast.success(`Opening matter: ${matter.title}`);
+      // toast.success(`Opening matter: ${matter.title}`);
       // In real implementation, this would navigate to matter details
       navigatePage('matters');
     }
@@ -293,7 +293,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
   const handleViewAllMatters = () => {
     navigatePage('matters');
-    toast.success('Navigating to matters page...');
+    // toast.success('Navigating to matters page...');
   };
 
   // Enhanced button handlers for stat cards
@@ -309,12 +309,12 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
 
   const handleOverdueInvoicesClick = () => {
     navigatePage('invoices');
-    toast.success('Navigating to overdue invoices...');
+    // toast.success('Navigating to overdue invoices...');
   };
 
   const handleAnalyticsClick = () => {
     navigatePage('reports');
-    toast.success('Opening Reports...');
+    // toast.success('Opening Reports...');
   };
 
   const formatCurrency = (amount: number) => {
@@ -692,7 +692,7 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
                 onClick={() => {
                   setQuickActions(prev => ({ ...prev, newInvoiceModal: false }));
                   navigatePage('invoices');
-                  toast.success('Opening invoice generation...');
+                  // toast.success('Opening invoice generation...');
                 }}
               >
                 <Icon icon={FileText} className="w-4 h-4 mr-2" noGradient />

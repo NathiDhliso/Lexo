@@ -1,11 +1,10 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Search, Plus, ChevronDown, Bell, User, LogOut, Settings } from 'lucide-react';
+import { Search, Plus, ChevronDown, User, LogOut, Settings } from 'lucide-react';
 import lexoLogo from '../../Public/Assets/lexo-logo.png';
 import { MegaMenu } from './MegaMenu';
 import { MobileMegaMenu } from './MobileMegaMenu';
 import GlobalCommandBar from './GlobalCommandBar';
 import { RealTimeTicker } from './RealTimeTicker';
-import AlertsDropdown from '../notifications/AlertsDropdown';
 import { Button, Icon } from '../design-system/components';
 import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
 import { CreateProFormaModal } from '../proforma/CreateProFormaModal';
@@ -13,7 +12,6 @@ import { GenerateInvoiceModal } from '../invoices/GenerateInvoiceModal';
 
 import { navigationConfig, getFilteredNavigationConfig } from '../../config/navigation.config';
 import { useKeyboardShortcuts, useClickOutside } from '../../hooks';
-import { smartNotificationsService } from '../../services/smart-notifications.service';
 import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import { ThemeToggle } from '../common/ThemeToggle';
@@ -22,7 +20,6 @@ import type {
   Page, 
   UserTier
 } from '../../types';
-import type { NotificationBadge, SmartNotification } from '../../services/smart-notifications.service';
 import { useNavigate } from 'react-router-dom';
 
 interface NavigationBarProps {
@@ -52,7 +49,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   // UI state
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [alertsOpen, setAlertsOpen] = useState(false);
   const [commandBarOpen, setCommandBarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
@@ -63,15 +59,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     generateInvoice: false
   });
 
-  // Notification state
-  const [notifications, setNotifications] = useState<SmartNotification[]>([]);
-  const [notificationBadges, setNotificationBadges] = useState<NotificationBadge[]>([]);
-
   // Refs
   const hoverTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const alertsRef = useRef<HTMLDivElement>(null);
 
   // Get filtered navigation config based on user tier
   const filteredConfig = getFilteredNavigationConfig(navigationConfig, userTier);
@@ -202,7 +193,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   // Click outside handlers
   useClickOutside(userMenuRef, () => setUserMenuOpen(false));
-  useClickOutside(alertsRef, () => setAlertsOpen(false));
 
   // Keyboard shortcuts
   useKeyboardShortcuts([
@@ -222,28 +212,11 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         }));
         setCommandBarOpen(false);
         setUserMenuOpen(false);
-        setAlertsOpen(false);
         document.body.style.overflow = '';
       },
       description: 'Close menus'
     }
   ]);
-
-  // Load notifications
-  useEffect(() => {
-    const loadNotifications = async () => {
-      try {
-        const notifs = await smartNotificationsService.getNotifications();
-        const badge = await smartNotificationsService.getBadgeInfo();
-        setNotifications(notifs);
-        setNotificationBadges([badge]);
-      } catch (error) {
-        console.error('Failed to load notifications:', error);
-      }
-    };
-
-    loadNotifications();
-  }, []);
 
   // Handle sign out
   const handleSignOut = async () => {
@@ -254,9 +227,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       toast.error('Failed to sign out');
     }
   };
-
-  // Calculate total notification count
-  const totalNotificationCount = notificationBadges.reduce((sum, badge) => sum + badge.count, 0);
 
   return (
     <>
@@ -358,37 +328,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                 <span className="hidden lg:inline">Create</span>
               </Button>
 
-              {/* Notifications */}
-              <div className="relative" ref={alertsRef}>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="relative min-h-[44px] min-w-[44px]"
-                  onClick={() => setAlertsOpen(!alertsOpen)}
-                  aria-label={`Notifications ${totalNotificationCount > 0 ? `(${totalNotificationCount} unread)` : ''}`}
-                >
-                  <Icon icon={Bell} className="w-4 h-4 md:w-5 md:h-5" />
-                  {totalNotificationCount > 0 && (
-                    <span className="absolute -top-1 -right-1 w-5 h-5 bg-status-error-500 text-white px-2 py-1 rounded-full text-xs font-medium">
-                      {totalNotificationCount > 99 ? '99+' : totalNotificationCount}
-                    </span>
-                  )}
-                </Button>
-                
-                {alertsOpen && (
-                  <AlertsDropdown
-                    notifications={notifications}
-                    badges={notificationBadges}
-                    onClose={() => setAlertsOpen(false)}
-                    onNotificationClick={(notification) => {
-                      if (notification.actionUrl) {
-                        handlePageNavigation(notification.actionUrl as Page);
-                      }
-                      setAlertsOpen(false);
-                    }}
-                  />
-                )}
-              </div>
+              {/* Notifications - Removed per user request */}
 
               {/* Theme Toggle - Desktop only */}
               <div className="hidden md:block">

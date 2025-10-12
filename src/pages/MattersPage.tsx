@@ -132,9 +132,9 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
       console.log('[MattersPage] Successfully loaded', mattersWithServices.length, 'matters');
       setMatters(mattersWithServices);
       
-      if (mattersWithServices.length > 0) {
-        toast.success(`Loaded ${mattersWithServices.length} matter${mattersWithServices.length > 1 ? 's' : ''}`, { duration: 2000 });
-      }
+      // if (mattersWithServices.length > 0) {
+      //   toast.success(`Loaded ${mattersWithServices.length} matter${mattersWithServices.length > 1 ? 's' : ''}`, { duration: 2000 });
+      // }
     } catch (err) {
       console.error('[MattersPage] Unexpected error:', err);
       toast.error('Unexpected error loading matters. Please refresh the page.', { duration: 5000 });
