@@ -103,9 +103,17 @@ class RateCardService {
    */
   async getRateCards(filters?: RateCardFilters): Promise<RateCard[]> {
     try {
+      // Get current user
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        console.warn('No authenticated user found');
+        return [];
+      }
+
       let query = supabase
         .from('rate_cards')
         .select('*')
+        .eq('advocate_id', user.id) // ✅ CRITICAL: Only load current advocate's rate cards
         .order('service_name');
 
       // Apply filters

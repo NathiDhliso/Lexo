@@ -99,21 +99,36 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
       setLoading(true);
       
       // Load rate cards with filters
+      // Note: We load ALL active rate cards and filter client-side if needed
+      // This ensures user's custom rate cards always show up
       const filters = {
         is_active: true,
-        ...(matterType && { matter_type: matterType }),
         ...(selectedCategory !== 'all' && { service_category: selectedCategory })
+        // Don't filter by matter_type on server - show all user's rate cards
       };
       
       const [rateCardsData, templatesData] = await Promise.all([
         rateCardService.getRateCards(filters),
         rateCardService.getStandardServiceTemplates({
           ...(selectedCategory !== 'all' && { service_category: selectedCategory }),
-          ...(matterType && { matter_type: matterType })
+          // Templates can still filter by matter type for suggestions
         })
       ]);
 
-      setRateCards(rateCardsData);
+      // Client-side sorting: prioritize rate cards matching matter type
+      let sortedRateCards = rateCardsData;
+      if (matterType) {
+        sortedRateCards = [
+          // First: rate cards that match the matter type
+          ...rateCardsData.filter(card => card.matter_type === matterType),
+          // Then: rate cards without a matter type (general services)
+          ...rateCardsData.filter(card => !card.matter_type),
+          // Last: rate cards with different matter types
+          ...rateCardsData.filter(card => card.matter_type && card.matter_type !== matterType)
+        ];
+      }
+
+      setRateCards(sortedRateCards);
       setTemplates(templatesData);
     } catch (error) {
       console.error('Error loading rate card data:', error);

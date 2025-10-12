@@ -3,11 +3,12 @@ import { Plus, FileText, Clock, CheckCircle, XCircle, ArrowRight, Link, Undo2, D
 import { proformaRequestService } from '../services/api/proforma-request.service';
 import { matterConversionService } from '../services/api/matter-conversion.service';
 import { proFormaPDFService } from '../services/proforma-pdf.service';
-import { LoadingSpinner, Button, EmptyState, Badge, SkeletonCard } from '../components/design-system/components';
+import { Button, EmptyState, Badge, SkeletonCard } from '../components/design-system/components';
 import { NewProFormaModal } from '../components/proforma/NewProFormaModal';
 import { CreateProFormaModal } from '../components/proforma/CreateProFormaModal';
 import { ConvertProFormaModal } from '../components/matters/ConvertProFormaModal';
 import { ProFormaLinkModal } from '../components/proforma/ProFormaLinkModal';
+import { ReviewProFormaRequestModal } from '../components/proforma/ReviewProFormaRequestModal';
 import { useAuth } from '../hooks/useAuth';
 import { Database } from '../../types/database';
 import type { Page } from '../types';
@@ -36,6 +37,8 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
   const [filter, setFilter] = useState<ProFormaRequestStatus[]>(['draft', 'sent', 'accepted', 'converted']);
   const [selectedProForma, setSelectedProForma] = useState<any | null>(null);
   const [showSendModal, setShowSendModal] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState<ProFormaRequest | null>(null);
 
   useEffect(() => {
     loadRequests();
@@ -311,6 +314,21 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
                 </div>
 
                 <div className="flex gap-2 flex-wrap">
+                  {/* Show Review button for submitted requests */}
+                  {request.status === 'sent' && request.responded_at && (
+                    <Button
+                      size="sm"
+                      variant="primary"
+                      onClick={() => {
+                        setSelectedRequest(request);
+                        setShowReviewModal(true);
+                      }}
+                    >
+                      <FileText className="w-4 h-4 mr-1" />
+                      Review & Quote
+                    </Button>
+                  )}
+                  
                   {(request.status === 'draft' || request.status === 'sent' || request.status === 'accepted') && request.estimated_amount && (
                     <Button size="sm" variant="secondary" onClick={() => handleDownloadPDF(request)}>
                       <Download className="w-4 h-4 mr-1" />
@@ -340,7 +358,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
                       </Button>
                     </>
                   )}
-                  {request.status === 'sent' && (
+                  {request.status === 'sent' && !request.responded_at && (
                     <Button
                       size="sm"
                       variant="primary"
@@ -464,6 +482,20 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
           }}
           proformaId={selectedProFormaId}
           workTitle={selectedProFormaTitle}
+        />
+      )}
+
+      {selectedRequest && (
+        <ReviewProFormaRequestModal
+          isOpen={showReviewModal}
+          onClose={() => {
+            setShowReviewModal(false);
+            setSelectedRequest(null);
+          }}
+          request={selectedRequest}
+          onSuccess={() => {
+            loadRequests();
+          }}
         />
       )}
     </div>

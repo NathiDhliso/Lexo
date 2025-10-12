@@ -1,6 +1,6 @@
 import React, { Suspense, useState, useCallback, useEffect } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { Toaster } from 'react-hot-toast';
+// Toaster import removed - toast notifications disabled per user request
 
 // UI Components
 import { LoadingSpinner } from './components/design-system/components';
@@ -221,16 +221,7 @@ const AppContent: React.FC = () => {
           </Suspense>
         </MainLayout>
         
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: {
-              background: '#363636',
-              color: '#fff',
-            },
-          }}
-        />
+        {/* Toaster component removed - toast notifications disabled per user request */}
       </div>
     </ProtectedRoute>
   );
@@ -313,16 +304,7 @@ function App() {
           <ErrorBoundary>
             <div className="App">
               {PageComponent}
-              <Toaster
-                position="top-right"
-                toastOptions={{
-                  duration: 4000,
-                  style: {
-                    background: '#363636',
-                    color: '#fff',
-                  },
-                }}
-              />
+              {/* Toaster component removed - toast notifications disabled per user request */}
             </div>
           </ErrorBoundary>
         </ThemeProvider>

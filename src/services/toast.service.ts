@@ -1,14 +1,11 @@
 /**
- * Toast Notification Service
+ * Toast Notification Service - DISABLED
  * 
- * A centralized service for displaying toast notifications throughout the application.
- * Wraps react-hot-toast with LexoHub design system styling and provides a consistent API.
+ * All toast notifications have been disabled per user request.
+ * This service now acts as a no-op (no operation) to prevent any toast notifications
+ * from appearing in the application.
  * 
- * Features:
- * - Success, error, warning, and info variants
- * - Customizable duration and positioning
- * - Auto-dismiss with manual dismiss option
- * - Theme-aware (Mpondo Gold & Judicial Blue)
+ * All methods return empty strings or do nothing to maintain API compatibility.
  */
 
 import toast, { ToastOptions as HotToastOptions } from 'react-hot-toast';
@@ -22,92 +19,69 @@ class ToastService {
   private defaultDuration = 4000;
 
   /**
-   * Display a success toast notification
+   * Display a success toast notification - DISABLED
    */
   success(title: string, message?: string, options?: ToastOptions): string {
-    const fullMessage = message ? `${title}\n${message}` : title;
-    return toast.success(fullMessage, this.getOptions(options));
+    // No-op: Do nothing
+    return '';
   }
 
   /**
-   * Display an error toast notification
+   * Display an error toast notification - DISABLED
    */
   error(title: string, message?: string, options?: ToastOptions): string {
-    const fullMessage = message ? `${title}\n${message}` : title;
-    return toast.error(fullMessage, {
-      ...this.getOptions(options),
-      duration: options?.duration || 5000, // Errors stay longer
-    });
+    // No-op: Do nothing
+    console.error(title, message); // Log to console instead
+    return '';
   }
 
   /**
-   * Display a warning toast notification
+   * Display a warning toast notification - DISABLED
    */
   warning(title: string, message?: string, options?: ToastOptions): string {
-    const fullMessage = message ? `${title}\n${message}` : title;
-    return toast(fullMessage, {
-      ...this.getOptions(options),
-      icon: '⚠️',
-    });
+    // No-op: Do nothing
+    return '';
   }
 
   /**
-   * Display an info toast notification
+   * Display an info toast notification - DISABLED
    */
   info(title: string, message?: string, options?: ToastOptions): string {
-    const fullMessage = message ? `${title}\n${message}` : title;
-    return toast(fullMessage, {
-      ...this.getOptions(options),
-      icon: 'ℹ️',
-    });
+    // No-op: Do nothing
+    return '';
   }
 
   /**
-   * Display a loading toast notification
+   * Display a loading toast notification - DISABLED
    */
   loading(title: string, message?: string): string {
-    const fullMessage = message ? `${title}\n${message}` : title;
-    return toast.loading(fullMessage);
+    // No-op: Do nothing
+    return '';
   }
 
   /**
-   * Update an existing toast
+   * Update an existing toast - DISABLED
    */
   update(toastId: string, type: 'success' | 'error' | 'warning' | 'info', title: string, message?: string): void {
-    toast.dismiss(toastId);
-    
-    switch (type) {
-      case 'success':
-        this.success(title, message);
-        break;
-      case 'error':
-        this.error(title, message);
-        break;
-      case 'warning':
-        this.warning(title, message);
-        break;
-      case 'info':
-        this.info(title, message);
-        break;
-    }
+    // No-op: Do nothing
   }
 
   /**
-   * Dismiss a specific toast by ID
+   * Dismiss a specific toast by ID - DISABLED
    */
   dismiss(id: string): void {
-    toast.dismiss(id);
+    // No-op: Do nothing
   }
 
   /**
-   * Dismiss all active toasts
+   * Dismiss all active toasts - DISABLED
    */
   dismissAll(): void {
-    toast.dismiss();
+    // No-op: Do nothing
   }
 
   /**
-   * Promise-based toast for async operations
+   * Promise-based toast for async operations - DISABLED
    */
   async promise<T>(
     promise: Promise<T>,
@@ -117,11 +91,12 @@ class ToastService {
       error: string | ((error: any) => string);
     }
   ): Promise<T> {
-    return toast.promise(promise, messages);
+    // Just return the promise result without showing toasts
+    return promise;
   }
 
   /**
-   * Get toast options with defaults
+   * Get toast options with defaults - DISABLED
    */
   private getOptions(options?: ToastOptions): HotToastOptions {
     return {
