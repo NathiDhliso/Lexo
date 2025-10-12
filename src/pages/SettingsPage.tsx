@@ -4,14 +4,15 @@
  */
 
 import React, { useState } from 'react';
-import { User, CreditCard, Users, FileText, DollarSign } from 'lucide-react';
+import { User, CreditCard, Users, FileText, DollarSign, Cloud } from 'lucide-react';
 import { SubscriptionManagement } from '../components/subscription/SubscriptionManagement';
 import { TeamManagement } from '../components/settings/TeamManagement';
 import { ProfileSettings } from '../components/settings/ProfileSettings';
 import { PDFTemplateEditor } from '../components/settings/PDFTemplateEditor';
 import { RateCardManagement } from '../components/settings/RateCardManagement';
+import { CloudStorageSettings } from '../components/settings/CloudStorageSettings';
 
-type SettingsTab = 'profile' | 'subscription' | 'team' | 'rate-cards' | 'pdf-templates';
+type SettingsTab = 'profile' | 'subscription' | 'team' | 'rate-cards' | 'pdf-templates' | 'cloud-storage';
 
 const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
@@ -22,6 +23,7 @@ const SettingsPage: React.FC = () => {
     { id: 'team' as SettingsTab, label: 'Team Members', icon: Users },
     { id: 'rate-cards' as SettingsTab, label: 'Rate Cards', icon: DollarSign },
     { id: 'pdf-templates' as SettingsTab, label: 'PDF Templates', icon: FileText },
+    { id: 'cloud-storage' as SettingsTab, label: 'Cloud Storage', icon: Cloud },
   ];
 
   return (
@@ -66,6 +68,7 @@ const SettingsPage: React.FC = () => {
             {activeTab === 'team' && <TeamManagement />}
             {activeTab === 'rate-cards' && <RateCardManagement />}
             {activeTab === 'pdf-templates' && <PDFTemplateEditor />}
+            {activeTab === 'cloud-storage' && <CloudStorageSettings />}
           </div>
         </div>
       </div>

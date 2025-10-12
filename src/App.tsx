@@ -30,6 +30,7 @@ import ProFormaRequestPage from './pages/ProFormaRequestPage';
 import MatterWorkbenchPage from './pages/MatterWorkbenchPage';
 import { ProFormaSubmissionPage } from './pages/attorney/ProFormaSubmissionPage';
 import { EngagementSigningPage } from './pages/attorney/EngagementSigningPage';
+import { CloudStorageCallbackPage } from './pages/CloudStorageCallbackPage';
 
 // Create Query Client with proper configuration
 const queryClient = new QueryClient({
@@ -257,6 +258,10 @@ function App() {
       console.log('Matched attorney/engagement route');
       return { type: 'attorney-engagement', token: hash.substring(2).split('/').pop() };
     }
+    if (hash === '#/settings/cloud-storage/callback' || hash.startsWith('#/settings/cloud-storage/callback')) {
+      console.log('Matched cloud storage callback route');
+      return { type: 'cloud-storage-callback' };
+    }
     
     // Check for pathname-based routes
     if (pathname.startsWith('/pro-forma-request/')) {
@@ -270,6 +275,10 @@ function App() {
     if (pathname.startsWith('/attorney/engagement/')) {
       console.log('Matched pathname attorney/engagement route');
       return { type: 'attorney-engagement', token: pathname.split('/').pop() };
+    }
+    if (pathname.startsWith('/settings/cloud-storage/callback')) {
+      console.log('Matched pathname cloud storage callback route');
+      return { type: 'cloud-storage-callback' };
     }
     
     console.log('No public route matched');
@@ -290,6 +299,9 @@ function App() {
         break;
       case 'attorney-engagement':
         PageComponent = <EngagementSigningPage />;
+        break;
+      case 'cloud-storage-callback':
+        PageComponent = <CloudStorageCallbackPage />;
         break;
       default:
         PageComponent = <ProFormaRequestPage token={publicRoute.token} />;
