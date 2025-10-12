@@ -2,9 +2,11 @@ import React, { useState } from 'react';
 import { Card, CardHeader, CardContent, Button } from '../../components/design-system/components';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { supabase } from '../../lib/supabase';
 
 export const AttorneyLoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -12,15 +14,54 @@ export const AttorneyLoginPage: React.FC = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    toast.success('Login successful');
-    navigate('/attorney/dashboard');
+    setIsSubmitting(true);
+
+    try {
+      // Sign in with Supabase
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email: formData.email.trim().toLowerCase(),
+        password: formData.password,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      if (data.user) {
+        // Check if user is an attorney
+        const { data: attorneyData, error: attorneyError } = await supabase
+          .from('attorney_users')
+          .select('*')
+          .eq('email', formData.email.trim().toLowerCase())
+          .single();
+
+        if (attorneyError || !attorneyData) {
+          // Not an attorney user
+          await supabase.auth.signOut();
+          toast.error('No attorney account found with this email. Please register first.');
+          setIsSubmitting(false);
+          return;
+        }
+
+        toast.success('Login successful!');
+        navigate('/attorney/dashboard');
+      }
+    } catch (error: any) {
+      console.error('Login error:', error);
+      toast.error(error.message || 'Login failed. Please check your credentials.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-neutral-100 dark:bg-neutral-900 p-4">
       <Card className="w-full max-w-md">
         <CardHeader>
-          <h1 className="text-2xl font-bold text-center">Attorney Login</h1>
+          <h1 className="text-2xl font-bold text-center">Client Portal Login</h1>
+          <p className="text-sm text-neutral-600 dark:text-neutral-400 text-center mt-2">
+            Access your matters, invoices, and documents
+          </p>
         </CardHeader>
         <CardContent className="p-6">
           <form onSubmit={handleLogin} className="space-y-4">
@@ -48,8 +89,8 @@ export const AttorneyLoginPage: React.FC = () => {
               />
             </div>
 
-            <Button type="submit" variant="primary" className="w-full">
-              Login
+            <Button type="submit" variant="primary" className="w-full" disabled={isSubmitting}>
+              {isSubmitting ? 'Logging in...' : 'Login'}
             </Button>
 
             <div className="mt-4 text-center text-sm">

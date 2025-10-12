@@ -6,6 +6,7 @@ import { LoadingSpinner } from './components/design-system/components';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
+import { AttorneyProtectedRoute } from './components/auth/AttorneyProtectedRoute';
 import { NavigationBar } from './components/navigation';
 import { UserTier, Page } from './types'
 
@@ -239,60 +240,61 @@ const AppContent: React.FC = () => {
         </ProtectedRoute>
       } />
       
+      {/* Attorney Protected Routes - Require Attorney Authentication */}
       <Route path="/attorney/dashboard" element={
-        <ProtectedRoute>
+        <AttorneyProtectedRoute>
           <MainLayout>
             <AttorneyDashboardPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/matters" element={
-        <ProtectedRoute>
+        <AttorneyProtectedRoute>
           <MainLayout>
             <AttorneyMattersPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/invoices" element={
-        <ProtectedRoute>
+        <AttorneyProtectedRoute>
           <MainLayout>
             <AttorneyInvoicesPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/proformas" element={
-        <ProtectedRoute>
+        <AttorneyProtectedRoute>
           <MainLayout>
             <AttorneyProFormasPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/notifications" element={
-        <ProtectedRoute>
+        <AttorneyProtectedRoute>
           <MainLayout>
             <AttorneyNotificationsPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/profile" element={
-        <ProtectedRoute>
+        <AttorneyProtectedRoute>
           <MainLayout>
             <AttorneyProfilePage />
           </MainLayout>
-        </ProtectedRoute>
+        </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/settings" element={
-        <ProtectedRoute>
+        <AttorneyProtectedRoute>
           <MainLayout>
             <AttorneySettingsPage />
           </MainLayout>
-        </ProtectedRoute>
+        </AttorneyProtectedRoute>
       } />
       
       {/* Catch-all route - redirect to dashboard for authenticated users */}
