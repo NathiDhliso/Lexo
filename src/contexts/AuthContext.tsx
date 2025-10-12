@@ -2,7 +2,7 @@
  * Authentication Context
  * Provides authentication state and methods throughout the application
  */
-import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { createContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import React from 'react';
 import { authService, type ExtendedUser, type UserMetadata } from '../services/auth.service';
 import { advocateService } from '../services/advocate.service';
@@ -53,32 +53,19 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Initialize auth with retry logic
   const initializeAuth = useCallback(async () => {
-    // Clear any demo sessions from localStorage
-    localStorage.removeItem('demo_user');
-    localStorage.removeItem('demo_session');
-    
-    const maxRetries = 3;
-    let retryCount = 0;
     let mounted = true;
 
-    while (retryCount < maxRetries && mounted) {
-      try {
-        const currentUser = await authService.getCurrentUser();
-        if (mounted) {
-          setUser(currentUser);
-          setSessionError(null);
-        }
-        break;
-      } catch (error) {
-        retryCount++;
-        if (retryCount === maxRetries) {
-          console.error('Failed to initialize auth after retries:', error);
-          if (mounted) {
-            setSessionError(error as Error);
-          }
-        } else {
-          await new Promise(resolve => setTimeout(resolve, 1000 * retryCount));
-        }
+    try {
+      const currentUser = await authService.getCurrentUser();
+      if (mounted) {
+        setUser(currentUser);
+        setSessionError(null);
+      }
+    } catch (error) {
+      // Silent fail - no session is expected when user is not logged in
+      if (mounted) {
+        setUser(null);
+        setSessionError(null);
       }
     }
     
@@ -180,11 +167,12 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         return cleanup;
       } catch (error) {
-        console.error('Auth initialization failed:', error);
+        // Silent fail - no session is expected when user is not logged in
         if (mounted) {
           setLoading(false);
           setIsInitializing(false);
-          setSessionError(error as Error);
+          setUser(null);
+          setSessionError(null);
         }
       }
     };

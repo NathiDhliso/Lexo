@@ -8,6 +8,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { AttorneyProtectedRoute } from './components/auth/AttorneyProtectedRoute';
 import { NavigationBar } from './components/navigation';
+import { AttorneyNavigationBar } from './components/navigation/AttorneyNavigationBar';
 import { UserTier, Page } from './types'
 
 import {
@@ -99,6 +100,21 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         onToggleSidebar={() => {}}
         sidebarOpen={false}
       />
+      <main className="flex-1">
+        <div className="px-3 sm:px-4 md:px-6 py-4 md:py-6">
+          <Suspense fallback={<LoadingSpinner />}>
+            {children}
+          </Suspense>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+const AttorneyLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+  return (
+    <div className="min-h-screen bg-neutral-50 dark:bg-gradient-to-br dark:from-metallic-gray-900 dark:via-metallic-gray-800 dark:to-metallic-gray-900 flex flex-col transition-colors duration-300">
+      <AttorneyNavigationBar />
       <main className="flex-1">
         <div className="px-3 sm:px-4 md:px-6 py-4 md:py-6">
           <Suspense fallback={<LoadingSpinner />}>
@@ -243,57 +259,57 @@ const AppContent: React.FC = () => {
       {/* Attorney Protected Routes - Require Attorney Authentication */}
       <Route path="/attorney/dashboard" element={
         <AttorneyProtectedRoute>
-          <MainLayout>
+          <AttorneyLayout>
             <AttorneyDashboardPage />
-          </MainLayout>
+          </AttorneyLayout>
         </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/matters" element={
         <AttorneyProtectedRoute>
-          <MainLayout>
+          <AttorneyLayout>
             <AttorneyMattersPage />
-          </MainLayout>
+          </AttorneyLayout>
         </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/invoices" element={
         <AttorneyProtectedRoute>
-          <MainLayout>
+          <AttorneyLayout>
             <AttorneyInvoicesPage />
-          </MainLayout>
+          </AttorneyLayout>
         </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/proformas" element={
         <AttorneyProtectedRoute>
-          <MainLayout>
+          <AttorneyLayout>
             <AttorneyProFormasPage />
-          </MainLayout>
+          </AttorneyLayout>
         </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/notifications" element={
         <AttorneyProtectedRoute>
-          <MainLayout>
+          <AttorneyLayout>
             <AttorneyNotificationsPage />
-          </MainLayout>
+          </AttorneyLayout>
         </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/profile" element={
         <AttorneyProtectedRoute>
-          <MainLayout>
+          <AttorneyLayout>
             <AttorneyProfilePage />
-          </MainLayout>
+          </AttorneyLayout>
         </AttorneyProtectedRoute>
       } />
       
       <Route path="/attorney/settings" element={
         <AttorneyProtectedRoute>
-          <MainLayout>
+          <AttorneyLayout>
             <AttorneySettingsPage />
-          </MainLayout>
+          </AttorneyLayout>
         </AttorneyProtectedRoute>
       } />
       

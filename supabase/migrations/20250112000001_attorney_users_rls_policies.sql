@@ -23,16 +23,18 @@ USING (auth.uid() IN (
   SELECT id FROM auth.users WHERE email = attorney_users.email
 ));
 
--- Policy: Allow service role to insert (for registration)
-CREATE POLICY "Service role can insert attorney users"
+-- Policy: Allow anonymous users to insert (for registration)
+CREATE POLICY "Allow attorney registration"
 ON attorney_users
 FOR INSERT
+TO anon, authenticated
 WITH CHECK (true);
 
 -- Grant necessary permissions
 GRANT SELECT ON attorney_users TO authenticated;
 GRANT SELECT ON attorney_users TO anon;
 GRANT INSERT ON attorney_users TO authenticated;
+GRANT INSERT ON attorney_users TO anon;
 GRANT UPDATE ON attorney_users TO authenticated;
 
 -- Add comment
