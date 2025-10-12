@@ -1,13 +1,17 @@
 import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Database } from '../../types/database';
+import { PDFTemplateService } from './pdf-template.service';
+import { supabase } from '../lib/supabase';
 
 type ProFormaRequest = Database['public']['Tables']['proforma_requests']['Row'];
 
 interface ProFormaService {
   id: string;
-  name: string;
+  name?: string;
+  service_name?: string;
   description?: string;
+  service_description?: string;
   pricing_type: 'hourly' | 'fixed';
   hourly_rate?: number;
   fixed_fee?: number;
@@ -17,6 +21,11 @@ interface ProFormaService {
 
 export class ProFormaPDFService {
   private static instance: ProFormaPDFService;
+  private pdfTemplateService: PDFTemplateService;
+
+  constructor() {
+    this.pdfTemplateService = PDFTemplateService.getInstance();
+  }
 
   public static getInstance(): ProFormaPDFService {
     if (!ProFormaPDFService.instance) {
@@ -34,24 +43,33 @@ export class ProFormaPDFService {
       phone?: string;
     }
   ): Promise<Blob> {
+    // Get current user's PDF template
+    const { data: { user } } = await supabase.auth.getUser();
+    const template = user ? await this.pdfTemplateService.getDefaultTemplate(user.id) : null;
+    
+    // Use template colors or fallback to defaults
+    const primaryColor = template?.colorScheme?.primary ? this.hexToRgb(template.colorScheme.primary) : [41, 98, 255];
+    const secondaryColor = template?.colorScheme?.secondary ? this.hexToRgb(template.colorScheme.secondary) : [100, 100, 100];
+    const accentColor = template?.colorScheme?.accent ? this.hexToRgb(template.colorScheme.accent) : [41, 98, 255];
     const doc = new jsPDF();
     const pageWidth = doc.internal.pageSize.getWidth();
     const pageHeight = doc.internal.pageSize.getHeight();
     let yPosition = 20;
 
-    doc.setFontSize(24);
+    // Header title with template primary color
+    doc.setFontSize(template?.header?.titleStyle?.fontSize || 24);
     doc.setFont('helvetica', 'bold');
-    doc.setTextColor(41, 98, 255);
-    doc.text('PRO FORMA INVOICE', pageWidth / 2, yPosition, { align: 'center' });
+    doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.text(template?.header?.title || 'PRO FORMA INVOICE', pageWidth / 2, yPosition, { align: 'center' });
     
     yPosition += 15;
-    doc.setFontSize(10);
-    doc.setTextColor(100, 100, 100);
-    doc.text('Estimate for Legal Services', pageWidth / 2, yPosition, { align: 'center' });
+    doc.setFontSize(template?.header?.subtitleStyle?.fontSize || 10);
+    doc.setTextColor(secondaryColor[0], secondaryColor[1], secondaryColor[2]);
+    doc.text(template?.header?.subtitle || 'Estimate for Legal Services', pageWidth / 2, yPosition, { align: 'center' });
 
     yPosition += 15;
-    doc.setDrawColor(41, 98, 255);
-    doc.setLineWidth(0.5);
+    doc.setDrawColor(primaryColor[0], primaryColor[1], primaryColor[2]);
+    doc.setLineWidth(template?.header?.borderWidth || 0.5);
     doc.line(20, yPosition, pageWidth - 20, yPosition);
 
     yPosition += 10;
@@ -140,10 +158,11 @@ export class ProFormaPDFService {
 
     yPosition += 12;
 
+    // Only show matter title, not the long description
     if (proforma.work_title) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
-      doc.setTextColor(41, 98, 255);
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.text('Matter:', 20, yPosition);
       yPosition += 7;
       doc.setFont('helvetica', 'normal');
@@ -154,19 +173,7 @@ export class ProFormaPDFService {
       yPosition += titleLines.length * 5 + 5;
     }
 
-    if (proforma.work_description) {
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(41, 98, 255);
-      doc.text('Description:', 20, yPosition);
-      yPosition += 7;
-      doc.setFont('helvetica', 'normal');
-      doc.setFontSize(10);
-      doc.setTextColor(0, 0, 0);
-      const descLines = doc.splitTextToSize(proforma.work_description, pageWidth - 40);
-      doc.text(descLines, 20, yPosition);
-      yPosition += descLines.length * 5 + 5;
-    }
+    // Description section removed - keep PDF clean and focused on services
 
     yPosition += 5;
 
@@ -175,7 +182,7 @@ export class ProFormaPDFService {
     if (services.length > 0) {
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(12);
-      doc.setTextColor(41, 98, 255);
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.text('Services & Pricing:', 20, yPosition);
       yPosition += 10;
 
@@ -195,9 +202,9 @@ export class ProFormaPDFService {
         }
 
         return [
-          service.name,
-          service.description || '',
-          service.pricing_type === 'hourly' ? `R${rate.toFixed(2)}/hr × ${hours}h` : 'Fixed Fee',
+          service.name || service.service_name || 'Service',
+          service.description || service.service_description || '',
+          service.pricing_type === 'hourly' ? `R${rate.toFixed(2)}/hr × ${hours}h` : `R${rate.toFixed(2)}`,
           quantity.toString(),
           `R${amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
         ];
@@ -209,21 +216,21 @@ export class ProFormaPDFService {
         body: tableData,
         theme: 'striped',
         headStyles: {
-          fillColor: [41, 98, 255],
+          fillColor: primaryColor as [number, number, number],
           textColor: [255, 255, 255],
           fontStyle: 'bold',
-          fontSize: 10
+          fontSize: template?.table?.headerStyle?.fontSize || 10
         },
         bodyStyles: {
-          fontSize: 9,
+          fontSize: template?.table?.cellStyle?.fontSize || 9,
           textColor: [50, 50, 50]
         },
         columnStyles: {
-          0: { cellWidth: 40 },
-          1: { cellWidth: 60 },
-          2: { cellWidth: 30 },
-          3: { cellWidth: 15, halign: 'center' },
-          4: { cellWidth: 35, halign: 'right' }
+          0: { cellWidth: 45 },  // Wider for service name
+          1: { cellWidth: 55 },  // Description
+          2: { cellWidth: 35 },  // Rate
+          3: { cellWidth: 15, halign: 'center' },  // Qty
+          4: { cellWidth: 30, halign: 'right' }    // Amount
         },
         margin: { left: 20, right: 20 },
         didDrawPage: (data) => {
@@ -263,7 +270,7 @@ export class ProFormaPDFService {
       
       yPosition += 10;
       doc.setFontSize(12);
-      doc.setTextColor(41, 98, 255);
+      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
       doc.text('TOTAL ESTIMATE:', pageWidth - 80, yPosition);
       doc.text(`R${total.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, pageWidth - 20, yPosition, { align: 'right' });
     }
@@ -296,16 +303,34 @@ export class ProFormaPDFService {
     yPosition += 5;
     doc.text('• Please contact us if you have any questions about this estimate', 25, yPosition);
 
-    doc.setFontSize(8);
+    // Footer with template settings
+    doc.setFontSize(template?.footer?.textStyle?.fontSize || 8);
     doc.setTextColor(150, 150, 150);
-    doc.text(
-      `Generated on ${new Date().toLocaleDateString('en-ZA')} at ${new Date().toLocaleTimeString('en-ZA')}`,
-      pageWidth / 2,
-      pageHeight - 10,
-      { align: 'center' }
-    );
+    
+    if (template?.footer?.text) {
+      doc.text(template.footer.text, pageWidth / 2, pageHeight - 15, { align: 'center' });
+    }
+    
+    if (template?.footer?.showTimestamp !== false) {
+      doc.text(
+        `Generated on ${new Date().toLocaleDateString('en-ZA')} at ${new Date().toLocaleTimeString('en-ZA')}`,
+        pageWidth / 2,
+        pageHeight - 10,
+        { align: 'center' }
+      );
+    }
 
     return doc.output('blob');
+  }
+
+  /**
+   * Convert hex color to RGB array
+   */
+  private hexToRgb(hex: string): [number, number, number] {
+    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+    return result
+      ? [parseInt(result[1], 16), parseInt(result[2], 16), parseInt(result[3], 16)]
+      : [41, 98, 255]; // Default blue
   }
 
   async downloadProFormaPDF(
