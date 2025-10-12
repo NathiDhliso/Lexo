@@ -72,8 +72,24 @@ web_modules/
 .env.local
 .env.*.local
 .env.*
+.env.production
+.env.staging
+.env.development
 !.env.example
 !.env.aws.example
+
+# AWS credentials and config
+.aws/
+aws-credentials.json
+credentials.json
+
+# Security and secrets
+secrets/
+*.key
+*.pem
+*.cert
+*.p12
+*.pfx
 
 # Supabase local/env secrets
 supabase/.env

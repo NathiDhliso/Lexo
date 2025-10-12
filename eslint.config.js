@@ -23,13 +23,21 @@ export default tseslint.config(
         'warn',
         { allowConstantExport: true },
       ],
-      // Temporarily disable strict rules to allow commit
-      '@typescript-eslint/no-unused-vars': 'warn',
-      '@typescript-eslint/no-explicit-any': 'warn',
-      'no-case-declarations': 'warn',
-      'no-prototype-builtins': 'warn',
-      'prefer-const': 'warn',
-      'react-hooks/exhaustive-deps': 'warn',
+      // Enforce strict rules for code quality
+      '@typescript-eslint/no-unused-vars': ['error', { 
+        argsIgnorePattern: '^_',
+        varsIgnorePattern: '^_',
+        caughtErrorsIgnorePattern: '^_'
+      }],
+      '@typescript-eslint/no-explicit-any': 'error',
+      'no-case-declarations': 'error',
+      'no-prototype-builtins': 'error',
+      'prefer-const': 'error',
+      'react-hooks/exhaustive-deps': 'error',
+      // Additional quality rules
+      'no-console': ['warn', { allow: ['warn', 'error'] }],
+      'no-debugger': 'error',
+      'no-alert': 'error',
     },
   }
 );
