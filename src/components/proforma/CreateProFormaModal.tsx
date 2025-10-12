@@ -143,7 +143,12 @@ export const CreateProFormaModal: React.FC<CreateProFormaModalProps> = ({
       phone: (user.user_metadata as any)?.phone,
     };
 
-    await proFormaPDFService.downloadProFormaPDF(proformaData as any, advocateInfo);
+    // When creating a new pro forma, always use 'proforma' document type
+    await proFormaPDFService.downloadProFormaPDF(
+      proformaData as any, 
+      advocateInfo,
+      { documentType: 'proforma' }
+    );
 
     onSuccess(proformaData);
     onClose();

@@ -169,14 +169,26 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
         return;
       }
 
-      await proFormaPDFService.downloadProFormaPDF(request, {
-        full_name: advocate.full_name,
-        practice_number: advocate.practice_number,
-        email: advocate.email || undefined,
-        phone: advocate.phone || undefined,
-      });
+      // Determine document type based on request status
+      // If the request has been converted to a matter/invoice, use 'invoice'
+      // Otherwise, use 'proforma' for quotes/estimates
+      const documentType = request.status === 'accepted' && request.converted_matter_id 
+        ? 'invoice' 
+        : 'proforma';
 
-      toast.success('Pro forma PDF downloaded successfully');
+      await proFormaPDFService.downloadProFormaPDF(
+        request, 
+        {
+          full_name: advocate.full_name,
+          practice_number: advocate.practice_number,
+          email: advocate.email || undefined,
+          phone: advocate.phone || undefined,
+        },
+        { documentType }
+      );
+
+      const docTypeLabel = documentType === 'invoice' ? 'Invoice' : 'Pro forma';
+      toast.success(`${docTypeLabel} PDF downloaded successfully`);
     } catch (error) {
       console.error('Error generating PDF:', error);
       toast.error('Failed to generate PDF');
