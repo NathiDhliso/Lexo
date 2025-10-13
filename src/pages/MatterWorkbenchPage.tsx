@@ -330,6 +330,38 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
     setCurrentStep(prev => Math.max(prev - 1, 1));
   };
 
+  const handleSubmit = async () => {
+    if (!validateStep(currentStep)) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      if (!user?.id) {
+        throw new Error('User not authenticated');
+      }
+
+      // Create the matter
+      const result = await matterApiService.create({
+        ...formData,
+        advocate_id: user.id,
+        status: 'active'
+      });
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      toast.success('Matter created successfully!');
+      navigatePage('matters');
+    } catch (error) {
+      console.error('Error creating matter:', error);
+      toast.error(error instanceof Error ? error.message : 'Failed to create matter');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const navigate = useNavigate();
 
   const navigatePage = (page: Page) => {
