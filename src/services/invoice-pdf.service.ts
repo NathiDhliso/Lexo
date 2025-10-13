@@ -404,7 +404,6 @@ export class InvoicePDFService {
 
       const tableHeaderBg = pdfTemplate?.table?.headerBackgroundColor ? this.hexToRgb(pdfTemplate.table.headerBackgroundColor) : primaryColor;
       const tableHeaderText = pdfTemplate?.table?.headerTextColor ? this.hexToRgb(pdfTemplate.table.headerTextColor) : [255, 255, 255];
-      const rowBgColor = pdfTemplate?.table?.rowBackgroundColor ? this.hexToRgb(pdfTemplate.table.rowBackgroundColor) : [255, 255, 255];
       const altRowColor = pdfTemplate?.table?.alternateRowColor ? this.hexToRgb(pdfTemplate.table.alternateRowColor) : [250, 250, 250];
 
       autoTable(doc, {

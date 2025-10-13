@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Search, Clock, ArrowRight, FileText, Users, Receipt, Zap } from 'lucide-react';
-import { SearchResult, SearchCategory, SearchState, KeyboardShortcut } from '../../types';
+import { SearchResult, SearchCategory, SearchState, KeyboardShortcut, Page } from '../../types';
 import { useKeyboardShortcuts } from '../../hooks/useKeyboardShortcuts';
 
 interface GlobalCommandBarProps {
-  onNavigate: (page: string) => void;
+  onNavigate: (page: Page) => void;
   onAction: (actionId: string) => void;
   className?: string;
 }
@@ -180,10 +180,6 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
     return acc;
   }, {} as Record<SearchCategory, SearchResult[]>);
 
-  const containerWidthClasses = searchState.isOpen
-    ? 'w-[24rem] sm:w-[28rem] md:w-[32rem]'
-    : 'w-48 sm:w-64 md:w-72';
-
   return (
     <div
       className={`relative w-full ${className}`}
@@ -243,18 +239,34 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                 </div>
                 <div className="space-y-1">
                   <button
-                    onClick={() => onAction('new-matter')}
+                    onClick={() => {
+                      onAction('create-matter');
+                      closeCommandBar();
+                    }}
                     className="w-full text-left px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 rounded-md transition-colors flex items-center justify-between"
                   >
                     <span>Add New Matter</span>
                     <span className="text-xs text-neutral-400 dark:text-neutral-500">Ctrl+Shift+M</span>
                   </button>
                   <button
-                    onClick={() => onAction('create-invoice')}
+                    onClick={() => {
+                      onAction('create-invoice');
+                      closeCommandBar();
+                    }}
                     className="w-full text-left px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 rounded-md transition-colors flex items-center justify-between"
                   >
                     <span>Create Invoice</span>
                     <span className="text-xs text-neutral-400 dark:text-neutral-500">Ctrl+Shift+I</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      onAction('create-proforma');
+                      closeCommandBar();
+                    }}
+                    className="w-full text-left px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 rounded-md transition-colors flex items-center justify-between"
+                  >
+                    <span>Create Pro Forma</span>
+                    <span className="text-xs text-neutral-400 dark:text-neutral-500">Ctrl+Shift+P</span>
                   </button>
                 </div>
               </div>
@@ -275,7 +287,7 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                         {getCategoryLabel(category as SearchCategory)}
                       </div>
                       <div className="space-y-1">
-                        {results.map((result, index) => {
+                        {results.map((result) => {
                           const globalIndex = searchState.results.indexOf(result);
                           const isSelected = globalIndex === searchState.selectedIndex;
                           return (

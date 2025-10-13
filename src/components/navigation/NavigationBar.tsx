@@ -4,13 +4,15 @@ import lexoLogo from '../../Public/Assets/lexo-logo.png';
 import { MegaMenu } from './MegaMenu';
 import { MobileMegaMenu } from './MobileMegaMenu';
 import GlobalCommandBar from './GlobalCommandBar';
+import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp';
+import { ShortcutHint } from './ShortcutHint';
 import { RealTimeTicker } from './RealTimeTicker';
 import { Button, Icon } from '../design-system/components';
 import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
 import { CreateProFormaModal } from '../proforma/CreateProFormaModal';
 import { GenerateInvoiceModal } from '../invoices/GenerateInvoiceModal';
 
-import { navigationConfig, getFilteredNavigationConfig } from '../../config/navigation.config';
+import { getFilteredNavigationConfig } from '../../config/navigation.config';
 import { useKeyboardShortcuts, useClickOutside } from '../../hooks';
 import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
@@ -51,6 +53,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [commandBarOpen, setCommandBarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
 
   // Modal state
   const [modalState, setModalState] = useState({
@@ -65,7 +68,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   // Get filtered navigation config based on user tier
-  const filteredConfig = getFilteredNavigationConfig(navigationConfig, userTier);
+  const filteredConfig = getFilteredNavigationConfig(userTier);
 
   // Handle scroll for navbar styling
   useEffect(() => {
@@ -203,6 +206,33 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       description: 'Open command bar'
     },
     {
+      key: 'm',
+      ctrlKey: true,
+      shiftKey: true,
+      action: () => setModalState(prev => ({ ...prev, createMatter: true })),
+      description: 'Add new matter'
+    },
+    {
+      key: 'i',
+      ctrlKey: true,
+      shiftKey: true,
+      action: () => setModalState(prev => ({ ...prev, generateInvoice: true })),
+      description: 'Create invoice'
+    },
+    {
+      key: 'p',
+      ctrlKey: true,
+      shiftKey: true,
+      action: () => setModalState(prev => ({ ...prev, createProForma: true })),
+      description: 'Create pro forma'
+    },
+    {
+      key: '?',
+      shiftKey: true,
+      action: () => setShowShortcutsHelp(true),
+      description: 'Show keyboard shortcuts'
+    },
+    {
       key: 'Escape',
       action: () => {
         setNavigationState(prev => ({
@@ -212,6 +242,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         }));
         setCommandBarOpen(false);
         setUserMenuOpen(false);
+        setShowShortcutsHelp(false);
         document.body.style.overflow = '';
       },
       description: 'Close menus'
@@ -286,7 +317,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                       aria-expanded={navigationState.megaMenuOpen && navigationState.activeCategory === category.id}
                       aria-haspopup="menu"
                     >
-                      <Icon icon={category.icon} className="w-4 h-4 lg:w-5 lg:h-5" />
+                      {React.createElement(category.icon, { className: "w-4 h-4 lg:w-5 lg:h-5" })}
                       <span className="hidden lg:inline">{category.label}</span>
                       <ChevronDown className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform duration-200 ${
                         navigationState.megaMenuOpen && navigationState.activeCategory === category.id ? 'rotate-180' : ''
@@ -404,7 +435,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
             ref={megaMenuRef}
             onMouseEnter={handleMegaMenuHover}
             onMouseLeave={handleMegaMenuLeave}
-            className="hidden md:block absolute top-full left-0 w-full bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700 shadow-soft z-40"
+            className="hidden md:block absolute top-full left-0 w-full bg-white/70 dark:bg-metallic-gray-900/70 backdrop-blur-3xl border-b border-neutral-200/80 dark:border-metallic-gray-700/80 shadow-soft z-40"
           >
             <MegaMenu
               category={filteredConfig.categories.find(c => c.id === navigationState.activeCategory)!}
@@ -444,6 +475,15 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           />
         </div>
       )}
+
+      {/* Keyboard Shortcuts Help */}
+      <KeyboardShortcutsHelp
+        isOpen={showShortcutsHelp}
+        onClose={() => setShowShortcutsHelp(false)}
+      />
+
+      {/* Shortcut Hint */}
+      <ShortcutHint />
 
       {/* Modals */}
       {modalState.createMatter && (

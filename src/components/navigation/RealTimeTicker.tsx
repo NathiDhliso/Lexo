@@ -178,7 +178,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
     <div 
       className={cn(
         "relative overflow-hidden border-b border-neutral-200 dark:border-metallic-gray-700 bg-white dark:bg-metallic-gray-900 transition-all duration-300",
-        isMinimized ? "h-3" : "h-12",
+        isMinimized ? "h-3" : "h-14",
         className
       )}
       onMouseEnter={() => setIsHovered(true)}
@@ -193,7 +193,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
           e.stopPropagation();
           toggleMinimized();
         }}
-        className="absolute top-1 right-2 z-10 p-1 rounded hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 transition-colors"
+        className="absolute top-2 right-2 z-10 p-1 rounded hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 transition-colors"
         title={isMinimized ? "Expand ticker" : "Minimize ticker"}
       >
         {isMinimized ? (
@@ -226,18 +226,18 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
           {/* Ticker content */}
           <div 
             ref={tickerRef}
-            className="flex items-center h-full px-4 cursor-pointer transition-all duration-300 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800"
+            className="flex items-center h-full px-4 py-2 cursor-pointer transition-all duration-300 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800"
             onClick={() => handleItemClick(currentItem)}
           >
             {/* Icon */}
-            <div className={cn("flex-shrink-0 mr-3", urgencyStyles.icon)}>
+            <div className={cn("flex-shrink-0 mr-4", urgencyStyles.icon)}>
               {getIconForType(currentItem.type)}
             </div>
 
             {/* Content */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className={cn("font-medium text-sm truncate", urgencyStyles.text)}>
+            <div className="flex-1 min-w-0 flex items-center gap-6">
+              <div className="flex items-center gap-3 min-w-0">
+                <span className={cn("font-semibold text-base whitespace-nowrap", urgencyStyles.text)}>
                   {currentItem.title}
                 </span>
                 
@@ -246,18 +246,18 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
                 )}
               </div>
               
-              <div className="flex items-center gap-4 text-xs text-neutral-600 dark:text-neutral-400">
+              <div className="flex items-center gap-6 text-sm text-neutral-700 dark:text-neutral-300">
                 <span className="truncate">{currentItem.description}</span>
                 
                 {currentItem.amount && (
-                  <span className="font-medium text-mpondo-gold-600">
+                  <span className="font-semibold text-mpondo-gold-600 dark:text-mpondo-gold-400 whitespace-nowrap">
                     {formatAmount(currentItem.amount)}
                   </span>
                 )}
                 
                 {currentItem.dueDate && (
-                  <span className="flex items-center gap-1">
-                    <Clock className="w-3 h-3" />
+                  <span className="flex items-center gap-1.5 whitespace-nowrap">
+                    <Clock className="w-4 h-4" />
                     {formatTimeRemaining(currentItem.dueDate)}
                   </span>
                 )}
@@ -265,19 +265,19 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
             </div>
 
             {/* Navigation arrow */}
-            <ChevronRight className="w-4 h-4 text-neutral-400 dark:text-neutral-500 flex-shrink-0 ml-2 mr-6" />
+            <ChevronRight className="w-5 h-5 text-neutral-400 dark:text-neutral-500 flex-shrink-0 ml-4 mr-8" />
           </div>
 
           {/* Progress indicators */}
-          <div className="absolute bottom-1 right-8 flex gap-1">
+          <div className="absolute bottom-2 right-10 flex gap-1.5">
             {tickerItems.map((_, index) => (
               <div
                 key={index}
                 className={cn(
-                  "w-1.5 h-1.5 rounded-full transition-all duration-300",
+                  "w-2 h-2 rounded-full transition-all duration-300",
                   index === currentIndex 
                     ? urgencyStyles.indicator 
-                    : "bg-neutral-300"
+                    : "bg-neutral-300 dark:bg-neutral-600"
                 )}
               />
             ))}
@@ -285,44 +285,47 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
 
           {/* Hover overlay with all items */}
           {isHovered && (
-            <div className="absolute top-full left-0 right-0 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 theme-shadow-lg z-50 max-h-64 overflow-y-auto">
+            <div className="absolute top-full left-0 right-0 bg-white dark:bg-metallic-gray-900 border border-neutral-200 dark:border-metallic-gray-700 theme-shadow-lg z-50 max-h-80 overflow-y-auto">
               {tickerItems.map((item, index) => {
                 const itemStyles = getUrgencyStyles(item.urgency);
                 return (
                   <div
                     key={item.id}
                     className={cn(
-                      "flex items-center p-3 border-b border-neutral-100 dark:border-metallic-gray-800 cursor-pointer transition-colors hover:bg-neutral-50 dark:hover:bg-metallic-gray-800",
+                      "flex items-center gap-4 p-4 border-b border-neutral-100 dark:border-metallic-gray-800 cursor-pointer transition-colors hover:bg-neutral-50 dark:hover:bg-metallic-gray-800",
                       index === currentIndex && "bg-neutral-50 dark:bg-metallic-gray-800"
                     )}
                     onClick={() => handleItemClick(item)}
                   >
-                    <div className={cn("flex-shrink-0 mr-3", itemStyles.icon)}>
+                    <div className={cn("flex-shrink-0", itemStyles.icon)}>
                       {getIconForType(item.type)}
                     </div>
                     
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className={cn("font-medium text-sm", itemStyles.text)}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className={cn("font-semibold text-sm", itemStyles.text)}>
                           {item.title}
                         </span>
                         {item.urgency === 'urgent' && (
                           <AlertTriangle className="w-4 h-4 text-red-500" />
                         )}
                       </div>
-                      <p className="text-xs text-neutral-600 dark:text-neutral-400 truncate">
+                      <p className="text-sm text-neutral-600 dark:text-neutral-400 truncate">
                         {item.description}
                       </p>
                     </div>
                     
-                    <div className="flex items-center gap-2 text-xs text-neutral-500 dark:text-neutral-400">
+                    <div className="flex items-center gap-3 text-sm text-neutral-600 dark:text-neutral-400 whitespace-nowrap">
                       {item.amount && (
-                        <span className="font-medium text-mpondo-gold-600">
+                        <span className="font-semibold text-mpondo-gold-600 dark:text-mpondo-gold-400">
                           {formatAmount(item.amount)}
                         </span>
                       )}
                       {item.dueDate && (
-                        <span>{formatTimeRemaining(item.dueDate)}</span>
+                        <span className="flex items-center gap-1">
+                          <Clock className="w-4 h-4" />
+                          {formatTimeRemaining(item.dueDate)}
+                        </span>
                       )}
                     </div>
                   </div>

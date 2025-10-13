@@ -52,10 +52,10 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({
 }) => {
   // Check if item is available for user tier
   const isAvailable = !item.requiredTier || userTier >= item.requiredTier;
-  
+
   const handleClick = () => {
     if (!isAvailable) return;
-    
+
     if (item.action) {
       onActionClick(item.action);
     } else if (item.page) {
@@ -67,20 +67,18 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({
     <button
       onClick={handleClick}
       disabled={!isAvailable}
-      className={`w-full flex items-center justify-between p-4 text-left transition-all duration-200 min-h-[56px] ${
-        level > 0 ? 'pl-8' : ''
-      } ${
-        isAvailable
-          ? 'text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 active:bg-neutral-200 dark:active:bg-metallic-gray-700'
+      className={`w-full flex items-center justify-between p-4 text-left transition-all duration-200 min-h-[56px] ${level > 0 ? 'pl-8' : ''
+        } ${isAvailable
+          ? 'text-neutral-900 dark:text-neutral-100 hover:bg-neutral-100/60 dark:hover:bg-metallic-gray-800/40 active:bg-neutral-200/70 dark:active:bg-metallic-gray-700/50'
           : 'text-neutral-400 dark:text-neutral-600 cursor-not-allowed'
-      }`}
+        }`}
       aria-label={item.label}
     >
       <div className="flex items-center gap-3">
         {item.icon && (
-          <Icon 
-            icon={item.icon} 
-            className={`w-5 h-5 ${isAvailable ? '' : 'opacity-50'}`} 
+          <Icon
+            icon={item.icon}
+            className={`w-5 h-5 ${isAvailable ? '' : 'opacity-50'}`}
           />
         )}
         <div>
@@ -92,7 +90,7 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({
           )}
         </div>
       </div>
-      
+
       {!isAvailable && (
         <span className="text-xs bg-neutral-200 dark:bg-metallic-gray-700 px-2 py-1 rounded">
           Upgrade
@@ -116,7 +114,7 @@ const MobileSection: React.FC<MobileSectionProps> = ({
     <div className="border-b border-neutral-200 dark:border-metallic-gray-700 last:border-b-0">
       <button
         onClick={() => setIsExpanded(!isExpanded)}
-        className="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 transition-colors min-h-[56px]"
+        className="w-full flex items-center justify-between p-4 text-left hover:bg-neutral-50/60 dark:hover:bg-metallic-gray-800/40 transition-colors min-h-[56px]"
         aria-expanded={isExpanded}
         aria-label={`${section.title} section`}
       >
@@ -135,20 +133,18 @@ const MobileSection: React.FC<MobileSectionProps> = ({
             )}
           </div>
         </div>
-        <ChevronDown 
-          className={`w-5 h-5 text-neutral-400 transition-transform duration-200 ${
-            isExpanded ? 'rotate-180' : ''
-          }`} 
+        <ChevronDown
+          className={`w-5 h-5 text-neutral-400 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''
+            }`}
         />
       </button>
-      
+
       {/* Animated content */}
-      <div 
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-        }`}
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+          }`}
       >
-        <div className="bg-neutral-50 dark:bg-metallic-gray-800/50">
+        <div className="bg-neutral-50/50 dark:bg-metallic-gray-800/20">
           {section.items?.map((item: any, index: number) => (
             <MobileMenuItem
               key={index}
@@ -181,22 +177,20 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
     <div className="border-b border-neutral-200 dark:border-metallic-gray-700">
       <button
         onClick={onToggle}
-        className={`w-full flex items-center justify-between p-4 text-left transition-all duration-200 min-h-[64px] ${
-          isActive
-            ? 'bg-mpondo-gold-100 dark:bg-mpondo-gold-900/30 text-mpondo-gold-900 dark:text-mpondo-gold-400'
-            : 'hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100'
-        }`}
+        className={`w-full flex items-center justify-between p-4 text-left transition-all duration-200 min-h-[64px] ${isActive
+          ? 'bg-mpondo-gold-100 dark:bg-mpondo-gold-900/30 text-mpondo-gold-900 dark:text-mpondo-gold-400'
+          : 'hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100'
+          }`}
         aria-expanded={isExpanded}
         aria-label={`${category.label} category`}
       >
         <div className="flex items-center gap-4">
-          <Icon 
-            icon={category.icon} 
-            className={`w-6 h-6 ${
-              isActive 
-                ? 'text-mpondo-gold-600 dark:text-mpondo-gold-400' 
-                : 'text-neutral-600 dark:text-neutral-400'
-            }`} 
+          <Icon
+            icon={category.icon}
+            className={`w-6 h-6 ${isActive
+              ? 'text-mpondo-gold-600 dark:text-mpondo-gold-400'
+              : 'text-neutral-600 dark:text-neutral-400'
+              }`}
           />
           <div>
             <div className="font-semibold text-lg">{category.label}</div>
@@ -207,35 +201,32 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
             )}
           </div>
         </div>
-        <ChevronDown 
-          className={`w-5 h-5 transition-transform duration-200 ${
-            isExpanded ? 'rotate-180' : ''
-          } ${
-            isActive 
-              ? 'text-mpondo-gold-600 dark:text-mpondo-gold-400' 
+        <ChevronDown
+          className={`w-5 h-5 transition-transform duration-200 ${isExpanded ? 'rotate-180' : ''
+            } ${isActive
+              ? 'text-mpondo-gold-600 dark:text-mpondo-gold-400'
               : 'text-neutral-400'
-          }`} 
+            }`}
         />
       </button>
-      
+
       {/* Animated category content */}
-      <div 
-        className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isExpanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
-        }`}
+      <div
+        className={`overflow-hidden transition-all duration-300 ease-in-out ${isExpanded ? 'max-h-screen opacity-100' : 'max-h-0 opacity-0'
+          }`}
       >
-        <div className="bg-neutral-50 dark:bg-metallic-gray-800/50">
+        <div className="bg-neutral-50/70 dark:bg-metallic-gray-800/30">
           {/* Category main page link */}
           {category.page && (
             <button
               onClick={() => onItemClick(category.page!)}
-              className="w-full flex items-center gap-3 p-4 pl-8 text-left hover:bg-neutral-100 dark:hover:bg-metallic-gray-700 transition-colors min-h-[56px]"
+              className="w-full flex items-center gap-3 p-4 pl-8 text-left hover:bg-neutral-100/60 dark:hover:bg-metallic-gray-700/40 transition-colors min-h-[56px]"
             >
               <ChevronRight className="w-4 h-4 text-neutral-400" />
               <span className="font-medium">View All {category.label}</span>
             </button>
           )}
-          
+
           {/* Category sections */}
           {category.sections?.map((section, index) => (
             <MobileSection
@@ -325,16 +316,16 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
   return (
     <>
       {/* Backdrop */}
-      <div 
+      <div
         className="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 md:hidden"
         onClick={onClose}
         aria-hidden="true"
       />
-      
+
       {/* Mobile Menu */}
       <div
         ref={menuRef}
-        className="fixed top-0 right-0 h-full w-full max-w-sm bg-white dark:bg-metallic-gray-900 shadow-2xl z-50 md:hidden transform transition-transform duration-300 ease-in-out"
+        className="fixed top-0 right-0 h-full w-full max-w-sm bg-white/70 dark:bg-metallic-gray-900/70 backdrop-blur-3xl shadow-2xl z-50 md:hidden transform transition-transform duration-300 ease-in-out"
         role="dialog"
         aria-modal="true"
         aria-label="Mobile navigation menu"
@@ -446,7 +437,7 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
                 Settings
               </span>
             </button>
-            
+
             <button
               onClick={handleSignOut}
               className="w-full flex items-center gap-3 p-3 text-left hover:bg-status-error-50 dark:hover:bg-status-error-900/20 rounded-lg transition-colors"

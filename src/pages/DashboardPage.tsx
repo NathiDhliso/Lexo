@@ -231,19 +231,53 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
         }).length
       };
 
-      // Default performance metrics since analytics service is not available
-      const defaultPerformanceMetrics = {
-        settlementRate: 85,
-        clientSatisfaction: 92,
-        timeManagement: 78
-      };
+      // Calculate real performance metrics from invoice data
+      let collectionRate = 0;
+      let avgBillTime = 0;
+      let settlementRate = 0;
+
+      try {
+        // Fetch all invoices for the user to calculate metrics
+        const allInvoicesResponse = await InvoiceService.getInvoices({
+          page: 1,
+          pageSize: 1000 // Get all invoices for accurate metrics
+        });
+
+        const allInvoices = allInvoicesResponse.data;
+
+        if (allInvoices.length > 0) {
+          // Calculate Collection Rate: (Paid Amount / Total Invoiced) * 100
+          const totalInvoiced = allInvoices.reduce((sum, inv) => sum + inv.total_amount, 0);
+          const totalPaid = allInvoices.reduce((sum, inv) => sum + (inv.amount_paid || 0), 0);
+          collectionRate = totalInvoiced > 0 ? Math.round((totalPaid / totalInvoiced) * 100) : 0;
+
+          // Calculate Average Bill Time: Average days from invoice creation to payment
+          const paidInvoices = allInvoices.filter(inv => inv.datePaid && inv.created_at);
+          if (paidInvoices.length > 0) {
+            const totalDays = paidInvoices.reduce((sum, inv) => {
+              const created = new Date(inv.created_at);
+              const paid = new Date(inv.datePaid!);
+              const days = Math.floor((paid.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
+              return sum + days;
+            }, 0);
+            avgBillTime = Math.round(totalDays / paidInvoices.length);
+          }
+
+          // Calculate Settlement Rate: (Paid Invoices / Total Invoices) * 100
+          const paidCount = allInvoices.filter(inv => inv.status === InvoiceStatus.PAID).length;
+          settlementRate = Math.round((paidCount / allInvoices.length) * 100);
+        }
+      } catch (error) {
+        console.error('Error calculating performance metrics:', error);
+        // If calculation fails, leave metrics at 0 instead of showing fake data
+      }
 
       setDashboardData(prev => ({ 
         ...prev, 
         ...computed, 
-        settlementRate: Math.round(defaultPerformanceMetrics.settlementRate),
-        collectionRate: Math.round(defaultPerformanceMetrics.clientSatisfaction),
-        avgBillTime: Math.round(defaultPerformanceMetrics.timeManagement),
+        settlementRate,
+        collectionRate,
+        avgBillTime,
         isLoading: false 
       }));
       
