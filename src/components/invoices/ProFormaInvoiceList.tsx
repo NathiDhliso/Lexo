@@ -77,6 +77,12 @@ export const ProFormaInvoiceList: React.FC = () => {
     loadProFormaRequests();
   };
 
+  const handleViewDetails = (proFormaId: string) => {
+    // Navigate to pro forma details page or open details modal
+    toast.success(`Opening details for pro forma ${proFormaId}`);
+    // TODO: Implement navigation or modal for pro forma details
+  };
+
   const formatDate = (dateString?: string | null) => {
     if (!dateString) return 'N/A';
     return new Date(dateString).toLocaleDateString('en-ZA', {
@@ -272,7 +278,10 @@ export const ProFormaInvoiceList: React.FC = () => {
                         <ArrowRight className="w-4 h-4" />
                       </button>
                     )}
-                    <button className="px-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 transition-colors text-sm">
+                    <button 
+                      onClick={() => handleViewDetails(proForma.id)}
+                      className="px-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 transition-colors text-sm"
+                    >
                       View Details
                     </button>
                   </div>
