@@ -29,7 +29,9 @@ const AttorneyRegisterPage = lazy(() => import('./pages/attorney/AttorneyRegiste
 const SubmitMatterRequestPage = lazy(() => import('./pages/attorney/SubmitMatterRequestPage').then(m => ({ default: m.SubmitMatterRequestPage })));
 const ProFormaRequestPage = lazy(() => import('./pages/ProFormaRequestPage'));
 const MatterWorkbenchPage = lazy(() => import('./pages/MatterWorkbenchPage'));
+const WIPTrackerPage = lazy(() => import('./pages/WIPTrackerPage'));
 const FirmsPage = lazy(() => import('./pages/FirmsPage'));
+const DocumentLinkingTest = lazy(() => import('./components/documents/DocumentLinkingTest').then(m => ({ default: m.DocumentLinkingTest })));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -47,10 +49,14 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const userTier: UserTier = UserTier.ADVOCATE_PRO;
   const navigate = useNavigate();
 
-  const handlePageChange = (page: Page) => {
+  const handlePageChange = (page: Page, data?: any) => {
     switch (page) {
       case 'dashboard':
         navigate('/dashboard');
+        break;
+      case 'proforma':
+        // Pro formas are handled via attorney submissions
+        navigate('/proforma-requests');
         break;
       case 'proforma-requests':
         navigate('/proforma-requests');
@@ -59,7 +65,18 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         navigate('/matters');
         break;
       case 'matter-workbench':
-        navigate('/matter-workbench');
+        // Expect matterId in data
+        if (data?.matterId) {
+          navigate(`/matter-workbench/${data.matterId}`, { state: data });
+        } else {
+          navigate('/matters');
+        }
+        break;
+      case 'wip-tracker':
+        navigate('/wip-tracker');
+        break;
+      case 'firms':
+        navigate('/firms');
         break;
       case 'invoices':
         navigate('/invoices');
@@ -150,10 +167,18 @@ const AppContent: React.FC = () => {
         </ProtectedRoute>
       } />
       
-      <Route path="/matter-workbench" element={
+      <Route path="/matter-workbench/:matterId" element={
         <ProtectedRoute>
           <MainLayout>
             <MatterWorkbenchPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/wip-tracker" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <WIPTrackerPage />
           </MainLayout>
         </ProtectedRoute>
       } />
@@ -178,6 +203,14 @@ const AppContent: React.FC = () => {
         <ProtectedRoute>
           <MainLayout>
             <AuditTrailPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/test/documents" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <DocumentLinkingTest />
           </MainLayout>
         </ProtectedRoute>
       } />

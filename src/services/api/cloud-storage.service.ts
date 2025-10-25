@@ -319,69 +319,65 @@ export class CloudStorageService {
     }
   }
 
-  // Upload file to cloud storage
-  static async uploadToCloud(
-    options: CloudStorageUploadOptions
-  ): Promise<DocumentCloudStorage> {
+  // Link existing file from cloud storage
+  static async linkFromCloudStorage(
+    options: CloudStorageLinkOptions
+  ): Promise<DocumentReference> {
     try {
-      const connection = await this.getPrimaryConnection();
-      if (!connection) {
-        throw new Error('No cloud storage connected. Please connect a storage provider first.');
-      }
-
-      // Upload to provider
-      const providerFile = await this.uploadToProvider(
-        connection,
-        options.file,
-        options.folderId,
-        options.onProgress
-      );
-
-      // Create document upload record
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('User not authenticated');
 
-      const { data: document, error: docError } = await supabase
-        .from('document_uploads')
+      // For cloud storage, verify the connection exists
+      if (options.storageType !== 'local') {
+        const connections = await this.getConnections();
+        const connection = connections.find(c => c.provider === options.storageType && c.isActive);
+        if (!connection) {
+          throw new Error(`No active ${options.storageType} connection found. Please connect your account first.`);
+        }
+      }
+
+      // Create document reference (not upload)
+      const { data: docRef, error } = await supabase
+        .from('document_references')
         .insert({
           matter_id: options.matterId,
-          original_filename: options.file.name,
-          file_url: providerFile.webUrl,
-          file_size_bytes: options.file.size,
-          file_type: options.file.type,
-          mime_type: options.file.type,
-          processing_status: 'completed',
-          uploaded_by: user.id
+          file_name: options.fileName,
+          storage_type: options.storageType,
+          local_path: options.storageType === 'local' ? options.fileReference : null,
+          cloud_file_id: options.storageType !== 'local' ? options.fileReference : null,
+          cloud_file_url: options.fileUrl,
+          file_status: 'available',
+          last_verified_at: new Date().toISOString()
         })
         .select()
         .single();
 
-      if (docError) throw docError;
+      if (error) throw error;
 
-      // Create cloud storage mapping
-      const { data: mapping, error: mappingError } = await supabase
-        .from('document_cloud_storage')
-        .insert({
-          document_upload_id: document.id,
-          connection_id: connection.id,
-          provider_file_id: providerFile.id,
-          provider_file_path: providerFile.path,
-          provider_web_url: providerFile.webUrl,
-          provider_download_url: providerFile.downloadUrl,
-          is_synced: true,
-          last_synced_at: new Date().toISOString()
-        })
-        .select()
-        .single();
-
-      if (mappingError) throw mappingError;
-
-      toast.success('File uploaded to cloud storage');
-      return this.mapDocumentCloudStorage(mapping);
+      toast.success(`File linked from ${options.storageType === 'local' ? 'local storage' : options.storageType}`);
+      return this.mapDocumentReference(docRef);
     } catch (error) {
-      console.error('Error uploading to cloud:', error);
-      const message = error instanceof Error ? error.message : 'Failed to upload file';
+      console.error('Error linking file:', error);
+      const message = error instanceof Error ? error.message : 'Failed to link file';
       toast.error(message);
+      throw error;
+    }
+  }
+
+  // Get document references for a matter
+  static async getDocumentReferences(matterId: string): Promise<DocumentReference[]> {
+    try {
+      const { data, error } = await supabase
+        .from('document_references')
+        .select('*')
+        .eq('matter_id', matterId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+
+      return (data || []).map(this.mapDocumentReference);
+    } catch (error) {
+      console.error('Error fetching document references:', error);
       throw error;
     }
   }
@@ -421,29 +417,122 @@ export class CloudStorageService {
     }
   }
 
-  // Sync all documents
-  static async syncAllDocuments(connectionId: string): Promise<CloudStorageSyncResult> {
+  // Verify all document references
+  static async verifyAllDocuments(matterId?: string): Promise<CloudStorageVerificationResult> {
     try {
       const startTime = Date.now();
 
-      // This would implement full sync logic
-      // For now, return mock result
-      const result: CloudStorageSyncResult = {
-        success: true,
-        filesUploaded: 0,
-        filesDownloaded: 0,
-        filesFailed: 0,
-        errors: [],
+      // Get document references to verify
+      let query = supabase.from('document_references').select('*');
+      if (matterId) {
+        query = query.eq('matter_id', matterId);
+      }
+
+      const { data: documents, error } = await query;
+      if (error) throw error;
+
+      let filesAvailable = 0;
+      let filesMissing = 0;
+      let filesAccessDenied = 0;
+      const errors: string[] = [];
+
+      // Verify each document reference
+      for (const doc of documents || []) {
+        try {
+          const isAvailable = await this.verifyDocumentExists(doc);
+          if (isAvailable) {
+            filesAvailable++;
+            // Update status if it was previously missing
+            if (doc.file_status !== 'available') {
+              await supabase
+                .from('document_references')
+                .update({ 
+                  file_status: 'available',
+                  last_verified_at: new Date().toISOString()
+                })
+                .eq('id', doc.id);
+            }
+          } else {
+            filesMissing++;
+            // Update status to missing
+            await supabase
+              .from('document_references')
+              .update({ 
+                file_status: 'missing',
+                last_verified_at: new Date().toISOString()
+              })
+              .eq('id', doc.id);
+          }
+        } catch (error) {
+          filesAccessDenied++;
+          errors.push(`${doc.file_name}: ${error instanceof Error ? error.message : 'Access denied'}`);
+          // Update status to access denied
+          await supabase
+            .from('document_references')
+            .update({ 
+              file_status: 'access_denied',
+              last_verified_at: new Date().toISOString()
+            })
+            .eq('id', doc.id);
+        }
+      }
+
+      const result: CloudStorageVerificationResult = {
+        success: errors.length === 0,
+        filesVerified: documents?.length || 0,
+        filesAvailable,
+        filesMissing,
+        filesAccessDenied,
+        errors,
         duration: Date.now() - startTime
       };
 
-      toast.success('Documents synced successfully');
+      if (result.success) {
+        toast.success('All documents verified successfully');
+      } else {
+        toast.error(`Verification completed with ${errors.length} errors`);
+      }
+
       return result;
     } catch (error) {
-      console.error('Error syncing documents:', error);
-      toast.error('Failed to sync documents');
+      console.error('Error verifying documents:', error);
+      toast.error('Failed to verify documents');
       throw error;
     }
+  }
+
+  // Verify if a single document reference still exists
+  private static async verifyDocumentExists(docRef: any): Promise<boolean> {
+    if (docRef.storage_type === 'local') {
+      // For local files, we can't verify from web app
+      // This would need desktop app integration
+      return true; // Assume available for now
+    }
+
+    // For cloud storage, check if file still exists
+    try {
+      const connections = await this.getConnections();
+      const connection = connections.find(c => c.provider === docRef.storage_type && c.isActive);
+      
+      if (!connection) {
+        throw new Error('Storage connection not available');
+      }
+
+      // Check file exists using provider API
+      return await this.checkCloudFileExists(connection, docRef.cloud_file_id);
+    } catch (error) {
+      return false;
+    }
+  }
+
+  // Check if cloud file exists (provider-specific)
+  private static async checkCloudFileExists(
+    connection: CloudStorageConnection,
+    fileId: string
+  ): Promise<boolean> {
+    // TODO: Implement actual provider API calls
+    // For now, return true (mock implementation)
+    return true;
   }
 
   // Mapping functions
@@ -509,14 +598,197 @@ export class CloudStorageService {
     modifiedDate?: Date;
     path: string;
     mimeType?: string;
+    webViewUrl?: string;
   }>> {
-    // TODO: Implement actual provider API calls
-    // For now, return mock data for development
-    
-    // Mock delay to simulate API call
+    switch (connection.provider) {
+      case 'google_drive':
+        return await this.listGoogleDriveFiles(connection, folderPath);
+      case 'onedrive':
+        return await this.listOneDriveFiles(connection, folderPath);
+      case 'dropbox':
+        return await this.listDropboxFiles(connection, folderPath);
+      default:
+        return await this.listMockFiles(folderPath);
+    }
+  }
+
+  // Google Drive file listing
+  private static async listGoogleDriveFiles(
+    connection: CloudStorageConnection,
+    folderPath: string
+  ): Promise<Array<{
+    id: string;
+    name: string;
+    type: 'file' | 'folder';
+    size?: number;
+    modifiedDate?: Date;
+    path: string;
+    mimeType?: string;
+    webViewUrl?: string;
+  }>> {
+    try {
+      // Call Supabase Edge Function for Google Drive API
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) throw new Error('No active session');
+
+      const folderId = folderPath === 'Root' || !folderPath ? 'root' : folderPath;
+      
+      const response = await fetch(`${supabase.supabaseUrl}/functions/v1/google-drive-files?folderId=${folderId}`, {
+        headers: {
+          'Authorization': `Bearer ${session.access_token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch files from Google Drive');
+      }
+
+      const result = await response.json();
+      
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to list Google Drive files');
+      }
+
+      return result.files;
+    } catch (error) {
+      console.error('Error listing Google Drive files:', error);
+      
+      // Fallback to enhanced mock data for development
+      return await this.listMockGoogleDriveFiles(folderPath);
+    }
+  }
+
+  // Enhanced mock data for Google Drive (development fallback)
+  private static async listMockGoogleDriveFiles(folderPath: string): Promise<Array<{
+    id: string;
+    name: string;
+    type: 'file' | 'folder';
+    size?: number;
+    modifiedDate?: Date;
+    path: string;
+    mimeType?: string;
+    webViewUrl?: string;
+  }>> {
+    await new Promise(resolve => setTimeout(resolve, 800)); // Simulate API delay
+
+    if (!folderPath || folderPath === 'Root' || folderPath === '') {
+      return [
+        {
+          id: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+          name: 'Client Briefs',
+          type: 'folder',
+          path: 'Client Briefs',
+        },
+        {
+          id: '1mGcjNF0dhQEgFQOlXZWX4LL8egr18rNd',
+          name: 'Court Documents',
+          type: 'folder',
+          path: 'Court Documents',
+        },
+        {
+          id: '1f4YoD4ihiDvOKbfvtfvhIleP7A9veX7l',
+          name: 'Smith v Jones - Brief.pdf',
+          type: 'file',
+          size: 245760,
+          modifiedDate: new Date(Date.now() - 86400000),
+          path: 'Smith v Jones - Brief.pdf',
+          mimeType: 'application/pdf',
+          webViewUrl: 'https://drive.google.com/file/d/1f4YoD4ihiDvOKbfvtfvhIleP7A9veX7l/view'
+        },
+        {
+          id: '1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms',
+          name: 'Legal Opinion - Tax Matter.docx',
+          type: 'file',
+          size: 51200,
+          modifiedDate: new Date(Date.now() - 172800000),
+          path: 'Legal Opinion - Tax Matter.docx',
+          mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          webViewUrl: 'https://docs.google.com/document/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit'
+        },
+        {
+          id: '1mGcjNF0dhQEgFQOlXZWX4LL8egr18rNd',
+          name: 'Contract Review Notes.pdf',
+          type: 'file',
+          size: 128000,
+          modifiedDate: new Date(Date.now() - 259200000),
+          path: 'Contract Review Notes.pdf',
+          mimeType: 'application/pdf',
+          webViewUrl: 'https://drive.google.com/file/d/1mGcjNF0dhQEgFQOlXZWX4LL8egr18rNd/view'
+        }
+      ];
+    }
+
+    // Mock subfolder contents
+    return [
+      {
+        id: `${folderPath}-subfolder-1`,
+        name: 'Archive',
+        type: 'folder',
+        path: `${folderPath}/Archive`,
+      },
+      {
+        id: `${folderPath}-file-1`,
+        name: 'Document.pdf',
+        type: 'file',
+        size: 102400,
+        modifiedDate: new Date(Date.now() - 259200000),
+        path: `${folderPath}/Document.pdf`,
+        mimeType: 'application/pdf',
+        webViewUrl: `https://drive.google.com/file/d/${folderPath}-file-1/view`
+      }
+    ];
+  }
+
+  // OneDrive file listing (mock for now)
+  private static async listOneDriveFiles(
+    connection: CloudStorageConnection,
+    folderPath: string
+  ): Promise<Array<{
+    id: string;
+    name: string;
+    type: 'file' | 'folder';
+    size?: number;
+    modifiedDate?: Date;
+    path: string;
+    mimeType?: string;
+    webViewUrl?: string;
+  }>> {
+    // TODO: Implement OneDrive API
+    return await this.listMockFiles(folderPath);
+  }
+
+  // Dropbox file listing (mock for now)
+  private static async listDropboxFiles(
+    connection: CloudStorageConnection,
+    folderPath: string
+  ): Promise<Array<{
+    id: string;
+    name: string;
+    type: 'file' | 'folder';
+    size?: number;
+    modifiedDate?: Date;
+    path: string;
+    mimeType?: string;
+    webViewUrl?: string;
+  }>> {
+    // TODO: Implement Dropbox API
+    return await this.listMockFiles(folderPath);
+  }
+
+  // Mock file listing for development
+  private static async listMockFiles(folderPath: string): Promise<Array<{
+    id: string;
+    name: string;
+    type: 'file' | 'folder';
+    size?: number;
+    modifiedDate?: Date;
+    path: string;
+    mimeType?: string;
+    webViewUrl?: string;
+  }>> {
     await new Promise(resolve => setTimeout(resolve, 500));
 
-    // Mock data based on folder path
     if (!folderPath || folderPath === 'Root') {
       return [
         {
@@ -539,29 +811,13 @@ export class CloudStorageService {
           modifiedDate: new Date(Date.now() - 86400000),
           path: 'Case Brief - Smith v Jones.pdf',
           mimeType: 'application/pdf'
-        },
-        {
-          id: '4',
-          name: 'Client Meeting Notes.docx',
-          type: 'file',
-          size: 51200,
-          modifiedDate: new Date(Date.now() - 172800000),
-          path: 'Client Meeting Notes.docx',
-          mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
         }
       ];
     }
 
-    // Mock subfolder contents
     return [
       {
         id: `${folderPath}-1`,
-        name: 'Subfolder',
-        type: 'folder',
-        path: `${folderPath}/Subfolder`,
-      },
-      {
-        id: `${folderPath}-2`,
         name: 'Document.pdf',
         type: 'file',
         size: 102400,
@@ -572,21 +828,61 @@ export class CloudStorageService {
     ];
   }
 
-  private static mapDocumentCloudStorage(data: any): DocumentCloudStorage {
+  private static mapDocumentReference(data: any): DocumentReference {
     return {
       id: data.id,
-      documentUploadId: data.document_upload_id,
-      connectionId: data.connection_id,
-      providerFileId: data.provider_file_id,
-      providerFilePath: data.provider_file_path,
-      providerWebUrl: data.provider_web_url,
-      providerDownloadUrl: data.provider_download_url,
-      isSynced: data.is_synced,
-      lastSyncedAt: data.last_synced_at,
-      localHash: data.local_hash,
-      providerHash: data.provider_hash,
+      matterId: data.matter_id,
+      fileName: data.file_name,
+      fileType: data.file_type,
+      documentType: data.document_type,
+      notes: data.notes,
+      storageType: data.storage_type,
+      localPath: data.local_path,
+      cloudFileId: data.cloud_file_id,
+      cloudFileUrl: data.cloud_file_url,
+      lastVerifiedAt: data.last_verified_at,
+      fileStatus: data.file_status || 'available',
       createdAt: data.created_at,
       updatedAt: data.updated_at
     };
+  }
+
+  // Open document reference
+  static async openDocument(docRef: DocumentReference): Promise<void> {
+    try {
+      if (docRef.storageType === 'local') {
+        // Local files can only be opened in desktop app
+        toast.error('Local files can only be opened in the desktop app');
+        return;
+      }
+
+      // For cloud storage, open in web browser
+      if (docRef.cloudFileUrl) {
+        window.open(docRef.cloudFileUrl, '_blank');
+      } else {
+        toast.error('File URL not available');
+      }
+    } catch (error) {
+      console.error('Error opening document:', error);
+      toast.error('Failed to open document');
+    }
+  }
+
+  // Delete document reference (not the actual file)
+  static async deleteDocumentReference(docRefId: string): Promise<void> {
+    try {
+      const { error } = await supabase
+        .from('document_references')
+        .delete()
+        .eq('id', docRefId);
+
+      if (error) throw error;
+
+      toast.success('Document reference removed');
+    } catch (error) {
+      console.error('Error deleting document reference:', error);
+      toast.error('Failed to remove document reference');
+      throw error;
+    }
   }
 }

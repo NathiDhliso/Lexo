@@ -1,83 +1,11 @@
 /**
  * Request Action Modals
- * Modals for accepting, requesting info, and declining matter requests
+ * Modals for requesting info and declining matter requests
  */
 import React, { useState } from 'react';
 import { Button, Textarea } from '../design-system/components';
-import { X, CheckCircle, MessageCircle, XCircle } from 'lucide-react';
+import { X, MessageCircle, XCircle } from 'lucide-react';
 import type { Matter } from '../../types';
-
-interface AcceptMatterModalProps {
-  isOpen: boolean;
-  matter: Matter | null;
-  onConfirm: (matterId: string) => void;
-  onClose: () => void;
-}
-
-export const AcceptMatterModal: React.FC<AcceptMatterModalProps> = ({
-  isOpen,
-  matter,
-  onConfirm,
-  onClose
-}) => {
-  if (!isOpen || !matter) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-metallic-gray-900 rounded-lg shadow-xl max-w-md w-full">
-        <div className="p-6">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-status-success-100 dark:bg-status-success-900/30 flex items-center justify-center">
-                <CheckCircle className="w-6 h-6 text-status-success-600 dark:text-status-success-400" />
-              </div>
-              <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
-                Accept Matter Request
-              </h2>
-            </div>
-            <button
-              onClick={onClose}
-              className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="mb-6">
-            <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-              Are you sure you want to accept this matter request?
-            </p>
-            <div className="bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg p-4">
-              <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
-                {matter.title}
-              </h3>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                From: {matter.instructing_firm} • {matter.instructing_attorney}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex gap-3">
-            <Button
-              variant="secondary"
-              onClick={onClose}
-              className="flex-1"
-            >
-              Cancel
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => onConfirm(matter.id)}
-              className="flex-1"
-            >
-              Accept Matter
-            </Button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
 
 interface RequestInfoModalProps {
   isOpen: boolean;

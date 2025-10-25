@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Plus, FileText, Clock, CheckCircle, XCircle, ArrowRight, Link, Undo2, Download } from 'lucide-react';
 import { proformaRequestService } from '../services/api/proforma-request.service';
 import { matterConversionService } from '../services/api/matter-conversion.service';
@@ -24,10 +25,9 @@ interface ProFormaRequestsPageProps {
 
 export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNavigate }) => {
   const { user } = useAuth();
+  const [searchParams] = useSearchParams();
   const [requests, setRequests] = useState<ProFormaRequest[]>([]);
   const [loading, setLoading] = useState(true);
-  const [showNewModal, setShowNewModal] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [showLinkModal, setShowLinkModal] = useState(false);
   const [selectedProFormaId, setSelectedProFormaId] = useState<string | null>(null);
@@ -37,6 +37,32 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
   const [showSendModal, setShowSendModal] = useState(false);
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedRequest, setSelectedRequest] = useState<ProFormaRequest | null>(null);
+
+  // Read URL parameters and apply filters
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    const createParam = searchParams.get('create');
+    
+    // Apply status filter if provided
+    if (statusParam && isValidStatus(statusParam)) {
+      setFilter([statusParam as ProFormaRequestStatus]);
+    }
+    
+    // Trigger create modal if requested
+    if (createParam === 'true') {
+      toast('Please select a matter to create a Pro Forma request', { 
+        duration: 4000,
+        icon: '📝' 
+      });
+      // Remove the create param from URL
+      searchParams.delete('create');
+      window.history.replaceState({}, '', `${window.location.pathname}?${searchParams.toString()}`);
+    }
+  }, [searchParams]);
+
+  const isValidStatus = (status: string): boolean => {
+    return ['draft', 'sent', 'accepted', 'declined', 'expired', 'converted'].includes(status);
+  };
 
   useEffect(() => {
     loadRequests();
@@ -203,11 +229,41 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="primary" onClick={() => setShowCreateModal(true)}>
+          <Button 
+            variant="primary" 
+            onClick={() => {
+              toast('Pro forma requests are created from matters. Navigate to Matters to create one.', {
+                duration: 5000,
+                icon: '💡'
+              });
+              if (onNavigate) {
+                setTimeout(() => onNavigate('matters'), 2000);
+              }
+            }}
+          >
             <Plus className="w-5 h-5 mr-2" />
             New Pro Forma
           </Button>
-          <Button variant="secondary" onClick={() => setShowNewModal(true)}>
+          <Button 
+            variant="secondary" 
+            onClick={() => {
+              if (requests.length === 0) {
+                toast.error('No pro forma requests available. Create one first from a matter.');
+                return;
+              }
+              const draftRequest = requests.find(r => r.status === 'draft');
+              if (draftRequest) {
+                setSelectedProFormaId(draftRequest.id);
+                setSelectedProFormaTitle(draftRequest.work_title || '');
+                setShowLinkModal(true);
+              } else {
+                toast('Select a draft pro forma request below to generate a link', {
+                  duration: 4000,
+                  icon: '👇'
+                });
+              }
+            }}
+          >
             <Link className="w-5 h-5 mr-2" />
             Generate Link
           </Button>
@@ -248,7 +304,18 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
           title="No pro forma requests found"
           description="Create your first pro forma to send quotes and estimates to attorneys before creating matters."
           action={
-            <Button variant="primary" onClick={() => setShowNewModal(true)}>
+            <Button 
+              variant="primary" 
+              onClick={() => {
+                toast('Pro forma requests are created from matters. Navigate to Matters page first.', {
+                  duration: 5000,
+                  icon: '💡'
+                });
+                if (onNavigate) {
+                  setTimeout(() => onNavigate('matters'), 2000);
+                }
+              }}
+            >
               <Plus className="w-4 h-4 mr-2" />
               Create Pro Forma
             </Button>
@@ -429,7 +496,6 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
                 onClick={() => {
                   toast.success('Pro forma sent to client');
                   setShowSendModal(false);
-                  setShowCreateModal(false);
                   setSelectedProForma(null);
                 }}
                 className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
@@ -491,6 +557,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
           onSuccess={() => {
             loadRequests();
           }}
+          onNavigate={onNavigate}
         />
       )}
     </div>

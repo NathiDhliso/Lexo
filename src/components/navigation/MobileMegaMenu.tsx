@@ -11,7 +11,7 @@ import type { NavigationCategory, Page, UserTier } from '../../types';
 
 interface MobileMegaMenuProps {
   categories: NavigationCategory[];
-  onItemClick: (page: Page, hash?: string) => void;
+  onItemClick: (page: Page, queryParams?: Record<string, string>) => void;
   onActionClick: (action: string) => void;
   userTier: UserTier;
   activePage: Page;
@@ -25,7 +25,7 @@ interface MobileMegaMenuProps {
 
 interface MobileMenuItemProps {
   item: any;
-  onItemClick: (page: Page, hash?: string) => void;
+  onItemClick: (page: Page, queryParams?: Record<string, string>) => void;
   onActionClick: (action: string) => void;
   userTier: UserTier;
   level?: number;
@@ -33,7 +33,7 @@ interface MobileMenuItemProps {
 
 interface MobileSectionProps {
   section: any;
-  onItemClick: (page: Page, hash?: string) => void;
+  onItemClick: (page: Page, queryParams?: Record<string, string>) => void;
   onActionClick: (action: string) => void;
   userTier: UserTier;
   level?: number;
@@ -41,7 +41,7 @@ interface MobileSectionProps {
 
 interface MobileCategoryProps {
   category: NavigationCategory;
-  onItemClick: (page: Page, hash?: string) => void;
+  onItemClick: (page: Page, queryParams?: Record<string, string>) => void;
   onActionClick: (action: string) => void;
   userTier: UserTier;
   activePage: Page;
@@ -67,8 +67,20 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({
     if (item.action) {
       onActionClick(item.action);
     } else if (item.page) {
-      onItemClick(item.page, item.hash);
+      // Support both new queryParams and deprecated hash for backward compatibility
+      const params = item.queryParams || (item.hash ? parseHashToParams(item.hash) : undefined);
+      onItemClick(item.page, params);
     }
+  };
+
+  // Helper to parse old hash format to params
+  const parseHashToParams = (hash: string): Record<string, string> => {
+    const params: Record<string, string> = {};
+    hash.split('&').forEach(pair => {
+      const [key, value] = pair.split('=');
+      if (key && value) params[key] = value;
+    });
+    return params;
   };
 
   return (
@@ -298,8 +310,8 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
   };
 
   // Handle item click with menu close
-  const handleItemClick = (page: Page, hash?: string) => {
-    onItemClick(page, hash);
+  const handleItemClick = (page: Page, queryParams?: Record<string, string>) => {
+    onItemClick(page, queryParams);
     onClose();
   };
 

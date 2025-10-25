@@ -39,18 +39,29 @@ export interface CloudStorageSyncLog {
   completedAt?: string;
 }
 
-export interface DocumentCloudStorage {
+export interface DocumentReference {
   id: string;
-  documentUploadId: string;
-  connectionId: string;
-  providerFileId: string;
-  providerFilePath: string;
-  providerWebUrl?: string;
-  providerDownloadUrl?: string;
-  isSynced: boolean;
-  lastSyncedAt: string;
-  localHash?: string;
-  providerHash?: string;
+  matterId: string;
+  
+  // File metadata (not the file itself)
+  fileName: string;
+  fileType?: string;
+  documentType?: 'brief' | 'motion' | 'affidavit' | 'correspondence' | 'contract' | 'other';
+  notes?: string;
+  
+  // Storage location (advocate's choice)
+  storageType: 'local' | CloudStorageProvider;
+  
+  // Reference to file (NOT the file contents)
+  localPath?: string;              // For desktop app: "C:/Documents/Briefs/Smith.pdf"
+  cloudFileId?: string;            // For cloud: Google Drive file ID
+  cloudFileUrl?: string;           // For cloud: Shareable link
+  
+  // Verification status
+  lastVerifiedAt?: string;
+  fileStatus: 'available' | 'missing' | 'access_denied';
+  
+  // Metadata
   createdAt: string;
   updatedAt: string;
 }
@@ -67,11 +78,12 @@ export interface CloudStorageProviderInfo {
   isAvailable: boolean;
 }
 
-export interface CloudStorageUploadOptions {
-  file: File;
-  matterId?: string;
-  folderId?: string;
-  onProgress?: (progress: number) => void;
+export interface CloudStorageLinkOptions {
+  matterId: string;
+  fileName: string;
+  storageType: 'local' | CloudStorageProvider;
+  fileReference: string; // Drive file ID, OneDrive item ID, or local file path
+  fileUrl?: string; // Shareable link for cloud files
 }
 
 export interface CloudStorageDownloadOptions {
@@ -95,13 +107,26 @@ export interface CloudStorageQuota {
   percentage: number;
 }
 
-export interface CloudStorageSyncResult {
+export interface CloudStorageVerificationResult {
   success: boolean;
-  filesUploaded: number;
-  filesDownloaded: number;
-  filesFailed: number;
+  filesVerified: number;
+  filesAvailable: number;
+  filesMissing: number;
+  filesAccessDenied: number;
   errors: string[];
   duration: number; // in ms
+}
+
+export interface CloudStorageFileInfo {
+  id: string;
+  name: string;
+  type: 'file' | 'folder';
+  size?: number;
+  modifiedDate?: Date;
+  path: string;
+  mimeType?: string;
+  webViewUrl?: string;
+  downloadUrl?: string;
 }
 
 export interface OAuthConfig {

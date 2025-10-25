@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Copy, Check, Clock } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
@@ -87,15 +87,33 @@ export const InviteAttorneyModal: React.FC<InviteAttorneyModalProps> = ({
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleFieldChange = (field: keyof FormData, value: string) => {
+  const handleFieldChange = useCallback((field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setTouched(prev => ({ ...prev, [field]: true }));
     
     // Clear error for this field when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: undefined }));
-    }
-  };
+    setErrors(prev => {
+      if (prev[field]) {
+        const newErrors = { ...prev };
+        delete newErrors[field];
+        return newErrors;
+      }
+      return prev;
+    });
+  }, []);
+
+  // Memoized handlers
+  const handleAttorneyNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFieldChange('attorneyName', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleAttorneyEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleFieldChange('attorneyEmail', e.target.value);
+  }, [handleFieldChange]);
+
+  const handleRoleChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    handleFieldChange('role', e.target.value);
+  }, [handleFieldChange]);
 
   const generateToken = async () => {
     // Validate form before generating token
@@ -156,7 +174,7 @@ export const InviteAttorneyModal: React.FC<InviteAttorneyModalProps> = ({
                 label="Attorney Name"
                 placeholder="Enter attorney's full name"
                 value={formData.attorneyName}
-                onChange={(e) => handleFieldChange('attorneyName', e.target.value)}
+                onChange={handleAttorneyNameChange}
                 error={errors.attorneyName}
                 touched={touched.attorneyName}
                 required
@@ -167,7 +185,7 @@ export const InviteAttorneyModal: React.FC<InviteAttorneyModalProps> = ({
                 type="email"
                 placeholder="attorney@lawfirm.co.za"
                 value={formData.attorneyEmail}
-                onChange={(e) => handleFieldChange('attorneyEmail', e.target.value)}
+                onChange={handleAttorneyEmailChange}
                 error={errors.attorneyEmail}
                 touched={touched.attorneyEmail}
                 required
@@ -179,7 +197,7 @@ export const InviteAttorneyModal: React.FC<InviteAttorneyModalProps> = ({
                 </label>
                 <select
                   value={formData.role}
-                  onChange={(e) => handleFieldChange('role', e.target.value)}
+                  onChange={handleRoleChange}
                   className={`
                     w-full px-3 py-2.5 min-h-[44px]
                     border rounded-lg

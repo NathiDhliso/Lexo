@@ -12,7 +12,7 @@ import { UserTier } from '../../types';
 
 interface MegaMenuProps {
   category: NavigationCategory;
-  onItemClick: (page: Page, hash?: string) => void;
+  onItemClick: (page: Page, queryParams?: Record<string, string>) => void;
   onActionClick?: (action: string) => void;
   userTier: UserTier;
   className?: string;
@@ -20,14 +20,14 @@ interface MegaMenuProps {
 
 interface MegaMenuItemProps {
   item: NavigationItem;
-  onItemClick: (page: Page, hash?: string) => void;
+  onItemClick: (page: Page, queryParams?: Record<string, string>) => void;
   onActionClick?: (action: string) => void;
   userTier: UserTier;
 }
 
 interface MegaMenuSectionProps {
   section: NavigationSection;
-  onItemClick: (page: Page, hash?: string) => void;
+  onItemClick: (page: Page, queryParams?: Record<string, string>) => void;
   onActionClick?: (action: string) => void;
   userTier: UserTier;
 }
@@ -44,12 +44,19 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
     (item.minTier && getUserTierLevel(userTier) >= getUserTierLevel(item.minTier));
   
   const handleClick = () => {
+    console.log('[MegaMenu] Item clicked:', item.id, 'action:', item.action, 'page:', item.page, 'isAccessible:', isAccessible);
     if (isAccessible) {
       if (item.action && onActionClick) {
+        console.log('[MegaMenu] Calling onActionClick with action:', item.action);
         onActionClick(item.action);
       } else if (item.page) {
-        onItemClick(item.page, item.hash);
+        // Support both new queryParams and deprecated hash for backward compatibility
+        const params = item.queryParams || (item.hash ? parseHashToParams(item.hash) : undefined);
+        console.log('[MegaMenu] Calling onItemClick with page:', item.page, 'params:', params);
+        onItemClick(item.page, params);
       }
+    } else {
+      console.log('[MegaMenu] Item not accessible');
     }
   };
 
@@ -59,9 +66,20 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
       if (item.action && onActionClick) {
         onActionClick(item.action);
       } else if (item.page) {
-        onItemClick(item.page, item.hash);
+        const params = item.queryParams || (item.hash ? parseHashToParams(item.hash) : undefined);
+        onItemClick(item.page, params);
       }
     }
+  };
+
+  // Helper to parse old hash format to params
+  const parseHashToParams = (hash: string): Record<string, string> => {
+    const params: Record<string, string> = {};
+    hash.split('&').forEach(pair => {
+      const [key, value] = pair.split('=');
+      if (key && value) params[key] = value;
+    });
+    return params;
   };
 
   return (
@@ -191,11 +209,21 @@ const MegaMenuSection: React.FC<MegaMenuSectionProps> = ({
 // Featured items component
 const FeaturedItems: React.FC<{
   items: NavigationItem[];
-  onItemClick: (page: Page, hash?: string) => void;
+  onItemClick: (page: Page, queryParams?: Record<string, string>) => void;
   onActionClick?: (action: string) => void;
   userTier: UserTier;
 }> = ({ items, onItemClick, onActionClick, userTier }) => {
   const accessibleItems = getAccessibleNavigationItems(items, userTier);
+  
+  // Helper to parse old hash format to params
+  const parseHashToParams = (hash: string): Record<string, string> => {
+    const params: Record<string, string> = {};
+    hash.split('&').forEach(pair => {
+      const [key, value] = pair.split('=');
+      if (key && value) params[key] = value;
+    });
+    return params;
+  };
   
   if (accessibleItems.length === 0) {
     return null;
@@ -226,7 +254,8 @@ const FeaturedItems: React.FC<{
                   if (item.action && onActionClick) {
                     onActionClick(item.action);
                   } else if (item.page) {
-                    onItemClick(item.page, item.hash);
+                    const params = item.queryParams || (item.hash ? parseHashToParams(item.hash) : undefined);
+                    onItemClick(item.page, params);
                   }
                 }
               }}

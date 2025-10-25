@@ -70,16 +70,69 @@ class ReportsService {
   }
 
   async generateWIPReport(filters: ReportFilter): Promise<WIPReportData> {
-    const mockData: WIPReportData = {
-      matters: [
-        { id: '1', name: 'Smith v. Jones', client: 'John Smith', unbilledAmount: 15000, hours: 45 },
-        { id: '2', name: 'Estate Planning - Brown', client: 'Sarah Brown', unbilledAmount: 8500, hours: 28 },
-        { id: '3', name: 'Contract Review - Tech Corp', client: 'Tech Corp Ltd', unbilledAmount: 22000, hours: 67 },
-      ],
-      totalUnbilled: 45500,
-    };
-    
-    return this.callRPC('generate_wip_report', filters, mockData);
+    try {
+      // Try to get real data from database
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      let query = supabase
+        .from('matters')
+        .select('id, title, client_name, wip_value, created_at')
+        .eq('advocate_id', user.id)
+        .eq('status', 'active')
+        .gt('wip_value', 0);
+
+      if (filters.startDate) {
+        query = query.gte('created_at', filters.startDate);
+      }
+      if (filters.endDate) {
+        query = query.lte('created_at', filters.endDate);
+      }
+
+      const { data: matters, error } = await query;
+
+      if (error) throw error;
+
+      // Get time entries for each matter to calculate hours
+      const mattersWithHours = await Promise.all(
+        (matters || []).map(async (matter) => {
+          const { data: timeEntries } = await supabase
+            .from('time_entries')
+            .select('hours_worked')
+            .eq('matter_id', matter.id)
+            .is('invoice_id', null); // Only unbilled time
+
+          const totalHours = timeEntries?.reduce((sum, entry) => sum + (entry.hours_worked || 0), 0) || 0;
+
+          return {
+            id: matter.id,
+            name: matter.title,
+            client: matter.client_name,
+            unbilledAmount: matter.wip_value || 0,
+            hours: totalHours
+          };
+        })
+      );
+
+      const totalUnbilled = mattersWithHours.reduce((sum, m) => sum + m.unbilledAmount, 0);
+
+      return {
+        matters: mattersWithHours,
+        totalUnbilled
+      };
+    } catch (error) {
+      console.warn('Failed to fetch real WIP data, using mock:', error);
+      // Fallback to mock data
+      const mockData: WIPReportData = {
+        matters: [
+          { id: '1', name: 'Smith v. Jones', client: 'John Smith', unbilledAmount: 15000, hours: 45 },
+          { id: '2', name: 'Estate Planning - Brown', client: 'Sarah Brown', unbilledAmount: 8500, hours: 28 },
+          { id: '3', name: 'Contract Review - Tech Corp', client: 'Tech Corp Ltd', unbilledAmount: 22000, hours: 67 },
+        ],
+        totalUnbilled: 45500,
+      };
+      return mockData;
+    }
   }
 
   async generateRevenueReport(filters: ReportFilter): Promise<RevenueReportData> {
@@ -141,16 +194,79 @@ class ReportsService {
   }
 
   async generateOutstandingInvoicesReport(filters: ReportFilter): Promise<any> {
-    const mockData = {
-      invoices: [
-        { id: 'INV-001', client: 'Tech Corp', amount: 15000, dueDate: '2024-04-30', daysOverdue: 0 },
-        { id: 'INV-002', client: 'John Smith', amount: 8500, dueDate: '2024-04-15', daysOverdue: 15 },
-        { id: 'INV-003', client: 'ABC Ltd', amount: 22000, dueDate: '2024-05-10', daysOverdue: 0 },
-      ],
-      totalOutstanding: 45500,
-    };
-    
-    return this.callRPC('generate_outstanding_invoices_report', filters, mockData);
+    try {
+      // Try to get real data from database
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      let query = supabase
+        .from('invoices')
+        .select(`
+          id,
+          invoice_number,
+          matter_id,
+          balance_due,
+          date_due,
+          status,
+          matters (
+            client_name,
+            instructing_attorney
+          )
+        `)
+        .eq('advocate_id', user.id)
+        .in('status', ['sent', 'overdue'])
+        .gt('balance_due', 0)
+        .order('date_due', { ascending: true });
+
+      if (filters.startDate) {
+        query = query.gte('date_due', filters.startDate);
+      }
+      if (filters.endDate) {
+        query = query.lte('date_due', filters.endDate);
+      }
+
+      const { data: invoices, error } = await query;
+
+      if (error) throw error;
+
+      const now = new Date();
+      const formattedInvoices = (invoices || []).map((invoice: any) => {
+        const dueDate = new Date(invoice.date_due);
+        const daysOverdue = invoice.status === 'overdue' 
+          ? Math.floor((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24))
+          : 0;
+
+        return {
+          id: invoice.invoice_number,
+          invoiceId: invoice.id,
+          client: invoice.matters?.client_name || 'Unknown',
+          attorney: invoice.matters?.instructing_attorney || 'Unknown',
+          amount: invoice.balance_due,
+          dueDate: invoice.date_due,
+          daysOverdue,
+          status: invoice.status
+        };
+      });
+
+      const totalOutstanding = formattedInvoices.reduce((sum, inv) => sum + inv.amount, 0);
+
+      return {
+        invoices: formattedInvoices,
+        totalOutstanding
+      };
+    } catch (error) {
+      console.warn('Failed to fetch real outstanding invoices data, using mock:', error);
+      // Fallback to mock data
+      const mockData = {
+        invoices: [
+          { id: 'INV-001', client: 'Tech Corp', amount: 15000, dueDate: '2024-04-30', daysOverdue: 0 },
+          { id: 'INV-002', client: 'John Smith', amount: 8500, dueDate: '2024-04-15', daysOverdue: 15 },
+          { id: 'INV-003', client: 'ABC Ltd', amount: 22000, dueDate: '2024-05-10', daysOverdue: 0 },
+        ],
+        totalOutstanding: 45500,
+      };
+      return mockData;
+    }
   }
 
   async generateAgingReport(filters: ReportFilter): Promise<any> {

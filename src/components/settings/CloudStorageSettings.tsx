@@ -67,10 +67,14 @@ export const CloudStorageSettings: React.FC = () => {
 
   const handleSync = async (connectionId: string) => {
     try {
-      await CloudStorageService.syncAllDocuments(connectionId);
-      toast.success('Sync completed');
+      const result = await CloudStorageService.verifyAllDocuments();
+      if (result.success) {
+        toast.success(`Verified ${result.filesAvailable} files successfully`);
+      } else {
+        toast.error(`Found ${result.filesMissing} missing files`);
+      }
     } catch (error) {
-      console.error('Error syncing:', error);
+      console.error('Error verifying files:', error);
     }
   };
 
@@ -84,16 +88,38 @@ export const CloudStorageSettings: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      {/* Privacy Notice */}
+      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+        <div className="flex items-start gap-3">
+          <div className="text-green-600 dark:text-green-400 text-xl">🔒</div>
+          <div>
+            <h3 className="font-semibold text-green-800 dark:text-green-200 mb-2">Your Privacy is Protected</h3>
+            <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+              This app <strong>NEVER uploads</strong> your client documents to our servers. 
+              When you link files from Google Drive or your computer, we only store:
+            </p>
+            <ul className="text-sm text-green-700 dark:text-green-300 list-disc list-inside space-y-1">
+              <li>The file name and location reference</li>
+              <li>A link to YOUR storage (Google Drive, OneDrive, etc.)</li>
+              <li>When you linked it to a matter</li>
+            </ul>
+            <p className="text-sm text-green-700 dark:text-green-300 mt-2">
+              <strong>Your actual documents stay in YOUR storage, under YOUR control.</strong>
+            </p>
+          </div>
+        </div>
+      </div>
+
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Cloud Storage</h2>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Cloud Storage Connections</h2>
           <p className="mt-1 text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500">
-            Connect your cloud storage accounts to store documents
+            Connect your cloud storage accounts to link documents to matters
           </p>
         </div>
         <Button onClick={() => setShowAddModal(true)}>
-          Add Storage Provider
+          Connect Storage Provider
         </Button>
       </div>
 
@@ -157,7 +183,7 @@ export const CloudStorageSettings: React.FC = () => {
                         size="sm"
                         onAsyncClick={() => handleSync(connection.id)}
                       >
-                        Sync Now
+                        Verify Files
                       </AsyncButton>
                     )}
                     {connection.isActive ? (
@@ -203,7 +229,7 @@ export const CloudStorageSettings: React.FC = () => {
             No cloud storage connected
           </h3>
           <p className="text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mb-4">
-            Connect a cloud storage provider to store your documents
+            Connect a cloud storage provider to link your documents to matters
           </p>
           <Button onClick={() => setShowAddModal(true)}>
             Connect Storage Provider
@@ -218,6 +244,13 @@ export const CloudStorageSettings: React.FC = () => {
         title="Connect Cloud Storage"
       >
         <div className="space-y-4">
+          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+            <p className="text-sm text-blue-800 dark:text-blue-200">
+              <strong>How it works:</strong> We'll connect to your cloud storage with read-only access. 
+              You can then link existing files from your storage to matters in this app. 
+              Your files stay in your storage - we never download or store them.
+            </p>
+          </div>
           <p className="text-sm text-gray-600 dark:text-neutral-400 dark:text-neutral-500">
             Choose a cloud storage provider to connect your account
           </p>

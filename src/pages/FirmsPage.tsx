@@ -1,4 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Building, 
   Plus, 
@@ -18,13 +19,14 @@ import { supabase } from '../lib/supabase';
 import { exportToCSV, exportToPDF } from '../utils/export.utils';
 import type { Firm } from '../types/financial.types';
 import { useNavigate } from 'react-router-dom';
-import { FirmCard, InviteAttorneyModal } from '../components/firms';
+import { FirmCard, AddAttorneyModal, CreateFirmModal } from '../components/firms';
 
 const FirmsPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'active' | 'all'>('active');
   const [searchTerm, setSearchTerm] = useState('');
-  const [showInviteModal, setShowInviteModal] = useState(false);
-  const [firmToInvite, setFirmToInvite] = useState<Firm | null>(null);
+  const [showAddAttorneyModal, setShowAddAttorneyModal] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
 
   const [firms, setFirms] = useState<Firm[]>([]);
   const [loadingFirms, setLoadingFirms] = useState(true);
@@ -32,12 +34,50 @@ const FirmsPage: React.FC = () => {
   const navigate = useNavigate();
   const { confirm } = useConfirmation();
 
+  // Log component mount
+  useEffect(() => {
+    console.log('[FirmsPage] Component mounted/rendered');
+    return () => console.log('[FirmsPage] Component unmounting');
+  }, []);
+
+  // Read URL parameters and apply view/action
+  useEffect(() => {
+    const viewParam = searchParams.get('view');
+    const actionParam = searchParams.get('action');
+    
+    // Apply view filter if provided
+    if (viewParam === 'attorneys') {
+      // Could filter to show only firms with attorneys
+      toast('Viewing all attorneys across firms', { icon: '👥' });
+    } else if (viewParam === 'pending') {
+      // Could filter to show pending invitations
+      toast('Viewing pending attorney invitations', { icon: '⏳' });
+    }
+    
+    // Trigger add attorney modal if requested
+    if (actionParam === 'invite') {
+      setShowAddAttorneyModal(true);
+      toast('Add a new attorney to your firms', { 
+        duration: 4000,
+        icon: '👋' 
+      });
+      // Remove the action param from URL
+      searchParams.delete('action');
+      window.history.replaceState({}, '', `${window.location.pathname}${searchParams.toString() ? '?' + searchParams.toString() : ''}`);
+    }
+  }, [searchParams, firms]);
+
   // Load firms from database
   const fetchFirms = useCallback(async () => {
-    if (loading || !isAuthenticated) return;
+    console.log('[FirmsPage] fetchFirms called. loading:', loading, 'isAuthenticated:', isAuthenticated);
+    if (loading || !isAuthenticated) {
+      console.log('[FirmsPage] Skipping fetch - auth not ready');
+      return;
+    }
     setLoadingFirms(true);
     
     try {
+      console.log('[FirmsPage] Fetching firms from database...');
       const { data, error } = await supabase
         .from('firms')
         .select('*')
@@ -50,6 +90,7 @@ const FirmsPage: React.FC = () => {
         return;
       }
       
+      console.log('[FirmsPage] Successfully fetched firms:', data?.length || 0, 'firms');
       setFirms(data || []);
     } catch (err) {
       console.error('[FirmsPage] Unexpected error:', err);
@@ -88,13 +129,12 @@ const FirmsPage: React.FC = () => {
   });
 
   const handleNewFirmClick = () => {
-    // TODO: Implement create firm modal
-    toast('Create firm functionality coming soon', { icon: 'ℹ️' });
+    console.log('[FirmsPage] New Firm button clicked');
+    setShowCreateModal(true);
   };
 
-  const handleInviteAttorney = (firm: Firm) => {
-    setFirmToInvite(firm);
-    setShowInviteModal(true);
+  const handleAddAttorney = (_firm: Firm) => {
+    setShowAddAttorneyModal(true);
   };
 
   const handleManageFirm = (firm: Firm) => {
@@ -226,10 +266,18 @@ const FirmsPage: React.FC = () => {
   return (
     <div className="w-full space-y-6 min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="flex items-center gap-3 mb-6">
+        <div className="w-12 h-12 rounded-lg bg-mpondo-gold-100 dark:bg-mpondo-gold-900/30 flex items-center justify-center">
+          <Building className="w-6 h-6 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
+        </div>
+        <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">Firms</h1>
+      </div>
+
+      {/* Firms Management Section */}
+      <div data-section="firms-list" className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">Firms</h1>
-          <p className="text-neutral-600 dark:text-neutral-400 mt-1">Manage instructing law firms</p>
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Manage Firms</h2>
+          <p className="text-neutral-600 dark:text-neutral-400 mt-1">Browse and manage your law firms</p>
         </div>
         
         <Button 
@@ -331,7 +379,7 @@ const FirmsPage: React.FC = () => {
               firm={firm}
               attorneys={[]} // TODO: Fetch attorneys for each firm
               activeMattersCount={0} // TODO: Fetch active matters count
-              onInviteAttorney={handleInviteAttorney}
+              onAddAttorney={handleAddAttorney}
               onManageFirm={handleManageFirm}
               onViewMatters={handleViewMatters}
             />
@@ -339,17 +387,25 @@ const FirmsPage: React.FC = () => {
         </div>
       )}
 
-      {/* Invite Attorney Modal */}
-      {firmToInvite && (
-        <InviteAttorneyModal
-          isOpen={showInviteModal}
-          onClose={() => {
-            setShowInviteModal(false);
-            setFirmToInvite(null);
-          }}
-          firm={firmToInvite}
-        />
-      )}
+      {/* Create Firm Modal */}
+      <CreateFirmModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onSuccess={() => {
+          fetchFirms(); // Reload firms list
+          setShowCreateModal(false);
+        }}
+      />
+
+      {/* Add Attorney Modal */}
+      <AddAttorneyModal
+        isOpen={showAddAttorneyModal}
+        onClose={() => setShowAddAttorneyModal(false)}
+        onSuccess={() => {
+          fetchFirms(); // Reload firms list
+          setShowAddAttorneyModal(false);
+        }}
+      />
     </div>
   );
 };

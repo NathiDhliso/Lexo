@@ -1,27 +1,35 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { 
   Briefcase, 
   Plus, 
   Clock, 
   AlertTriangle,
+  AlertCircle,
   Eye,
   Search,
   Edit,
   Undo2,
-  Zap,
-  ChevronDown,
   Trash2,
   Download,
-  Archive
+  Archive,
+  DollarSign,
+  Bell,
+  TrendingUp,
+  FileText,
+  Info,
+  CheckCircle
 } from 'lucide-react';
 import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
 import { SkeletonMatterCard } from '../components/design-system/components';
 import { MatterDetailModal } from '../components/matters/MatterDetailModal';
 import { EditMatterModal } from '../components/matters/EditMatterModal';
-import { QuickCreateMatterModal } from '../components/matters/QuickCreateMatterModal';
 import { NewRequestCard } from '../components/matters/NewRequestCard';
-import { AcceptMatterModal, RequestInfoModal, DeclineMatterModal } from '../components/matters/RequestActionModals';
+import { RequestInfoModal, DeclineMatterModal } from '../components/matters/RequestActionModals';
 import { AcceptBriefModal } from '../components/matters/AcceptBriefModal';
+import { RequestScopeAmendmentModal } from '../components/matters/RequestScopeAmendmentModal';
+import { SimpleFeeEntryModal } from '../components/matters/SimpleFeeEntryModal';
+import { QuickAddMatterModal, type QuickAddMatterData } from '../components/matters/QuickAddMatterModal';
 import { NotificationBadge } from '../components/navigation/NotificationBadge';
 import { BulkActionToolbar, SelectionCheckbox } from '../components/ui/BulkActionToolbar';
 import { matterApiService } from '../services/api';
@@ -41,25 +49,46 @@ interface MattersPageProps {
 }
 
 const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'active' | 'new_requests' | 'all'>('active');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [showQuickCreateModal, setShowQuickCreateModal] = useState(false);
-  const [showCreateDropdown, setShowCreateDropdown] = useState(false);
-  
   // New request action modals
-  const [showAcceptModal, setShowAcceptModal] = useState(false);
   const [showAcceptBriefModal, setShowAcceptBriefModal] = useState(false);
   const [showRequestInfoModal, setShowRequestInfoModal] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
+  const [showQuickAddModal, setShowQuickAddModal] = useState(false);
+  
+  // TIER 1 & TIER 2 Feature modals
+  const [showScopeAmendmentModal, setShowScopeAmendmentModal] = useState(false);
+  const [showSimpleFeeModal, setShowSimpleFeeModal] = useState(false);
+  const [selectedMatterForAction, setSelectedMatterForAction] = useState<Matter | null>(null);
 
   const [matters, setMatters] = useState<Matter[]>([]);
   const [loadingMatters, setLoadingMatters] = useState(true);
   const { user, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { confirm } = useConfirmation();
+
+  // Read URL parameters and apply tab/view
+  useEffect(() => {
+    const tabParam = searchParams.get('tab');
+    const viewParam = searchParams.get('view');
+    
+    // Apply tab filter if provided
+    if (tabParam === 'active') {
+      setActiveTab('active');
+    } else if (tabParam === 'new_requests') {
+      setActiveTab('new_requests');
+      toast('Viewing new matter requests', { icon: '📋' });
+    } else if (viewParam === 'time') {
+      toast('Time tracking view - showing matters with time entries', { icon: '⏱️' });
+    } else if (viewParam === 'documents') {
+      toast('Documents view - showing matters with documents', { icon: '📁' });
+    }
+  }, [searchParams]);
 
   const navigatePage = (page: Page) => {
     if (onNavigate) {
@@ -77,7 +106,8 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         navigate('/matters');
         break;
       case 'matter-workbench':
-        navigate('/matter-workbench');
+        // This should include a matterId, but if called directly, go to matters list
+        navigate('/matters');
         break;
       case 'invoices':
         navigate('/invoices');
@@ -230,17 +260,31 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   });
 
   const handleNewMatterClick = () => {
-    navigatePage('matter-workbench');
+    // Open quick add modal for matters accepted over phone/email
+    setShowQuickAddModal(true);
+  };
+
+  const handleQuickAddMatter = async (matterData: QuickAddMatterData) => {
+    try {
+      const newMatter = await matterApiService.createActiveMatter(matterData);
+      setShowQuickAddModal(false);
+      await fetchMatters(); // Refresh the list
+      // Navigate to the matter workbench
+      navigate(`/matter-workbench/${newMatter.id}`);
+    } catch (error) {
+      console.error('Error creating matter:', error);
+      // Error toast is shown by the service
+    }
   };
 
   const handleViewMatter = (matter: Matter) => {
-    setSelectedMatter(matter);
-    setShowDetailModal(true);
-  };
-
-  const handleViewDetails = (matter: Matter) => {
-    setSelectedMatter(matter);
-    setShowDetailModal(true);
+    // If matter is active, route to workbench; otherwise show detail modal
+    if (matter.status === 'active') {
+      navigate(`/matter-workbench/${matter.id}`);
+    } else {
+      setSelectedMatter(matter);
+      setShowDetailModal(true);
+    }
   };
 
   const handleEditMatter = (matter: Matter) => {
@@ -402,19 +446,6 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   };
 
   // New Request Action Handlers
-  const handleAcceptMatter = async (matterId: string) => {
-    try {
-      await matterApiService.updateStatus(matterId, MatterStatus.ACTIVE);
-      toast.success('Matter request accepted');
-      await fetchMatters();
-      setShowAcceptModal(false);
-      setSelectedMatter(null);
-    } catch (error) {
-      console.error('Failed to accept matter:', error);
-      toast.error('Failed to accept matter request');
-    }
-  };
-
   const handleRequestInfo = async (matterId: string, message: string) => {
     try {
       // TODO: Implement email notification to attorney
@@ -457,6 +488,23 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     }
   };
 
+  // Calculate stats
+  const stats = useMemo(() => {
+    const newRequestCount = matters.filter(m => m.status === MatterStatus.NEW_REQUEST).length;
+    const activeCount = matters.filter(m => m.status === MatterStatus.ACTIVE).length;
+    const settledCount = matters.filter(m => m.status === MatterStatus.SETTLED).length;
+    const closedCount = matters.filter(m => m.status === MatterStatus.CLOSED).length;
+    const totalWIP = matters.reduce((sum, m) => sum + (m.wip_value || 0), 0);
+    
+    return {
+      newRequestCount,
+      activeCount,
+      settledCount,
+      closedCount,
+      totalWIP
+    };
+  }, [matters]);
+
   return (
     <div className="w-full space-y-6 min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 p-6">
       {/* Header */}
@@ -475,6 +523,75 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           <span>New Matter</span>
         </Button>
       </div>
+
+      {/* Stats Cards */}
+      {!loadingMatters && matters.length > 0 && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <Card className="overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">New Requests</p>
+                  <p className="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">
+                    {stats.newRequestCount}
+                  </p>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
+                  <Bell className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Active Matters</p>
+                  <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">
+                    {stats.activeCount}
+                  </p>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total WIP</p>
+                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+                    R{stats.totalWIP.toLocaleString()}
+                  </p>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+          
+          <Card className="overflow-hidden">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Settled</p>
+                  <p className="text-3xl font-bold text-orange-600 dark:text-orange-400 mt-2">
+                    {stats.settledCount}
+                  </p>
+                </div>
+                <div className="w-12 h-12 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center">
+                  <FileText className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
 
       {/* Search */}
       <div className="relative max-w-md">
@@ -548,19 +665,27 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
             ))}
           </div>
         ) : filteredMatters.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <Briefcase className="w-12 h-12 text-neutral-400 dark:text-neutral-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">No Matters Found</h3>
-              <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-                {activeTab === 'active' ? 'No active matters' : activeTab === 'new_requests' ? 'No new matter requests' : 'No matters match your search criteria'}
-              </p>
-              <Button onClick={handleNewMatterClick} variant="primary">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Your First Matter
-              </Button>
-            </CardContent>
-          </Card>
+          <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-8 text-center">
+            <Info className="w-16 h-16 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">
+              {matters.length === 0 ? 'No Matters Yet' : 'No Matters Found'}
+            </h3>
+            <p className="text-blue-800 dark:text-blue-200 mb-4 max-w-lg mx-auto">
+              {matters.length === 0 
+                ? 'New matters will appear here when attorneys submit briefs via the firm portal.'
+                : activeTab === 'active' 
+                  ? 'No active matters found. Try adjusting your search or filters.' 
+                  : activeTab === 'new_requests' 
+                    ? 'No new matter requests at this time.' 
+                    : 'No matters match your search criteria.'}
+            </p>
+            {matters.length === 0 && (
+              <div className="inline-flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 px-4 py-2 rounded-lg">
+                <Info className="w-4 h-4" />
+                <span>Tip: Share attorney registration links from the Firms page</span>
+              </div>
+            )}
+          </div>
         ) : activeTab === 'new_requests' ? (
           // Render New Request Cards
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -741,6 +866,40 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                       Reverse
                     </Button>
                   )}
+
+                  {/* 🆕 TIER 2: Scope Amendment Button - for Path A matters (from pro forma) */}
+                  {matter.status === MatterStatus.ACTIVE && (matter as any).source_proforma_id && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedMatterForAction(matter);
+                        setShowScopeAmendmentModal(true);
+                      }}
+                      className="flex items-center gap-2 text-judicial-blue-700 dark:text-judicial-blue-400 border-judicial-blue-300 dark:border-judicial-blue-700 hover:bg-judicial-blue-50 dark:hover:bg-judicial-blue-950/30"
+                      title="Request scope amendment for additional work"
+                    >
+                      <AlertCircle className="w-4 h-4" />
+                      Scope Amendment
+                    </Button>
+                  )}
+
+                  {/* 🆕 TIER 2: Simple Fee Entry Button - for Path B matters (accepted brief) */}
+                  {matter.status === MatterStatus.ACTIVE && !(matter as any).source_proforma_id && (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setSelectedMatterForAction(matter);
+                        setShowSimpleFeeModal(true);
+                      }}
+                      className="flex items-center gap-2 text-mpondo-gold-700 dark:text-mpondo-gold-400 border-mpondo-gold-300 dark:border-mpondo-gold-700 hover:bg-mpondo-gold-50 dark:hover:bg-mpondo-gold-950/30"
+                      title="Quick fee entry for brief work"
+                    >
+                      <DollarSign className="w-4 h-4" />
+                      Fee Entry
+                    </Button>
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -763,14 +922,10 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
       />
 
       {/* New Request Action Modals */}
-      <AcceptMatterModal
-        isOpen={showAcceptModal}
-        matter={selectedMatter}
-        onConfirm={handleAcceptMatter}
-        onClose={() => {
-          setShowAcceptModal(false);
-          setSelectedMatter(null);
-        }}
+      <QuickAddMatterModal
+        isOpen={showQuickAddModal}
+        onConfirm={handleQuickAddMatter}
+        onClose={() => setShowQuickAddModal(false)}
       />
 
       <AcceptBriefModal
@@ -800,6 +955,34 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         onClose={() => {
           setShowDeclineModal(false);
           setSelectedMatter(null);
+        }}
+      />
+
+      {/* 🆕 TIER 2: Scope Amendment Modal */}
+      <RequestScopeAmendmentModal
+        isOpen={showScopeAmendmentModal}
+        matter={selectedMatterForAction}
+        onClose={() => {
+          setShowScopeAmendmentModal(false);
+          setSelectedMatterForAction(null);
+        }}
+        onSuccess={() => {
+          fetchMatters();
+          toast.success('Scope amendment request sent to attorney');
+        }}
+      />
+
+      {/* 🆕 TIER 2: Simple Fee Entry Modal */}
+      <SimpleFeeEntryModal
+        isOpen={showSimpleFeeModal}
+        matter={selectedMatterForAction}
+        onClose={() => {
+          setShowSimpleFeeModal(false);
+          setSelectedMatterForAction(null);
+        }}
+        onSuccess={() => {
+          fetchMatters();
+          toast.success('Fee note created successfully');
         }}
       />
     </div>

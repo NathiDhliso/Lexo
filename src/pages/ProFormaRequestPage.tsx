@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import { FileText, Clock, AlertCircle, CheckCircle, Building, User, Mail, Phone } from 'lucide-react';
 import { proformaRequestService } from '../services/api/proforma-request.service';
@@ -138,6 +138,43 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
       setSubmitting(false);
     }
   };
+
+  // Memoized handlers
+  const handleCaseTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, case_title: e.target.value }));
+  }, []);
+
+  const handleMatterTypeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData(prev => ({ ...prev, matter_type: e.target.value }));
+  }, []);
+
+  const handleUrgencyLevelChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData(prev => ({ ...prev, urgency_level: e.target.value as 'low' | 'medium' | 'high' }));
+  }, []);
+
+  const handleWorkDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, work_description: e.target.value }));
+  }, []);
+
+  const handleAttorneyNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, instructing_attorney_name: e.target.value }));
+  }, []);
+
+  const handleAttorneyEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, instructing_attorney_email: e.target.value }));
+  }, []);
+
+  const handleAttorneyPhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, instructing_attorney_phone: e.target.value }));
+  }, []);
+
+  const handleInstructingFirmChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, instructing_firm: e.target.value }));
+  }, []);
+
+  const handlePreferredContactChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    setFormData(prev => ({ ...prev, preferred_contact_method: e.target.value as 'email' | 'phone' | 'either' }));
+  }, []);
 
   const formatCurrency = (amount: number) => {
     return `R ${amount.toLocaleString('en-ZA', {
@@ -301,9 +338,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                           type="text"
                           required
                           value={formData.case_title}
-                          onChange={(e) =>
-                            setFormData({ ...formData, case_title: e.target.value })
-                          }
+                          onChange={handleCaseTitleChange}
                           className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           placeholder="e.g., Smith v. Jones Contract Dispute"
                         />
@@ -317,9 +352,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                           <select
                             required
                             value={formData.matter_type}
-                            onChange={(e) =>
-                              setFormData({ ...formData, matter_type: e.target.value })
-                            }
+                            onChange={handleMatterTypeChange}
                             className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           >
                             <option value="">Select matter type...</option>
@@ -341,9 +374,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                           <select
                             required
                             value={formData.urgency_level}
-                            onChange={(e) =>
-                              setFormData({ ...formData, urgency_level: e.target.value as 'low' | 'medium' | 'high' })
-                            }
+                            onChange={handleUrgencyLevelChange}
                             className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           >
                             <option value="low">Low - No rush</option>
@@ -360,9 +391,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                         <textarea
                           required
                           value={formData.work_description}
-                          onChange={(e) =>
-                            setFormData({ ...formData, work_description: e.target.value })
-                          }
+                          onChange={handleWorkDescriptionChange}
                           rows={8}
                           className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           placeholder="Please provide a comprehensive description including:&#10;&#10;• Background and context of the case&#10;• Key issues and legal questions&#10;• Work required from the advocate&#10;• Important deadlines or time constraints&#10;• Any relevant documents or evidence&#10;• Expected outcomes or objectives&#10;&#10;Example:&#10;Our client is facing a breach of contract claim. We need an advocate to:&#10;- Review the 50-page commercial agreement&#10;- Draft heads of argument for the upcoming hearing&#10;- Appear in court on 15 March 2025&#10;- Provide an opinion on liability and quantum"
@@ -393,9 +422,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                       type="text"
                       required
                       value={formData.instructing_attorney_name}
-                      onChange={(e) =>
-                        setFormData({ ...formData, instructing_attorney_name: e.target.value })
-                      }
+                      onChange={handleAttorneyNameChange}
                       className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                       placeholder="Enter your full name"
                     />
@@ -412,9 +439,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                           type="email"
                           required
                           value={formData.instructing_attorney_email}
-                          onChange={(e) =>
-                            setFormData({ ...formData, instructing_attorney_email: e.target.value })
-                          }
+                          onChange={handleAttorneyEmailChange}
                           className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           placeholder="your.email@example.com"
                         />
@@ -430,9 +455,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                         <input
                           type="tel"
                           value={formData.instructing_attorney_phone}
-                          onChange={(e) =>
-                            setFormData({ ...formData, instructing_attorney_phone: e.target.value })
-                          }
+                          onChange={handleAttorneyPhoneChange}
                           className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                           placeholder="+27 11 123 4567"
                         />
@@ -450,9 +473,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                         type="text"
                         required
                         value={formData.instructing_firm}
-                        onChange={(e) =>
-                          setFormData({ ...formData, instructing_firm: e.target.value })
-                        }
+                        onChange={handleInstructingFirmChange}
                         className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="Your law firm or organization"
                       />
@@ -466,9 +487,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                     <select
                       required
                       value={formData.preferred_contact_method}
-                      onChange={(e) =>
-                        setFormData({ ...formData, preferred_contact_method: e.target.value as 'email' | 'phone' | 'either' })
-                      }
+                      onChange={handlePreferredContactChange}
                       className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                     >
                       <option value="email">Email</option>

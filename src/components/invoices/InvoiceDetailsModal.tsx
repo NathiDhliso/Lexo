@@ -3,9 +3,6 @@ import {
   FileText, 
   Calendar, 
   Building, 
-  User, 
-  Mail, 
-  Phone,
   Download,
   Send,
   CheckCircle,
@@ -37,6 +34,10 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
   const [isEditing, setIsEditing] = useState(false);
   const [editedNarrative, setEditedNarrative] = useState(invoice.fee_narrative || '');
   const [isLoading, setIsLoading] = useState(false);
+  const [showCreditNoteModal, setShowCreditNoteModal] = useState(false);
+  const [creditNoteAmount, setCreditNoteAmount] = useState('');
+  const [creditNoteReason, setCreditNoteReason] = useState('');
+  const [creditNoteCategory, setCreditNoteCategory] = useState<'billing_error' | 'service_issue' | 'client_dispute' | 'goodwill' | 'other'>('billing_error');
 
   const getStatusConfig = (status: InvoiceStatus) => {
     switch (status) {
@@ -104,7 +105,7 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
         return;
       }
 
-      const { data: matter, error: matterError } = await supabase
+      const { data: matter } = await supabase
         .from('matters')
         .select('title, client_name, reference_number')
         .eq('id', invoice.matterId || (invoice as any).matter_id)
@@ -181,6 +182,74 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
     } catch (error) {
       console.error('Error updating invoice:', error);
       toast.error('Failed to update invoice narrative. Please try again.', { 
+        id: loadingToast,
+        duration: 5000 
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleIssueCreditNote = async () => {
+    const amount = parseFloat(creditNoteAmount);
+    
+    if (!amount || amount <= 0) {
+      toast.error('Please enter a valid credit amount');
+      return;
+    }
+    
+    if (amount > invoice.balance_due) {
+      toast.error('Credit amount cannot exceed balance due');
+      return;
+    }
+    
+    if (!creditNoteReason.trim()) {
+      toast.error('Please provide a reason for the credit note');
+      return;
+    }
+
+    const loadingToast = toast.loading('Issuing credit note...');
+    
+    try {
+      setIsLoading(true);
+      
+      // Create credit note
+      const { error } = await supabase
+        .from('credit_notes')
+        .insert({
+          invoice_id: invoice.id,
+          advocate_id: invoice.advocate_id,
+          amount: amount,
+          reason: creditNoteReason,
+          reason_category: creditNoteCategory,
+          status: 'issued',
+          issued_at: new Date().toISOString(),
+          credit_note_number: `CN-${new Date().getFullYear()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Update invoice balance
+      const newBalance = invoice.balance_due - amount;
+      await InvoiceService.updateInvoice(invoice.id, { 
+        balance_due: newBalance,
+        amount_paid: invoice.amount_paid + amount
+      });
+
+      toast.success(`Credit note issued: ${formatRand(amount)}`, { 
+        id: loadingToast,
+        duration: 4000 
+      });
+      
+      setShowCreditNoteModal(false);
+      setCreditNoteAmount('');
+      setCreditNoteReason('');
+      onInvoiceUpdated?.();
+    } catch (error) {
+      console.error('Error issuing credit note:', error);
+      toast.error('Failed to issue credit note', { 
         id: loadingToast,
         duration: 5000 
       });
@@ -406,33 +475,140 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
       </ModalBody>
 
       <ModalFooter>
-        <div className="flex items-center gap-3">
-          <Button variant="outline" onClick={onClose}>
-            Close
-          </Button>
-          
-          <Button
-            variant="outline"
-            onClick={handleDownloadPDF}
-            disabled={isLoading}
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Download PDF
-          </Button>
-          
-          {invoice.status === InvoiceStatus.DRAFT && (
-            <Button
-              variant="primary"
-              onClick={handleSendInvoice}
-              disabled={isLoading}
-              className="bg-mpondo-gold-600 hover:bg-mpondo-gold-700"
-            >
-              <Send className="w-4 h-4 mr-2" />
-              Send Invoice
+        <div className="flex items-center justify-between w-full">
+          <div className="flex items-center gap-3">
+            <Button variant="outline" onClick={onClose}>
+              Close
             </Button>
-          )}
+            
+            <Button
+              variant="outline"
+              onClick={handleDownloadPDF}
+              disabled={isLoading}
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Download PDF
+            </Button>
+          </div>
+          
+          <div className="flex items-center gap-3">
+            {(invoice.status === InvoiceStatus.SENT || invoice.status === InvoiceStatus.OVERDUE) && invoice.balance_due > 0 && (
+              <Button
+                variant="outline"
+                onClick={() => setShowCreditNoteModal(true)}
+                disabled={isLoading}
+                className="border-status-warning-500 text-status-warning-700 hover:bg-status-warning-50"
+              >
+                <FileText className="w-4 h-4 mr-2" />
+                Issue Credit Note
+              </Button>
+            )}
+            
+            {invoice.status === InvoiceStatus.DRAFT && (
+              <Button
+                variant="primary"
+                onClick={handleSendInvoice}
+                disabled={isLoading}
+                className="bg-mpondo-gold-600 hover:bg-mpondo-gold-700"
+              >
+                <Send className="w-4 h-4 mr-2" />
+                Send Invoice
+              </Button>
+            )}
+          </div>
         </div>
       </ModalFooter>
+
+      {/* Credit Note Modal */}
+      {showCreditNoteModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[60]">
+          <div className="bg-white dark:bg-metallic-gray-900 rounded-lg shadow-xl max-w-md w-full mx-4">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+                  Issue Credit Note
+                </h3>
+                <button
+                  onClick={() => setShowCreditNoteModal(false)}
+                  className="text-neutral-400 hover:text-neutral-600"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="space-y-4">
+                <div className="bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg p-3">
+                  <p className="text-sm text-judicial-blue-900 dark:text-judicial-blue-100">
+                    <strong>Invoice Balance:</strong> {formatRand(invoice.balance_due)}
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                    Credit Amount
+                  </label>
+                  <Input
+                    type="number"
+                    value={creditNoteAmount}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setCreditNoteAmount(e.target.value)}
+                    placeholder="0.00"
+                    min="0"
+                    max={invoice.balance_due}
+                    step="0.01"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                    Reason Category
+                  </label>
+                  <select
+                    value={creditNoteCategory}
+                    onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setCreditNoteCategory(e.target.value as any)}
+                    className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100"
+                  >
+                    <option value="billing_error">Fee Adjustment / Billing Error</option>
+                    <option value="service_issue">Service Issue</option>
+                    <option value="client_dispute">Client Dispute</option>
+                    <option value="goodwill">Goodwill Credit</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                    Reason / Notes
+                  </label>
+                  <textarea
+                    value={creditNoteReason}
+                    onChange={(e) => setCreditNoteReason(e.target.value)}
+                    placeholder="Explain the reason for this credit note..."
+                    className="w-full h-24 px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 resize-none"
+                  />
+                </div>
+
+                <div className="flex gap-3 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => setShowCreditNoteModal(false)}
+                    className="flex-1"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    variant="primary"
+                    onClick={handleIssueCreditNote}
+                    disabled={isLoading}
+                    className="flex-1 bg-status-warning-600 hover:bg-status-warning-700"
+                  >
+                    Issue Credit Note
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </Modal>
   );
 };

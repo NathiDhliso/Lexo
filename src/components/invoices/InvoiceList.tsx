@@ -19,16 +19,17 @@ import { InvoiceStatus } from '@/types';
 
 interface InvoiceListProps {
   className?: string;
+  initialStatusFilter?: string | null;
 }
 
-interface InvoiceFilters {
+interface InvoiceFiltersState {
   search: string;
   status: InvoiceStatus[];
   bar: BarAssociation[];
   dateRange: { start: string; end: string } | null;
 }
 
-export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
+export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '', initialStatusFilter = null }) => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [filteredInvoices, setFilteredInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
@@ -40,9 +41,11 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '' }) => {
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [selectedInvoice, setSelectedInvoice] = useState<Invoice | null>(null);
   
-  const [filters, setFilters] = useState<InvoiceFilters>({
+  const [filters, setFilters] = useState<InvoiceFiltersState>({
     search: '',
-    status: [],
+    status: initialStatusFilter && ['draft', 'sent', 'paid', 'overdue', 'cancelled'].includes(initialStatusFilter) 
+      ? [initialStatusFilter as InvoiceStatus] 
+      : [],
     bar: [],
     dateRange: null
   });

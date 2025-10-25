@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { FileText, User, Briefcase, DollarSign, CheckCircle, Upload } from 'lucide-react';
 import { MultiStepForm, Step } from '../common/MultiStepForm';
 import { Input, Select, Textarea } from '../design-system/components';
+import { DocumentUploadWithProcessing } from '../document-processing/DocumentUploadWithProcessing';
 import type { NewMatterForm } from '../../types';
 
 interface NewMatterMultiStepProps {
@@ -201,7 +202,7 @@ export const NewMatterMultiStep: React.FC<NewMatterMultiStepProps> = ({
                         <p className="text-gray-600 dark:text-neutral-400">Upload the attorney's soft copy to automatically extract client and case details</p>
                       </div>
                       
-                      <FileUpload
+                      <DocumentUploadWithProcessing
                         onFileSelect={handleFileSelect}
                         onFileRemove={handleFileRemove}
                         currentFile={uploadedFile}

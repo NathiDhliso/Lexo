@@ -1,6 +1,6 @@
 import type { NavigationConfig, NavigationItem } from '../types';
 import { UserTier } from '../types';
-import { BarChart3, FileText, Users, FolderOpen, CreditCard, DollarSign, FileCheck, CheckSquare, ExternalLink, Clock, Building2, UserPlus, UsersRound } from 'lucide-react';
+import { BarChart3, FileText, Users, FolderOpen, CreditCard, DollarSign, FileCheck, CheckSquare, ExternalLink, Clock, Building2, UserPlus, UsersRound, TrendingUp } from 'lucide-react';
 
 // Navigation items - Note: Profile and Settings are only in User Menu dropdown, not in main navigation
 const navigationItems: NavigationItem[] = [
@@ -71,7 +71,7 @@ export const navigationConfig: NavigationConfig = {
             {
               id: 'create-proforma',
               label: 'Create Pro Forma',
-              page: 'proforma-requests',
+              action: 'create-proforma',
               icon: FileCheck,
               description: 'Create new quote request',
             },
@@ -94,7 +94,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'proforma-requests',
               icon: FileCheck,
               description: 'Work on draft quotes',
-              hash: 'status=draft',
+              queryParams: { status: 'draft' },
             },
             {
               id: 'proforma-sent',
@@ -102,7 +102,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'proforma-requests',
               icon: ExternalLink,
               description: 'View sent quotes awaiting response',
-              hash: 'status=sent',
+              queryParams: { status: 'sent' },
               isNew: true,
             },
           ],
@@ -146,7 +146,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'firms',
               icon: UsersRound,
               description: 'View and manage attorneys',
-              hash: 'view=attorneys',
+              queryParams: { view: 'attorneys' },
             },
             {
               id: 'firm-pending',
@@ -154,7 +154,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'firms',
               icon: Clock,
               description: 'View pending attorney invites',
-              hash: 'view=pending',
+              queryParams: { view: 'pending' },
             },
           ],
         },
@@ -195,7 +195,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'matters',
               icon: FileText,
               description: 'View active cases',
-              hash: 'tab=active',
+              queryParams: { tab: 'active' },
             },
             {
               id: 'new-requests',
@@ -203,7 +203,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'matters',
               icon: FileCheck,
               description: 'View new matter requests',
-              hash: 'tab=new_requests',
+              queryParams: { tab: 'new_requests' },
               isNew: true,
             },
           ],
@@ -213,12 +213,20 @@ export const navigationConfig: NavigationConfig = {
           title: 'Tools',
           items: [
             {
+              id: 'wip-tracker',
+              label: 'WIP Tracker',
+              page: 'wip-tracker',
+              icon: TrendingUp,
+              description: 'Track unbilled work',
+              isNew: true,
+            },
+            {
               id: 'time-tracking',
               label: 'Time Tracking',
               page: 'matters',
               icon: Clock,
               description: 'Track billable hours',
-              hash: 'view=time',
+              queryParams: { view: 'time' },
             },
             {
               id: 'documents',
@@ -226,7 +234,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'matters',
               icon: FolderOpen,
               description: 'Upload & manage files',
-              hash: 'view=documents',
+              queryParams: { view: 'documents' },
             },
           ],
         },
@@ -267,7 +275,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'invoices',
               icon: FileCheck,
               description: 'Work on draft invoices',
-              hash: 'status=draft',
+              queryParams: { status: 'draft' },
             },
             {
               id: 'unpaid-invoices',
@@ -275,7 +283,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'invoices',
               icon: DollarSign,
               description: 'Track unpaid invoices',
-              hash: 'status=sent',
+              queryParams: { status: 'sent' },
             },
           ],
         },
@@ -297,7 +305,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'invoices',
               icon: DollarSign,
               description: 'Track payments & reminders',
-              hash: 'tab=tracking',
+              queryParams: { tab: 'tracking' },
             },
           ],
         },

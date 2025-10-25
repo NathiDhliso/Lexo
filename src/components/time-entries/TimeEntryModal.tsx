@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { X, Clock, Save, Calendar, DollarSign } from 'lucide-react';
 import { Button, Input, Textarea } from '../design-system/components';
 import { TimeEntryService } from '../../services/api/time-entries.service';
@@ -80,6 +80,31 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
+
+  // Memoized handlers to prevent input focus loss
+  const handleDateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, date: e.target.value }));
+  }, []);
+
+  const handleHoursChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, hours: parseInt(e.target.value) || 0 }));
+  }, []);
+
+  const handleMinutesChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, minutes: parseInt(e.target.value) || 0 }));
+  }, []);
+
+  const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, description: e.target.value }));
+  }, []);
+
+  const handleRateChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, rate: parseFloat(e.target.value) || 0 }));
+  }, []);
+
+  const handleBillableChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData(prev => ({ ...prev, billable: e.target.checked }));
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -172,7 +197,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
                 <Input
                   type="date"
                   value={formData.date}
-                  onChange={(e) => setFormData(prev => ({ ...prev, date: e.target.value }))}
+                  onChange={handleDateChange}
                   max={new Date().toISOString().split('T')[0]}
                   error={errors.date}
                 />
@@ -190,7 +215,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
                       min="0"
                       max="24"
                       value={formData.hours}
-                      onChange={(e) => setFormData(prev => ({ ...prev, hours: parseInt(e.target.value) || 0 }))}
+                      onChange={handleHoursChange}
                       placeholder="Hours"
                     />
                   </div>
@@ -201,7 +226,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
                       max="59"
                       step="15"
                       value={formData.minutes}
-                      onChange={(e) => setFormData(prev => ({ ...prev, minutes: parseInt(e.target.value) || 0 }))}
+                      onChange={handleMinutesChange}
                       placeholder="Minutes"
                     />
                   </div>
@@ -218,7 +243,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
               </label>
               <Textarea
                 value={formData.description}
-                onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                onChange={handleDescriptionChange}
                 placeholder="Describe the work performed..."
                 rows={4}
                 error={errors.description}
@@ -236,7 +261,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
                   min="0"
                   step="100"
                   value={formData.rate}
-                  onChange={(e) => setFormData(prev => ({ ...prev, rate: parseFloat(e.target.value) || 0 }))}
+                  onChange={handleRateChange}
                   error={errors.rate}
                 />
               </div>
@@ -258,7 +283,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
                 type="checkbox"
                 id="billable"
                 checked={formData.billable}
-                onChange={(e) => setFormData(prev => ({ ...prev, billable: e.target.checked }))}
+                onChange={handleBillableChange}
                 className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
               />
               <label htmlFor="billable" className="text-sm text-neutral-700 dark:text-neutral-300">

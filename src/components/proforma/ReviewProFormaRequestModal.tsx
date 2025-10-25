@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { X, FileText, User, Mail, Phone, Building, Calendar, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
 import { proformaRequestService } from '../../services/api/proforma-request.service';
 import { AsyncButton } from '../ui/AsyncButton';
 import { Button } from '../design-system/components';
 import { Database } from '../../../types/database';
 import { toast } from 'react-hot-toast';
+import type { Page } from '../../types';
 
 type ProFormaRequest = Database['public']['Tables']['proforma_requests']['Row'];
 
@@ -13,6 +14,7 @@ interface ReviewProFormaRequestModalProps {
   onClose: () => void;
   request: ProFormaRequest;
   onSuccess: () => void;
+  onNavigate?: (page: Page, data?: any) => void;
 }
 
 export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProps> = ({
@@ -20,35 +22,35 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
   onClose,
   request,
   onSuccess,
+  onNavigate,
 }) => {
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showDeclineConfirm, setShowDeclineConfirm] = useState(false);
   const [declineReason, setDeclineReason] = useState('');
 
-  const [initialData, setInitialData] = useState<{
-    matterName: string;
-    clientName: string;
-    matterSummary: string;
-    matterType?: string;
-  } | null>(null);
-
   const handleCreateQuote = () => {
-    // Prepare initial data for the CreateProFormaModal
-    setInitialData({
-      matterName: request.work_title || '',
-      clientName: request.instructing_attorney_name || '',
-      matterSummary: request.work_description || '',
-      matterType: (request as any).matter_type || '',
-    });
-    setShowCreateModal(true);
+    // Navigate to MatterWorkbenchPage to create pro forma using Universal Toolset
+    // This follows Path A: "Quote First" workflow
+    if (onNavigate) {
+      toast.success('Opening Matter Workbench to create pro forma quote...');
+      onNavigate('matter-workbench', {
+        mode: 'create-proforma',
+        requestId: request.id,
+        matterName: request.work_title || '',
+        clientName: request.instructing_attorney_name || '',
+        matterSummary: request.work_description || '',
+        matterType: (request as any).matter_type || '',
+        email: request.instructing_attorney_email,
+        firm: request.instructing_firm,
+      });
+      onClose();
+    } else {
+      toast.error('Navigation not available');
+    }
   };
 
-  const handleQuoteCreated = () => {
-    setShowCreateModal(false);
-    toast.success('Pro forma created! You can now download the PDF and send it to the attorney.');
-    onSuccess();
-    onClose();
-  };
+  const handleDeclineReasonChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setDeclineReason(e.target.value);
+  }, []);
 
   const handleDecline = async () => {
     try {
@@ -274,7 +276,7 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
               </label>
               <textarea
                 value={declineReason}
-                onChange={(e) => setDeclineReason(e.target.value)}
+                onChange={handleDeclineReasonChange}
                 rows={3}
                 className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                 placeholder="e.g., Conflict of interest, outside area of expertise, etc."

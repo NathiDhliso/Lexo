@@ -33,16 +33,15 @@ interface DashboardPageProps {
 const DashboardPage: React.FC<DashboardPageProps> = () => {
   const { user, loading, isAuthenticated } = useAuth();
   const [dashboardData, setDashboardData] = useState({
+    newRequests: 0,              // NEW: Matters awaiting your decision
+    awaitingApproval: 0,         // NEW: Pro formas sent to attorneys
     activeMatters: 0,
     outstandingWip: 0,
     monthlyBilling: 0,
-    overdueInvoices: 0,
-    collectionRate: 0,
-    avgBillTime: 0,
-    settlementRate: 0,
+    totalOutstandingFees: 0,     // REPLACED collectionRate
+    oldestUnpaidDays: 0,         // REPLACED avgBillTime
     totalMatters: 0,
     thisWeekMatters: 0,
-    pendingConflictChecks: 0,
     upcomingDeadlines: 0,
     isLoading: false
   });
@@ -97,6 +96,9 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
         break;
       case 'reports':
         navigate('/reports');
+        break;
+      case 'firms':
+        navigate('/firms');
         break;
       default:
         navigate('/dashboard');
@@ -220,6 +222,8 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
       weekAgo.setDate(now.getDate() - 7);
 
       const computed = {
+        newRequests: allMatters.filter(m => m.status === MatterStatus.NEW_REQUEST).length,
+        awaitingApproval: allMatters.filter(m => m.status === 'awaiting_approval' as any).length,
         activeMatters: allMatters.filter(m => m.status === MatterStatus.ACTIVE).length,
         totalMatters: allMatters.length,
         outstandingWip: allMatters.reduce((sum, m) => sum + (m.wip_value || 0), 0),
@@ -227,60 +231,55 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
           const created = m.created_at ? new Date(m.created_at) : null;
           return created ? created >= weekAgo : false;
         }).length,
-        pendingConflictChecks: allMatters.filter(m => !m.conflict_check_completed).length,
         upcomingDeadlines: allMatters.filter(m => {
           const deadline = m.expected_completion_date ? new Date(m.expected_completion_date) : null;
           return deadline ? (deadline >= now && deadline <= new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000)) : false;
         }).length
       };
 
-      // Calculate real performance metrics from invoice data
-      let collectionRate = 0;
-      let avgBillTime = 0;
-      let settlementRate = 0;
+      // Calculate financial metrics from invoice data
+      let totalOutstandingFees = 0;
+      let oldestUnpaidDays = 0;
 
       try {
         // Fetch all invoices for the user to calculate metrics
         const allInvoicesResponse = await InvoiceService.getInvoices({
           page: 1,
-          pageSize: 1000 // Get all invoices for accurate metrics
+          pageSize: 1000
         });
 
         const allInvoices = allInvoicesResponse.data;
 
         if (allInvoices.length > 0) {
-          // Calculate Collection Rate: (Paid Amount / Total Invoiced) * 100
-          const totalInvoiced = allInvoices.reduce((sum, inv) => sum + inv.total_amount, 0);
-          const totalPaid = allInvoices.reduce((sum, inv) => sum + (inv.amount_paid || 0), 0);
-          collectionRate = totalInvoiced > 0 ? Math.round((totalPaid / totalInvoiced) * 100) : 0;
+          // Calculate Total Outstanding Fees: Sum of unpaid invoice amounts
+          const unpaidInvoices = allInvoices.filter(inv => 
+            inv.status !== InvoiceStatus.PAID && inv.status !== InvoiceStatus.CANCELLED
+          );
+          totalOutstandingFees = unpaidInvoices.reduce((sum, inv) => {
+            const outstanding = inv.total_amount - (inv.amount_paid || 0);
+            return sum + outstanding;
+          }, 0);
 
-          // Calculate Average Bill Time: Average days from invoice creation to payment
-          const paidInvoices = allInvoices.filter(inv => inv.datePaid && inv.created_at);
-          if (paidInvoices.length > 0) {
-            const totalDays = paidInvoices.reduce((sum, inv) => {
-              const created = new Date(inv.created_at);
-              const paid = new Date(inv.datePaid!);
-              const days = Math.floor((paid.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
-              return sum + days;
-            }, 0);
-            avgBillTime = Math.round(totalDays / paidInvoices.length);
+          // Calculate Oldest Unpaid Days: Days since oldest unpaid invoice was created
+          if (unpaidInvoices.length > 0) {
+            const oldestInvoice = unpaidInvoices.reduce((oldest, inv) => {
+              const invDate = new Date(inv.created_at);
+              const oldestDate = new Date(oldest.created_at);
+              return invDate < oldestDate ? inv : oldest;
+            });
+            const created = new Date(oldestInvoice.created_at);
+            oldestUnpaidDays = Math.floor((now.getTime() - created.getTime()) / (1000 * 60 * 60 * 24));
           }
-
-          // Calculate Settlement Rate: (Paid Invoices / Total Invoices) * 100
-          const paidCount = allInvoices.filter(inv => inv.status === InvoiceStatus.PAID).length;
-          settlementRate = Math.round((paidCount / allInvoices.length) * 100);
         }
       } catch (error) {
-        console.error('Error calculating performance metrics:', error);
-        // If calculation fails, leave metrics at 0 instead of showing fake data
+        console.error('Error calculating financial metrics:', error);
       }
 
       setDashboardData(prev => ({ 
         ...prev, 
         ...computed, 
-        settlementRate,
-        collectionRate,
-        avgBillTime,
+        totalOutstandingFees,
+        oldestUnpaidDays,
         isLoading: false 
       }));
       
@@ -295,8 +294,11 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
   const handleQuickAction = (action: 'new-matter' | 'new-invoice' | 'time-entry') => {
     switch (action) {
       case 'new-matter':
-        setQuickActions(prev => ({ ...prev, newMatterModal: true }));
-        // toast.success('Opening new matter form...');
+        // Matters are now created when attorneys submit briefs
+        toast('Matters are created automatically when attorneys submit briefs', { 
+          icon: 'ℹ️',
+          duration: 4000 
+        });
         break;
       case 'new-invoice':
         navigatePage('invoices');
@@ -433,15 +435,23 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
             />
             
             <NewRequestsCard
-              newRequestsCount={0}
+              newRequestsCount={dashboardData.newRequests}
               recentRequests={[]}
-              onViewAll={() => navigatePage('matters')}
+              onViewAll={() => navigate('/matters?tab=new_requests')}
             />
             
-            <CloudStorageStatusCard
-              isConnected={false}
-              onConfigure={() => navigatePage('settings')}
-            />
+            <Card hoverable onClick={() => navigate('/proforma-requests')} className="cursor-pointer">
+              <CardContent className="p-4">
+                <div className="flex items-center justify-between mb-2">
+                  <Icon icon={Clock} className="w-6 h-6 text-blue-600 dark:text-blue-400" noGradient />
+                  <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
+                    {dashboardData.awaitingApproval}
+                  </span>
+                </div>
+                <h3 className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Awaiting Approval</h3>
+                <p className="text-xs text-neutral-500 dark:text-neutral-500 mt-1">Pro formas sent to attorneys</p>
+              </CardContent>
+            </Card>
           </div>
 
     {/* Recent Activity Feed */}
@@ -559,7 +569,7 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
           <div className="mb-2">
               <Icon icon={AlertTriangle} className="w-6 h-6 mx-auto" noGradient />
           </div>
-            <h3 className="text-lg font-bold text-neutral-900">{dashboardData.overdueInvoices}</h3>
+            <h3 className="text-lg font-bold text-neutral-900">{invoiceMetrics.overdueCount}</h3>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">Overdue Invoices</p>
             <div className="mt-2 text-xs text-status-warning-600 flex items-center justify-center">
               Review Overdue <Icon icon={ArrowRight} className="w-3 h-3 ml-1" noGradient />
@@ -672,41 +682,31 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
 
       <Card>
         <CardHeader>
-          <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Practice Performance</h2>
+          <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Financial Overview</h2>
         </CardHeader>
           <CardContent className="space-y-4">
+            <div className="flex justify-between items-center p-3 bg-amber-50 dark:bg-amber-900/20 rounded-lg border border-amber-200 dark:border-amber-800">
+              <span className="text-sm text-neutral-600 dark:text-neutral-400">Outstanding Fees</span>
+              <span className="font-semibold text-lg text-amber-700 dark:text-amber-400">
+                R {dashboardData.totalOutstandingFees.toLocaleString()}
+              </span>
+            </div>
             <div className="flex justify-between items-center p-3 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">Collection Rate</span>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-neutral-900 dark:text-neutral-100">{dashboardData.collectionRate}%</span>
-                <div className="w-12 h-2 bg-neutral-200 dark:bg-metallic-gray-700 rounded-full">
-                  <div 
-                    className="h-full bg-status-success-500 rounded-full" 
-                    style={{ width: `${dashboardData.collectionRate}%` }}
-                  ></div>
-                </div>
-              </div>
-          </div>
+              <span className="text-sm text-neutral-600 dark:text-neutral-400">Oldest Unpaid Invoice</span>
+              <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                {dashboardData.oldestUnpaidDays > 0 ? `${dashboardData.oldestUnpaidDays} days` : 'None'}
+              </span>
+            </div>
             <div className="flex justify-between items-center p-3 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">Average Bill Time</span>
-              <span className="font-medium text-neutral-900 dark:text-neutral-100">{dashboardData.avgBillTime} days</span>
-          </div>
-            <div className="flex justify-between items-center p-3 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-            <span className="text-sm text-neutral-600 dark:text-neutral-400">Settlement Rate</span>
-              <div className="flex items-center gap-2">
-                <span className="font-medium text-neutral-900 dark:text-neutral-100">{dashboardData.settlementRate}%</span>
-                <div className="w-12 h-2 bg-neutral-200 dark:bg-metallic-gray-700 rounded-full">
-                  <div 
-                    className="h-full bg-mpondo-gold-500 dark:bg-mpondo-gold-400 rounded-full" 
-                    style={{ width: `${dashboardData.settlementRate}%` }}
-                  ></div>
-                </div>
-              </div>
+              <span className="text-sm text-neutral-600 dark:text-neutral-400">Unbilled WIP</span>
+              <span className="font-medium text-neutral-900 dark:text-neutral-100">
+                R {dashboardData.outstandingWip.toLocaleString()}
+              </span>
             </div>
             <div className="pt-2">
-              <Button variant="outline" size="sm" className="w-full" onClick={handleAnalyticsClick}>
+              <Button variant="outline" size="sm" className="w-full" onClick={() => navigatePage('reports')}>
                 <Icon icon={BarChart3} className="w-4 h-4 mr-2" noGradient />
-                View Detailed Analytics
+                View Financial Reports
               </Button>
           </div>
         </CardContent>

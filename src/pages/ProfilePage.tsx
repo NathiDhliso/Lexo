@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { User as UserIcon } from 'lucide-react';
 import { Card, CardHeader, CardContent, Button } from '../components/design-system/components';
 import { useAuth } from '../hooks/useAuth';
@@ -73,12 +73,37 @@ const ProfilePage: React.FC = () => {
     // Reset to original values if needed
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = useCallback((field: string, value: string) => {
     setUserProfile(prev => ({
       ...prev,
       [field]: value
     }));
-  };
+  }, []);
+
+  // Memoized handlers
+  const handleNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('name', e.target.value);
+  }, [handleInputChange]);
+
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('email', e.target.value);
+  }, [handleInputChange]);
+
+  const handlePhoneChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('phone', e.target.value);
+  }, [handleInputChange]);
+
+  const handlePracticeNumberChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('practiceNumber', e.target.value);
+  }, [handleInputChange]);
+
+  const handleChambersChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('chambers', e.target.value);
+  }, [handleInputChange]);
+
+  const handleExperienceChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('experience', e.target.value);
+  }, [handleInputChange]);
 
 
   const tabs = [
@@ -120,7 +145,7 @@ const ProfilePage: React.FC = () => {
                   <input
                     type="text"
                     value={userProfile.name}
-                    onChange={(e) => handleInputChange('name', e.target.value)}
+                    onChange={handleNameChange}
                     className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none"
                   />
                 ) : (
@@ -134,7 +159,7 @@ const ProfilePage: React.FC = () => {
                     <input
                       type="email"
                       value={userProfile.email}
-                      onChange={(e) => handleInputChange('email', e.target.value)}
+                      onChange={handleEmailChange}
                       className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.email}</p>
@@ -142,7 +167,7 @@ const ProfilePage: React.FC = () => {
                     <input
                       type="tel"
                       value={userProfile.phone}
-                      onChange={(e) => handleInputChange('phone', e.target.value)}
+                      onChange={handlePhoneChange}
                       className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.phone}</p>
@@ -150,7 +175,7 @@ const ProfilePage: React.FC = () => {
                     <input
                       type="text"
                       value={userProfile.practiceNumber}
-                      onChange={(e) => handleInputChange('practiceNumber', e.target.value)}
+                      onChange={handlePracticeNumberChange}
                       className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.practiceNumber}</p>
@@ -160,7 +185,7 @@ const ProfilePage: React.FC = () => {
                     <input
                       type="text"
                       value={userProfile.chambers}
-                      onChange={(e) => handleInputChange('chambers', e.target.value)}
+                      onChange={handleChambersChange}
                       className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.chambers}</p>
@@ -169,7 +194,7 @@ const ProfilePage: React.FC = () => {
                     <input
                       type="text"
                       value={userProfile.experience}
-                      onChange={(e) => handleInputChange('experience', e.target.value)}
+                      onChange={handleExperienceChange}
                       className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.experience}</p>

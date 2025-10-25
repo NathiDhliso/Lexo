@@ -1,9 +1,11 @@
 // Navigation Types
 export type Page =
   | 'dashboard'
+  | 'proforma'
   | 'proforma-requests'
   | 'matters'
   | 'matter-workbench'
+  | 'wip-tracker'
   | 'firms'
   | 'invoices'
   | 'partner-approval'
@@ -28,7 +30,8 @@ export interface NavigationItem {
   href?: string;
   page?: Page;
   action?: string; // For modal actions like 'create-matter', 'create-proforma'
-  hash?: string; // URL hash/query params for filtered views (e.g., 'status=draft', 'tab=active')
+  hash?: string; // DEPRECATED: Use queryParams instead
+  queryParams?: Record<string, string>; // URL query params for filtered views (e.g., { status: 'draft' })
   icon?: React.ComponentType<{ className?: string }>;
   description?: string;
   badge?: string;

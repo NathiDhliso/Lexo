@@ -1,882 +1,196 @@
+/**
+ * Matter Workbench Page - True WIP workspace for active matters
+ */
 import React, { useState, useEffect } from 'react';
-import { 
-  ArrowLeft, 
-  Save, 
-  FileText, 
-  Users, 
-  DollarSign, 
-  Upload,
-  CheckCircle,
-  AlertCircle,
-  Clock,
-  Briefcase,
-  Building2,
-  Phone,
-  Mail,
-  MapPin,
-  Calendar,
-  Hash,
-  FileCheck,
-  Sparkles
-} from 'lucide-react';
-import { Card, CardContent, CardHeader, Button, Input, Select, Textarea } from '../components/design-system/components';
+import { useParams, useNavigate } from 'react-router-dom';
+import { ArrowLeft, FileText, Clock, Receipt, Briefcase, AlertCircle, FolderOpen, DollarSign } from 'lucide-react';
+import { Button, Card } from '../components/design-system/components';
 import { matterApiService } from '../services/api';
-import { useAuth } from '../hooks/useAuth';
+import { proformaRequestService } from '../services/api/proforma-request.service';
 import { toast } from 'react-hot-toast';
-import type { NewMatterForm, Page } from '../types';
-import { useNavigate } from 'react-router-dom';
+import type { Matter } from '../types';
 
-interface MatterWorkbenchPageProps {
-  onNavigate?: (page: Page) => void;
-}
+// Workbench Components
+import { WorkbenchOverview } from '../components/matters/workbench/WorkbenchOverview';
+import { WorkbenchTimeTab } from '../components/matters/workbench/WorkbenchTimeTab';
+import { WorkbenchExpensesTab } from '../components/matters/workbench/WorkbenchExpensesTab';
+import { WorkbenchServicesTab } from '../components/matters/workbench/WorkbenchServicesTab';
+import { WorkbenchAmendmentsTab } from '../components/matters/workbench/WorkbenchAmendmentsTab';
+import { WorkbenchInvoicingTab } from '../components/matters/workbench/WorkbenchInvoicingTab';
+import { PathAActions } from '../components/matters/workbench/PathAActions';
+import { PathBActions } from '../components/matters/workbench/PathBActions';
+import { DocumentsTab } from '../components/documents/DocumentsTab';
 
-const MATTER_TYPES = [
-  'Personal Injury',
-  'Motor Vehicle Accident',
-  'Medical Malpractice',
-  'Product Liability',
-  'Workplace Injury',
-  'Property Damage',
-  'Contract Dispute',
-  'Insurance Claim',
-  'Other'
-];
+// Modals
+import { TimeEntryModal } from '../components/time-entries/TimeEntryModal';
+import { QuickDisbursementModal } from '../components/expenses/QuickDisbursementModal';
+import { LogServiceModal } from '../components/services/LogServiceModal';
+import { SimpleFeeEntryModal } from '../components/matters/SimpleFeeEntryModal';
+import { BudgetComparisonWidget } from '../components/matters/workbench/BudgetComparisonWidget';
 
-const FEE_TYPES = [
-  'Contingency',
-  'Hourly',
-  'Fixed Fee',
-  'Hybrid'
-];
+type TabType = 'overview' | 'time' | 'expenses' | 'services' | 'amendments' | 'documents' | 'invoicing';
 
-const RISK_LEVELS = [
-  'Low',
-  'Medium',
-  'High'
-];
-
-const CLIENT_TYPES = [
-  'Individual',
-  'Business',
-  'Government',
-  'Non-Profit'
-];
-
-const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate }) => {
-  const { user } = useAuth();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  const [formData, setFormData] = useState<NewMatterForm>({
-    title: '',
-    matterType: '',
-    matter_type: '',
-    description: '',
-    courtCaseNumber: '',
-    clientName: '',
-    client_name: '',
-    clientEmail: '',
-    client_email: '',
-    clientPhone: '',
-    client_phone: '',
-    clientAddress: '',
-    client_address: '',
-    clientType: 'individual' as any,
-    client_type: 'individual' as any,
-    instructingAttorney: '',
-    instructing_attorney: '',
-    instructingFirm: '',
-    instructing_firm: '',
-    instructingAttorneyEmail: '',
-    instructing_attorney_email: '',
-    instructingAttorneyPhone: '',
-    instructing_attorney_phone: '',
-    instructingFirmRef: '',
-    instructing_firm_ref: '',
-    feeType: 'contingency' as any,
-    fee_type: 'contingency' as any,
-    estimatedFee: 0,
-    estimated_fee: 0,
-    feeCap: 0,
-    fee_cap: 0,
-    riskLevel: 'medium' as any,
-    risk_level: 'medium' as any
-  });
-
-  const steps = [
-    {
-      id: 1,
-      title: 'Basic Information',
-      description: 'Matter type, title, and description',
-      icon: FileText,
-      color: 'bg-green-500 dark:bg-green-600'
-    },
-    {
-      id: 2,
-      title: 'Client Details',
-      description: 'Client information and contact details',
-      icon: Users,
-      color: 'bg-purple-500 dark:bg-purple-600'
-    },
-    {
-      id: 3,
-      title: 'Attorney Information',
-      description: 'Instructing attorney and firm details',
-      icon: Building2,
-      color: 'bg-orange-500 dark:bg-orange-600'
-    },
-    {
-      id: 4,
-      title: 'Financial Terms',
-      description: 'Fee structure and financial arrangements',
-      icon: DollarSign,
-      color: 'bg-yellow-500 dark:bg-yellow-600'
-    },
-    {
-      id: 5,
-      title: 'Review & Submit',
-      description: 'Review all information before creating matter',
-      icon: CheckCircle,
-      color: 'bg-emerald-500 dark:bg-emerald-600'
-    }
-  ];
-
-  const handleInputChange = (field: keyof NewMatterForm, value: string | number) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    // Clear validation error when user starts typing
-    if (validationErrors[field]) {
-      setValidationErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
-
-  const validateStep = (step: number): boolean => {
-    const errors: Record<string, string> = {};
-
-    switch (step) {
-      case 1: // Basic Information
-        if (!formData.title.trim()) errors.title = 'Matter title is required';
-        if (!formData.matter_type) errors.matter_type = 'Matter type is required';
-        if (!formData.description.trim()) errors.description = 'Description is required';
-        break;
-      case 2: // Client Details
-        if (!formData.client_name.trim()) errors.client_name = 'Client name is required';
-        if (!formData.client_email.trim()) errors.client_email = 'Client email is required';
-        if (formData.client_email && !/\S+@\S+\.\S+/.test(formData.client_email)) {
-          errors.client_email = 'Valid email is required';
-        }
-        break;
-      case 3: // Attorney Information
-        if (!formData.instructing_attorney.trim()) errors.instructing_attorney = 'Instructing attorney name is required';
-        if (!formData.instructing_attorney_firm.trim()) errors.instructing_attorney_firm = 'Attorney firm is required';
-        if (!formData.instructing_attorney_email.trim()) errors.instructing_attorney_email = 'Attorney email is required';
-        if (formData.instructing_attorney_email && !/\S+@\S+\.\S+/.test(formData.instructing_attorney_email)) {
-          errors.instructing_attorney_email = 'Valid email is required';
-        }
-        break;
-      case 4: // Financial Terms
-        if (!formData.fee_type) errors.fee_type = 'Fee type is required';
-        if (formData.estimated_fee < 0) errors.estimated_fee = 'Estimated fee cannot be negative';
-        break;
-    }
-
-    setValidationErrors(errors);
-    return Object.keys(errors).length === 0;
-  };
-
-  const handleNext = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, steps.length));
-    }
-  };
-
-  const handlePrevious = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
-  };
-
-  const handleSubmit = async () => {
-    if (!validateStep(currentStep)) {
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      if (!user?.id) {
-        throw new Error('User not authenticated');
-      }
-
-      // Create the matter
-      const result = await matterApiService.create({
-        ...formData,
-        advocate_id: user.id,
-        status: 'active'
-      });
-
-      if (result.error) {
-        throw new Error(result.error);
-      }
-
-      toast.success('Matter created successfully!');
-      navigatePage('matters');
-    } catch (error) {
-      console.error('Error creating matter:', error);
-      toast.error(error instanceof Error ? error.message : 'Failed to create matter');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
+const MatterWorkbenchPage: React.FC = () => {
+  const { matterId } = useParams<{ matterId: string }>();
   const navigate = useNavigate();
 
-  const navigatePage = (page: Page) => {
-    if (onNavigate) {
-      onNavigate(page);
-      return;
+  const [matter, setMatter] = useState<Matter | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  const [isPathA, setIsPathA] = useState(false);
+  const [originalBudget, setOriginalBudget] = useState(0);
+  // TODO: Fetch and calculate these from amendments table when viewing amendments tab
+  const [amendmentTotal] = useState(0);
+  const [amendmentCount] = useState(0);
+
+  const [showTimeModal, setShowTimeModal] = useState(false);
+  const [showExpenseModal, setShowExpenseModal] = useState(false);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [showSimpleFeeModal, setShowSimpleFeeModal] = useState(false);
+  const [showBudgetModal, setShowBudgetModal] = useState(false);
+
+  useEffect(() => {
+    if (matterId) {
+      loadMatterData();
     }
-    switch (page) {
-      case 'dashboard':
-        navigate('/dashboard');
-        break;
-      case 'proforma-requests':
-        navigate('/proforma-requests');
-        break;
-      case 'matters':
-        navigate('/matters');
-        break;
-      case 'matter-workbench':
-        navigate('/matter-workbench');
-        break;
-      case 'invoices':
-        navigate('/invoices');
-        break;
-      case 'partner-approval':
-        navigate('/partner-approval');
-        break;
-      case 'profile':
-        navigate('/profile');
-        break;
-      case 'settings':
-        navigate('/settings');
-        break;
-      default:
-        break;
+  }, [matterId]);
+
+  const loadMatterData = async () => {
+    if (!matterId) return;
+    try {
+      setLoading(true);
+      const { data, error } = await matterApiService.getById(matterId);
+      if (error || !data) {
+        const errorMessage = typeof error === 'string' ? error : error?.message || 'Matter not found';
+        throw new Error(errorMessage);
+      }
+      setMatter(data);
+      const sourceProFormaId = (data as any).source_proforma_id;
+      setIsPathA(!!sourceProFormaId);
+      if (sourceProFormaId) {
+        await loadProFormaData(sourceProFormaId);
+      }
+    } catch (error) {
+      console.error('Error loading matter:', error);
+      toast.error('Failed to load matter');
+      navigate('/matters');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loadProFormaData = async (proFormaId: string) => {
+    try {
+      const proforma = await proformaRequestService.getById(proFormaId);
+      if (proforma) setOriginalBudget(proforma.estimated_amount || 0);
+    } catch (error) {
+      console.error('Error loading pro forma:', error);
     }
   };
 
-  const renderStepContent = () => {
-    switch (currentStep) {
-      case 1:
-        return (
-          <div className="space-y-6 max-w-2xl mx-auto">
-            <div className="text-center mb-8">
-              <FileText className="w-16 h-16 text-green-500 dark:text-green-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Basic Information</h3>
-              <p className="text-neutral-600 dark:text-neutral-400">Provide the fundamental details about this matter</p>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Matter Title *
-                </label>
-                <Input
-                  value={formData.title}
-                  onChange={(e) => handleInputChange('title', e.target.value)}
-                  placeholder="e.g., Smith vs. ABC Insurance - Motor Vehicle Accident"
-                  error={validationErrors.title}
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Matter Type *
-                </label>
-                <Select
-                  value={formData.matter_type}
-                  onChange={(e) => handleInputChange('matter_type', e.target.value)}
-                  error={validationErrors.matter_type}
-                >
-                  <option value="">Select matter type</option>
-                  {MATTER_TYPES.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </Select>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Court Case Number
-                </label>
-                <div className="relative">
-                  <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                  <Input
-                    value={formData.court_case_number}
-                    onChange={(e) => handleInputChange('court_case_number', e.target.value)}
-                    placeholder="e.g., 2024/12345"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Description *
-                </label>
-                <Textarea
-                  value={formData.description}
-                  onChange={(e) => handleInputChange('description', e.target.value)}
-                  placeholder="Provide a detailed description of the matter, including key facts and circumstances..."
-                  rows={4}
-                  error={validationErrors.description}
-                />
-              </div>
-            </div>
-          </div>
-        );
-
-      case 2:
-        return (
-          <div className="space-y-6 max-w-2xl mx-auto">
-            <div className="text-center mb-8">
-              <Users className="w-16 h-16 text-purple-500 dark:text-purple-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Client Details</h3>
-              <p className="text-neutral-600 dark:text-neutral-400">Information about the client for this matter</p>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Client Name *
-                </label>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                  <Input
-                    value={formData.client_name}
-                    onChange={(e) => handleInputChange('client_name', e.target.value)}
-                    placeholder="Full name or company name"
-                    className="pl-10"
-                    error={validationErrors.client_name}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Client Type
-                </label>
-                <Select
-                  value={formData.client_type}
-                  onChange={(e) => handleInputChange('client_type', e.target.value)}
-                >
-                  {CLIENT_TYPES.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                    Email Address *
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                    <Input
-                      type="email"
-                      value={formData.client_email}
-                      onChange={(e) => handleInputChange('client_email', e.target.value)}
-                      placeholder="client@example.com"
-                      className="pl-10"
-                      error={validationErrors.client_email}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                    Phone Number
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                    <Input
-                      value={formData.client_phone}
-                      onChange={(e) => handleInputChange('client_phone', e.target.value)}
-                      placeholder="+27 11 123 4567"
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Address
-                </label>
-                <div className="relative">
-                  <MapPin className="absolute left-3 top-3 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                  <Textarea
-                    value={formData.client_address}
-                    onChange={(e) => handleInputChange('client_address', e.target.value)}
-                    placeholder="Full address including postal code"
-                    rows={3}
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 3:
-        return (
-          <div className="space-y-6 max-w-2xl mx-auto">
-            <div className="text-center mb-8">
-              <Building2 className="w-16 h-16 text-orange-500 dark:text-orange-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Attorney Information</h3>
-              <p className="text-neutral-600 dark:text-neutral-400">Details about the instructing attorney and firm</p>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Instructing Attorney Name *
-                </label>
-                <div className="relative">
-                  <Users className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                  <Input
-                    value={formData.instructing_attorney}
-                    onChange={(e) => handleInputChange('instructing_attorney', e.target.value)}
-                    placeholder="Attorney full name"
-                    className="pl-10"
-                    error={validationErrors.instructing_attorney}
-                  />
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Law Firm *
-                </label>
-                <div className="relative">
-                  <Building2 className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                  <Input
-                    value={formData.instructing_attorney_firm}
-                    onChange={(e) => handleInputChange('instructing_attorney_firm', e.target.value)}
-                    placeholder="Law firm name"
-                    className="pl-10"
-                    error={validationErrors.instructing_attorney_firm}
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                    Attorney Email *
-                  </label>
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                    <Input
-                      type="email"
-                      value={formData.instructing_attorney_email}
-                      onChange={(e) => handleInputChange('instructing_attorney_email', e.target.value)}
-                      placeholder="attorney@lawfirm.com"
-                      className="pl-10"
-                      error={validationErrors.instructing_attorney_email}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                    Attorney Phone
-                  </label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                    <Input
-                      value={formData.instructing_attorney_phone}
-                      onChange={(e) => handleInputChange('instructing_attorney_phone', e.target.value)}
-                      placeholder="+27 11 123 4567"
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Firm Reference Number
-                </label>
-                <div className="relative">
-                  <Hash className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                  <Input
-                    value={formData.firm_reference}
-                    onChange={(e) => handleInputChange('firm_reference', e.target.value)}
-                    placeholder="Internal firm reference"
-                    className="pl-10"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 4:
-        return (
-          <div className="space-y-6 max-w-2xl mx-auto">
-            <div className="text-center mb-8">
-              <DollarSign className="w-16 h-16 text-yellow-500 dark:text-yellow-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Financial Terms</h3>
-              <p className="text-neutral-600 dark:text-neutral-400">Fee structure and financial arrangements</p>
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Fee Type *
-                </label>
-                <Select
-                  value={formData.fee_type}
-                  onChange={(e) => handleInputChange('fee_type', e.target.value)}
-                  error={validationErrors.fee_type}
-                >
-                  {FEE_TYPES.map(type => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </Select>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                    Estimated Fee (R)
-                  </label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                    <Input
-                      type="number"
-                      value={formData.estimated_fee}
-                      onChange={(e) => handleInputChange('estimated_fee', parseFloat(e.target.value) || 0)}
-                      placeholder="0.00"
-                      className="pl-10"
-                      error={validationErrors.estimated_fee}
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                    Fee Cap (R)
-                  </label>
-                  <div className="relative">
-                    <DollarSign className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-                    <Input
-                      type="number"
-                      value={formData.fee_cap}
-                      onChange={(e) => handleInputChange('fee_cap', parseFloat(e.target.value) || 0)}
-                      placeholder="0.00"
-                      className="pl-10"
-                    />
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-                  Risk Level
-                </label>
-                <Select
-                  value={formData.risk_level}
-                  onChange={(e) => handleInputChange('risk_level', e.target.value)}
-                >
-                  {RISK_LEVELS.map(level => (
-                    <option key={level} value={level}>{level}</option>
-                  ))}
-                </Select>
-              </div>
-            </div>
-          </div>
-        );
-
-      case 5:
-        return (
-          <div className="space-y-6 max-w-4xl mx-auto">
-            <div className="text-center mb-8">
-              <CheckCircle className="w-16 h-16 text-emerald-500 dark:text-emerald-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Review & Submit</h3>
-              <p className="text-neutral-600 dark:text-neutral-400">Review all information before creating the matter</p>
-            </div>
-
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-              {/* Basic Information */}
-              <Card>
-                <CardHeader>
-                  <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 flex items-center">
-                    <FileText className="w-5 h-5 mr-2" />
-                    Basic Information
-                  </h4>
-                </CardHeader>
-                <CardContent>
-                  <dl className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Title:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.title}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Type:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.matter_type}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Case Number:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.court_case_number || 'N/A'}</dd>
-                    </div>
-                  </dl>
-                </CardContent>
-              </Card>
-
-              {/* Client Details */}
-              <Card>
-                <CardHeader>
-                  <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 flex items-center">
-                    <Users className="w-5 h-5 mr-2" />
-                    Client Details
-                  </h4>
-                </CardHeader>
-                <CardContent>
-                  <dl className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Name:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.client_name}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Type:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.client_type}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Email:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.client_email}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Phone:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.client_phone || 'N/A'}</dd>
-                    </div>
-                  </dl>
-                </CardContent>
-              </Card>
-
-              {/* Attorney Information */}
-              <Card>
-                <CardHeader>
-                  <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 flex items-center">
-                    <Building2 className="w-5 h-5 mr-2" />
-                    Attorney Information
-                  </h4>
-                </CardHeader>
-                <CardContent>
-                  <dl className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Attorney:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.instructing_attorney}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Firm:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.instructing_attorney_firm}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Email:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.instructing_attorney_email}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Phone:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.instructing_attorney_phone || 'N/A'}</dd>
-                    </div>
-                  </dl>
-                </CardContent>
-              </Card>
-
-              {/* Financial Terms */}
-              <Card>
-                <CardHeader>
-                  <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 flex items-center">
-                    <DollarSign className="w-5 h-5 mr-2" />
-                    Financial Terms
-                  </h4>
-                </CardHeader>
-                <CardContent>
-                  <dl className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Fee Type:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.fee_type}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Estimated Fee:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">R {formData.estimated_fee.toLocaleString()}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Fee Cap:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">R {formData.fee_cap.toLocaleString()}</dd>
-                    </div>
-                    <div className="flex justify-between">
-                      <dt className="text-neutral-600 dark:text-neutral-400">Risk Level:</dt>
-                      <dd className="font-medium text-right dark:text-neutral-200">{formData.risk_level}</dd>
-                    </div>
-                  </dl>
-                </CardContent>
-              </Card>
-            </div>
-
-            {formData.description && (
-              <Card>
-                <CardHeader>
-                  <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Description</h4>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm text-neutral-700 dark:text-neutral-300">{formData.description}</p>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        );
-
-      default:
-        return null;
-    }
+  const handleModalSuccess = () => {
+    loadMatterData();
   };
+
+  if (loading || !matter) return <div>Loading...</div>;
+
+  const tabs = [
+    { id: 'overview', label: 'Overview', icon: Briefcase },
+    { id: 'time', label: 'Time', icon: Clock },
+    { id: 'expenses', label: 'Expenses', icon: Receipt },
+    { id: 'services', label: 'Services', icon: FileText },
+    ...(isPathA ? [{ id: 'amendments', label: 'Amendments', icon: AlertCircle }] : []),
+    { id: 'documents', label: 'Documents', icon: FolderOpen },
+    { id: 'invoicing', label: 'Invoicing', icon: DollarSign },
+  ];
 
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-900">
-      {/* Header */}
-      <div className="bg-white dark:bg-metallic-gray-800 border-b border-neutral-200 dark:border-metallic-gray-700 sticky top-0 z-10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
-            <div className="flex items-center space-x-4">
-              <Button
-                variant="ghost"
-                onClick={() => onNavigate?.('matters')}
-                className="flex items-center space-x-2"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                <span>Back to Matters</span>
-              </Button>
-              <div className="h-6 w-px bg-neutral-300" />
-              <div>
-                <h1 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">Matter Workbench</h1>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">Create a new legal matter</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                Step {currentStep} of {steps.length}
-              </span>
-              <div className="w-32 bg-neutral-200 dark:bg-metallic-gray-700 rounded-full h-2">
-                <div 
-                  className="bg-blue-600 dark:bg-judicial-blue-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${(currentStep / steps.length) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Progress Steps */}
-      <div className="bg-white dark:bg-metallic-gray-800 border-b border-neutral-200 dark:border-metallic-gray-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="bg-white dark:bg-metallic-gray-800 border-b sticky top-0 z-10">
+        <div className="max-w-7xl mx-auto px-8 py-4">
           <div className="flex items-center justify-between">
-            {steps.map((step, index) => {
-              const isActive = currentStep === step.id;
-              const isCompleted = currentStep > step.id;
-              const Icon = step.icon;
-              
-              return (
-                <div key={step.id} className="flex items-center">
-                  <div className="flex items-center">
-                    <div className={`
-                      w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-200
-                      ${isActive ? 'border-blue-600 bg-blue-600 text-white' : 
-                        isCompleted ? 'border-green-600 bg-green-600 text-white' : 
-                        'border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-400 dark:text-neutral-500'}
-                    `}>
-                      {isCompleted ? (
-                        <CheckCircle className="w-5 h-5" />
-                      ) : (
-                        <Icon className="w-5 h-5" />
-                      )}
-                    </div>
-                    <div className="ml-3 hidden sm:block">
-                      <p className={`text-sm font-medium ${isActive ? 'text-blue-600 dark:text-judicial-blue-400' : isCompleted ? 'text-green-600 dark:text-green-400' : 'text-neutral-500 dark:text-neutral-400'}`}>
-                        {step.title}
-                      </p>
-                      <p className="text-xs text-neutral-500 dark:text-neutral-400">{step.description}</p>
-                    </div>
-                  </div>
-                  
-                  {index < steps.length - 1 && (
-                    <div className={`
-                      hidden sm:block w-16 h-0.5 mx-4 transition-all duration-200
-                      ${isCompleted ? 'bg-green-600 dark:bg-green-500' : 'bg-neutral-300 dark:bg-metallic-gray-600'}
-                    `} />
-                  )}
-                </div>
-              );
-            })}
+            <div className="flex items-center gap-4">
+              <Button variant="ghost" onClick={() => navigate('/matters')}>
+                <ArrowLeft className="w-4 h-4 mr-2" /> Back
+              </Button>
+              <div>
+                <h1 className="text-xl font-bold">{matter.title}</h1>
+                <span className="text-sm px-2 py-1 rounded bg-blue-100">
+                  {isPathA ? 'Path A' : 'Path B'}
+                </span>
+              </div>
+            </div>
+            <div className="text-right">
+              <p className="text-xs">WIP</p>
+              <p className="text-lg font-bold">R{(matter.wip_value || 0).toLocaleString()}</p>
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <Card className="min-h-[600px]">
-          <CardContent className="p-8">
-            {renderStepContent()}
-          </CardContent>
-        </Card>
+      <div className="max-w-7xl mx-auto px-8 py-6 space-y-6">
+        {isPathA ? (
+          <PathAActions
+            matterId={matter.id}
+            onLogTime={() => setShowTimeModal(true)}
+            onLogExpense={() => setShowExpenseModal(true)}
+            onLogService={() => setShowServiceModal(true)}
+            onRequestAmendment={() => setActiveTab('amendments')}
+            onViewBudget={() => setShowBudgetModal(true)}
+          />
+        ) : (
+          <PathBActions
+            matterId={matter.id}
+            onSimpleFeeEntry={() => setShowSimpleFeeModal(true)}
+            onLogTime={() => setShowTimeModal(true)}
+            onLogExpense={() => setShowExpenseModal(true)}
+          />
+        )}
 
-        {/* Navigation Buttons */}
-        <div className="flex justify-between items-center mt-8">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={currentStep === 1}
-            className="flex items-center space-x-2"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Previous</span>
-          </Button>
+        <div className="flex gap-4 border-b">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id as TabType)}
+                className={activeTab === tab.id ? 'border-b-2 border-blue-600 pb-2' : 'pb-2'}
+              >
+                <Icon className="w-4 h-4 inline mr-2" />
+                {tab.label}
+              </button>
+            );
+          })}
+        </div>
 
-          <div className="flex space-x-3">
-            {currentStep < steps.length ? (
-              <Button
-                variant="primary"
-                onClick={handleNext}
-                className="flex items-center space-x-2"
-              >
-                <span>Next</span>
-                <ArrowLeft className="w-4 h-4 rotate-180" />
-              </Button>
-            ) : (
-              <Button
-                variant="primary"
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="flex items-center space-x-2"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Clock className="w-4 h-4 animate-spin" />
-                    <span>Creating Matter...</span>
-                  </>
-                ) : (
-                  <>
-                    <Save className="w-4 h-4" />
-                    <span>Create Matter</span>
-                  </>
-                )}
-              </Button>
+        <Card>
+          <div className="p-6">
+            {activeTab === 'overview' && (
+              <WorkbenchOverview matter={matter} isPathA={isPathA} originalBudget={originalBudget} amendmentTotal={amendmentTotal} amendmentCount={amendmentCount} />
             )}
+            {activeTab === 'time' && <WorkbenchTimeTab matterId={matter.id} matterTitle={matter.title} />}
+            {activeTab === 'expenses' && <WorkbenchExpensesTab matterId={matter.id} />}
+            {activeTab === 'services' && <WorkbenchServicesTab matterId={matter.id} />}
+            {activeTab === 'amendments' && isPathA && <WorkbenchAmendmentsTab matter={matter} />}
+            {activeTab === 'documents' && <DocumentsTab matterId={matter.id} />}
+            {activeTab === 'invoicing' && <WorkbenchInvoicingTab matter={matter} />}
+          </div>
+        </Card>
+      </div>
+
+      {showTimeModal && <TimeEntryModal isOpen={showTimeModal} onClose={() => setShowTimeModal(false)} matterId={matter.id} matterTitle={matter.title} onSave={handleModalSuccess} />}
+      {showExpenseModal && <QuickDisbursementModal isOpen={showExpenseModal} onClose={() => setShowExpenseModal(false)} matterId={matter.id} onSuccess={handleModalSuccess} />}
+      {showServiceModal && <LogServiceModal isOpen={showServiceModal} onClose={() => setShowServiceModal(false)} matterId={matter.id} matterTitle={matter.title} onSave={handleModalSuccess} />}
+      {showSimpleFeeModal && <SimpleFeeEntryModal isOpen={showSimpleFeeModal} onClose={() => setShowSimpleFeeModal(false)} matter={matter} onSuccess={handleModalSuccess} />}
+      {showBudgetModal && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl max-w-2xl w-full p-6">
+            <h2 className="text-2xl font-bold mb-4">Budget Comparison</h2>
+            <BudgetComparisonWidget originalBudget={originalBudget} amendmentTotal={amendmentTotal} wipValue={matter.wip_value || 0} amendmentCount={amendmentCount} />
+            <Button onClick={() => setShowBudgetModal(false)} className="mt-4">Close</Button>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

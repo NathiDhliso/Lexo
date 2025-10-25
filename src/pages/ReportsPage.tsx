@@ -149,13 +149,106 @@ export const ReportsPage: React.FC = () => {
   const handleExportCSV = (data: any) => {
     if (!data || !activeReport) return;
     
-    const filename = `${activeReport}-report`;
+    let exportData: any[] = [];
+    let filename = 'report';
     
-    // Convert data to array format if needed
-    const exportData = Array.isArray(data) ? data : [data];
+    switch (activeReport) {
+      case 'wip':
+        filename = 'wip-report';
+        exportData = data.matters.map((m: any) => ({
+          'Matter': m.name,
+          'Client': m.client,
+          'Unbilled Amount': m.unbilledAmount,
+          'Hours': m.hours,
+        }));
+        break;
+        
+      case 'revenue':
+        filename = 'revenue-report';
+        if (data.breakdown) {
+          exportData = data.breakdown.map((b: any) => ({
+            'Period': b.period,
+            'Amount': b.amount,
+          }));
+        }
+        break;
+        
+      case 'outstanding':
+        filename = 'outstanding-invoices';
+        exportData = data.invoices.map((inv: any) => ({
+          'Invoice': inv.id,
+          'Client': inv.client,
+          'Attorney': inv.attorney,
+          'Amount': inv.amount,
+          'Due Date': inv.dueDate,
+          'Days Overdue': inv.daysOverdue || 0,
+          'Status': inv.status.toUpperCase(),
+        }));
+        break;
+        
+      case 'client-revenue':
+        filename = 'client-revenue';
+        exportData = data.clients.map((c: any) => ({
+          'Client': c.name,
+          'Revenue': c.revenue,
+          'Invoices': c.invoices,
+        }));
+        break;
+        
+      case 'time-entry':
+        filename = 'time-entry-report';
+        exportData = data.entries.map((e: any) => ({
+          'Date': e.date,
+          'Matter': e.matter,
+          'Hours': e.hours,
+          'Rate': e.rate,
+          'Amount': e.amount,
+        }));
+        break;
+        
+      case 'pipeline':
+        filename = 'pipeline-report';
+        exportData = data.matters.map((m: any) => ({
+          'Matter': m.name,
+          'Status': m.status,
+          'Value': m.value,
+        }));
+        break;
+        
+      case 'aging':
+        filename = 'aging-report';
+        exportData = [
+          { 'Period': 'Current', 'Amount': data.current },
+          { 'Period': '1-30 Days', 'Amount': data.days30 },
+          { 'Period': '31-60 Days', 'Amount': data.days60 },
+          { 'Period': '61-90 Days', 'Amount': data.days90 },
+          { 'Period': 'Over 90 Days', 'Amount': data.over90 },
+          { 'Period': 'Total', 'Amount': data.total },
+        ];
+        break;
+        
+      case 'profitability':
+        filename = 'profitability-report';
+        exportData = data.matters.map((m: any) => ({
+          'Matter': m.name,
+          'Revenue': m.revenue,
+          'Costs': m.costs,
+          'Profit': m.profit,
+          'Margin %': m.margin,
+        }));
+        break;
+        
+      default:
+        toastService.error('Export not available for this report type');
+        return;
+    }
     
-    exportToCSV(exportData, filename);
-    toastService.success('Report exported to CSV');
+    if (exportData.length > 0) {
+      exportToCSV(exportData, filename);
+      toastService.success('Report exported successfully');
+    } else {
+      toastService.error('No data to export');
+    }
   };
 
   const handleExportPDF = async (data: any) => {

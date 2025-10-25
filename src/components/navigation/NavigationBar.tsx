@@ -189,16 +189,28 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     document.body.style.overflow = '';
   };
 
-  // Handle page navigation
-  const handlePageNavigation = (page: Page) => {
+  // Handle page navigation with optional query params
+  const handlePageNavigation = (page: Page, queryParams?: Record<string, string>) => {
+    const pagePath = `/${page}`;
+    
+    // Build query string if params provided
+    if (queryParams && Object.keys(queryParams).length > 0) {
+      const searchParams = new URLSearchParams(queryParams);
+      navigate(`${pagePath}?${searchParams.toString()}`);
+    } else {
+      navigate(pagePath);
+    }
+    
     onPageChange(page);
+    
+    // Close menus
     setNavigationState(prev => ({
       ...prev,
-      activePage: page,
       megaMenuOpen: false,
       mobileMenuOpen: false,
       activeCategory: null,
-      hoveredCategory: null
+      hoveredCategory: null,
+      activePage: page
     }));
     
     // Restore body scroll
@@ -207,21 +219,19 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   // Handle action clicks
   const handleActionClick = (action: string) => {
+    console.log('[NavigationBar] handleActionClick called with action:', action);
     switch (action) {
       case 'create-matter':
         setModalState(prev => ({ ...prev, createMatter: true }));
         break;
       case 'create-proforma':
-        // Navigate to pro forma page instead of opening modal
-        handlePageNavigation('proforma-requests');
+        // Navigate to pro forma page with create modal trigger
+        handlePageNavigation('proforma-requests', { create: 'true' });
         break;
       case 'invite-attorney':
-        // Navigate to firms page - InviteAttorneyModal is already integrated there
-        handlePageNavigation('firms');
-        toast('Use the "Invite Attorney" button on the Firms page', { 
-          duration: 3000,
-          icon: '👋' 
-        });
+        console.log('[NavigationBar] Navigating to firms page with action=invite');
+        // Navigate to firms page with invite modal trigger
+        handlePageNavigation('firms', { action: 'invite' });
         break;
       case 'quick-invoice':
       case 'create-invoice':

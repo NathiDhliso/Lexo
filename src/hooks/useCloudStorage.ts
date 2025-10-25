@@ -1,6 +1,11 @@
 import { useState, useEffect } from 'react';
 import { CloudStorageService } from '@/services/api/cloud-storage.service';
-import type { CloudStorageConnection, CloudStorageUploadOptions } from '@/types/cloud-storage.types';
+import type { 
+  CloudStorageConnection, 
+  CloudStorageLinkOptions, 
+  DocumentReference,
+  CloudStorageFileInfo
+} from '@/types/cloud-storage.types';
 
 export const useCloudStorage = () => {
   const [connections, setConnections] = useState<CloudStorageConnection[]>([]);
@@ -30,9 +35,52 @@ export const useCloudStorage = () => {
     }
   };
 
-  const uploadFile = async (options: CloudStorageUploadOptions) => {
+  const linkFile = async (options: CloudStorageLinkOptions) => {
     try {
-      const result = await CloudStorageService.uploadToCloud(options);
+      const result = await CloudStorageService.linkFromCloudStorage(options);
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const getDocumentReferences = async (matterId: string) => {
+    try {
+      const result = await CloudStorageService.getDocumentReferences(matterId);
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const listFiles = async (connectionId: string, folderPath?: string) => {
+    try {
+      const result = await CloudStorageService.listFiles(connectionId, folderPath);
+      return result;
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const openDocument = async (docRef: DocumentReference) => {
+    try {
+      await CloudStorageService.openDocument(docRef);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const deleteDocumentReference = async (docRefId: string) => {
+    try {
+      await CloudStorageService.deleteDocumentReference(docRefId);
+    } catch (err) {
+      throw err;
+    }
+  };
+
+  const verifyDocuments = async (matterId?: string) => {
+    try {
+      const result = await CloudStorageService.verifyAllDocuments(matterId);
       return result;
     } catch (err) {
       throw err;
@@ -66,25 +114,22 @@ export const useCloudStorage = () => {
     }
   };
 
-  const syncDocuments = async (connectionId: string) => {
-    try {
-      const result = await CloudStorageService.syncAllDocuments(connectionId);
-      return result;
-    } catch (err) {
-      throw err;
-    }
-  };
-
   return {
     connections,
     primaryConnection,
     loading,
     error,
-    uploadFile,
+    // File operations (new approach)
+    linkFile,
+    getDocumentReferences,
+    listFiles,
+    openDocument,
+    deleteDocumentReference,
+    verifyDocuments,
+    // Connection management
     setPrimary,
     disconnect,
     deleteConnection,
-    syncDocuments,
     refresh: loadConnections
   };
 };

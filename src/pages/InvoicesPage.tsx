@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { FileText, FileCheck, Clock } from 'lucide-react';
 import { InvoiceList } from '../components/invoices/InvoiceList';
 import { PaymentTrackingDashboard } from '../components/invoices/PaymentTrackingDashboard';
@@ -6,7 +7,25 @@ import { ProFormaInvoiceList } from '../components/invoices/ProFormaInvoiceList'
 import { MatterTimeEntriesView } from '../components/invoices/MatterTimeEntriesView';
 
 const InvoicesPage: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'invoices' | 'proforma' | 'time-entries' | 'tracking'>('invoices');
+  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+
+  // Read URL parameters and apply filters/tabs
+  useEffect(() => {
+    const statusParam = searchParams.get('status');
+    const tabParam = searchParams.get('tab');
+    
+    // Apply status filter if provided (for InvoiceList component)
+    if (statusParam) {
+      setStatusFilter(statusParam); // This can be passed to InvoiceList
+    }
+    
+    // Apply tab if provided
+    if (tabParam === 'tracking') {
+      setActiveTab('tracking');
+    }
+  }, [searchParams]);
 
   return (
     <div className="w-full space-y-6 min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 p-6">
@@ -67,7 +86,7 @@ const InvoicesPage: React.FC = () => {
         </button>
       </div>
 
-      {activeTab === 'invoices' && <InvoiceList />}
+      {activeTab === 'invoices' && <InvoiceList initialStatusFilter={statusFilter} />}
       {activeTab === 'proforma' && <ProFormaInvoiceList />}
       {activeTab === 'time-entries' && <MatterTimeEntriesView />}
       {activeTab === 'tracking' && <PaymentTrackingDashboard />}

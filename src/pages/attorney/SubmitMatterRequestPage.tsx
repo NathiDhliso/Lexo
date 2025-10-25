@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { supabase } from '../../lib/supabase';
 import { matterApiService } from '../../services/api/matter-api.service';
@@ -112,7 +112,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = useCallback((field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error for this field
     if (formErrors[field]) {
@@ -122,7 +122,24 @@ export const SubmitMatterRequestPage: React.FC = () => {
         return newErrors;
       });
     }
-  };
+  }, [formErrors]);
+
+  // Memoized handlers
+  const handleTitleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('title', e.target.value);
+  }, [handleInputChange]);
+
+  const handleDescriptionChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    handleInputChange('description', e.target.value);
+  }, [handleInputChange]);
+
+  const handleMatterTypeChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    handleInputChange('matter_type', e.target.value);
+  }, [handleInputChange]);
+
+  const handleUrgencyLevelChange = useCallback((e: React.ChangeEvent<HTMLSelectElement>) => {
+    handleInputChange('urgency_level', e.target.value as 'low' | 'standard' | 'high');
+  }, [handleInputChange]);
 
   const handleSubmitAnother = () => {
     setSubmitted(false);
@@ -281,7 +298,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
             label="Matter Title"
             type="text"
             value={formData.title}
-            onChange={(e) => handleInputChange('title', e.target.value)}
+            onChange={handleTitleChange}
             error={formErrors.title}
             required
             placeholder="e.g., Contract Dispute - ABC Corp"
@@ -293,7 +310,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
             </label>
             <textarea
               value={formData.description}
-              onChange={(e) => handleInputChange('description', e.target.value)}
+              onChange={handleDescriptionChange}
               rows={6}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent ${
                 formErrors.description
@@ -322,7 +339,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
             </label>
             <select
               value={formData.matter_type}
-              onChange={(e) => handleInputChange('matter_type', e.target.value)}
+              onChange={handleMatterTypeChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent ${
                 formErrors.matter_type
                   ? 'border-red-500'
@@ -349,7 +366,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
             </label>
             <select
               value={formData.urgency_level}
-              onChange={(e) => handleInputChange('urgency_level', e.target.value as 'low' | 'standard' | 'high')}
+              onChange={handleUrgencyLevelChange}
               className="w-full px-3 py-2 border border-neutral-300 dark:border-neutral-600 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100"
             >
               <option value="low">Low - No immediate deadline</option>

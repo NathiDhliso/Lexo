@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { AttorneyService } from '../../services/api/attorney.service';
 import { FormInput } from '../../components/ui/FormInput';
@@ -125,7 +125,7 @@ export const AttorneyRegisterPage: React.FC = () => {
     }
   };
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = useCallback((field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error for this field
     if (formErrors[field]) {
@@ -135,7 +135,28 @@ export const AttorneyRegisterPage: React.FC = () => {
         return newErrors;
       });
     }
-  };
+  }, [formErrors]);
+
+  // Memoized handlers
+  const handleAttorneyNameChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('attorney_name', e.target.value);
+  }, [handleInputChange]);
+
+  const handlePhoneNumberChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('phone_number', e.target.value);
+  }, [handleInputChange]);
+
+  const handleEmailChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('email', e.target.value);
+  }, [handleInputChange]);
+
+  const handlePasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('password', e.target.value);
+  }, [handleInputChange]);
+
+  const handleConfirmPasswordChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    handleInputChange('confirmPassword', e.target.value);
+  }, [handleInputChange]);
 
   if (loading) {
     return (
@@ -218,7 +239,7 @@ export const AttorneyRegisterPage: React.FC = () => {
             label="Attorney Name"
             type="text"
             value={formData.attorney_name}
-            onChange={(e) => handleInputChange('attorney_name', e.target.value)}
+            onChange={handleAttorneyNameChange}
             error={formErrors.attorney_name}
             required
             placeholder="Enter your full name"
@@ -228,7 +249,7 @@ export const AttorneyRegisterPage: React.FC = () => {
             label="Phone Number"
             type="tel"
             value={formData.phone_number}
-            onChange={(e) => handleInputChange('phone_number', e.target.value)}
+            onChange={handlePhoneNumberChange}
             error={formErrors.phone_number}
             required
             placeholder="+27 XX XXX XXXX"
@@ -238,7 +259,7 @@ export const AttorneyRegisterPage: React.FC = () => {
             label="Email Address"
             type="email"
             value={formData.email}
-            onChange={(e) => handleInputChange('email', e.target.value)}
+            onChange={handleEmailChange}
             error={formErrors.email}
             required
             placeholder="your.email@example.com"
@@ -248,7 +269,7 @@ export const AttorneyRegisterPage: React.FC = () => {
             label="Password"
             type="password"
             value={formData.password}
-            onChange={(e) => handleInputChange('password', e.target.value)}
+            onChange={handlePasswordChange}
             error={formErrors.password}
             required
             placeholder="At least 8 characters"
@@ -263,7 +284,7 @@ export const AttorneyRegisterPage: React.FC = () => {
             label="Confirm Password"
             type="password"
             value={formData.confirmPassword}
-            onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
+            onChange={handleConfirmPasswordChange}
             error={formErrors.confirmPassword}
             required
             placeholder="Re-enter your password"
