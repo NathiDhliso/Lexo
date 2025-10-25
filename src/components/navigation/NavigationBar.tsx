@@ -9,7 +9,6 @@ import { ShortcutHint } from './ShortcutHint';
 import { RealTimeTicker } from './RealTimeTicker';
 import { Button, Icon } from '../design-system/components';
 import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
-import { CreateProFormaModal } from '../proforma/CreateProFormaModal';
 import { GenerateInvoiceModal } from '../invoices/GenerateInvoiceModal';
 
 import { getFilteredNavigationConfig } from '../../config/navigation.config';
@@ -498,17 +497,8 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         />
       )}
 
-      {modalState.createProForma && (
-        <CreateProFormaModal
-          isOpen={modalState.createProForma}
-          onClose={() => setModalState(prev => ({ ...prev, createProForma: false }))}
-          onSuccess={() => {
-            setModalState(prev => ({ ...prev, createProForma: false }));
-            toast.success('Pro Forma request created successfully');
-            handlePageNavigation('proforma-requests');
-          }}
-        />
-      )}
+      {/* TODO: Replace with SimpleProFormaModal or remove if obsolete */}
+      {/* CreateProFormaModal has been deleted */}
 
       {modalState.generateInvoice && (
         <GenerateInvoiceModal

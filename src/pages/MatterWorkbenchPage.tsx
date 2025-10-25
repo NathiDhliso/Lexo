@@ -20,12 +20,10 @@ import {
   Sparkles
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, Button, Input, Select, Textarea } from '../components/design-system/components';
-import FileUpload from '../components/common/FileUpload';
-import { awsDocumentProcessingService } from '../services/aws-document-processing.service';
 import { matterApiService } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-hot-toast';
-import type { NewMatterForm, Page, DocumentProcessingResult } from '../types';
+import type { NewMatterForm, Page } from '../types';
 import { useNavigate } from 'react-router-dom';
 
 interface MatterWorkbenchPageProps {
@@ -69,15 +67,6 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
-  
-  // Document processing states
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [isProcessingDocument, setIsProcessingDocument] = useState(false);
-  const [processingProgress, setProcessingProgress] = useState(0);
-  const [documentProcessingError, setDocumentProcessingError] = useState<string | null>(null);
-  const [extractedData, setExtractedData] = useState<DocumentProcessingResult | null>(null);
-  const [showExtractedDataPreview, setShowExtractedDataPreview] = useState(false);
-
   const [formData, setFormData] = useState<NewMatterForm>({
     title: '',
     matterType: '',
@@ -117,41 +106,34 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
   const steps = [
     {
       id: 1,
-      title: 'Document Upload',
-      description: 'Upload legal documents for automatic data extraction',
-      icon: Upload,
-      color: 'bg-blue-500 dark:bg-blue-600'
-    },
-    {
-      id: 2,
       title: 'Basic Information',
       description: 'Matter type, title, and description',
       icon: FileText,
       color: 'bg-green-500 dark:bg-green-600'
     },
     {
-      id: 3,
+      id: 2,
       title: 'Client Details',
       description: 'Client information and contact details',
       icon: Users,
       color: 'bg-purple-500 dark:bg-purple-600'
     },
     {
-      id: 4,
+      id: 3,
       title: 'Attorney Information',
       description: 'Instructing attorney and firm details',
       icon: Building2,
       color: 'bg-orange-500 dark:bg-orange-600'
     },
     {
-      id: 5,
+      id: 4,
       title: 'Financial Terms',
       description: 'Fee structure and financial arrangements',
       icon: DollarSign,
       color: 'bg-yellow-500 dark:bg-yellow-600'
     },
     {
-      id: 6,
+      id: 5,
       title: 'Review & Submit',
       description: 'Review all information before creating matter',
       icon: CheckCircle,
@@ -167,142 +149,23 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
     }
   };
 
-  const handleFileSelect = async (file: File) => {
-    setUploadedFile(file);
-    setIsProcessingDocument(true);
-    setProcessingProgress(0);
-    setDocumentProcessingError(null);
-    setExtractedData(null);
-
-    try {
-      // Simulate processing progress
-      const progressInterval = setInterval(() => {
-        setProcessingProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 200);
-
-      const result = await awsDocumentProcessingService.processDocument(file);
-      
-      clearInterval(progressInterval);
-      setProcessingProgress(100);
-      setExtractedData(result);
-      setShowExtractedDataPreview(true);
-      
-      toast.success('Document processed successfully!');
-    } catch (error) {
-      console.error('Document processing error:', error);
-      setDocumentProcessingError(error instanceof Error ? error.message : 'Failed to process document');
-      toast.error('Failed to process document');
-    } finally {
-      setIsProcessingDocument(false);
-    }
-  };
-
-  const handleFileRemove = () => {
-    setUploadedFile(null);
-    setExtractedData(null);
-    setShowExtractedDataPreview(false);
-    setDocumentProcessingError(null);
-    setProcessingProgress(0);
-  };
-
-  const applyExtractedData = () => {
-    if (!extractedData) return;
-
-    console.log('[MatterWorkbench] Applying extracted data:', extractedData);
-
-    // The actual extracted fields are in extractedData.extractedData
-    const data = (extractedData as any).extractedData || extractedData;
-    console.log('[MatterWorkbench] Actual data to extract from:', data);
-
-    const updates: Partial<NewMatterForm> = {};
-    
-    // Client fields - use both camelCase and snake_case
-    if (data.clientName) {
-      updates.clientName = data.clientName;
-      updates.client_name = data.clientName;
-    }
-    if (data.clientEmail) {
-      updates.clientEmail = data.clientEmail;
-      updates.client_email = data.clientEmail;
-    }
-    if (data.clientPhone) {
-      updates.clientPhone = data.clientPhone;
-      updates.client_phone = data.clientPhone;
-    }
-    if (data.clientAddress) {
-      updates.clientAddress = data.clientAddress;
-      updates.client_address = data.clientAddress;
-    }
-    
-    // Case fields
-    if (data.caseNumber) {
-      updates.courtCaseNumber = data.caseNumber;
-    }
-    if (data.description) {
-      updates.description = data.description;
-    }
-    if (data.caseTitle) {
-      updates.title = data.caseTitle;
-    }
-    
-    // Attorney fields
-    if (data.attorneyName) {
-      updates.instructingAttorney = data.attorneyName;
-      updates.instructing_attorney = data.attorneyName;
-    }
-    if (data.attorneyEmail) {
-      updates.instructingAttorneyEmail = data.attorneyEmail;
-      updates.instructing_attorney_email = data.attorneyEmail;
-    }
-    if (data.attorneyPhone) {
-      updates.instructingAttorneyPhone = data.attorneyPhone;
-      updates.instructing_attorney_phone = data.attorneyPhone;
-    }
-    if (data.firmName) {
-      updates.instructingFirm = data.firmName;
-      updates.instructing_firm = data.firmName;
-    }
-    if (data.lawFirm) {
-      updates.instructingFirm = data.lawFirm;
-      updates.instructing_firm = data.lawFirm;
-    }
-    
-    // Financial fields
-    if (data.estimatedAmount) {
-      updates.estimatedFee = data.estimatedAmount;
-      updates.estimated_fee = data.estimatedAmount;
-    }
-
-    console.log('[MatterWorkbench] Updates to apply:', updates);
-    setFormData(prev => ({ ...prev, ...updates }));
-    setShowExtractedDataPreview(false);
-    
-    toast.success('Extracted data applied to form!');
-  };
-
   const validateStep = (step: number): boolean => {
     const errors: Record<string, string> = {};
 
     switch (step) {
-      case 2: // Basic Information
+      case 1: // Basic Information
         if (!formData.title.trim()) errors.title = 'Matter title is required';
         if (!formData.matter_type) errors.matter_type = 'Matter type is required';
         if (!formData.description.trim()) errors.description = 'Description is required';
         break;
-      case 3: // Client Details
+      case 2: // Client Details
         if (!formData.client_name.trim()) errors.client_name = 'Client name is required';
         if (!formData.client_email.trim()) errors.client_email = 'Client email is required';
         if (formData.client_email && !/\S+@\S+\.\S+/.test(formData.client_email)) {
           errors.client_email = 'Valid email is required';
         }
         break;
-      case 4: // Attorney Information
+      case 3: // Attorney Information
         if (!formData.instructing_attorney.trim()) errors.instructing_attorney = 'Instructing attorney name is required';
         if (!formData.instructing_attorney_firm.trim()) errors.instructing_attorney_firm = 'Attorney firm is required';
         if (!formData.instructing_attorney_email.trim()) errors.instructing_attorney_email = 'Attorney email is required';
@@ -310,7 +173,7 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
           errors.instructing_attorney_email = 'Valid email is required';
         }
         break;
-      case 5: // Financial Terms
+      case 4: // Financial Terms
         if (!formData.fee_type) errors.fee_type = 'Fee type is required';
         if (formData.estimated_fee < 0) errors.estimated_fee = 'Estimated fee cannot be negative';
         break;
@@ -403,95 +266,6 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
     switch (currentStep) {
       case 1:
         return (
-          <div className="space-y-6">
-            <div className="text-center">
-              <Upload className="w-16 h-16 text-blue-500 dark:text-judicial-blue-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Upload Legal Documents</h3>
-              <p className="text-neutral-600 dark:text-neutral-400">
-                Upload attorney briefs, court documents, or client correspondence to automatically extract case details
-              </p>
-            </div>
-
-            <FileUpload
-              onFileSelect={handleFileSelect}
-              onFileRemove={handleFileRemove}
-              currentFile={uploadedFile}
-              isProcessing={isProcessingDocument}
-              processingProgress={processingProgress}
-              error={documentProcessingError}
-              label="Upload Attorney's Brief or Legal Document"
-              description="Upload PDF, DOC, or DOCX files (max 10MB) for automatic data extraction"
-              className="max-w-2xl mx-auto"
-            />
-
-            {showExtractedDataPreview && extractedData && (
-              <Card className="max-w-2xl mx-auto border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20">
-                <CardHeader>
-                  <div className="flex items-center space-x-2">
-                    <Sparkles className="w-5 h-5 text-green-600 dark:text-green-400" />
-                    <h4 className="font-semibold text-green-900 dark:text-green-100">Extracted Information</h4>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                    {extractedData.clientName && (
-                      <div>
-                        <span className="font-medium text-green-800 dark:text-green-300">Client:</span>
-                        <span className="ml-2 text-green-700 dark:text-green-400">{extractedData.clientName}</span>
-                      </div>
-                    )}
-                    {extractedData.clientEmail && (
-                      <div>
-                        <span className="font-medium text-green-800 dark:text-green-300">Email:</span>
-                        <span className="ml-2 text-green-700 dark:text-green-400">{extractedData.clientEmail}</span>
-                      </div>
-                    )}
-                    {extractedData.clientPhone && (
-                      <div>
-                        <span className="font-medium text-green-800 dark:text-green-300">Phone:</span>
-                        <span className="ml-2 text-green-700 dark:text-green-400">{extractedData.clientPhone}</span>
-                      </div>
-                    )}
-                    {extractedData.caseNumber && (
-                      <div>
-                        <span className="font-medium text-green-800 dark:text-green-300">Case Number:</span>
-                        <span className="ml-2 text-green-700 dark:text-green-400">{extractedData.caseNumber}</span>
-                      </div>
-                    )}
-                    {extractedData.attorneyName && (
-                      <div>
-                        <span className="font-medium text-green-800 dark:text-green-300">Attorney:</span>
-                        <span className="ml-2 text-green-700 dark:text-green-400">{extractedData.attorneyName}</span>
-                      </div>
-                    )}
-                    {extractedData.firmName && (
-                      <div>
-                        <span className="font-medium text-green-800 dark:text-green-300">Firm:</span>
-                        <span className="ml-2 text-green-700 dark:text-green-400">{extractedData.firmName}</span>
-                      </div>
-                    )}
-                  </div>
-                  
-                  <div className="flex space-x-3 mt-4">
-                    <Button onClick={applyExtractedData} variant="primary" size="sm">
-                      Apply to Form
-                    </Button>
-                    <Button 
-                      onClick={() => setShowExtractedDataPreview(false)} 
-                      variant="outline" 
-                      size="sm"
-                    >
-                      Dismiss
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-          </div>
-        );
-
-      case 2:
-        return (
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center mb-8">
               <FileText className="w-16 h-16 text-green-500 dark:text-green-400 mx-auto mb-4" />
@@ -559,7 +333,7 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
           </div>
         );
 
-      case 3:
+      case 2:
         return (
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center mb-8">
@@ -652,7 +426,7 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
           </div>
         );
 
-      case 4:
+      case 3:
         return (
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center mb-8">
@@ -746,7 +520,7 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
           </div>
         );
 
-      case 5:
+      case 4:
         return (
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center mb-8">
@@ -823,7 +597,7 @@ const MatterWorkbenchPage: React.FC<MatterWorkbenchPageProps> = ({ onNavigate })
           </div>
         );
 
-      case 6:
+      case 5:
         return (
           <div className="space-y-6 max-w-4xl mx-auto">
             <div className="text-center mb-8">

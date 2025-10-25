@@ -39,6 +39,16 @@ export const WIPAccumulator: React.FC<WIPAccumulatorProps> = ({ matterId }) => {
         {
           event: '*',
           schema: 'public',
+          table: 'logged_services',
+          filter: `matter_id=eq.${matterId}`
+        },
+        () => loadWIPData()
+      )
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
           table: 'time_entries',
           filter: `matter_id=eq.${matterId}`
         },
@@ -63,19 +73,33 @@ export const WIPAccumulator: React.FC<WIPAccumulatorProps> = ({ matterId }) => {
 
   const loadWIPData = async () => {
     try {
+      // Fetch logged services (actual work, not estimates)
+      const { data: services } = await supabase
+        .from('logged_services')
+        .select('amount')
+        .eq('matter_id', matterId)
+        .eq('is_estimate', false)
+        .is('invoice_id', null);
+
+      // Fetch time entries
       const { data: timeEntries } = await supabase
         .from('time_entries')
         .select('hours, hourly_rate')
         .eq('matter_id', matterId)
-        .eq('is_billed', false)
-        .is('deleted_at', null);
+        .is('invoice_id', null);
 
+      // Fetch expenses
       const { data: expenses } = await supabase
         .from('expenses')
         .select('amount')
         .eq('matter_id', matterId)
-        .eq('is_billed', false)
-        .is('deleted_at', null);
+        .is('invoice_id', null);
+
+      // Calculate totals from all three sources
+      const servicesTotal = (services || []).reduce(
+        (sum, service) => sum + (service.amount || 0),
+        0
+      );
 
       const timeTotal = (timeEntries || []).reduce(
         (sum, entry) => sum + (entry.hours * entry.hourly_rate),
@@ -83,19 +107,20 @@ export const WIPAccumulator: React.FC<WIPAccumulatorProps> = ({ matterId }) => {
       );
 
       const expensesTotal = (expenses || []).reduce(
-        (sum, expense) => sum + expense.amount,
+        (sum, expense) => sum + (expense.amount || 0),
         0
       );
 
-      const totalWIP = timeTotal + expensesTotal;
+      // Total WIP is sum of all three sources
+      const totalWIP = servicesTotal + timeTotal + expensesTotal;
 
       setWip({
+        servicesTotal,
+        servicesCount: services?.length || 0,
         timeEntriesTotal: timeTotal,
         timeEntriesCount: timeEntries?.length || 0,
-        expensesTotal: expensesTotal,
+        expensesTotal,
         expensesCount: expenses?.length || 0,
-        servicesTotal: 0,
-        servicesCount: 0,
         totalWIP
       });
     } catch (error) {

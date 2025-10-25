@@ -1,7 +1,70 @@
 /**
  * Financial Workflow Types
- * Credit notes, payment disputes, scope amendments, partner approvals
+ * Credit notes, payment disputes, scope amendments, partner approvals, firms
  */
+
+/**
+ * Firm (Instructing Law Firm)
+ * Represents law firms that instruct advocates for matters
+ */
+export interface Firm {
+  id: string;
+  firm_name: string;
+  attorney_name: string;
+  practice_number?: string;
+  phone_number?: string;
+  email: string;
+  address?: string;
+  status: 'active' | 'inactive';
+  invitation_token?: string;
+  invitation_token_expires_at?: string;
+  invitation_token_used_at?: string;
+  onboarded_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface InvitationTokenResponse {
+  token: string;
+  expires_at: string;
+  invitation_link: string;
+}
+
+export interface AttorneyRegistrationData {
+  firm_id: string;
+  token: string;
+  attorney_name: string;
+  phone_number: string;
+  email: string;
+  password: string;
+}
+
+export interface MatterRequest {
+  title: string;
+  description: string;
+  matter_type: string;
+  urgency_level: 'low' | 'standard' | 'high';
+  firm_id: string;
+}
+
+export interface FirmCreate {
+  firm_name: string;
+  attorney_name: string;
+  practice_number?: string;
+  phone_number?: string;
+  email: string;
+  address?: string;
+}
+
+export interface FirmUpdate {
+  firm_name?: string;
+  attorney_name?: string;
+  practice_number?: string;
+  phone_number?: string;
+  email?: string;
+  address?: string;
+  status?: 'active' | 'inactive';
+}
 
 export interface CreditNote {
   id: string;
@@ -110,4 +173,50 @@ export interface PartnerApprovalCreate {
   matter_id: string;
   partner_id: string;
   comments?: string;
+}
+
+/**
+ * Logged Service
+ * Represents service-based work items for both Pro Forma estimates and WIP actuals
+ */
+export interface LoggedService {
+  id: string;
+  matter_id: string;
+  advocate_id: string;
+  service_date: string;
+  description: string;
+  service_type: 'consultation' | 'drafting' | 'research' | 'court_appearance' | 'negotiation' | 'review' | 'other';
+  estimated_hours?: number;
+  rate_card_id?: string;
+  unit_rate: number;
+  quantity: number;
+  amount: number;
+  is_estimate: boolean;
+  pro_forma_id?: string;
+  invoice_id?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface LoggedServiceCreate {
+  matter_id: string;
+  service_date: string;
+  description: string;
+  service_type: LoggedService['service_type'];
+  estimated_hours?: number;
+  rate_card_id?: string;
+  unit_rate: number;
+  quantity?: number;
+  is_estimate?: boolean;
+  pro_forma_id?: string;
+}
+
+export interface LoggedServiceUpdate {
+  service_date?: string;
+  description?: string;
+  service_type?: LoggedService['service_type'];
+  estimated_hours?: number;
+  rate_card_id?: string;
+  unit_rate?: number;
+  quantity?: number;
 }

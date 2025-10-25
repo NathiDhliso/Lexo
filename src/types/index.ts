@@ -167,7 +167,8 @@ export enum MatterStatus {
   PENDING = 'pending',
   SETTLED = 'settled',
   CLOSED = 'closed',
-  ON_HOLD = 'on_hold'
+  ON_HOLD = 'on_hold',
+  NEW_REQUEST = 'new_request'
 }
 
 export enum InvoiceStatus {
@@ -283,6 +284,7 @@ export interface Advocate {
 export interface Matter {
   id: string;
   advocate_id: string;
+  firm_id?: string; // Foreign key to firms table (required after migration)
   reference_number: string;
   title: string;
   description?: string;
@@ -639,6 +641,8 @@ export interface ApiError {
 export interface NewMatterForm {
   advocateId?: string;
   referenceNumber?: string;
+  firm_id?: string; // Required: Foreign key to firms table
+  firmId?: string; // Alias for firm_id
   title: string;
   description?: string;
   matterType: string;

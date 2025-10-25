@@ -66,6 +66,48 @@ export class InvoiceService {
         throw new Error('User not authenticated');
       }
 
+      // Validate WIP exists before invoice generation (for non-temp matters)
+      // Check all three types: services, time entries, and expenses
+      if (!matterId.startsWith('temp-pro-forma-')) {
+        // Check for logged services
+        const { data: servicesCheck, count: servicesCount } = await supabase
+          .from('logged_services')
+          .select('id', { count: 'exact', head: true })
+          .eq('matter_id', matterId)
+          .eq('is_estimate', false)
+          .is('invoice_id', null);
+
+        // Check for time entries
+        const { data: timeCheck, count: timeCount } = await supabase
+          .from('time_entries')
+          .select('id', { count: 'exact', head: true })
+          .eq('matter_id', matterId)
+          .is('invoice_id', null);
+
+        // Check for expenses
+        const { data: expensesCheck, count: expensesCount } = await supabase
+          .from('expenses')
+          .select('id', { count: 'exact', head: true })
+          .eq('matter_id', matterId)
+          .is('invoice_id', null);
+
+        const totalWipItems = (servicesCount || 0) + (timeCount || 0) + (expensesCount || 0);
+
+        if (totalWipItems === 0) {
+          toast.error('No WIP items available for invoicing');
+          throw new Error('No WIP items found. Please log services, time, or expenses before generating an invoice.');
+        }
+
+        // Validate WIP total is greater than zero
+        const { data: wipTotals } = await supabase
+          .rpc('calculate_matter_wip', { matter_id_param: matterId });
+
+        if (wipTotals && wipTotals <= 0) {
+          toast.error('WIP total must be greater than zero');
+          throw new Error('Cannot generate invoice with zero or negative WIP value.');
+        }
+      }
+
       const isTempProFormaMatter = matterId.startsWith('temp-pro-forma-');
 
       if (isTempProFormaMatter && !isProForma) {
@@ -175,6 +217,27 @@ export class InvoiceService {
             updated_at: new Date().toISOString()
           })
           .in('id', timeEntries.map(e => e.id));
+
+        // Mark logged services as invoiced
+        await supabase
+          .from('logged_services')
+          .update({
+            invoice_id: invoice.id,
+            updated_at: new Date().toISOString()
+          })
+          .eq('matter_id', matterId)
+          .eq('is_estimate', false)
+          .is('invoice_id', null);
+
+        // Mark expenses as invoiced
+        await supabase
+          .from('expenses')
+          .update({
+            invoice_id: invoice.id,
+            updated_at: new Date().toISOString()
+          })
+          .eq('matter_id', matterId)
+          .is('invoice_id', null);
       }
 
       // Update matter WIP value (only for final invoices, not pro forma)

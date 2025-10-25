@@ -183,6 +183,134 @@ export class AttorneyService extends BaseApiService<AttorneyUser> {
       return false;
     }
   }
+
+  /**
+   * Generate invitation token for a firm
+   */
+  static async generateInvitationToken(firmId: string): Promise<import('../../types/financial.types').InvitationTokenResponse> {
+    try {
+      // Generate cryptographically secure token
+      const token = crypto.randomUUID() + crypto.randomUUID().replace(/-/g, '');
+      
+      // Calculate expiration (7 days from now)
+      const expiresAt = new Date();
+      expiresAt.setDate(expiresAt.getDate() + 7);
+      
+      // Update firm with token
+      const { data, error } = await supabase
+        .from('firms')
+        .update({
+          invitation_token: token,
+          invitation_token_expires_at: expiresAt.toISOString(),
+          invitation_token_used_at: null // Reset if re-inviting
+        })
+        .eq('id', firmId)
+        .select()
+        .single();
+      
+      if (error) {
+        console.error('Error generating invitation token:', error);
+        toast.error('Failed to generate invitation link');
+        throw error;
+      }
+      
+      // Construct invitation link
+      const invitationLink = `${window.location.origin}/register-firm?firm_id=${firmId}&token=${token}`;
+      
+      return {
+        token,
+        expires_at: expiresAt.toISOString(),
+        invitation_link: invitationLink
+      };
+    } catch (error) {
+      console.error('Error in generateInvitationToken:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Verify invitation token
+   */
+  static async verifyInvitationToken(firmId: string, token: string): Promise<import('../../types/financial.types').Firm> {
+    const { data: firm, error } = await supabase
+      .from('firms')
+      .select('*')
+      .eq('id', firmId)
+      .eq('invitation_token', token)
+      .single();
+    
+    if (error || !firm) {
+      throw new Error('Invalid invitation link');
+    }
+    
+    // Check expiration
+    if (firm.invitation_token_expires_at) {
+      const expiresAt = new Date(firm.invitation_token_expires_at);
+      if (expiresAt < new Date()) {
+        throw new Error('This invitation link has expired');
+      }
+    }
+    
+    // Check if already used
+    if (firm.invitation_token_used_at) {
+      throw new Error('This invitation has already been used');
+    }
+    
+    return firm;
+  }
+
+  /**
+   * Register attorney via invitation
+   */
+  static async registerViaInvitation(data: import('../../types/financial.types').AttorneyRegistrationData): Promise<void> {
+    try {
+      // Verify token again (security double-check)
+      await this.verifyInvitationToken(data.firm_id, data.token);
+      
+      // Create auth user
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: data.email,
+        password: data.password,
+        options: {
+          data: {
+            attorney_name: data.attorney_name,
+            phone_number: data.phone_number,
+            firm_id: data.firm_id,
+            user_type: 'attorney'
+          }
+        }
+      });
+      
+      if (authError) {
+        if (authError.message.includes('already registered')) {
+          toast.error('An account with this email already exists');
+        } else if (authError.message.includes('weak password')) {
+          toast.error('Password is too weak. Use at least 8 characters');
+        } else {
+          toast.error('Registration failed. Please try again');
+        }
+        throw authError;
+      }
+      
+      // Update firm record
+      await supabase
+        .from('firms')
+        .update({
+          attorney_name: data.attorney_name,
+          phone_number: data.phone_number,
+          email: data.email,
+          invitation_token_used_at: new Date().toISOString(),
+          onboarded_at: new Date().toISOString(),
+          status: 'active'
+        })
+        .eq('id', data.firm_id);
+      
+      toast.success('Registration successful!');
+    } catch (error) {
+      console.error('Error in registerViaInvitation:', error);
+      throw error;
+    }
+  }
 }
 
 export const attorneyService = new AttorneyService();

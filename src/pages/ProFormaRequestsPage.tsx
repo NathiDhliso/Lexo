@@ -4,8 +4,6 @@ import { proformaRequestService } from '../services/api/proforma-request.service
 import { matterConversionService } from '../services/api/matter-conversion.service';
 import { proFormaPDFService } from '../services/proforma-pdf.service';
 import { Button, EmptyState, Badge, SkeletonCard } from '../components/design-system/components';
-import { NewProFormaModal } from '../components/proforma/NewProFormaModal';
-import { CreateProFormaModal } from '../components/proforma/CreateProFormaModal';
 import { ConvertProFormaModal } from '../components/matters/ConvertProFormaModal';
 import { ProFormaLinkModal } from '../components/proforma/ProFormaLinkModal';
 import { ReviewProFormaRequestModal } from '../components/proforma/ReviewProFormaRequestModal';
@@ -418,23 +416,8 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
         </div>
       )}
 
-      <CreateProFormaModal
-        isOpen={showCreateModal}
-        onClose={() => setShowCreateModal(false)}
-        onSuccess={(proforma) => {
-          setSelectedProForma(proforma);
-          setShowSendModal(true);
-        }}
-      />
-
-      <NewProFormaModal
-        isOpen={showNewModal}
-        onClose={() => setShowNewModal(false)}
-        onSuccess={() => {
-          setShowNewModal(false);
-          loadRequests();
-        }}
-      />
+      {/* TODO: Replace with SimpleProFormaModal or remove if obsolete */}
+      {/* <CreateProFormaModal /> and <NewProFormaModal /> have been deleted */}
 
       {selectedProForma && showSendModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

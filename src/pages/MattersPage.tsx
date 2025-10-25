@@ -36,7 +36,7 @@ interface MattersPageProps {
 }
 
 const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
-  const [activeTab, setActiveTab] = useState<'active' | 'all'>('active');
+  const [activeTab, setActiveTab] = useState<'active' | 'new_requests' | 'all'>('active');
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
@@ -194,10 +194,16 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                            matter.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            matter.instructing_attorney.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesTab = activeTab === 'all' || 
-                        (activeTab === 'active' && matter.status === MatterStatus.ACTIVE);
+                        (activeTab === 'active' && matter.status === MatterStatus.ACTIVE) ||
+                        (activeTab === 'new_requests' && matter.status === MatterStatus.NEW_REQUEST);
       return matchesSearch && matchesTab;
     });
   }, [matters, searchTerm, activeTab]);
+  
+  // Count new requests
+  const newRequestsCount = useMemo(() => {
+    return matters.filter(m => m.status === MatterStatus.NEW_REQUEST).length;
+  }, [matters]);
 
   // Selection management
   const {
@@ -417,17 +423,22 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
 
       {/* Tabs */}
       <div className="flex space-x-1 bg-neutral-100 dark:bg-metallic-gray-800 rounded-lg p-1 w-fit">
-        {(['active', 'all'] as const).map((tab) => (
+        {(['active', 'new_requests', 'all'] as const).map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors relative ${
               activeTab === tab
                 ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 theme-shadow-sm'
                 : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
             }`}
           >
-            {tab === 'active' ? 'Active Matters' : 'All Matters'}
+            {tab === 'active' ? 'Active Matters' : tab === 'new_requests' ? 'New Requests' : 'All Matters'}
+            {tab === 'new_requests' && newRequestsCount > 0 && (
+              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
+                {newRequestsCount}
+              </span>
+            )}
           </button>
         ))}
       </div>
@@ -478,7 +489,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
               <Briefcase className="w-12 h-12 text-neutral-400 dark:text-neutral-500 mx-auto mb-4" />
               <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">No Matters Found</h3>
               <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-                {activeTab === 'active' ? 'No active matters' : 'No matters match your search criteria'}
+                {activeTab === 'active' ? 'No active matters' : activeTab === 'new_requests' ? 'No new matter requests' : 'No matters match your search criteria'}
               </p>
               <Button onClick={handleNewMatterClick} variant="primary">
                 <Plus className="w-4 h-4 mr-2" />
@@ -504,12 +515,13 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{matter.title}</h3>
                       <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                        matter.status === MatterStatus.NEW_REQUEST ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 animate-pulse' :
                         matter.status === MatterStatus.ACTIVE ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
                         matter.status === MatterStatus.PENDING ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
                         matter.status === MatterStatus.SETTLED ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
                         'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300'
                       }`}>
-                        {matter.status}
+                        {matter.status === MatterStatus.NEW_REQUEST ? 'NEW REQUEST' : matter.status}
                       </span>
                       
                       {/* Health Check Warning Icons */}
@@ -553,6 +565,12 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                         <span className="text-neutral-600 dark:text-neutral-400">Attorney:</span>
                         <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">{matter.instructing_attorney}</span>
                       </div>
+                      {matter.status === MatterStatus.NEW_REQUEST && (matter as any).instructing_firm && (
+                        <div>
+                          <span className="text-neutral-600 dark:text-neutral-400">Firm:</span>
+                          <span className="ml-2 font-medium text-purple-700 dark:text-purple-300">{(matter as any).instructing_firm}</span>
+                        </div>
+                      )}
                       <div>
                         <span className="text-neutral-600 dark:text-neutral-400">Type:</span>
                         <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">{(matter as any).brief_type}</span>

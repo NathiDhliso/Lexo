@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { X, FileText, User, Mail, Phone, Building, Calendar, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
-import { CreateProFormaModal } from './CreateProFormaModal';
 import { proformaRequestService } from '../../services/api/proforma-request.service';
 import { AsyncButton } from '../ui/AsyncButton';
 import { Button } from '../design-system/components';
@@ -166,13 +165,12 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
                     <div>
                       <span className="text-sm text-neutral-600 dark:text-neutral-400 font-medium">Urgency:</span>
                       <span
-                        className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${
-                          request.urgency === 'high'
+                        className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${request.urgency === 'high'
                             ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
                             : request.urgency === 'medium'
-                            ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
-                            : 'bg-gray-100 dark:bg-metallic-gray-800 text-gray-700 dark:text-neutral-300'
-                        }`}
+                              ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                              : 'bg-gray-100 dark:bg-metallic-gray-800 text-gray-700 dark:text-neutral-300'
+                          }`}
                       >
                         {request.urgency.charAt(0).toUpperCase() + request.urgency.slice(1)}
                       </span>
@@ -308,22 +306,8 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
         </div>
       )}
 
-      {/* Create Pro Forma Modal */}
-      {showCreateModal && initialData && (
-        <CreateProFormaModal
-          isOpen={showCreateModal}
-          onClose={() => {
-            setShowCreateModal(false);
-            setInitialData(null);
-          }}
-          onSuccess={handleQuoteCreated}
-          matterId={request.id}
-          matterName={initialData.matterName}
-          clientName={initialData.clientName}
-          initialSummary={initialData.matterSummary}
-          initialMatterType={initialData.matterType}
-        />
-      )}
+      {/* TODO: Replace with SimpleProFormaModal or remove if obsolete */}
+      {/* CreateProFormaModal has been deleted */}
     </>
   );
 };

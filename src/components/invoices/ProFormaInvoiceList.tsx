@@ -3,7 +3,6 @@ import { Plus, FileCheck, AlertCircle, ArrowRight, CheckCircle, Clock, XCircle, 
 import { proformaRequestService } from '../../services/api/proforma-request.service';
 import { formatRand } from '../../lib/currency';
 import { toast } from 'react-hot-toast';
-import { NewProFormaModal } from '../proforma/NewProFormaModal';
 import { ConvertProFormaModal } from '../matters/ConvertProFormaModal';
 
 interface ProFormaRequest {
@@ -176,11 +175,10 @@ export const ProFormaInvoiceList: React.FC = () => {
           <button
             key={status}
             onClick={() => setFilterStatus(status)}
-            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
-              filterStatus === status
-                ? 'bg-amber-600 text-white'
-                : 'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-metallic-gray-700'
-            }`}
+            className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${filterStatus === status
+              ? 'bg-amber-600 text-white'
+              : 'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-metallic-gray-700'
+              }`}
           >
             {status.charAt(0).toUpperCase() + status.slice(1)}
           </button>
@@ -278,7 +276,7 @@ export const ProFormaInvoiceList: React.FC = () => {
                         <ArrowRight className="w-4 h-4" />
                       </button>
                     )}
-                    <button 
+                    <button
                       onClick={() => handleViewDetails(proForma.id)}
                       className="px-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 rounded-lg hover:bg-neutral-50 dark:hover:bg-metallic-gray-800 transition-colors text-sm"
                     >
@@ -292,16 +290,8 @@ export const ProFormaInvoiceList: React.FC = () => {
         )}
       </div>
 
-      {showNewModal && (
-        <NewProFormaModal
-          isOpen={showNewModal}
-          onClose={() => setShowNewModal(false)}
-          onSuccess={() => {
-            setShowNewModal(false);
-            loadProFormaRequests();
-          }}
-        />
-      )}
+      {/* TODO: Replace with SimpleProFormaModal or remove if obsolete */}
+      {/* NewProFormaModal has been deleted */}
 
       {showConvertModal && selectedProForma && (
         <ConvertProFormaModal

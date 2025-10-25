@@ -6,9 +6,7 @@ import { LoadingSpinner } from './components/design-system/components';
 import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
-import { AttorneyProtectedRoute } from './components/auth/AttorneyProtectedRoute';
 import { NavigationBar } from './components/navigation';
-import { AttorneyNavigationBar } from './components/navigation/AttorneyNavigationBar';
 import { UserTier, Page } from './types'
 
 import {
@@ -24,21 +22,13 @@ import {
   ReportsPage,
   DisputesPage,
   CreditNotesPage,
-  AttorneyDashboardPage,
-  AttorneyMattersPage,
-  AttorneyInvoicesPage,
-  AttorneyProFormasPage,
-  AttorneyNotificationsPage,
-  AttorneyProfilePage,
-  AttorneySettingsPage,
   AttorneyRegisterPage,
-  AttorneyLoginPage
+  SubmitMatterRequestPage
 } from './pages';
 
 import ProFormaRequestPage from './pages/ProFormaRequestPage';
 import MatterWorkbenchPage from './pages/MatterWorkbenchPage';
-import { ProFormaSubmissionPage } from './pages/attorney/ProFormaSubmissionPage';
-import { EngagementSigningPage } from './pages/attorney/EngagementSigningPage';
+import FirmsPage from './pages/FirmsPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -111,30 +101,13 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   );
 };
 
-const AttorneyLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-gradient-to-br dark:from-metallic-gray-900 dark:via-metallic-gray-800 dark:to-metallic-gray-900 flex flex-col transition-colors duration-300">
-      <AttorneyNavigationBar />
-      <main className="flex-1">
-        <div className="px-3 sm:px-4 md:px-6 py-4 md:py-6">
-          <Suspense fallback={<LoadingSpinner />}>
-            {children}
-          </Suspense>
-        </div>
-      </main>
-    </div>
-  );
-};
-
 const AppContent: React.FC = () => {
   return (
     <Routes>
       {/* Public Attorney Routes - No Authentication Required */}
       <Route path="/attorney/register" element={<AttorneyRegisterPage />} />
-      <Route path="/attorney/login" element={<AttorneyLoginPage />} />
+      <Route path="/attorney/submit-matter-request" element={<SubmitMatterRequestPage />} />
       <Route path="/pro-forma-request/:token" element={<ProFormaRequestPage token="" />} />
-      <Route path="/attorney/proforma/:token" element={<ProFormaSubmissionPage />} />
-      <Route path="/attorney/engagement/:token" element={<EngagementSigningPage />} />
       
       <Route path="/" element={
         <ProtectedRoute>
@@ -164,6 +137,14 @@ const AppContent: React.FC = () => {
         <ProtectedRoute>
           <MainLayout>
             <MattersPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/firms" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <FirmsPage />
           </MainLayout>
         </ProtectedRoute>
       } />
@@ -257,61 +238,7 @@ const AppContent: React.FC = () => {
       } />
       
       {/* Attorney Protected Routes - Require Attorney Authentication */}
-      <Route path="/attorney/dashboard" element={
-        <AttorneyProtectedRoute>
-          <AttorneyLayout>
-            <AttorneyDashboardPage />
-          </AttorneyLayout>
-        </AttorneyProtectedRoute>
-      } />
-      
-      <Route path="/attorney/matters" element={
-        <AttorneyProtectedRoute>
-          <AttorneyLayout>
-            <AttorneyMattersPage />
-          </AttorneyLayout>
-        </AttorneyProtectedRoute>
-      } />
-      
-      <Route path="/attorney/invoices" element={
-        <AttorneyProtectedRoute>
-          <AttorneyLayout>
-            <AttorneyInvoicesPage />
-          </AttorneyLayout>
-        </AttorneyProtectedRoute>
-      } />
-      
-      <Route path="/attorney/proformas" element={
-        <AttorneyProtectedRoute>
-          <AttorneyLayout>
-            <AttorneyProFormasPage />
-          </AttorneyLayout>
-        </AttorneyProtectedRoute>
-      } />
-      
-      <Route path="/attorney/notifications" element={
-        <AttorneyProtectedRoute>
-          <AttorneyLayout>
-            <AttorneyNotificationsPage />
-          </AttorneyLayout>
-        </AttorneyProtectedRoute>
-      } />
-      
-      <Route path="/attorney/profile" element={
-        <AttorneyProtectedRoute>
-          <AttorneyLayout>
-            <AttorneyProfilePage />
-          </AttorneyLayout>
-        </AttorneyProtectedRoute>
-      } />
-      
-      <Route path="/attorney/settings" element={
-        <AttorneyProtectedRoute>
-          <AttorneyLayout>
-            <AttorneySettingsPage />
-          </AttorneyLayout>
-        </AttorneyProtectedRoute>
-      } />
+      {/* Attorney routes removed - only registration and matter request submission remain */}
       
       {/* Catch-all route - redirect to dashboard for authenticated users */}
       <Route path="*" element={

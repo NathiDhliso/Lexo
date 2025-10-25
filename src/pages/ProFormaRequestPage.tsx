@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { FileText, Clock, AlertCircle, CheckCircle, Building, User, Mail, Phone, Upload, Edit3 } from 'lucide-react';
+import { FileText, Clock, AlertCircle, CheckCircle, Building, User, Mail, Phone } from 'lucide-react';
 import { proformaRequestService } from '../services/api/proforma-request.service';
 import { LoadingSpinner } from '../components/design-system/components';
 import { Database } from '../../types/database';
-import FileUpload from '../components/common/FileUpload';
-import { awsDocumentProcessingService, DocumentProcessingResult } from '../services/aws-document-processing.service';
 
 /**
  * Public-facing pro forma request page for attorneys.
@@ -40,13 +38,13 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
     preferred_contact_method: 'email' as 'email' | 'phone' | 'either',
   });
 
-  // File upload state
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-  const [isProcessingDocument, setIsProcessingDocument] = useState(false);
-  const [processingProgress, setProcessingProgress] = useState(0);
-  const [documentProcessingError, setDocumentProcessingError] = useState<string | null>(null);
-  const [extractedData, setExtractedData] = useState<DocumentProcessingResult | null>(null);
-  const [inputMode, setInputMode] = useState<'manual' | 'upload'>('manual');
+  // File upload state - DISABLED: Document processing feature removed
+  // const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  // const [isProcessingDocument, setIsProcessingDocument] = useState(false);
+  // const [processingProgress, setProcessingProgress] = useState(0);
+  // const [documentProcessingError, setDocumentProcessingError] = useState<string | null>(null);
+  // const [extractedData, setExtractedData] = useState<any | null>(null);
+  const [inputMode] = useState<'manual'>('manual'); // Always manual mode now
 
   useEffect(() => {
     const loadRequest = async () => {
@@ -104,64 +102,12 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
     loadRequest();
   }, [token]);
 
-  // File upload handlers
-  const handleFileSelect = async (file: File) => {
-    setUploadedFile(file);
-    setDocumentProcessingError(null);
-    setIsProcessingDocument(true);
-    setProcessingProgress(0);
-
-    try {
-      const result = await awsDocumentProcessingService.processDocument(
-        file,
-        (progress) => {
-          setProcessingProgress(progress.percentage);
-        }
-      );
-
-      setExtractedData(result);
-      setIsProcessingDocument(false);
-
-      if (result.extractedData) {
-        setFormData(prev => ({
-          ...prev,
-          instructing_attorney_name: result.extractedData.clientName || prev.instructing_attorney_name,
-          instructing_attorney_email: result.extractedData.clientEmail || prev.instructing_attorney_email,
-          instructing_attorney_phone: result.extractedData.clientPhone || prev.instructing_attorney_phone,
-          instructing_firm: result.extractedData.lawFirm || prev.instructing_firm,
-          work_description: result.extractedData.description || prev.work_description,
-          case_title: result.extractedData.caseTitle || prev.case_title,
-        }));
-      }
-
-    } catch (error) {
-      console.error('Document processing failed:', error);
-      
-      // Silently switch to manual mode on error
-      setIsProcessingDocument(false);
-      setInputMode('manual');
-      setUploadedFile(null);
-      setExtractedData(null);
-      setDocumentProcessingError(null);
-    }
-  };
-
-  const handleFileRemove = () => {
-    setUploadedFile(null);
-    setExtractedData(null);
-    setDocumentProcessingError(null);
-    setProcessingProgress(0);
-  };
-
-  const handleModeSwitch = (mode: 'manual' | 'upload') => {
-    setInputMode(mode);
-    if (mode === 'manual') {
-      setUploadedFile(null);
-      setExtractedData(null);
-      setDocumentProcessingError(null);
-      setProcessingProgress(0);
-    }
-  };
+  // File upload handlers - DISABLED: Document processing feature removed
+  /* 
+  const handleFileSelect = async (file: File) => { ... };
+  const handleFileRemove = () => { ... };
+  const handleModeSwitch = (mode: 'manual' | 'upload') => { ... };
+  */
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -327,78 +273,16 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                   Choose how you'd like to provide your case information
                 </p>
                 
-                <div className="flex items-center gap-2 sm:gap-4 p-1 bg-neutral-100 dark:bg-metallic-gray-700 rounded-lg">
-                  <button
-                    type="button"
-                    onClick={() => handleModeSwitch('manual')}
-                    className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-md font-medium text-sm sm:text-base transition-all ${
-                      inputMode === 'manual'
-                        ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 theme-shadow-sm'
-                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
-                    }`}
-                  >
-                    <Edit3 className="w-4 h-4 flex-shrink-0" />
-                    <span className="truncate">Manual Entry</span>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => handleModeSwitch('upload')}
-                    className={`flex-1 flex items-center justify-center gap-1 sm:gap-2 px-2 sm:px-4 py-2.5 rounded-md font-medium text-sm sm:text-base transition-all ${
-                      inputMode === 'upload'
-                        ? 'bg-white dark:bg-metallic-gray-800 text-blue-600 dark:text-mpondo-gold-500 theme-shadow-sm'
-                        : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-200'
-                    }`}
-                  >
-                    <Upload className="w-4 h-4 flex-shrink-0" />
-                    <span className="truncate">Upload Document</span>
-                  </button>
-                </div>
+                {/* Mode switcher removed - document upload feature disabled */}
                 <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-2 text-center">
-                  {inputMode === 'manual'
-                    ? 'Fill in the form fields below with your case details'
-                    : 'Upload a brief, letter, or case summary to auto-populate the form'}
+                  Fill in the form fields below with your case details
                 </p>
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-6">
-                {inputMode === 'upload' && (
-                  <div className="space-y-4">
-                    <h3 className="font-medium text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
-                      <Upload className="w-4 h-4" />
-                      Document Upload
-                    </h3>
-                    
-                    <FileUpload
-                      onFileSelect={handleFileSelect}
-                      onFileRemove={handleFileRemove}
-                      currentFile={uploadedFile}
-                      isProcessing={isProcessingDocument}
-                      processingProgress={processingProgress}
-                      error={documentProcessingError}
-                      label="Upload Legal Document"
-                      description="Upload a PDF or Word document to automatically extract case details and populate the form"
-                      acceptedTypes={awsDocumentProcessingService.getSupportedFileTypes()}
-                      maxSizeInMB={awsDocumentProcessingService.getMaxFileSizeInMB()}
-                    />
-
-                    {extractedData && uploadedFile && !documentProcessingError && (
-                      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
-                        <div className="flex items-center gap-2 text-green-700 dark:text-green-300 mb-2">
-                          <CheckCircle className="w-4 h-4" />
-                          <span className="font-medium">Document processed successfully!</span>
-                        </div>
-                        <p className="text-sm text-green-600 dark:text-green-400">
-                          Confidence: {extractedData.confidence}% • Processing time: {(extractedData.processingTime / 1000).toFixed(1)}s
-                        </p>
-                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">
-                          Review and edit the auto-populated fields below
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {(inputMode === 'manual' || (inputMode === 'upload' && extractedData && uploadedFile)) && (
+                {/* Document upload feature removed - always use manual mode */}
+                
+                {inputMode === 'manual' && (
                   <>
                     {/* Case Information - Moved to top */}
                     <div className="space-y-4">
@@ -407,11 +291,6 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                           <FileText className="w-4 h-4" />
                           Case Information
                         </h3>
-                        {inputMode === 'upload' && extractedData && (
-                          <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
-                            Review and edit the auto-populated fields below
-                          </p>
-                        )}
                       </div>
 
                       <div>

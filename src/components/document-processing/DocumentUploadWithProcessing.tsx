@@ -1,270 +1,132 @@
-import React, { useState, useCallback } from 'react';
-import { Upload, FileText, X, Loader2, CheckCircle } from 'lucide-react';
-import { Button } from '../design-system/components';
-import { toast } from 'react-hot-toast';
-import { awsDocumentProcessingService, DocumentProcessingResult } from '../../services/aws-document-processing.service';
+import React, { useState } from 'react';
+import { Upload } from 'lucide-react';
+import { supabase } from '../../lib/supabase';
+import toast from 'react-hot-toast';
 
 interface DocumentUploadWithProcessingProps {
-  matterId: string;
-  onComplete?: (documentId: string, extractedData: any) => void;
-  onCancel?: () => void;
+    matterId: string;
+    onUploadComplete: () => void;
 }
 
 export const DocumentUploadWithProcessing: React.FC<DocumentUploadWithProcessingProps> = ({
-  matterId,
-  onComplete,
-  onCancel
+    matterId,
+    onUploadComplete,
 }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [processing, setProcessing] = useState(false);
-  const [processingProgress, setProcessingProgress] = useState(0);
-  const [extractedData, setExtractedData] = useState<DocumentProcessingResult | null>(null);
-  const [error, setError] = useState<string | null>(null);
+    const [uploading, setUploading] = useState(false);
+    const [dragActive, setDragActive] = useState(false);
 
-  const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const supportedTypes = awsDocumentProcessingService.getSupportedFileTypes();
-      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-      
-      if (!supportedTypes.includes(fileExtension)) {
-        toast.error(`Please select a valid file type: ${supportedTypes.join(', ')}`);
-        return;
-      }
-      
-      const maxSize = awsDocumentProcessingService.getMaxFileSizeInMB() * 1024 * 1024;
-      if (file.size > maxSize) {
-        toast.error(`File size must be less than ${awsDocumentProcessingService.getMaxFileSizeInMB()}MB`);
-        return;
-      }
-      setSelectedFile(file);
-    }
-  }, []);
+    const handleDrag = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (e.type === 'dragenter' || e.type === 'dragover') {
+            setDragActive(true);
+        } else if (e.type === 'dragleave') {
+            setDragActive(false);
+        }
+    };
 
-  const handleDrop = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-    const file = event.dataTransfer.files[0];
-    if (file) {
-      const supportedTypes = awsDocumentProcessingService.getSupportedFileTypes();
-      const fileExtension = '.' + file.name.split('.').pop()?.toLowerCase();
-      
-      if (!supportedTypes.includes(fileExtension)) {
-        toast.error(`Please select a valid file type: ${supportedTypes.join(', ')}`);
-        return;
-      }
-      setSelectedFile(file);
-    }
-  }, []);
+    const handleDrop = (e: React.DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setDragActive(false);
 
-  const handleDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
-    event.preventDefault();
-  }, []);
+        if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+            handleFiles(e.dataTransfer.files);
+        }
+    };
 
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        e.preventDefault();
+        if (e.target.files && e.target.files[0]) {
+            handleFiles(e.target.files);
+        }
+    };
 
-  const handleUpload = async () => {
-    if (!selectedFile) return;
+    const handleFiles = async (files: FileList) => {
+        const file = files[0];
+        if (!file) return;
 
-    setUploading(true);
-    setProcessing(true);
-    setError(null);
-    setProcessingProgress(0);
+        setUploading(true);
 
-    try {
-      const result = await awsDocumentProcessingService.processDocument(
-        selectedFile,
-        (progress) => setProcessingProgress(progress.percentage)
-      );
-      
-      setExtractedData(result);
-      setUploading(false);
-      
-      if (onComplete) {
-        onComplete(result.fileUrl, result.extractedData);
-      }
-      
-      toast.success('Document processed successfully!');
-    } catch (error) {
-      console.error('Upload error:', error);
-      const errorMessage = (error as Error).message || 'Failed to process document';
-      setError(errorMessage);
-      toast.error(errorMessage);
-      setUploading(false);
-    }
-  };
+        try {
+            const { data: { user } } = await supabase.auth.getUser();
+            if (!user) throw new Error('Not authenticated');
 
-  const handleRemoveFile = () => {
-    setSelectedFile(null);
-    setProcessing(false);
-    setExtractedData(null);
-    setError(null);
-    setProcessingProgress(0);
-  };
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${matterId}/${Date.now()}.${fileExt}`;
 
-  if (processing && extractedData) {
+            const { error: uploadError } = await supabase.storage
+                .from('documents')
+                .upload(fileName, file);
+
+            if (uploadError) throw uploadError;
+
+            const { error: dbError } = await supabase
+                .from('document_uploads')
+                .insert({
+                    matter_id: matterId,
+                    name: file.name,
+                    file_type: file.type,
+                    file_size: file.size,
+                    storage_path: fileName,
+                    uploaded_by: user.id,
+                });
+
+            if (dbError) throw dbError;
+
+            toast.success('Document uploaded successfully');
+            onUploadComplete();
+        } catch (error) {
+            console.error('Error uploading document:', error);
+            toast.error('Failed to upload document');
+        } finally {
+            setUploading(false);
+        }
+    };
+
     return (
-      <div className="space-y-6">
-        <div className="bg-green-50 dark:bg-green-950/30 border border-green-200 dark:border-green-800 rounded-lg p-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-10 h-10 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-green-900 dark:text-green-300">Processing Complete</h3>
-              <p className="text-sm text-green-700 dark:text-green-400">
-                Confidence: {extractedData.confidence}% • Processing time: {(extractedData.processingTime / 1000).toFixed(1)}s
-              </p>
-            </div>
-          </div>
-          
-          <div className="space-y-2 text-sm text-green-900 dark:text-green-300">
-            {extractedData.extractedData.clientName && (
-              <div><span className="font-medium">Client:</span> {extractedData.extractedData.clientName}</div>
-            )}
-            {extractedData.extractedData.clientEmail && (
-              <div><span className="font-medium">Email:</span> {extractedData.extractedData.clientEmail}</div>
-            )}
-            {extractedData.extractedData.description && (
-              <div><span className="font-medium">Description:</span> {extractedData.extractedData.description}</div>
-            )}
-          </div>
-        </div>
-        
-        <div className="flex justify-end gap-3">
-          <Button variant="outline" onClick={handleRemoveFile}>
-            Process Another Document
-          </Button>
-          {onCancel && (
-            <Button variant="primary" onClick={onCancel}>
-              Done
-            </Button>
-          )}
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-6">
-      <div className="text-center">
-        <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
-          Upload Document for Processing
-        </h2>
-        <p className="text-neutral-600 dark:text-neutral-400">
-          Upload a PDF document to extract data using AI-powered processing
-        </p>
-      </div>
-
-      {!selectedFile ? (
         <div
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          className="border-2 border-dashed border-neutral-300 dark:border-neutral-600 rounded-lg p-12 text-center hover:border-mpondo-gold-500 dark:hover:border-mpondo-gold-400 transition-colors cursor-pointer"
+            className={`relative border-2 border-dashed rounded-lg p-8 text-center transition-colors ${dragActive
+                ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/10'
+                : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-neutral-400 dark:hover:border-metallic-gray-500'
+                }`}
+            onDragEnter={handleDrag}
+            onDragLeave={handleDrag}
+            onDragOver={handleDrag}
+            onDrop={handleDrop}
         >
-          <Upload className="w-12 h-12 text-neutral-400 dark:text-neutral-500 mx-auto mb-4" />
-          <p className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
-            Drop your document here or click to browse
-          </p>
-          <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-4">
-            Supported: {awsDocumentProcessingService.getSupportedFileTypes().join(', ')} • Max: {awsDocumentProcessingService.getMaxFileSizeInMB()}MB
-          </p>
-          <input
-            type="file"
-            accept={awsDocumentProcessingService.getSupportedFileTypes().join(',')}
-            onChange={handleFileSelect}
-            className="hidden"
-            id="file-upload"
-          />
-          <label htmlFor="file-upload" className="cursor-pointer">
-            <span className="inline-flex items-center px-4 py-2 bg-mpondo-gold-500 text-white rounded-lg hover:bg-mpondo-gold-600 transition-colors font-medium">
-              Select File
-            </span>
-          </label>
-        </div>
-      ) : (
-        <div className="border border-neutral-300 dark:border-neutral-600 rounded-lg p-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-judicial-blue-100 dark:bg-judicial-blue-900/30 rounded-lg flex items-center justify-center">
-                <FileText className="w-6 h-6 text-judicial-blue-600 dark:text-judicial-blue-400" />
-              </div>
-              <div>
-                <p className="font-medium text-neutral-900 dark:text-neutral-100">{selectedFile.name}</p>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                </p>
-              </div>
-            </div>
-            <button
-              onClick={handleRemoveFile}
-              className="text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 transition-colors"
-              disabled={uploading}
-            >
-              <X className="w-5 h-5" />
-            </button>
-          </div>
-
-          <div className="mt-6 flex justify-end gap-3">
-            {onCancel && (
-              <Button variant="outline" onClick={onCancel} disabled={uploading}>
-                Cancel
-              </Button>
-            )}
-            <Button
-              variant="primary"
-              onClick={handleUpload}
-              disabled={uploading}
-            >
-              {uploading ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Processing...
-                </>
-              ) : (
-                <>
-                  <Upload className="w-4 h-4 mr-2" />
-                  Upload & Process
-                </>
-              )}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {uploading && (
-        <div className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <div className="flex items-center gap-3 mb-2">
-            <Loader2 className="w-5 h-5 text-blue-600 dark:text-blue-400 animate-spin" />
-            <span className="font-medium text-blue-900 dark:text-blue-300">Processing Document...</span>
-          </div>
-          <div className="w-full bg-blue-200 dark:bg-blue-800 rounded-full h-2">
-            <div 
-              className="bg-blue-600 dark:bg-blue-400 h-2 rounded-full transition-all duration-300"
-              style={{ width: `${processingProgress}%` }}
+            <input
+                type="file"
+                id="file-upload"
+                className="hidden"
+                onChange={handleChange}
+                disabled={uploading}
             />
-          </div>
-          <p className="text-sm text-blue-700 dark:text-blue-400 mt-2">{processingProgress}% complete</p>
-        </div>
-      )}
 
-      {error && (
-        <div className="bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 rounded-lg p-4">
-          <p className="text-red-800 dark:text-red-300">{error}</p>
-        </div>
-      )}
+            <label
+                htmlFor="file-upload"
+                className="cursor-pointer flex flex-col items-center"
+            >
+                <Upload className={`w-12 h-12 mb-4 ${uploading ? 'text-neutral-400' : 'text-neutral-500 dark:text-neutral-400'}`} />
 
-      <div className="bg-judicial-blue-50 dark:bg-judicial-blue-950/30 rounded-lg p-4">
-        <h3 className="font-semibold text-judicial-blue-900 dark:text-judicial-blue-300 mb-2">
-          AWS Textract Processing
-        </h3>
-        <ul className="text-sm text-judicial-blue-700 dark:text-judicial-blue-400 space-y-1">
-          <li>• Secure upload to AWS S3</li>
-          <li>• Intelligent text extraction with AWS Textract</li>
-          <li>• Automatic client and case detail extraction</li>
-          <li>• Pre-populates matter forms with extracted data</li>
-          <li>• Graceful fallback to mock data in development</li>
-        </ul>
-      </div>
-    </div>
-  );
+                {uploading ? (
+                    <div className="space-y-2">
+                        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 mx-auto"></div>
+                        <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                            Uploading document...
+                        </p>
+                    </div>
+                ) : (
+                    <>
+                        <p className="text-base font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                            Drop your file here or click to browse
+                        </p>
+                        <p className="text-sm text-neutral-500 dark:text-neutral-400">
+                            Supports PDF, DOC, DOCX, and other common formats
+                        </p>
+                    </>
+                )}
+            </label>
+        </div>
+    );
 };

@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import { FileText, User, Briefcase, DollarSign, CheckCircle, Upload } from 'lucide-react';
 import { MultiStepForm, Step } from '../common/MultiStepForm';
 import { Input, Select, Textarea } from '../design-system/components';
-import FileUpload from '../common/FileUpload';
-import { awsDocumentProcessingService } from '../../services/aws-document-processing.service';
 import type { NewMatterForm } from '../../types';
-import type { DocumentProcessingResult } from '../../services/aws-document-processing.service';
 
 interface NewMatterMultiStepProps {
   isOpen: boolean;

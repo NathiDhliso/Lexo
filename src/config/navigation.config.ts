@@ -30,6 +30,14 @@ const navigationItems: NavigationItem[] = [
     description: 'Manage your cases and matters',
   },
   {
+    id: 'firms',
+    label: 'Firms',
+    href: '/firms',
+    page: 'firms',
+    icon: Users,
+    description: 'Manage instructing law firms',
+  },
+  {
     id: 'invoices',
     label: 'Invoices',
     href: '/invoices',

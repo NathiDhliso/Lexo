@@ -99,6 +99,29 @@ export class MatterApiService extends BaseApiService<Matter> {
    * Create new matter with simple select (no joins) to avoid RLS issues
    */
   async createSimple(data: Partial<Matter>): Promise<ApiResponse<Matter>> {
+    // Validate firm_id is provided
+    if (!data.firm_id) {
+      toast.error('Instructing firm is required');
+      throw new Error('firm_id is required for matter creation');
+    }
+
+    // Verify firm exists
+    const { data: firm, error: firmError } = await supabase
+      .from('firms')
+      .select('id, status')
+      .eq('id', data.firm_id)
+      .single();
+
+    if (firmError || !firm) {
+      toast.error('Selected firm not found');
+      throw new Error('The specified firm does not exist');
+    }
+
+    if (firm.status !== 'active') {
+      toast.error('Selected firm is inactive');
+      throw new Error('Cannot create matter with inactive firm');
+    }
+
     return this.executeQuery(async () => {
       return supabase
         .from(this.tableName)
@@ -121,14 +144,40 @@ export class MatterApiService extends BaseApiService<Matter> {
         error: {
           code: 'AUTHENTICATION_ERROR',
           message: 'User not authenticated',
-          details: null
+          details: undefined
         }
       };
+    }
+
+    // Validate firm_id is provided (required for attorney-first model)
+    if (!formData.firm_id && !formData.firmId) {
+      toast.error('Instructing firm is required');
+      throw new Error('Instructing firm is required. Please select a firm before creating a matter.');
+    }
+
+    const firmId = formData.firm_id || formData.firmId;
+
+    // Verify firm exists
+    const { data: firm, error: firmError } = await supabase
+      .from('firms')
+      .select('id, firm_name, status')
+      .eq('id', firmId)
+      .single();
+
+    if (firmError || !firm) {
+      toast.error('Selected firm not found');
+      throw new Error('The selected instructing firm does not exist. Please select a valid firm.');
+    }
+
+    if (firm.status !== 'active') {
+      toast.error('Selected firm is inactive');
+      throw new Error(`The firm "${firm.firm_name}" is inactive and cannot be assigned to new matters.`);
     }
 
     // Only include fields that exist in the database
     const matterData: any = {
       advocate_id: user.id,
+      firm_id: firmId, // Required: Link to instructing firm
       title: formData.title,
       description: formData.description,
       matter_type: formData.matterType || formData.matter_type,
@@ -136,7 +185,7 @@ export class MatterApiService extends BaseApiService<Matter> {
       client_email: formData.clientEmail || formData.client_email,
       client_phone: formData.clientPhone || formData.client_phone,
       instructing_attorney: formData.instructingAttorney || formData.instructing_attorney,
-      instructing_firm: formData.instructingFirm || formData.instructing_firm,
+      instructing_firm: formData.instructingFirm || formData.instructing_firm || firm.firm_name,
       status: 'active'
     };
 
@@ -472,6 +521,66 @@ export class MatterApiService extends BaseApiService<Matter> {
   // Helper method to generate request ID (inherited from BaseApiService)
   private generateRequestId(): string {
     return `req_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+  }
+
+  /**
+   * Create matter request from attorney (invitation workflow)
+   */
+  async createMatterRequest(data: import('../../types/financial.types').MatterRequest): Promise<Matter> {
+    // Get current user (attorney)
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      toast.error('User not authenticated');
+      throw new Error('User not authenticated');
+    }
+    
+    // Get firm to find advocate_id
+    const { data: firm, error: firmError } = await supabase
+      .from('firms')
+      .select('*')
+      .eq('id', data.firm_id)
+      .single();
+    
+    if (firmError || !firm) {
+      toast.error('Firm not found');
+      throw new Error('Firm not found');
+    }
+    
+    // Get advocate_id from firm
+    if (!firm.advocate_id) {
+      toast.error('This firm is not associated with an advocate');
+      throw new Error('Firm has no advocate assigned');
+    }
+    
+    const advocate_id = firm.advocate_id;
+    
+    // Create matter with status 'new_request'
+    const { data: matter, error: matterError } = await supabase
+      .from('matters')
+      .insert({
+        advocate_id: advocate_id,
+        firm_id: data.firm_id,
+        title: data.title,
+        description: data.description,
+        matter_type: data.matter_type,
+        urgency: data.urgency_level,
+        status: 'new_request',
+        client_name: user.user_metadata.attorney_name || 'Unknown',
+        client_email: user.email,
+        instructing_attorney: user.user_metadata.attorney_name || 'Unknown',
+        instructing_firm: firm.firm_name
+      })
+      .select()
+      .single();
+    
+    if (matterError) {
+      console.error('Error creating matter request:', matterError);
+      toast.error('Failed to submit matter request');
+      throw matterError;
+    }
+    
+    toast.success('Matter request submitted successfully');
+    return matter as Matter;
   }
 }
 
