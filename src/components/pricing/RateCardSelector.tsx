@@ -721,4 +721,5 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
   );
 };
 
+export { RateCardSelector };
 export default RateCardSelector;

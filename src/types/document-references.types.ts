@@ -7,38 +7,38 @@ export interface DocumentReference {
   id: string;
   user_id: string;
   matter_id?: string;
-  
+
   // File identification
   file_name: string;
   file_extension?: string;
   file_size_bytes?: number;
   mime_type?: string;
-  
+
   // Storage location
   storage_provider: 'google_drive' | 'onedrive' | 'dropbox' | 'icloud' | 'box' | 'local';
   provider_file_id: string;
   provider_file_path: string;
   provider_web_url?: string;
   provider_download_url?: string;
-  
+
   // Local file path (for local storage)
   local_file_path?: string;
-  
+
   // File verification
   file_hash?: string;
   last_verified_at?: string;
   verification_status: 'available' | 'missing' | 'access_denied' | 'unknown';
   verification_error?: string;
-  
+
   // Categorization
   document_type: 'contract' | 'correspondence' | 'evidence' | 'pleading' | 'research' | 'general';
   tags: string[];
   description?: string;
-  
+
   // Privacy and security
   is_confidential: boolean;
   access_level: 'private' | 'firm' | 'matter_team';
-  
+
   // Metadata
   created_at: string;
   updated_at: string;
@@ -47,24 +47,24 @@ export interface DocumentReference {
 export interface DocumentAccessLog {
   id: string;
   document_reference_id: string;
-  
+
   // Access details
   accessed_by: string;
   access_type: 'view' | 'download' | 'verify' | 'link' | 'unlink';
   access_method: 'web' | 'api' | 'desktop_app';
-  
+
   // Context
   matter_id?: string;
   user_agent?: string;
   ip_address?: string;
-  
+
   // Result
   success: boolean;
   error_message?: string;
-  
+
   // Timestamp
   accessed_at: string;
-  
+
   // Joined data
   accessed_by_user?: {
     id: string;
@@ -78,12 +78,12 @@ export interface MatterDocumentLink {
   id: string;
   matter_id: string;
   document_reference_id: string;
-  
+
   // Link metadata
   linked_by: string;
   link_reason?: string;
   is_primary: boolean;
-  
+
   // Timestamp
   linked_at: string;
 }
@@ -91,21 +91,21 @@ export interface MatterDocumentLink {
 export interface DocumentSharing {
   id: string;
   document_reference_id: string;
-  
+
   // Sharing details
   shared_with: string;
   shared_by: string;
-  
+
   // Permissions
   permission_level: 'view' | 'comment' | 'edit';
   can_reshare: boolean;
-  
+
   // Expiry
   expires_at?: string;
-  
+
   // Status
   is_active: boolean;
-  
+
   // Timestamp
   shared_at: string;
 }
