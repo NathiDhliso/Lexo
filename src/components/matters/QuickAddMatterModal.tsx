@@ -33,7 +33,7 @@ export interface QuickAddMatterData {
   client_name?: string;
   description: string;
   matter_type: string;
-  urgency?: 'low' | 'standard' | 'high';
+  urgency?: 'routine' | 'standard' | 'urgent' | 'emergency';
 }
 
 const MATTER_TYPES = [
@@ -283,7 +283,7 @@ export const QuickAddMatterModal: React.FC<QuickAddMatterModalProps> = ({
                     ) : (
                       firms.map(firm => (
                         <option key={firm.id} value={firm.id}>
-                          {firm.firm_name} {firm.primary_contact_name ? `(${firm.primary_contact_name})` : ''}
+                          {firm.firm_name} {firm.attorney_name ? `(${firm.attorney_name})` : ''}
                         </option>
                       ))
                     )}
@@ -419,11 +419,12 @@ export const QuickAddMatterModal: React.FC<QuickAddMatterModalProps> = ({
                 </label>
                 <Select
                   value={formData.urgency}
-                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleInputChange('urgency', e.target.value as 'low' | 'standard' | 'high')}
+                  onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleInputChange('urgency', e.target.value as 'routine' | 'standard' | 'urgent' | 'emergency')}
                 >
-                  <option value="low">Low</option>
+                  <option value="routine">Routine</option>
                   <option value="standard">Standard</option>
-                  <option value="high">High</option>
+                  <option value="urgent">Urgent</option>
+                  <option value="emergency">Emergency</option>
                 </Select>
               </div>
             </div>

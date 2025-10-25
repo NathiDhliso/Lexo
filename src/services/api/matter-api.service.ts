@@ -611,7 +611,7 @@ export class MatterApiService extends BaseApiService<Matter> {
     client_name?: string;
     description: string;
     matter_type: string;
-    urgency?: 'low' | 'standard' | 'high';
+    urgency?: 'routine' | 'standard' | 'urgent' | 'emergency';
   }): Promise<Matter> {
     // Get current user (advocate)
     const { data: { user }, error: userError } = await supabase.auth.getUser();
