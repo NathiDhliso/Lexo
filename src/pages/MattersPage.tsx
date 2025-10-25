@@ -15,9 +15,14 @@ import {
   Archive
 } from 'lucide-react';
 import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
+import { SkeletonMatterCard } from '../components/design-system/components';
 import { MatterDetailModal } from '../components/matters/MatterDetailModal';
 import { EditMatterModal } from '../components/matters/EditMatterModal';
 import { QuickCreateMatterModal } from '../components/matters/QuickCreateMatterModal';
+import { NewRequestCard } from '../components/matters/NewRequestCard';
+import { AcceptMatterModal, RequestInfoModal, DeclineMatterModal } from '../components/matters/RequestActionModals';
+import { AcceptBriefModal } from '../components/matters/AcceptBriefModal';
+import { NotificationBadge } from '../components/navigation/NotificationBadge';
 import { BulkActionToolbar, SelectionCheckbox } from '../components/ui/BulkActionToolbar';
 import { matterApiService } from '../services/api';
 import { matterConversionService } from '../services/api/matter-conversion.service';
@@ -43,6 +48,12 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [showEditModal, setShowEditModal] = useState(false);
   const [showQuickCreateModal, setShowQuickCreateModal] = useState(false);
   const [showCreateDropdown, setShowCreateDropdown] = useState(false);
+  
+  // New request action modals
+  const [showAcceptModal, setShowAcceptModal] = useState(false);
+  const [showAcceptBriefModal, setShowAcceptBriefModal] = useState(false);
+  const [showRequestInfoModal, setShowRequestInfoModal] = useState(false);
+  const [showDeclineModal, setShowDeclineModal] = useState(false);
 
   const [matters, setMatters] = useState<Matter[]>([]);
   const [loadingMatters, setLoadingMatters] = useState(true);
@@ -390,6 +401,62 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     }
   };
 
+  // New Request Action Handlers
+  const handleAcceptMatter = async (matterId: string) => {
+    try {
+      await matterApiService.updateStatus(matterId, MatterStatus.ACTIVE);
+      toast.success('Matter request accepted');
+      await fetchMatters();
+      setShowAcceptModal(false);
+      setSelectedMatter(null);
+    } catch (error) {
+      console.error('Failed to accept matter:', error);
+      toast.error('Failed to accept matter request');
+    }
+  };
+
+  const handleRequestInfo = async (matterId: string, message: string) => {
+    try {
+      // TODO: Implement email notification to attorney
+      console.log('Requesting info for matter:', matterId, 'Message:', message);
+      toast.success('Information request sent to attorney');
+      setShowRequestInfoModal(false);
+      setSelectedMatter(null);
+    } catch (error) {
+      console.error('Failed to request info:', error);
+      toast.error('Failed to send information request');
+    }
+  };
+
+  const handleDeclineMatter = async (matterId: string, reason: string) => {
+    try {
+      // TODO: Implement email notification to attorney
+      await matterApiService.updateStatus(matterId, MatterStatus.CLOSED);
+      console.log('Declining matter:', matterId, 'Reason:', reason);
+      toast.success('Matter request declined');
+      await fetchMatters();
+      setShowDeclineModal(false);
+      setSelectedMatter(null);
+    } catch (error) {
+      console.error('Failed to decline matter:', error);
+      toast.error('Failed to decline matter request');
+    }
+  };
+
+  // Path B: Accept Brief (Quick Start) Handler
+  const handleAcceptBrief = async (matterId: string) => {
+    try {
+      await matterApiService.acceptBrief(matterId);
+      toast.success('Brief accepted! Matter is now active.');
+      await fetchMatters();
+      setShowAcceptBriefModal(false);
+      setSelectedMatter(null);
+    } catch (error) {
+      console.error('Failed to accept brief:', error);
+      toast.error('Failed to accept brief');
+    }
+  };
+
   return (
     <div className="w-full space-y-6 min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 p-6">
       {/* Header */}
@@ -427,7 +494,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors relative ${
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors relative flex items-center gap-2 ${
               activeTab === tab
                 ? 'bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 theme-shadow-sm'
                 : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
@@ -435,9 +502,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           >
             {tab === 'active' ? 'Active Matters' : tab === 'new_requests' ? 'New Requests' : 'All Matters'}
             {tab === 'new_requests' && newRequestsCount > 0 && (
-              <span className="ml-2 inline-flex items-center justify-center px-2 py-0.5 text-xs font-bold leading-none text-white bg-red-500 rounded-full">
-                {newRequestsCount}
-              </span>
+              <NotificationBadge count={newRequestsCount} variant="error" size="sm" />
             )}
           </button>
         ))}
@@ -477,12 +542,11 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
       {/* Content */}
       <div className="space-y-4">
         {loadingMatters ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mpondo-gold-500 mx-auto mb-4"></div>
-              <p className="text-neutral-600 dark:text-neutral-400">Loading matters...</p>
-            </CardContent>
-          </Card>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }, (_, i) => (
+              <SkeletonMatterCard key={i} />
+            ))}
+          </div>
         ) : filteredMatters.length === 0 ? (
           <Card>
             <CardContent className="text-center py-12">
@@ -497,7 +561,37 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
               </Button>
             </CardContent>
           </Card>
+        ) : activeTab === 'new_requests' ? (
+          // Render New Request Cards
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {filteredMatters.map((matter) => (
+              <NewRequestCard
+                key={matter.id}
+                matter={matter}
+                onView={handleViewMatter}
+                onSendProForma={(m) => {
+                  // Path A: Send Pro Forma (navigate to pro forma page)
+                  setSelectedMatter(m);
+                  navigatePage('proforma-requests');
+                }}
+                onAcceptBrief={(m) => {
+                  // Path B: Accept Brief (quick start)
+                  setSelectedMatter(m);
+                  setShowAcceptBriefModal(true);
+                }}
+                onRequestInfo={(m) => {
+                  setSelectedMatter(m);
+                  setShowRequestInfoModal(true);
+                }}
+                onDecline={(m) => {
+                  setSelectedMatter(m);
+                  setShowDeclineModal(true);
+                }}
+              />
+            ))}
+          </div>
         ) : (
+          // Render Regular Matter Cards
           filteredMatters.map((matter) => (
             <Card key={matter.id} variant="default" hoverable>
               <CardHeader className="pb-3">
@@ -666,6 +760,47 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         isOpen={showEditModal}
         onClose={() => setShowEditModal(false)}
         onSave={handleSaveMatter}
+      />
+
+      {/* New Request Action Modals */}
+      <AcceptMatterModal
+        isOpen={showAcceptModal}
+        matter={selectedMatter}
+        onConfirm={handleAcceptMatter}
+        onClose={() => {
+          setShowAcceptModal(false);
+          setSelectedMatter(null);
+        }}
+      />
+
+      <AcceptBriefModal
+        isOpen={showAcceptBriefModal}
+        matter={selectedMatter}
+        onConfirm={handleAcceptBrief}
+        onClose={() => {
+          setShowAcceptBriefModal(false);
+          setSelectedMatter(null);
+        }}
+      />
+
+      <RequestInfoModal
+        isOpen={showRequestInfoModal}
+        matter={selectedMatter}
+        onSubmit={handleRequestInfo}
+        onClose={() => {
+          setShowRequestInfoModal(false);
+          setSelectedMatter(null);
+        }}
+      />
+
+      <DeclineMatterModal
+        isOpen={showDeclineModal}
+        matter={selectedMatter}
+        onConfirm={handleDeclineMatter}
+        onClose={() => {
+          setShowDeclineModal(false);
+          setSelectedMatter(null);
+        }}
       />
     </div>
   );

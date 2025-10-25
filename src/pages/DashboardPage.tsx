@@ -11,14 +11,17 @@ import {
   DollarSign,
   Calculator
 } from 'lucide-react';
-import { Card, CardHeader, CardContent, Button, Icon, EmptyState, SkeletonCard, Badge } from '../components/design-system/components';
+import { Card, CardHeader, CardContent, Button, Icon } from '../components/design-system/components';
 import { NewMatterMultiStep } from '../components/matters/NewMatterMultiStep';
+import { FirmOverviewCard } from '../components/dashboard/FirmOverviewCard';
+import { AttorneyInvitationsCard } from '../components/dashboard/AttorneyInvitationsCard';
+import { NewRequestsCard } from '../components/dashboard/NewRequestsCard';
+import { CloudStorageStatusCard } from '../components/dashboard/CloudStorageStatusCard';
+import { RecentActivityFeed } from '../components/dashboard/RecentActivityFeed';
 import { InvoiceService } from '../services/api/invoices.service';
 import { matterApiService } from '../services/api';
 import { useAuth } from '../hooks/useAuth';
 import { toast } from 'react-hot-toast';
-import { formatRand } from '../lib/currency';
-import { formatSADate } from '../lib/sa-legal-utils';
 import type { Matter, Page, Invoice } from '../types';
 import { MatterStatus, InvoiceStatus } from '../types';
 import { useNavigate } from 'react-router-dom';
@@ -27,7 +30,7 @@ interface DashboardPageProps {
   onNavigate?: (page: Page) => void;
 }
 
-const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
+const DashboardPage: React.FC<DashboardPageProps> = () => {
   const { user, loading, isAuthenticated } = useAuth();
   const [dashboardData, setDashboardData] = useState({
     activeMatters: 0,
@@ -402,32 +405,48 @@ const DashboardPage: React.FC<DashboardPageProps> = ({ onNavigate }) => {
       {/* Tab Content */}
       {activeTab === 'overview' && (
         <>
-          {/* Quick Actions - Streamlined */}
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <Button 
-          variant="outline" 
-          onClick={() => navigatePage('proforma-requests')}
-          className="h-16 flex flex-col items-center justify-center hover:border-judicial-blue-500 hover:bg-judicial-blue-50"
-        >
-          <Icon icon={Calculator} className="w-6 h-6 mb-1" noGradient />
-          <span className="text-sm font-medium">Pro Formas</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={handleViewAllMatters}
-          className="h-16 flex flex-col items-center justify-center hover:border-mpondo-gold-500 hover:bg-mpondo-gold-50"
-        >
-          <Icon icon={Briefcase} className="w-6 h-6 mb-1" noGradient />
-          <span className="text-sm font-medium">View Matters</span>
-        </Button>
-        <Button 
-          variant="outline" 
-          onClick={() => navigatePage('invoices')}
-          className="h-16 flex flex-col items-center justify-center hover:border-status-success-500 hover:bg-status-success-50"
-        >
-          <Icon icon={FileText} className="w-6 h-6 mb-1" noGradient />
-          <span className="text-sm font-medium">Invoices</span>
-        </Button>
+          {/* Welcome Header */}
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
+              Welcome Back, {user?.email?.split('@')[0] || 'User'}
+            </h2>
+            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
+              Here's what's happening with your practice today
+            </p>
+          </div>
+
+          {/* New Dashboard Cards - 4 Column Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <FirmOverviewCard
+              firmName="My Practice"
+              attorneyCount={0}
+              activeMatters={dashboardData.activeMatters}
+              monthlyRevenue={invoiceMetrics.paidThisMonth}
+              onClick={() => navigatePage('firms')}
+            />
+            
+            <AttorneyInvitationsCard
+              pendingCount={0}
+              recentInvitations={[]}
+              onInviteAttorney={() => navigatePage('firms')}
+              onManage={() => navigatePage('firms')}
+            />
+            
+            <NewRequestsCard
+              newRequestsCount={0}
+              recentRequests={[]}
+              onViewAll={() => navigatePage('matters')}
+            />
+            
+            <CloudStorageStatusCard
+              isConnected={false}
+              onConfigure={() => navigatePage('settings')}
+            />
+          </div>
+
+    {/* Recent Activity Feed */}
+    <div className="mb-6">
+      <RecentActivityFeed activities={[]} />
     </div>
 
     {/* Invoice Metrics Row */}

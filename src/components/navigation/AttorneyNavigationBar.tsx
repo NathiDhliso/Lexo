@@ -1,21 +1,26 @@
 import React, { useState, useRef } from 'react';
 import { User, LogOut, ChevronDown, FileText, CreditCard, Bell, Settings as SettingsIcon } from 'lucide-react';
 import lexoLogo from '../../Public/Assets/lexo-logo.png';
-import { Button, Icon } from '../design-system/components';
+import { Button } from '../design-system/components';
 import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import { ThemeToggle } from '../common/ThemeToggle';
-import { useNavigate } from 'react-router-dom';
-import { useClickOutside } from '../../hooks';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useClickOutside, useEscapeKey } from '../../hooks';
 
 export const AttorneyNavigationBar: React.FC = () => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const userMenuRef = useRef<HTMLDivElement>(null);
 
   useClickOutside(userMenuRef, () => setUserMenuOpen(false));
+  useEscapeKey(() => {
+    setUserMenuOpen(false);
+    setMobileMenuOpen(false);
+  });
 
   const handleSignOut = async () => {
     try {
@@ -34,13 +39,17 @@ export const AttorneyNavigationBar: React.FC = () => {
   ];
 
   return (
-    <nav className="sticky top-0 z-50 w-full bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700">
+    <nav 
+      className="sticky top-0 z-50 w-full bg-white dark:bg-metallic-gray-900 border-b border-neutral-200 dark:border-metallic-gray-700"
+      aria-label="Attorney portal navigation"
+    >
       <div className="w-full max-w-7xl mx-auto px-4 sm:px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
           <button
             onClick={() => navigate('/attorney/dashboard')}
             className="flex items-center gap-2 group transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 rounded-lg p-1"
+            aria-label="Go to attorney dashboard"
           >
             <img 
               src={lexoLogo} 
@@ -56,14 +65,16 @@ export const AttorneyNavigationBar: React.FC = () => {
           </button>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-1" role="navigation">
             {navItems.map((item) => (
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
                 className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 transition-colors"
+                aria-label={item.label}
+                aria-current={location.pathname === item.path ? 'page' : undefined}
               >
-                <Icon icon={item.icon} className="w-4 h-4" />
+                <item.icon className="w-4 h-4" aria-hidden="true" />
                 {item.label}
               </button>
             ))}
@@ -77,8 +88,9 @@ export const AttorneyNavigationBar: React.FC = () => {
               size="sm"
               className="hidden md:flex relative"
               onClick={() => navigate('/attorney/notifications')}
+              aria-label="View notifications"
             >
-              <Icon icon={Bell} className="w-5 h-5" />
+              <Bell className="w-5 h-5" aria-hidden="true" />
             </Button>
 
             {/* Theme Toggle */}
@@ -93,14 +105,21 @@ export const AttorneyNavigationBar: React.FC = () => {
                 size="sm"
                 className="flex items-center gap-2"
                 onClick={() => setUserMenuOpen(!userMenuOpen)}
+                aria-label="User account menu"
+                aria-expanded={userMenuOpen}
+                aria-haspopup="menu"
               >
-                <Icon icon={User} className="w-4 h-4" />
+                <User className="w-4 h-4" aria-hidden="true" />
                 <span className="hidden sm:inline">{user?.email?.split('@')[0] || 'Client'}</span>
-                <Icon icon={ChevronDown} className={`w-3 h-3 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-3 h-3 transition-transform ${userMenuOpen ? 'rotate-180' : ''}`} aria-hidden="true" />
               </Button>
               
               {userMenuOpen && (
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg z-50">
+                <div 
+                  className="absolute right-0 top-full mt-2 w-48 bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg shadow-lg z-50"
+                  role="menu"
+                  aria-label="User account options"
+                >
                   <div className="py-1">
                     <button
                       onClick={() => {
@@ -108,8 +127,9 @@ export const AttorneyNavigationBar: React.FC = () => {
                         setUserMenuOpen(false);
                       }}
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-700"
+                      role="menuitem"
                     >
-                      <Icon icon={User} className="w-4 h-4" />
+                      <User className="w-4 h-4" aria-hidden="true" />
                       Profile
                     </button>
                     <button
@@ -118,16 +138,18 @@ export const AttorneyNavigationBar: React.FC = () => {
                         setUserMenuOpen(false);
                       }}
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-700"
+                      role="menuitem"
                     >
-                      <Icon icon={SettingsIcon} className="w-4 h-4" />
+                      <SettingsIcon className="w-4 h-4" aria-hidden="true" />
                       Settings
                     </button>
-                    <hr className="my-1 border-neutral-200 dark:border-metallic-gray-700" />
+                    <hr className="my-1 border-neutral-200 dark:border-metallic-gray-700" role="separator" />
                     <button
                       onClick={handleSignOut}
                       className="flex items-center gap-2 w-full px-4 py-2 text-sm text-status-error-600 dark:text-status-error-400 hover:bg-status-error-50 dark:hover:bg-status-error-900/20"
+                      role="menuitem"
                     >
-                      <Icon icon={LogOut} className="w-4 h-4" />
+                      <LogOut className="w-4 h-4" aria-hidden="true" />
                       Sign Out
                     </button>
                   </div>
@@ -139,6 +161,9 @@ export const AttorneyNavigationBar: React.FC = () => {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="md:hidden flex items-center justify-center w-10 h-10 rounded-lg bg-mpondo-gold-500 hover:bg-mpondo-gold-600 text-white"
+              aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-menu"
             >
               <div className="relative w-5 h-5">
                 <span className={`absolute left-0 top-1 w-5 h-0.5 bg-white transition-all ${mobileMenuOpen ? 'rotate-45 translate-y-1.5' : ''}`} />
@@ -152,7 +177,12 @@ export const AttorneyNavigationBar: React.FC = () => {
 
       {/* Mobile Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden border-t border-neutral-200 dark:border-metallic-gray-700 bg-white dark:bg-metallic-gray-900">
+        <div 
+          id="mobile-menu"
+          className="md:hidden border-t border-neutral-200 dark:border-metallic-gray-700 bg-white dark:bg-metallic-gray-900"
+          role="navigation"
+          aria-label="Mobile navigation menu"
+        >
           <div className="px-4 py-2 space-y-1">
             {navItems.map((item) => (
               <button
@@ -162,8 +192,9 @@ export const AttorneyNavigationBar: React.FC = () => {
                   setMobileMenuOpen(false);
                 }}
                 className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-800"
+                aria-current={location.pathname === item.path ? 'page' : undefined}
               >
-                <Icon icon={item.icon} className="w-5 h-5" />
+                <item.icon className="w-5 h-5" aria-hidden="true" />
                 {item.label}
               </button>
             ))}
@@ -174,7 +205,7 @@ export const AttorneyNavigationBar: React.FC = () => {
               }}
               className="flex items-center gap-3 w-full px-4 py-3 rounded-lg text-sm font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-800"
             >
-              <Icon icon={Bell} className="w-5 h-5" />
+              <Bell className="w-5 h-5" aria-hidden="true" />
               Notifications
             </button>
           </div>

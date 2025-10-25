@@ -139,8 +139,13 @@ export const SubmitMatterRequestPage: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mpondo-gold-500 mx-auto mb-4"></div>
+        <div className="text-center" role="status" aria-live="polite">
+          <div 
+            className="animate-spin rounded-full h-12 w-12 border-b-2 border-mpondo-gold-500 mx-auto mb-4"
+            aria-label="Loading"
+          >
+            <span className="sr-only">Loading form...</span>
+          </div>
           <p className="text-neutral-600 dark:text-neutral-400">Loading...</p>
         </div>
       </div>
@@ -150,8 +155,12 @@ export const SubmitMatterRequestPage: React.FC = () => {
   if (!firmId) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white dark:bg-metallic-gray-900 rounded-lg shadow-lg p-8 text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+        <div 
+          className="max-w-md w-full bg-white dark:bg-metallic-gray-900 rounded-lg shadow-lg p-8 text-center"
+          role="alert"
+          aria-live="assertive"
+        >
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" aria-hidden="true" />
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             No Firm Associated
           </h2>
@@ -168,23 +177,23 @@ export const SubmitMatterRequestPage: React.FC = () => {
       <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center p-4">
         <div className="max-w-2xl w-full bg-white dark:bg-metallic-gray-900 rounded-lg shadow-lg p-8">
           {/* Progress Indicator */}
-          <div className="mb-6">
+          <div className="mb-6" role="status" aria-label="Step 2 of 2: Matter submitted successfully">
             <div className="flex items-center justify-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
               <span className="flex items-center gap-1 opacity-50">
                 <span className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
                 Register
               </span>
-              <span className="w-8 h-px bg-neutral-300 dark:bg-neutral-600"></span>
+              <span className="w-8 h-px bg-neutral-300 dark:bg-neutral-600" aria-hidden="true"></span>
               <span className="flex items-center gap-1">
-                <span className="w-6 h-6 rounded-full bg-mpondo-gold-500 text-white flex items-center justify-center text-xs font-bold">2</span>
+                <span className="w-6 h-6 rounded-full bg-mpondo-gold-500 text-white flex items-center justify-center text-xs font-bold" aria-current="step">2</span>
                 Submit Matter
               </span>
             </div>
           </div>
 
           {/* Success Message */}
-          <div className="text-center mb-8">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <div className="text-center mb-8" role="status" aria-live="polite" aria-atomic="true">
+            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" aria-hidden="true" />
             <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
               Matter Request Submitted!
             </h1>
@@ -241,15 +250,15 @@ export const SubmitMatterRequestPage: React.FC = () => {
     <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full bg-white dark:bg-metallic-gray-900 rounded-lg shadow-lg p-8">
         {/* Progress Indicator */}
-        <div className="mb-6">
+        <div className="mb-6" role="status" aria-label="Step 2 of 2: Submit Matter">
           <div className="flex items-center justify-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
             <span className="flex items-center gap-1 opacity-50">
               <span className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
               Register
             </span>
-            <span className="w-8 h-px bg-neutral-300 dark:bg-neutral-600"></span>
+            <span className="w-8 h-px bg-neutral-300 dark:bg-neutral-600" aria-hidden="true"></span>
             <span className="flex items-center gap-1">
-              <span className="w-6 h-6 rounded-full bg-mpondo-gold-500 text-white flex items-center justify-center text-xs font-bold">2</span>
+              <span className="w-6 h-6 rounded-full bg-mpondo-gold-500 text-white flex items-center justify-center text-xs font-bold" aria-current="step">2</span>
               Submit Matter
             </span>
           </div>
@@ -257,7 +266,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
 
         {/* Header */}
         <div className="text-center mb-8">
-          <FileText className="w-12 h-12 text-mpondo-gold-500 mx-auto mb-3" />
+          <FileText className="w-12 h-12 text-mpondo-gold-500 mx-auto mb-3" aria-hidden="true" />
           <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             Submit Matter Request
           </h1>
@@ -267,7 +276,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" aria-label="Matter request submission form">
           <FormInput
             label="Matter Title"
             type="text"
@@ -280,7 +289,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Description <span className="text-red-500">*</span>
+              Description <span className="text-red-500" aria-label="required">*</span>
             </label>
             <textarea
               value={formData.description}
@@ -292,11 +301,17 @@ export const SubmitMatterRequestPage: React.FC = () => {
                   : 'border-neutral-300 dark:border-neutral-600'
               } bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100`}
               placeholder="Provide a detailed description of the matter, including key facts, parties involved, and any urgent considerations..."
+              aria-describedby="description-requirements description-count"
+              aria-required="true"
+              aria-invalid={!!formErrors.description}
             />
+            <span id="description-requirements" className="sr-only">
+              Provide a detailed description of at least 20 characters
+            </span>
             {formErrors.description && (
-              <p className="mt-1 text-sm text-red-500">{formErrors.description}</p>
+              <p className="mt-1 text-sm text-red-500" role="alert">{formErrors.description}</p>
             )}
-            <p className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
+            <p id="description-count" className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
               {formData.description.length} characters (minimum 20)
             </p>
           </div>

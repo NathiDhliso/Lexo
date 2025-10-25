@@ -8,18 +8,19 @@ const config = {
   theme: {
     extend: {
       colors: {
+        // UI/UX Overhaul Design System Colors
         'metallic-gray': {
-          50: '#f8f9fa',
-          100: '#e9ecef',
-          200: '#dee2e6',
-          300: '#ced4da',
-          400: '#adb5bd',
-          500: '#6c757d',
-          600: '#495057',
-          700: '#343a40',
-          800: '#212529',
-          900: '#1a1d20',
-          950: '#0d0f11',
+          50: '#f8fafc',
+          100: '#f1f5f9',
+          200: '#e2e8f0',
+          300: '#cbd5e1',
+          400: '#94a3b8',
+          500: '#64748b',
+          600: '#475569',
+          700: '#334155',
+          800: '#1e293b',
+          900: '#0f172a',
+          950: '#020617',
         },
         // Primary Brand Color - Mpondo Gold
         'mpondo-gold': {
@@ -35,21 +36,58 @@ const config = {
           900: '#684e20',
           950: '#3b2b0f',
         },
-        // Secondary Brand Color - Judicial Blue
+        // Secondary Brand Color - Judicial Blue (UI/UX Overhaul Primary)
         'judicial-blue': {
-          50: '#f0f5fe',
-          100: '#dde8fc',
-          200: '#c3d8fa',
-          300: '#9ac0f6',
-          400: '#6a9ef0',
-          500: '#477aea',
-          600: '#325cdd',
-          700: '#2947cb',
-          800: '#273ba4',
-          900: '#1E3A8A', // Primary
-          950: '#1a2554',
+          50: '#eff6ff',
+          100: '#dbeafe',
+          200: '#bfdbfe',
+          300: '#93c5fd',
+          400: '#60a5fa',
+          500: '#3b82f6', // Primary
+          600: '#2563eb',
+          700: '#1d4ed8',
+          800: '#1e40af',
+          900: '#1e3a8a',
+          950: '#172554',
         },
-        // Semantic Colors
+        // Firm-Specific Accent Colors
+        'firm-primary': {
+          50: '#eef2ff',
+          100: '#e0e7ff',
+          200: '#c7d2fe',
+          300: '#a5b4fc',
+          400: '#818cf8',
+          500: '#6366f1', // Indigo for firm branding
+          600: '#4f46e5',
+          700: '#4338ca',
+          800: '#3730a3',
+          900: '#312e81',
+        },
+        'firm-secondary': {
+          50: '#faf5ff',
+          100: '#f3e8ff',
+          200: '#e9d5ff',
+          300: '#d8b4fe',
+          400: '#c084fc',
+          500: '#a855f7', // Purple for attorney roles
+          600: '#9333ea',
+          700: '#7e22ce',
+          800: '#6b21a8',
+          900: '#581c87',
+        },
+        'firm-accent': {
+          50: '#ecfeff',
+          100: '#cffafe',
+          200: '#a5f3fc',
+          300: '#67e8f9',
+          400: '#22d3ee',
+          500: '#06b6d4', // Cyan for highlights
+          600: '#0891b2',
+          700: '#0e7490',
+          800: '#155e75',
+          900: '#164e63',
+        },
+        // Semantic Colors (UI/UX Overhaul)
         status: {
           success: {
             50: '#f0fdf4',
@@ -57,7 +95,7 @@ const config = {
             200: '#bbf7d0',
             300: '#86efac',
             400: '#4ade80',
-            500: '#22c55e',
+            500: '#10b981', // Updated to match design spec
             600: '#16a34a',
             700: '#15803d',
             800: '#166534',
@@ -69,7 +107,7 @@ const config = {
             200: '#fde68a',
             300: '#fcd34d',
             400: '#fbbf24',
-            500: '#f59e0b',
+            500: '#f59e0b', // Amber
             600: '#d97706',
             700: '#b45309',
             800: '#92400e',
@@ -81,11 +119,36 @@ const config = {
             200: '#fecaca',
             300: '#fca5a5',
             400: '#f87171',
-            500: '#ef4444',
+            500: '#ef4444', // Red
             600: '#dc2626',
+            700: '#b91c1c',
             800: '#991b1b',
             900: '#7f1d1d',
           },
+          info: {
+            50: '#eff6ff',
+            100: '#dbeafe',
+            200: '#bfdbfe',
+            300: '#93c5fd',
+            400: '#60a5fa',
+            500: '#3b82f6', // Blue
+            600: '#2563eb',
+            700: '#1d4ed8',
+            800: '#1e40af',
+            900: '#1e3a8a',
+          },
+        },
+        // New Request Indicators
+        'new-request': {
+          bg: '#fef3c7',
+          border: '#f59e0b',
+          text: '#92400e',
+        },
+        // Cloud Storage Status
+        'cloud-storage': {
+          connected: '#10b981',
+          disconnected: '#ef4444',
+          warning: '#f59e0b',
         },
         // Neutral palette for UI
         neutral: {

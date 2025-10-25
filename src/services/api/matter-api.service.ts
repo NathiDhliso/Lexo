@@ -256,6 +256,22 @@ export class MatterApiService extends BaseApiService<Matter> {
   }
 
   /**
+   * Accept Brief (Path B: Quick Start)
+   * Accepts a matter request immediately without pro forma
+   * Sets status to ACTIVE
+   */
+  async acceptBrief(matterId: string): Promise<ApiResponse<Matter>> {
+    const updateData: Partial<Matter> = {
+      status: 'active' as MatterStatus
+    };
+
+    // TODO: Send notification to attorney about acceptance
+    // TODO: Log activity in audit trail
+    
+    return this.update(matterId, updateData);
+  }
+
+  /**
    * Update WIP value
    */
   async updateWipValue(matterId: string, wipValue: number): Promise<ApiResponse<Matter>> {

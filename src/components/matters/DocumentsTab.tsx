@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { FileText, Upload, Download, Trash2, Eye, Plus } from 'lucide-react';
+import { FileText, Upload, Download, Trash2, Plus } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
+import { CloudStorageService } from '../../services/api/cloud-storage.service';
+import { CloudStorageEmptyState } from '../cloud-storage';
+import { CloudStorageSetupWizard } from '../cloud-storage/CloudStorageSetupWizard';
 import toast from 'react-hot-toast';
 
 interface Document {
@@ -21,6 +24,31 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
   const [documents, setDocuments] = useState<Document[]>([]);
   const [loading, setLoading] = useState(true);
   const [showUpload, setShowUpload] = useState(false);
+  const [cloudConnection, setCloudConnection] = useState<{id: string; provider: string} | null>(null);
+  const [checkingConnection, setCheckingConnection] = useState(true);
+  const [showSetupWizard, setShowSetupWizard] = useState(false);
+
+  // Check for cloud storage connection
+  useEffect(() => {
+    const checkCloudConnection = async () => {
+      setCheckingConnection(true);
+      try {
+        const connection = await CloudStorageService.getPrimaryConnection();
+        if (connection) {
+          setCloudConnection({
+            id: connection.id,
+            provider: connection.provider
+          });
+        }
+      } catch (error) {
+        console.error('Failed to check cloud connection:', error);
+      } finally {
+        setCheckingConnection(false);
+      }
+    };
+
+    checkCloudConnection();
+  }, []);
 
   const fetchDocuments = async () => {
     setLoading(true);
@@ -112,11 +140,35 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
     return <FileText className="w-5 h-5" />;
   };
 
-  if (loading) {
+  if (loading || checkingConnection) {
     return (
       <div className="flex items-center justify-center py-12">
         <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
       </div>
+    );
+  }
+
+  // Show cloud storage setup wizard if not connected
+  if (!cloudConnection && !showUpload) {
+    return (
+      <>
+        <CloudStorageEmptyState onSetup={() => setShowSetupWizard(true)} />
+        {showSetupWizard && (
+          <CloudStorageSetupWizard
+            isOpen={showSetupWizard}
+            onClose={() => setShowSetupWizard(false)}
+            onComplete={() => {
+              setShowSetupWizard(false);
+              // Recheck connection after wizard completes
+              CloudStorageService.getPrimaryConnection().then(conn => {
+                if (conn) {
+                  setCloudConnection({ id: conn.id, provider: conn.provider });
+                }
+              });
+            }}
+          />
+        )}
+      </>
     );
   }
 
@@ -150,7 +202,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
             <button
               onClick={() => {
                 setShowUpload(false);
-                toast.info('Configure cloud storage in Settings to enable document linking');
+                toast.success('Please configure cloud storage in Settings to enable document linking');
               }}
               className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
             >

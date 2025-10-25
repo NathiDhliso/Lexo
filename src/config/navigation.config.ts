@@ -1,8 +1,8 @@
 import type { NavigationConfig, NavigationItem } from '../types';
 import { UserTier } from '../types';
-import { BarChart3, Settings, FileText, Users, FolderOpen, CreditCard, TrendingUp, DollarSign, FileCheck, CheckSquare, ExternalLink, Clock } from 'lucide-react';
+import { BarChart3, FileText, Users, FolderOpen, CreditCard, DollarSign, FileCheck, CheckSquare, ExternalLink, Clock, Building2, UserPlus, UsersRound } from 'lucide-react';
 
-// Navigation items
+// Navigation items - Note: Profile and Settings are only in User Menu dropdown, not in main navigation
 const navigationItems: NavigationItem[] = [
   {
     id: 'dashboard',
@@ -54,22 +54,6 @@ const navigationItems: NavigationItem[] = [
     description: 'Review billing readiness',
     isNew: true,
   },
-  {
-    id: 'profile',
-    label: 'Profile',
-    href: '/profile',
-    page: 'profile',
-    icon: Users,
-    description: 'Your profile and preferences',
-  },
-  {
-    id: 'settings',
-    label: 'Settings',
-    href: '/settings',
-    page: 'settings',
-    icon: Settings,
-    description: 'Application settings',
-  },
 ];
 
 // Navigation configuration with categories
@@ -82,42 +66,95 @@ export const navigationConfig: NavigationConfig = {
       sections: [
         {
           id: 'proforma-actions',
-          title: 'Actions',
+          title: 'Quick Actions',
           items: [
             {
               id: 'create-proforma',
               label: 'Create Pro Forma',
-              action: 'create-proforma',
+              page: 'proforma-requests',
               icon: FileCheck,
               description: 'Create new quote request',
-            },
-            {
-              id: 'view-proforma',
-              label: 'View All Requests',
-              page: 'proforma-requests',
-              icon: FileText,
-              description: 'Manage all pro forma requests',
             },
           ],
         },
         {
-          id: 'proforma-features',
-          title: 'Features',
+          id: 'proforma-views',
+          title: 'Views',
           items: [
             {
-              id: 'attorney-links',
-              label: 'Attorney Portal Links',
+              id: 'view-proforma',
+              label: 'All Requests',
               page: 'proforma-requests',
-              icon: ExternalLink,
-              description: 'Generate & send attorney links',
-              isNew: true,
+              icon: FileText,
+              description: 'View and manage all requests',
             },
             {
-              id: 'rate-cards',
-              label: 'Rate Cards',
+              id: 'proforma-drafts',
+              label: 'Draft Requests',
               page: 'proforma-requests',
-              icon: CreditCard,
-              description: 'Pricing & estimates',
+              icon: FileCheck,
+              description: 'Work on draft quotes',
+              hash: 'status=draft',
+            },
+            {
+              id: 'proforma-sent',
+              label: 'Sent Requests',
+              page: 'proforma-requests',
+              icon: ExternalLink,
+              description: 'View sent quotes awaiting response',
+              hash: 'status=sent',
+              isNew: true,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      id: 'firms',
+      label: 'Firms',
+      icon: Building2,
+      page: 'firms',
+      sections: [
+        {
+          id: 'firm-actions',
+          title: 'Quick Actions',
+          items: [
+            {
+              id: 'invite-attorney',
+              label: 'Invite Attorney',
+              action: 'invite-attorney',
+              icon: UserPlus,
+              description: 'Send attorney invitation',
+              isNew: true,
+            },
+          ],
+        },
+        {
+          id: 'firm-views',
+          title: 'Views',
+          items: [
+            {
+              id: 'view-firms',
+              label: 'All Firms',
+              page: 'firms',
+              icon: Building2,
+              description: 'View all law firms',
+            },
+            {
+              id: 'firm-attorneys',
+              label: 'Attorneys',
+              page: 'firms',
+              icon: UsersRound,
+              description: 'View and manage attorneys',
+              hash: 'view=attorneys',
+            },
+            {
+              id: 'firm-pending',
+              label: 'Pending Invitations',
+              page: 'firms',
+              icon: Clock,
+              description: 'View pending attorney invites',
+              hash: 'view=pending',
             },
           ],
         },
@@ -130,7 +167,7 @@ export const navigationConfig: NavigationConfig = {
       sections: [
         {
           id: 'matter-actions',
-          title: 'Actions',
+          title: 'Quick Actions',
           items: [
             {
               id: 'create-matter',
@@ -139,25 +176,49 @@ export const navigationConfig: NavigationConfig = {
               icon: FileText,
               description: 'Start new case',
             },
+          ],
+        },
+        {
+          id: 'matter-views',
+          title: 'Views',
+          items: [
             {
               id: 'view-matters',
-              label: 'View All Matters',
+              label: 'All Matters',
               page: 'matters',
               icon: FolderOpen,
-              description: 'Manage all cases',
+              description: 'View all matters',
+            },
+            {
+              id: 'active-matters',
+              label: 'Active Matters',
+              page: 'matters',
+              icon: FileText,
+              description: 'View active cases',
+              hash: 'tab=active',
+            },
+            {
+              id: 'new-requests',
+              label: 'New Requests',
+              page: 'matters',
+              icon: FileCheck,
+              description: 'View new matter requests',
+              hash: 'tab=new_requests',
+              isNew: true,
             },
           ],
         },
         {
-          id: 'matter-features',
-          title: 'Features',
+          id: 'matter-tools',
+          title: 'Tools',
           items: [
             {
               id: 'time-tracking',
-              label: 'Time Entries',
+              label: 'Time Tracking',
               page: 'matters',
               icon: Clock,
               description: 'Track billable hours',
+              hash: 'view=time',
             },
             {
               id: 'documents',
@@ -165,14 +226,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'matters',
               icon: FolderOpen,
               description: 'Upload & manage files',
-              isNew: true,
-            },
-            {
-              id: 'scope-amendments',
-              label: 'Scope Amendments',
-              page: 'matters',
-              icon: TrendingUp,
-              description: 'Manage scope changes',
+              hash: 'view=documents',
             },
           ],
         },
@@ -185,7 +239,7 @@ export const navigationConfig: NavigationConfig = {
       sections: [
         {
           id: 'invoice-actions',
-          title: 'Actions',
+          title: 'Quick Actions',
           items: [
             {
               id: 'create-invoice',
@@ -194,18 +248,40 @@ export const navigationConfig: NavigationConfig = {
               icon: CreditCard,
               description: 'Generate new invoice',
             },
+          ],
+        },
+        {
+          id: 'invoice-views',
+          title: 'Views',
+          items: [
             {
               id: 'view-invoices',
-              label: 'View All Invoices',
+              label: 'All Invoices',
               page: 'invoices',
               icon: FileText,
-              description: 'Manage all invoices',
+              description: 'View all invoices',
+            },
+            {
+              id: 'draft-invoices',
+              label: 'Draft Invoices',
+              page: 'invoices',
+              icon: FileCheck,
+              description: 'Work on draft invoices',
+              hash: 'status=draft',
+            },
+            {
+              id: 'unpaid-invoices',
+              label: 'Unpaid Invoices',
+              page: 'invoices',
+              icon: DollarSign,
+              description: 'Track unpaid invoices',
+              hash: 'status=sent',
             },
           ],
         },
         {
-          id: 'invoice-features',
-          title: 'Features',
+          id: 'invoice-tools',
+          title: 'Tools',
           items: [
             {
               id: 'partner-approval',
@@ -221,6 +297,7 @@ export const navigationConfig: NavigationConfig = {
               page: 'invoices',
               icon: DollarSign,
               description: 'Track payments & reminders',
+              hash: 'tab=tracking',
             },
           ],
         },

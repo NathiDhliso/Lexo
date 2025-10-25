@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, ChevronRight, X, Search, User, Settings, LogOut, Bell } from 'lucide-react';
-import { Button, Icon } from '../design-system/components';
+import { ChevronDown, ChevronRight, X, Search, Settings, LogOut } from 'lucide-react';
+import { Icon } from '../design-system/components';
 import { ThemeToggle } from '../common/ThemeToggle';
+import { NotificationBadge } from './NotificationBadge';
+import { CloudStorageIndicator } from './CloudStorageIndicator';
 import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -9,16 +11,21 @@ import type { NavigationCategory, Page, UserTier } from '../../types';
 
 interface MobileMegaMenuProps {
   categories: NavigationCategory[];
-  onItemClick: (page: Page) => void;
+  onItemClick: (page: Page, hash?: string) => void;
   onActionClick: (action: string) => void;
   userTier: UserTier;
   activePage: Page;
   onClose: () => void;
+  notificationCounts?: {
+    matters?: number;
+    firms?: number;
+  };
+  cloudStorageStatus?: 'connected' | 'disconnected' | 'warning';
 }
 
 interface MobileMenuItemProps {
   item: any;
-  onItemClick: (page: Page) => void;
+  onItemClick: (page: Page, hash?: string) => void;
   onActionClick: (action: string) => void;
   userTier: UserTier;
   level?: number;
@@ -26,7 +33,7 @@ interface MobileMenuItemProps {
 
 interface MobileSectionProps {
   section: any;
-  onItemClick: (page: Page) => void;
+  onItemClick: (page: Page, hash?: string) => void;
   onActionClick: (action: string) => void;
   userTier: UserTier;
   level?: number;
@@ -34,12 +41,13 @@ interface MobileSectionProps {
 
 interface MobileCategoryProps {
   category: NavigationCategory;
-  onItemClick: (page: Page) => void;
+  onItemClick: (page: Page, hash?: string) => void;
   onActionClick: (action: string) => void;
   userTier: UserTier;
   activePage: Page;
   isExpanded: boolean;
   onToggle: () => void;
+  notificationCount?: number;
 }
 
 // Mobile Menu Item Component
@@ -59,7 +67,7 @@ const MobileMenuItem: React.FC<MobileMenuItemProps> = ({
     if (item.action) {
       onActionClick(item.action);
     } else if (item.page) {
-      onItemClick(item.page);
+      onItemClick(item.page, item.hash);
     }
   };
 
@@ -169,7 +177,8 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
   userTier,
   activePage,
   isExpanded,
-  onToggle
+  onToggle,
+  notificationCount
 }) => {
   const isActive = activePage === category.page;
 
@@ -192,13 +201,24 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
               : 'text-neutral-600 dark:text-neutral-400'
               }`}
           />
-          <div>
-            <div className="font-semibold text-lg">{category.label}</div>
-            {category.description && (
-              <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
-                {category.description}
+          <div className="flex items-center gap-2">
+            <div>
+              <div className="font-semibold text-lg flex items-center gap-2">
+                {category.label}
+                {notificationCount && notificationCount > 0 && (
+                  <NotificationBadge 
+                    count={notificationCount} 
+                    variant="warning"
+                    size="sm"
+                  />
+                )}
               </div>
-            )}
+              {category.description && (
+                <div className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                  {category.description}
+                </div>
+              )}
+            </div>
           </div>
         </div>
         <ChevronDown
@@ -251,7 +271,9 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
   onActionClick,
   userTier,
   activePage,
-  onClose
+  onClose,
+  notificationCounts = {},
+  cloudStorageStatus = 'disconnected'
 }) => {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
@@ -276,8 +298,8 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
   };
 
   // Handle item click with menu close
-  const handleItemClick = (page: Page) => {
-    onItemClick(page);
+  const handleItemClick = (page: Page, hash?: string) => {
+    onItemClick(page, hash);
     onClose();
   };
 
@@ -290,7 +312,7 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
   // Handle search
   const handleSearch = () => {
     // Implement search functionality
-    toast.info('Search functionality coming soon!');
+    toast('Search functionality coming soon!', { icon: 'ℹ️' });
   };
 
   // Prevent scroll on body when menu is open
@@ -399,23 +421,42 @@ export const MobileMegaMenu: React.FC<MobileMegaMenuProps> = ({
 
           {/* Navigation Categories */}
           <div className="py-2">
-            {categories.map((category) => (
-              <MobileCategory
-                key={category.id}
-                category={category}
-                onItemClick={handleItemClick}
-                onActionClick={handleActionClick}
-                userTier={userTier}
-                activePage={activePage}
-                isExpanded={expandedCategory === category.id}
-                onToggle={() => handleCategoryToggle(category.id)}
-              />
-            ))}
+            {categories.map((category) => {
+              // Get notification count for this category
+              const notificationCount = category.id === 'matters' ? notificationCounts.matters :
+                                       category.id === 'firms' ? notificationCounts.firms : 0;
+              
+              return (
+                <MobileCategory
+                  key={category.id}
+                  category={category}
+                  onItemClick={handleItemClick}
+                  onActionClick={handleActionClick}
+                  userTier={userTier}
+                  activePage={activePage}
+                  isExpanded={expandedCategory === category.id}
+                  onToggle={() => handleCategoryToggle(category.id)}
+                  notificationCount={notificationCount}
+                />
+              );
+            })}
           </div>
         </div>
 
         {/* Footer */}
         <div className="border-t border-neutral-200 dark:border-metallic-gray-700 p-4 space-y-2">
+          {/* Cloud Storage Status */}
+          <div className="flex items-center justify-between p-3 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
+            <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
+              Cloud Storage
+            </span>
+            <CloudStorageIndicator
+              status={cloudStorageStatus}
+              onClick={() => handleItemClick('settings')}
+              className="!p-2 !min-h-[40px]"
+            />
+          </div>
+
           {/* Theme Toggle */}
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">

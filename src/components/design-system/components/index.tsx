@@ -3,7 +3,14 @@ import React from 'react';
 export { Icon } from './Icon';
 export { LoadingSpinner } from './LoadingSpinner';
 export { EmptyState } from './EmptyState';
-export { Skeleton, SkeletonCard, SkeletonTable } from './SkeletonLoader';
+export { 
+  Skeleton, 
+  SkeletonCard, 
+  SkeletonTable,
+  SkeletonMatterCard,
+  SkeletonFirmCard,
+  SkeletonList
+} from './SkeletonLoader';
 
 interface CardProps {
   children: React.ReactNode;

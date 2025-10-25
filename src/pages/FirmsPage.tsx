@@ -3,15 +3,13 @@ import {
   Building, 
   Plus, 
   Search,
-  Edit,
   Trash2,
   Download,
-  Archive,
-  Eye,
-  Mail
+  Archive
 } from 'lucide-react';
-import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
-import { BulkActionToolbar, SelectionCheckbox } from '../components/ui/BulkActionToolbar';
+import { Card, CardContent, Button } from '../components/design-system/components';
+import { SkeletonFirmCard } from '../components/design-system/components';
+import { BulkActionToolbar } from '../components/ui/BulkActionToolbar';
 import { useAuth } from '../hooks/useAuth';
 import { useSelection } from '../hooks/useSelection';
 import { useConfirmation } from '../hooks/useConfirmation';
@@ -20,25 +18,17 @@ import { supabase } from '../lib/supabase';
 import { exportToCSV, exportToPDF } from '../utils/export.utils';
 import type { Firm } from '../types/financial.types';
 import { useNavigate } from 'react-router-dom';
-import { InviteAttorneyModal } from '../components/firms/InviteAttorneyModal';
+import { FirmCard, InviteAttorneyModal } from '../components/firms';
 
-interface FirmsPageProps {
-  onNavigate?: (page: string) => void;
-}
-
-const FirmsPage: React.FC<FirmsPageProps> = ({ onNavigate }) => {
+const FirmsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'active' | 'all'>('active');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedFirm, setSelectedFirm] = useState<Firm | null>(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [showInviteModal, setShowInviteModal] = useState(false);
   const [firmToInvite, setFirmToInvite] = useState<Firm | null>(null);
 
   const [firms, setFirms] = useState<Firm[]>([]);
   const [loadingFirms, setLoadingFirms] = useState(true);
-  const { user, loading, isAuthenticated } = useAuth();
+  const { loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { confirm } = useConfirmation();
 
@@ -89,10 +79,8 @@ const FirmsPage: React.FC<FirmsPageProps> = ({ onNavigate }) => {
   // Selection management
   const {
     selectedItems,
-    isSelected,
     selectedCount,
     totalCount,
-    toggleSelection,
     clearSelection,
   } = useSelection({
     items: filteredFirms,
@@ -100,22 +88,23 @@ const FirmsPage: React.FC<FirmsPageProps> = ({ onNavigate }) => {
   });
 
   const handleNewFirmClick = () => {
-    setShowCreateModal(true);
-  };
-
-  const handleViewFirm = (firm: Firm) => {
-    setSelectedFirm(firm);
-    setShowDetailModal(true);
-  };
-
-  const handleEditFirm = (firm: Firm) => {
-    setSelectedFirm(firm);
-    setShowEditModal(true);
+    // TODO: Implement create firm modal
+    toast('Create firm functionality coming soon', { icon: 'ℹ️' });
   };
 
   const handleInviteAttorney = (firm: Firm) => {
     setFirmToInvite(firm);
     setShowInviteModal(true);
+  };
+
+  const handleManageFirm = (firm: Firm) => {
+    // TODO: Navigate to firm management page
+    navigate(`/firms/${firm.id}/manage`);
+  };
+
+  const handleViewMatters = (firm: Firm) => {
+    // Navigate to matters page filtered by firm
+    navigate(`/matters?firm_id=${firm.id}`);
   };
 
   // Bulk action handlers
@@ -314,119 +303,41 @@ const FirmsPage: React.FC<FirmsPageProps> = ({ onNavigate }) => {
       />
 
       {/* Content */}
-      <div className="space-y-4">
-        {loadingFirms ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-mpondo-gold-500 mx-auto mb-4"></div>
-              <p className="text-neutral-600 dark:text-neutral-400">Loading firms...</p>
-            </CardContent>
-          </Card>
-        ) : filteredFirms.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <Building className="w-12 h-12 text-neutral-400 dark:text-neutral-500 mx-auto mb-4" />
-              <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">No Firms Found</h3>
-              <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-                {activeTab === 'active' ? 'No active firms' : 'No firms match your search criteria'}
-              </p>
-              <Button onClick={handleNewFirmClick} variant="primary">
-                <Plus className="w-4 h-4 mr-2" />
-                Create Your First Firm
-              </Button>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredFirms.map((firm) => (
-            <Card key={firm.id} variant="default" hoverable>
-              <CardHeader className="pb-3">
-                <div className="flex items-start gap-4">
-                  {/* Selection Checkbox */}
-                  <SelectionCheckbox
-                    checked={isSelected(firm.id)}
-                    onChange={() => toggleSelection(firm.id)}
-                    label={`Select ${firm.firm_name}`}
-                    className="mt-1"
-                  />
-                  
-                  <div className="flex-1 flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{firm.firm_name}</h3>
-                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                          firm.status === 'active' 
-                            ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' 
-                            : 'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300'
-                        }`}>
-                          {firm.status}
-                        </span>
-                      </div>
-                      
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <span className="text-neutral-600 dark:text-neutral-400">Attorney:</span>
-                          <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">{firm.attorney_name}</span>
-                        </div>
-                        <div>
-                          <span className="text-neutral-600 dark:text-neutral-400">Email:</span>
-                          <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">{firm.email}</span>
-                        </div>
-                        {firm.phone_number && (
-                          <div>
-                            <span className="text-neutral-600 dark:text-neutral-400">Phone:</span>
-                            <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">{firm.phone_number}</span>
-                          </div>
-                        )}
-                        {firm.practice_number && (
-                          <div>
-                            <span className="text-neutral-600 dark:text-neutral-400">Practice #:</span>
-                            <span className="ml-2 font-medium text-neutral-900 dark:text-neutral-100">{firm.practice_number}</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="pt-0">
-                {/* Actions */}
-                <div className="flex flex-wrap gap-2">
-                  <Button
-                    variant="primary"
-                    size="sm"
-                    onClick={() => handleInviteAttorney(firm)}
-                    className="flex items-center gap-2"
-                  >
-                    <Mail className="w-4 h-4" />
-                    Invite Attorney
-                  </Button>
-                  
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => handleViewFirm(firm)}
-                    className="flex items-center gap-2"
-                  >
-                    <Eye className="w-4 h-4" />
-                    View
-                  </Button>
-                  
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleEditFirm(firm)}
-                    className="flex items-center gap-2"
-                  >
-                    <Edit className="w-4 h-4" />
-                    Edit
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          ))
-        )}
-      </div>
+      {loadingFirms ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {Array.from({ length: 6 }, (_, i) => (
+            <SkeletonFirmCard key={i} />
+          ))}
+        </div>
+      ) : filteredFirms.length === 0 ? (
+        <Card>
+          <CardContent className="text-center py-12">
+            <Building className="w-12 h-12 text-neutral-400 dark:text-neutral-500 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">No Firms Found</h3>
+            <p className="text-neutral-600 dark:text-neutral-400 mb-4">
+              {activeTab === 'active' ? 'No active firms' : 'No firms match your search criteria'}
+            </p>
+            <Button onClick={handleNewFirmClick} variant="primary">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Your First Firm
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredFirms.map((firm) => (
+            <FirmCard
+              key={firm.id}
+              firm={firm}
+              attorneys={[]} // TODO: Fetch attorneys for each firm
+              activeMattersCount={0} // TODO: Fetch active matters count
+              onInviteAttorney={handleInviteAttorney}
+              onManageFirm={handleManageFirm}
+              onViewMatters={handleViewMatters}
+            />
+          ))}
+        </div>
+      )}
 
       {/* Invite Attorney Modal */}
       {firmToInvite && (

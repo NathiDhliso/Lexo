@@ -467,6 +467,111 @@ export class CloudStorageService {
     };
   }
 
+  // List files and folders from cloud storage
+  static async listFiles(
+    connectionId: string,
+    folderPath: string = ''
+  ): Promise<Array<{
+    id: string;
+    name: string;
+    type: 'file' | 'folder';
+    size?: number;
+    modifiedDate?: Date;
+    path: string;
+    mimeType?: string;
+  }>> {
+    try {
+      const connections = await this.getConnections();
+      const connection = connections.find(c => c.id === connectionId);
+      
+      if (!connection) {
+        throw new Error('Connection not found');
+      }
+
+      // Call provider-specific API
+      return await this.listFilesFromProvider(connection, folderPath);
+    } catch (error) {
+      console.error('Error listing files:', error);
+      toast.error('Failed to load files');
+      throw error;
+    }
+  }
+
+  // List files from specific provider
+  private static async listFilesFromProvider(
+    connection: CloudStorageConnection,
+    folderPath: string
+  ): Promise<Array<{
+    id: string;
+    name: string;
+    type: 'file' | 'folder';
+    size?: number;
+    modifiedDate?: Date;
+    path: string;
+    mimeType?: string;
+  }>> {
+    // TODO: Implement actual provider API calls
+    // For now, return mock data for development
+    
+    // Mock delay to simulate API call
+    await new Promise(resolve => setTimeout(resolve, 500));
+
+    // Mock data based on folder path
+    if (!folderPath || folderPath === 'Root') {
+      return [
+        {
+          id: '1',
+          name: 'Legal Documents',
+          type: 'folder',
+          path: 'Legal Documents',
+        },
+        {
+          id: '2',
+          name: 'Contracts',
+          type: 'folder',
+          path: 'Contracts',
+        },
+        {
+          id: '3',
+          name: 'Case Brief - Smith v Jones.pdf',
+          type: 'file',
+          size: 245760,
+          modifiedDate: new Date(Date.now() - 86400000),
+          path: 'Case Brief - Smith v Jones.pdf',
+          mimeType: 'application/pdf'
+        },
+        {
+          id: '4',
+          name: 'Client Meeting Notes.docx',
+          type: 'file',
+          size: 51200,
+          modifiedDate: new Date(Date.now() - 172800000),
+          path: 'Client Meeting Notes.docx',
+          mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        }
+      ];
+    }
+
+    // Mock subfolder contents
+    return [
+      {
+        id: `${folderPath}-1`,
+        name: 'Subfolder',
+        type: 'folder',
+        path: `${folderPath}/Subfolder`,
+      },
+      {
+        id: `${folderPath}-2`,
+        name: 'Document.pdf',
+        type: 'file',
+        size: 102400,
+        modifiedDate: new Date(Date.now() - 259200000),
+        path: `${folderPath}/Document.pdf`,
+        mimeType: 'application/pdf'
+      }
+    ];
+  }
+
   private static mapDocumentCloudStorage(data: any): DocumentCloudStorage {
     return {
       id: data.id,

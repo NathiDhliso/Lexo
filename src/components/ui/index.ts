@@ -45,6 +45,44 @@ export type { SpinnerProps } from './Spinner';
 export { FormInput } from './FormInput';
 export type { FormInputProps } from './FormInput';
 
+export { FieldError } from './FieldError';
+export type { FieldErrorProps } from './FieldError';
+
+export { FormFieldGroup } from './FormFieldGroup';
+export type { FormFieldGroupProps } from './FormFieldGroup';
+
+export { InlineErrorAlert } from './InlineErrorAlert';
+export type { InlineErrorAlertProps } from './InlineErrorAlert';
+
+export { Tooltip } from './Tooltip';
+export type { TooltipProps } from './Tooltip';
+
+export { HelpTooltip } from './HelpTooltip';
+export type { HelpTooltipProps } from './HelpTooltip';
+
+export { AccessibilityChecker } from './AccessibilityChecker';
+export type { AccessibilityIssue } from './AccessibilityChecker';
+
+export { ResponsiveTestHelper } from './ResponsiveTestHelper';
+
+export { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp';
+
+export { ContrastChecker } from './ContrastChecker';
+
+export { 
+  LazyLoadWrapper, 
+  PageLoader, 
+  ComponentLoader, 
+  lazyWithPreload,
+  preloadImage,
+  preloadImages,
+  useIntersectionObserver,
+  LazyImage
+} from './LazyLoad';
+
+export { VirtualScroll, useVirtualScroll, usePagination } from './VirtualScroll';
+export { Pagination } from './VirtualScroll'; // Using VirtualScroll's Pagination
+
 export { SkeletonLoader } from './SkeletonLoader';
 export type { SkeletonLoaderProps } from './SkeletonLoader';
 
@@ -54,8 +92,7 @@ export type { LoadingOverlayProps } from './LoadingOverlay';
 export { ProgressBar } from './ProgressBar';
 export type { ProgressBarProps } from './ProgressBar';
 
-export { Pagination } from './Pagination';
-export type { PaginationProps } from './Pagination';
-
 export { BulkActionToolbar, SelectionCheckbox } from './BulkActionToolbar';
 export type { BulkActionToolbarProps, SelectionCheckboxProps, BulkAction } from './BulkActionToolbar';
+
+export { MatterStatusBadge } from './MatterStatusBadge';

@@ -7,6 +7,8 @@ import GlobalCommandBar from './GlobalCommandBar';
 import { KeyboardShortcutsHelp } from './KeyboardShortcutsHelp';
 import { ShortcutHint } from './ShortcutHint';
 import { RealTimeTicker } from './RealTimeTicker';
+import { CloudStorageIndicator } from './CloudStorageIndicator';
+import { NotificationBadge } from './NotificationBadge';
 import { Button, Icon } from '../design-system/components';
 import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
 import { GenerateInvoiceModal } from '../invoices/GenerateInvoiceModal';
@@ -14,6 +16,7 @@ import { GenerateInvoiceModal } from '../invoices/GenerateInvoiceModal';
 import { getFilteredNavigationConfig } from '../../config/navigation.config';
 import { useKeyboardShortcuts, useClickOutside } from '../../hooks';
 import { useAuth } from '../../hooks/useAuth';
+import { CloudStorageService } from '../../services/api/cloud-storage.service';
 import { toast } from 'react-hot-toast';
 import { ThemeToggle } from '../common/ThemeToggle';
 import type { 
@@ -53,6 +56,17 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   const [commandBarOpen, setCommandBarOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [showShortcutsHelp, setShowShortcutsHelp] = useState(false);
+  
+  // Cloud storage status
+  const [cloudStorageStatus, setCloudStorageStatus] = useState<'connected' | 'disconnected' | 'warning'>('disconnected');
+  const [cloudProvider, setCloudProvider] = useState<string | undefined>();
+  const [cloudLastSync, setCloudLastSync] = useState<Date | undefined>();
+  
+  // Notification counts (TODO: Connect to actual data)
+  const [notificationCounts, setNotificationCounts] = useState({
+    matters: 0, // New matter requests
+    firms: 0,   // Pending invitations
+  });
 
   // Modal state
   const [modalState, setModalState] = useState({
@@ -68,6 +82,32 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   // Get filtered navigation config based on user tier
   const filteredConfig = getFilteredNavigationConfig(userTier);
+
+  // Check cloud storage connection status
+  useEffect(() => {
+    const checkCloudStorage = async () => {
+      try {
+        const connection = await CloudStorageService.getPrimaryConnection();
+        if (connection) {
+          setCloudStorageStatus(connection.isActive ? 'connected' : 'warning');
+          setCloudProvider(connection.provider);
+          setCloudLastSync(connection.lastSyncAt ? new Date(connection.lastSyncAt) : undefined);
+        } else {
+          setCloudStorageStatus('disconnected');
+          setCloudProvider(undefined);
+          setCloudLastSync(undefined);
+        }
+      } catch (error) {
+        console.error('Failed to check cloud storage:', error);
+        setCloudStorageStatus('disconnected');
+      }
+    };
+
+    checkCloudStorage();
+    // Check periodically (every 5 minutes)
+    const interval = setInterval(checkCloudStorage, 5 * 60 * 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   // Handle scroll for navbar styling
   useEffect(() => {
@@ -172,7 +212,16 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         setModalState(prev => ({ ...prev, createMatter: true }));
         break;
       case 'create-proforma':
-        setModalState(prev => ({ ...prev, createProForma: true }));
+        // Navigate to pro forma page instead of opening modal
+        handlePageNavigation('proforma-requests');
+        break;
+      case 'invite-attorney':
+        // Navigate to firms page - InviteAttorneyModal is already integrated there
+        handlePageNavigation('firms');
+        toast('Use the "Invite Attorney" button on the Firms page', { 
+          duration: 3000,
+          icon: '👋' 
+        });
         break;
       case 'quick-invoice':
       case 'create-invoice':
@@ -299,6 +348,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                 const isActive = activePage === category.page;
                 const isHovered = navigationState.hoveredCategory === category.id;
                 
+                // Get notification count for this category
+                const notificationCount = category.id === 'matters' ? notificationCounts.matters :
+                                         category.id === 'firms' ? notificationCounts.firms : 0;
+                
                 return (
                   <div
                     key={category.id}
@@ -318,6 +371,13 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                     >
                       {React.createElement(category.icon, { className: "w-4 h-4 lg:w-5 lg:h-5" })}
                       <span className="hidden lg:inline">{category.label}</span>
+                      {notificationCount > 0 && (
+                        <NotificationBadge 
+                          count={notificationCount} 
+                          variant="warning"
+                          size="sm"
+                        />
+                      )}
                       <ChevronDown className={`w-3 h-3 lg:w-4 lg:h-4 transition-transform duration-200 ${
                         navigationState.megaMenuOpen && navigationState.activeCategory === category.id ? 'rotate-180' : ''
                       }`} />
@@ -359,6 +419,16 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
               </Button>
 
               {/* Notifications - Removed per user request */}
+
+              {/* Cloud Storage Indicator */}
+              <div className="hidden md:block">
+                <CloudStorageIndicator
+                  status={cloudStorageStatus}
+                  provider={cloudProvider}
+                  lastSync={cloudLastSync}
+                  onClick={() => navigate('/settings')}
+                />
+              </div>
 
               {/* Theme Toggle - Desktop only */}
               <div className="hidden md:block">
@@ -455,6 +525,8 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           userTier={userTier}
           activePage={navigationState.activePage}
           onClose={closeMobileMenu}
+          notificationCounts={notificationCounts}
+          cloudStorageStatus={cloudStorageStatus}
         />
       )}
 
@@ -497,8 +569,8 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         />
       )}
 
-      {/* TODO: Replace with SimpleProFormaModal or remove if obsolete */}
-      {/* CreateProFormaModal has been deleted */}
+      {/* Note: Create Pro Forma now navigates directly to Pro Forma Requests page */}
+      {/* InviteAttorneyModal is integrated in FirmsPage component */}
 
       {modalState.generateInvoice && (
         <GenerateInvoiceModal

@@ -5,7 +5,7 @@ import { FormInput } from '../../components/ui/FormInput';
 import { Button } from '../../components/ui/Button';
 import { toast } from 'react-hot-toast';
 import type { Firm } from '../../types/financial.types';
-import { CheckCircle, AlertCircle, Building } from 'lucide-react';
+import { AlertCircle, Building } from 'lucide-react';
 
 export const AttorneyRegisterPage: React.FC = () => {
   const [searchParams] = useSearchParams();
@@ -140,8 +140,13 @@ export const AttorneyRegisterPage: React.FC = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center p-4">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-mpondo-gold-500 mx-auto mb-4"></div>
+        <div className="text-center" role="status" aria-live="polite">
+          <div 
+            className="animate-spin rounded-full h-12 w-12 border-b-2 border-mpondo-gold-500 mx-auto mb-4"
+            aria-label="Loading"
+          >
+            <span className="sr-only">Verifying invitation...</span>
+          </div>
           <p className="text-neutral-600 dark:text-neutral-400">Verifying invitation...</p>
         </div>
       </div>
@@ -151,8 +156,12 @@ export const AttorneyRegisterPage: React.FC = () => {
   if (error) {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-white dark:bg-metallic-gray-900 rounded-lg shadow-lg p-8 text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+        <div 
+          className="max-w-md w-full bg-white dark:bg-metallic-gray-900 rounded-lg shadow-lg p-8 text-center"
+          role="alert"
+          aria-live="assertive"
+        >
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" aria-hidden="true" />
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             Invalid Invitation
           </h2>
@@ -171,23 +180,30 @@ export const AttorneyRegisterPage: React.FC = () => {
     <div className="min-h-screen bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full bg-white dark:bg-metallic-gray-900 rounded-lg shadow-lg p-8">
         {/* Progress Indicator */}
-        <div className="mb-6">
+        <div className="mb-8" role="status" aria-label="Step 1 of 2: Register">
           <div className="flex items-center justify-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
-            <span className="flex items-center gap-1">
-              <span className="w-6 h-6 rounded-full bg-mpondo-gold-500 text-white flex items-center justify-center text-xs font-bold">1</span>
-              Register
+            <span className="flex items-center gap-2">
+              <span 
+                className="w-8 h-8 rounded-full bg-judicial-blue-600 dark:bg-judicial-blue-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm"
+                aria-current="step"
+              >
+                1
+              </span>
+              <span className="font-medium">Register</span>
             </span>
-            <span className="w-8 h-px bg-neutral-300 dark:bg-neutral-600"></span>
-            <span className="flex items-center gap-1 opacity-50">
-              <span className="w-6 h-6 rounded-full border-2 border-neutral-300 dark:border-neutral-600 flex items-center justify-center text-xs font-bold">2</span>
-              Submit Matter
+            <span className="w-12 h-0.5 bg-neutral-300 dark:bg-neutral-600" aria-hidden="true"></span>
+            <span className="flex items-center gap-2 opacity-50">
+              <span className="w-8 h-8 rounded-full border-2 border-neutral-300 dark:border-neutral-600 flex items-center justify-center text-sm font-semibold">2</span>
+              <span className="font-medium">Submit Matter</span>
             </span>
           </div>
         </div>
 
         {/* Welcome Message */}
         <div className="text-center mb-8">
-          <Building className="w-12 h-12 text-mpondo-gold-500 mx-auto mb-3" />
+          <div className="p-3 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 rounded-full w-fit mx-auto mb-4">
+            <Building className="w-12 h-12 text-judicial-blue-600 dark:text-judicial-blue-400" aria-hidden="true" />
+          </div>
           <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             Welcome, {firmData?.firm_name}!
           </h1>
@@ -197,7 +213,7 @@ export const AttorneyRegisterPage: React.FC = () => {
         </div>
 
         {/* Registration Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-4" aria-label="Attorney registration form">
           <FormInput
             label="Attorney Name"
             type="text"
@@ -237,7 +253,11 @@ export const AttorneyRegisterPage: React.FC = () => {
             required
             placeholder="At least 8 characters"
             helperText="Use at least 8 characters with a mix of letters and numbers"
+            aria-describedby="password-requirements"
           />
+          <span id="password-requirements" className="sr-only">
+            Password must be at least 8 characters with a mix of letters and numbers
+          </span>
 
           <FormInput
             label="Confirm Password"
@@ -249,12 +269,13 @@ export const AttorneyRegisterPage: React.FC = () => {
             placeholder="Re-enter your password"
           />
 
-          <div className="pt-4">
+          <div className="pt-6">
             <Button
               type="submit"
               variant="primary"
               size="lg"
-              className="w-full"
+              fullWidth
+              loading={submitting}
               disabled={submitting}
             >
               {submitting ? 'Creating Account...' : 'Create Account & Continue'}

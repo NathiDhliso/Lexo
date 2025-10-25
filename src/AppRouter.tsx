@@ -1,4 +1,4 @@
-import React, { Suspense } from 'react';
+import React, { Suspense, lazy } from 'react';
 import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
@@ -9,26 +9,27 @@ import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { NavigationBar } from './components/navigation';
 import { UserTier, Page } from './types'
 
-import {
-  DashboardPage,
-  MattersPage,
-  InvoicesPage,
-  ProfilePage,
-  SettingsPage,
-  ProFormaRequestsPage,
-  PartnerApprovalPage,
-  NotificationsPage,
-  AuditTrailPage,
-  ReportsPage,
-  DisputesPage,
-  CreditNotesPage,
-  AttorneyRegisterPage,
-  SubmitMatterRequestPage
-} from './pages';
+// Lazy load all page components for better performance
+// Dashboard and critical pages are eager loaded for faster initial render
+import { DashboardPage } from './pages';
 
-import ProFormaRequestPage from './pages/ProFormaRequestPage';
-import MatterWorkbenchPage from './pages/MatterWorkbenchPage';
-import FirmsPage from './pages/FirmsPage';
+// Lazy load heavy pages
+const MattersPage = lazy(() => import('./pages/MattersPage'));
+const InvoicesPage = lazy(() => import('./pages/InvoicesPage'));
+const ProfilePage = lazy(() => import('./pages/ProfilePage'));
+const SettingsPage = lazy(() => import('./pages/SettingsPage'));
+const ProFormaRequestsPage = lazy(() => import('./pages/ProFormaRequestsPage').then(m => ({ default: m.ProFormaRequestsPage })));
+const PartnerApprovalPage = lazy(() => import('./pages/partner/PartnerApprovalPage').then(m => ({ default: m.PartnerApprovalPage })));
+const NotificationsPage = lazy(() => import('./pages/NotificationsPage'));
+const AuditTrailPage = lazy(() => import('./pages/AuditTrailPage'));
+const ReportsPage = lazy(() => import('./pages/ReportsPage'));
+const DisputesPage = lazy(() => import('./pages/DisputesPage'));
+const CreditNotesPage = lazy(() => import('./pages/CreditNotesPage'));
+const AttorneyRegisterPage = lazy(() => import('./pages/attorney/AttorneyRegisterPage').then(m => ({ default: m.AttorneyRegisterPage })));
+const SubmitMatterRequestPage = lazy(() => import('./pages/attorney/SubmitMatterRequestPage').then(m => ({ default: m.SubmitMatterRequestPage })));
+const ProFormaRequestPage = lazy(() => import('./pages/ProFormaRequestPage'));
+const MatterWorkbenchPage = lazy(() => import('./pages/MatterWorkbenchPage'));
+const FirmsPage = lazy(() => import('./pages/FirmsPage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {

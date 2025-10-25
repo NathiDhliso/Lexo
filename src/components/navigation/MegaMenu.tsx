@@ -12,7 +12,7 @@ import { UserTier } from '../../types';
 
 interface MegaMenuProps {
   category: NavigationCategory;
-  onItemClick: (page: Page) => void;
+  onItemClick: (page: Page, hash?: string) => void;
   onActionClick?: (action: string) => void;
   userTier: UserTier;
   className?: string;
@@ -20,14 +20,14 @@ interface MegaMenuProps {
 
 interface MegaMenuItemProps {
   item: NavigationItem;
-  onItemClick: (page: Page) => void;
+  onItemClick: (page: Page, hash?: string) => void;
   onActionClick?: (action: string) => void;
   userTier: UserTier;
 }
 
 interface MegaMenuSectionProps {
   section: NavigationSection;
-  onItemClick: (page: Page) => void;
+  onItemClick: (page: Page, hash?: string) => void;
   onActionClick?: (action: string) => void;
   userTier: UserTier;
 }
@@ -48,7 +48,7 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
       if (item.action && onActionClick) {
         onActionClick(item.action);
       } else if (item.page) {
-        onItemClick(item.page);
+        onItemClick(item.page, item.hash);
       }
     }
   };
@@ -59,7 +59,7 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
       if (item.action && onActionClick) {
         onActionClick(item.action);
       } else if (item.page) {
-        onItemClick(item.page);
+        onItemClick(item.page, item.hash);
       }
     }
   };
@@ -141,7 +141,7 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
             variant="outline"
             size="sm"
             className="text-xs"
-            onClick={(e) => {
+            onClick={(e: React.MouseEvent) => {
               e.stopPropagation();
               // Handle upgrade flow
             }}
@@ -191,7 +191,7 @@ const MegaMenuSection: React.FC<MegaMenuSectionProps> = ({
 // Featured items component
 const FeaturedItems: React.FC<{
   items: NavigationItem[];
-  onItemClick: (page: Page) => void;
+  onItemClick: (page: Page, hash?: string) => void;
   onActionClick?: (action: string) => void;
   userTier: UserTier;
 }> = ({ items, onItemClick, onActionClick, userTier }) => {
@@ -226,7 +226,7 @@ const FeaturedItems: React.FC<{
                   if (item.action && onActionClick) {
                     onActionClick(item.action);
                   } else if (item.page) {
-                    onItemClick(item.page);
+                    onItemClick(item.page, item.hash);
                   }
                 }
               }}

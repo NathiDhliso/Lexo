@@ -51,29 +51,33 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
         boxShadow: 'none',
         padding: 0,
       },
-      // Success toast styling
+      // Success toast styling - using status-success colors
       success: {
         duration: 4000,
         iconTheme: {
-          primary: '#22c55e',
+          primary: '#22c55e', // status-success-600
           secondary: '#fff',
         },
       },
-      // Error toast styling
+      // Error toast styling - using status-error colors
       error: {
         duration: 5000,
         iconTheme: {
-          primary: '#ef4444',
+          primary: '#dc2626', // status-error-600
           secondary: '#fff',
         },
       },
-      // Loading toast styling
+      // Loading toast styling - using judicial-blue colors
       loading: {
         duration: Infinity,
         iconTheme: {
-          primary: '#1E3A8A',
+          primary: '#2563eb', // judicial-blue-600
           secondary: '#fff',
         },
+      },
+      // Custom styling for different toast types
+      custom: {
+        duration: 4000,
       },
     },
   };
