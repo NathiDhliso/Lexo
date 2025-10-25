@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MoreVertical, Mail, Settings, Eye } from 'lucide-react';
+import { MoreVertical, Settings, Eye } from 'lucide-react';
 import { Button } from '../ui/Button';
 
 interface FirmAction {
@@ -11,14 +11,12 @@ interface FirmAction {
 }
 
 interface FirmActionsMenuProps {
-  onInviteAttorney: () => void;
   onManageFirm: () => void;
   onViewMatters: () => void;
   className?: string;
 }
 
 export const FirmActionsMenu: React.FC<FirmActionsMenuProps> = ({
-  onInviteAttorney,
   onManageFirm,
   onViewMatters,
   className = '',
@@ -27,15 +25,6 @@ export const FirmActionsMenu: React.FC<FirmActionsMenuProps> = ({
   const menuRef = useRef<HTMLDivElement>(null);
 
   const actions: FirmAction[] = [
-    {
-      id: 'invite',
-      label: 'Invite Attorney',
-      icon: <Mail className="w-4 h-4" />,
-      onClick: () => {
-        onInviteAttorney();
-        setIsOpen(false);
-      },
-    },
     {
       id: 'manage',
       label: 'Manage Firm',

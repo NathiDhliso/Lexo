@@ -598,6 +598,57 @@ export class MatterApiService extends BaseApiService<Matter> {
     toast.success('Matter request submitted successfully');
     return matter as Matter;
   }
+
+  /**
+   * Quick add active matter (for phone/email accepted matters)
+   */
+  async createActiveMatter(data: {
+    title: string;
+    instructing_firm: string;
+    instructing_attorney: string;
+    instructing_attorney_email: string;
+    instructing_attorney_phone?: string;
+    client_name?: string;
+    description: string;
+    matter_type: string;
+    urgency?: 'low' | 'standard' | 'high';
+  }): Promise<Matter> {
+    // Get current user (advocate)
+    const { data: { user }, error: userError } = await supabase.auth.getUser();
+    if (userError || !user) {
+      toast.error('User not authenticated');
+      throw new Error('User not authenticated');
+    }
+    
+    // Create matter with status 'active' immediately
+    const { data: matter, error: matterError } = await supabase
+      .from('matters')
+      .insert({
+        advocate_id: user.id,
+        title: data.title,
+        description: data.description,
+        matter_type: data.matter_type,
+        urgency: data.urgency || 'standard',
+        status: 'active', // ← Key difference from createMatterRequest
+        client_name: data.client_name || data.instructing_attorney,
+        client_email: data.instructing_attorney_email,
+        instructing_attorney: data.instructing_attorney,
+        instructing_attorney_email: data.instructing_attorney_email,
+        instructing_attorney_phone: data.instructing_attorney_phone,
+        instructing_firm: data.instructing_firm
+      })
+      .select()
+      .single();
+    
+    if (matterError) {
+      console.error('Error creating active matter:', matterError);
+      toast.error('Failed to create matter');
+      throw matterError;
+    }
+    
+    toast.success('Matter created and activated successfully!');
+    return matter as Matter;
+  }
 }
 
 // Export singleton instance

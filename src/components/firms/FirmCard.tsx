@@ -18,7 +18,7 @@ interface FirmCardProps {
   firm: Firm;
   attorneys?: Attorney[];
   activeMattersCount?: number;
-  onInviteAttorney: (firm: Firm) => void;
+  onAddAttorney: (firm: Firm) => void;
   onManageFirm: (firm: Firm) => void;
   onViewMatters: (firm: Firm) => void;
   onClick?: (firm: Firm) => void;
@@ -29,7 +29,7 @@ export const FirmCard: React.FC<FirmCardProps> = ({
   firm,
   attorneys = [],
   activeMattersCount = 0,
-  onInviteAttorney,
+  onAddAttorney,
   onManageFirm,
   onViewMatters,
   onClick,
@@ -89,7 +89,6 @@ export const FirmCard: React.FC<FirmCardProps> = ({
 
           {/* Actions Menu */}
           <FirmActionsMenu
-            onInviteAttorney={() => onInviteAttorney(firm)}
             onManageFirm={() => onManageFirm(firm)}
             onViewMatters={() => onViewMatters(firm)}
           />
@@ -150,11 +149,11 @@ export const FirmCard: React.FC<FirmCardProps> = ({
             size="sm"
             onClick={(e) => {
               e.stopPropagation();
-              onInviteAttorney(firm);
+              onAddAttorney(firm);
             }}
             className="flex-1 min-w-[120px]"
           >
-            Invite Attorney
+            Add Attorney
           </Button>
           <Button
             variant="secondary"
