@@ -1,84 +1,71 @@
 /**
  * Quick Brief Template Service
- * Manages advocate-specific templates for Quick Brief Capture feature
- * Handles template CRUD, usage tracking, and import/export functionality
+ * Handles CRUD operations for advocate quick brief templates
  */
 
 import { BaseApiService, type ApiResponse } from './base-api.service';
 import { supabase } from '../../lib/supabase';
 import { toast } from 'react-hot-toast';
+import type { TemplateItem, TemplateCategory, TemplateExport, TemplateImportResult } from '../../types/quick-brief.types';
 
-export type TemplateCategory = 
-  | 'matter_title'
-  | 'work_type'
-  | 'practice_area'
-  | 'urgency_preset'
-  | 'issue_template';
-
-export interface QuickBriefTemplate {
-  id: string;
-  advocate_id: string | null;
-  category: TemplateCategory;
-  value: string;
-  usage_count: number;
-  last_used_at: string | null;
-  is_custom: boolean;
-  created_at: string;
-  updated_at: string;
-}
-
-export interface TemplateExportData {
-  version: string;
-  exported_at: string;
-  templates: QuickBriefTemplate[];
-}
-
-export interface TemplateImportResult {
-  imported: number;
-  skipped: number;
-  errors: string[];
-}
-
-/**
- * Quick Brief Template Service
- * Extends BaseApiService for consistent error handling
- */
-export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate> {
+export class QuickBriefTemplateService extends BaseApiService<TemplateItem> {
   constructor() {
     super('advocate_quick_templates', '*');
   }
 
   /**
-   * Get templates by category for the current advocate
-   * Merges system defaults with custom templates
-   * Sorts by usage count (most used first)
+   * Get all templates for advocate by category, merged with system defaults
+   * System templates are shown first (alphabetically), then custom templates (by usage count)
    */
   async getTemplatesByCategory(
     advocateId: string,
     category: TemplateCategory
-  ): Promise<ApiResponse<QuickBriefTemplate[]>> {
+  ): Promise<ApiResponse<TemplateItem[]>> {
     const requestId = this.generateRequestId();
 
     try {
-      const { data, error } = await supabase
+      // Fetch advocate's custom templates
+      const { data: customTemplates, error: customError } = await supabase
         .from(this.tableName)
         .select(this.selectFields)
-        .or(`advocate_id.eq.${advocateId},advocate_id.is.null`)
+        .eq('advocate_id', advocateId)
         .eq('category', category)
-        .order('usage_count', { ascending: false })
-        .order('value', { ascending: true });
+        .order('usage_count', { ascending: false });
 
-      if (error) {
+      if (customError) {
         return {
           data: null,
-          error: this.transformError(error, requestId)
+          error: this.transformError(customError, requestId)
         };
       }
 
+      // Fetch system defaults
+      const { data: systemTemplates, error: systemError } = await supabase
+        .from(this.tableName)
+        .select(this.selectFields)
+        .eq('advocate_id', 'system')
+        .eq('category', category)
+        .order('value', { ascending: true });
+
+      if (systemError) {
+        return {
+          data: null,
+          error: this.transformError(systemError, requestId)
+        };
+      }
+
+      // Merge and deduplicate (custom templates take precedence)
+      const customValues = new Set((customTemplates || []).map(t => t.value.toLowerCase()));
+      const uniqueSystemTemplates = (systemTemplates || []).filter(
+        t => !customValues.has(t.value.toLowerCase())
+      );
+
+      // Combine: system templates first (alphabetically), then custom (by usage)
+      const merged = [...uniqueSystemTemplates, ...(customTemplates || [])];
+
       return {
-        data: data as QuickBriefTemplate[],
-        error: null,
-        count: data?.length
+        data: merged,
+        error: null
       };
     } catch (error) {
       return {
@@ -89,35 +76,74 @@ export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate
   }
 
   /**
-   * Upsert a template (add new or increment usage count for existing)
-   * Used when advocate selects a template during Quick Brief Capture
+   * Get all templates for advocate across all categories
+   */
+  async getAllTemplates(advocateId: string): Promise<ApiResponse<Record<TemplateCategory, TemplateItem[]>>> {
+    const categories: TemplateCategory[] = [
+      'matter_title',
+      'work_type',
+      'practice_area',
+      'urgency_preset',
+      'issue_template'
+    ];
+
+    const requestId = this.generateRequestId();
+
+    try {
+      const result: Record<string, TemplateItem[]> = {};
+
+      for (const category of categories) {
+        const response = await this.getTemplatesByCategory(advocateId, category);
+        if (response.error) {
+          return {
+            data: null,
+            error: response.error
+          };
+        }
+        result[category] = response.data || [];
+      }
+
+      return {
+        data: result as Record<TemplateCategory, TemplateItem[]>,
+        error: null
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: this.transformError(error as Error, requestId)
+      };
+    }
+  }
+
+  /**
+   * Add or update template (upsert with usage count increment)
    */
   async upsertTemplate(
     advocateId: string,
     category: TemplateCategory,
     value: string
-  ): Promise<ApiResponse<QuickBriefTemplate>> {
+  ): Promise<ApiResponse<TemplateItem>> {
     const requestId = this.generateRequestId();
 
     try {
-      // Check if template already exists for this advocate
-      const { data: existing, error: selectError } = await supabase
+      // Check if template already exists
+      const { data: existing, error: fetchError } = await supabase
         .from(this.tableName)
-        .select('*')
+        .select(this.selectFields)
         .eq('advocate_id', advocateId)
         .eq('category', category)
         .eq('value', value)
         .maybeSingle();
 
-      if (selectError) {
+      if (fetchError) {
         return {
           data: null,
-          error: this.transformError(selectError, requestId)
+          error: this.transformError(fetchError, requestId)
         };
       }
 
       if (existing) {
-        // Update existing template: increment usage count and update last_used_at
+        // Increment usage count
         const { data: updated, error: updateError } = await supabase
           .from(this.tableName)
           .update({
@@ -125,7 +151,7 @@ export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate
             last_used_at: new Date().toISOString()
           })
           .eq('id', existing.id)
-          .select()
+          .select(this.selectFields)
           .single();
 
         if (updateError) {
@@ -136,12 +162,12 @@ export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate
         }
 
         return {
-          data: updated as QuickBriefTemplate,
+          data: updated,
           error: null
         };
       } else {
-        // Create new custom template
-        const { data: created, error: insertError } = await supabase
+        // Create new template
+        const { data: created, error: createError } = await supabase
           .from(this.tableName)
           .insert({
             advocate_id: advocateId,
@@ -151,18 +177,18 @@ export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate
             last_used_at: new Date().toISOString(),
             is_custom: true
           })
-          .select()
+          .select(this.selectFields)
           .single();
 
-        if (insertError) {
+        if (createError) {
           return {
             data: null,
-            error: this.transformError(insertError, requestId)
+            error: this.transformError(createError, requestId)
           };
         }
 
         return {
-          data: created as QuickBriefTemplate,
+          data: created,
           error: null
         };
       }
@@ -175,39 +201,39 @@ export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate
   }
 
   /**
-   * Delete a custom template
-   * Only allows deletion of custom templates (not system defaults)
+   * Delete custom template (system templates cannot be deleted)
    */
   async deleteTemplate(templateId: string): Promise<ApiResponse<void>> {
     const requestId = this.generateRequestId();
 
     try {
-      // Verify it's a custom template before deleting
-      const { data: template, error: selectError } = await supabase
+      // Verify it's a custom template
+      const { data: template, error: fetchError } = await supabase
         .from(this.tableName)
-        .select('is_custom')
+        .select('is_custom, advocate_id')
         .eq('id', templateId)
         .single();
 
-      if (selectError) {
+      if (fetchError) {
         return {
           data: null,
-          error: this.transformError(selectError, requestId)
+          error: this.transformError(fetchError, requestId)
         };
       }
 
-      if (!template.is_custom) {
+      if (!template.is_custom || template.advocate_id === 'system') {
         return {
           data: null,
           error: {
-            type: 'VALIDATION_ERROR' as const,
-            message: 'Cannot delete system default templates',
+            type: 'VALIDATION_ERROR' as any,
+            message: 'Cannot delete system templates',
             timestamp: new Date(),
             requestId
           }
         };
       }
 
+      // Delete the template
       const { error: deleteError } = await supabase
         .from(this.tableName)
         .delete()
@@ -220,9 +246,8 @@ export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate
         };
       }
 
-      toast.success('Template deleted successfully');
       return {
-        data: null,
+        data: undefined as void,
         error: null
       };
     } catch (error) {
@@ -234,151 +259,74 @@ export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate
   }
 
   /**
-   * Export all custom templates for an advocate to JSON
-   * Excludes system defaults (advocate_id is null)
+   * Export templates to JSON
    */
-  async exportTemplates(advocateId: string): Promise<ApiResponse<TemplateExportData>> {
-    const requestId = this.generateRequestId();
+  async exportTemplates(advocateId: string): Promise<string> {
+    const categories: TemplateCategory[] = [
+      'matter_title',
+      'work_type',
+      'practice_area',
+      'urgency_preset',
+      'issue_template'
+    ];
 
-    try {
-      const { data, error } = await supabase
-        .from(this.tableName)
-        .select('*')
-        .eq('advocate_id', advocateId)
-        .eq('is_custom', true)
-        .order('category', { ascending: true })
-        .order('value', { ascending: true });
+    const exportData: TemplateExport = {
+      exported_at: new Date().toISOString(),
+      advocate_id: advocateId
+    };
 
-      if (error) {
-        return {
-          data: null,
-          error: this.transformError(error, requestId)
-        };
+    for (const category of categories) {
+      const response = await this.getTemplatesByCategory(advocateId, category);
+      if (response.data) {
+        // Only export custom templates
+        exportData[category] = response.data.filter(t => t.is_custom);
       }
-
-      const exportData: TemplateExportData = {
-        version: '1.0',
-        exported_at: new Date().toISOString(),
-        templates: data as QuickBriefTemplate[]
-      };
-
-      return {
-        data: exportData,
-        error: null
-      };
-    } catch (error) {
-      return {
-        data: null,
-        error: this.transformError(error as Error, requestId)
-      };
     }
+
+    return JSON.stringify(exportData, null, 2);
   }
 
   /**
-   * Import templates from JSON file
-   * Validates structure and merges with existing templates
-   * Handles conflicts by keeping existing templates (no overwrite)
+   * Import templates from JSON
    */
   async importTemplates(
     advocateId: string,
-    importData: TemplateExportData
+    jsonData: string
   ): Promise<ApiResponse<TemplateImportResult>> {
     const requestId = this.generateRequestId();
-    const result: TemplateImportResult = {
-      imported: 0,
-      skipped: 0,
-      errors: []
-    };
 
     try {
-      // Validate import data structure
-      if (!importData.version || !importData.templates || !Array.isArray(importData.templates)) {
-        return {
-          data: null,
-          error: {
-            type: 'VALIDATION_ERROR' as const,
-            message: 'Invalid import data structure',
-            timestamp: new Date(),
-            requestId
+      const importData: TemplateExport = JSON.parse(jsonData);
+      let imported = 0;
+      let skipped = 0;
+      const errors: string[] = [];
+
+      const categories: TemplateCategory[] = [
+        'matter_title',
+        'work_type',
+        'practice_area',
+        'urgency_preset',
+        'issue_template'
+      ];
+
+      for (const category of categories) {
+        const templates = importData[category];
+        if (!templates || !Array.isArray(templates)) continue;
+
+        for (const template of templates) {
+          try {
+            await this.upsertTemplate(advocateId, category, template.value);
+            imported++;
+          } catch (error) {
+            console.error(`Failed to import template: ${template.value}`, error);
+            errors.push(`Failed to import "${template.value}": ${(error as Error).message}`);
+            skipped++;
           }
-        };
-      }
-
-      // Validate version compatibility (currently only v1.0)
-      if (importData.version !== '1.0') {
-        return {
-          data: null,
-          error: {
-            type: 'VALIDATION_ERROR' as const,
-            message: `Unsupported import version: ${importData.version}`,
-            timestamp: new Date(),
-            requestId
-          }
-        };
-      }
-
-      // Get existing templates for conflict detection
-      const { data: existingTemplates } = await supabase
-        .from(this.tableName)
-        .select('category, value')
-        .eq('advocate_id', advocateId);
-
-      const existingSet = new Set(
-        existingTemplates?.map(t => `${t.category}:${t.value}`) || []
-      );
-
-      // Process each template
-      for (const template of importData.templates) {
-        try {
-          // Validate required fields
-          if (!template.category || !template.value) {
-            result.errors.push(`Skipped invalid template: ${JSON.stringify(template)}`);
-            result.skipped++;
-            continue;
-          }
-
-          // Check for conflicts
-          const key = `${template.category}:${template.value}`;
-          if (existingSet.has(key)) {
-            result.skipped++;
-            continue;
-          }
-
-          // Insert new template
-          const { error: insertError } = await supabase
-            .from(this.tableName)
-            .insert({
-              advocate_id: advocateId,
-              category: template.category,
-              value: template.value,
-              usage_count: 0,
-              is_custom: true
-            });
-
-          if (insertError) {
-            result.errors.push(`Failed to import "${template.value}": ${insertError.message}`);
-            result.skipped++;
-          } else {
-            result.imported++;
-          }
-        } catch (error) {
-          result.errors.push(`Error processing template: ${(error as Error).message}`);
-          result.skipped++;
         }
       }
 
-      if (result.imported > 0) {
-        toast.success(`Imported ${result.imported} template(s)`);
-      }
-      if (result.skipped > 0) {
-        toast.info(`Skipped ${result.skipped} duplicate/invalid template(s)`);
-      }
-      if (result.errors.length > 0) {
-        console.warn('Import errors:', result.errors);
-      }
-
       return {
-        data: result,
+        data: { imported, skipped, errors: errors.length > 0 ? errors : undefined },
         error: null
       };
     } catch (error) {
@@ -390,83 +338,84 @@ export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate
   }
 
   /**
-   * Get all templates for an advocate (for settings page)
-   * Includes both custom and system defaults
+   * Get most used templates across all categories
    */
-  async getAllTemplates(advocateId: string): Promise<ApiResponse<QuickBriefTemplate[]>> {
-    const requestId = this.generateRequestId();
-
-    try {
-      const { data, error } = await supabase
+  async getMostUsedTemplates(
+    advocateId: string,
+    limit: number = 10
+  ): Promise<ApiResponse<TemplateItem[]>> {
+    return this.executeQuery(async () => {
+      return supabase
         .from(this.tableName)
-        .select('*')
-        .or(`advocate_id.eq.${advocateId},advocate_id.is.null`)
-        .order('category', { ascending: true })
+        .select(this.selectFields)
+        .eq('advocate_id', advocateId)
+        .eq('is_custom', true)
         .order('usage_count', { ascending: false })
-        .order('value', { ascending: true });
-
-      if (error) {
-        return {
-          data: null,
-          error: this.transformError(error, requestId)
-        };
-      }
-
-      return {
-        data: data as QuickBriefTemplate[],
-        error: null,
-        count: data?.length
-      };
-    } catch (error) {
-      return {
-        data: null,
-        error: this.transformError(error as Error, requestId)
-      };
-    }
+        .limit(limit);
+    });
   }
 
   /**
-   * Update a template's value
-   * Only allows updating custom templates
+   * Get recently used templates
    */
-  async updateTemplate(
+  async getRecentlyUsedTemplates(
+    advocateId: string,
+    limit: number = 10
+  ): Promise<ApiResponse<TemplateItem[]>> {
+    return this.executeQuery(async () => {
+      return supabase
+        .from(this.tableName)
+        .select(this.selectFields)
+        .eq('advocate_id', advocateId)
+        .eq('is_custom', true)
+        .not('last_used_at', 'is', null)
+        .order('last_used_at', { ascending: false })
+        .limit(limit);
+    });
+  }
+
+  /**
+   * Update template value
+   */
+  async updateTemplateValue(
     templateId: string,
-    value: string
-  ): Promise<ApiResponse<QuickBriefTemplate>> {
+    newValue: string
+  ): Promise<ApiResponse<TemplateItem>> {
     const requestId = this.generateRequestId();
 
     try {
       // Verify it's a custom template
-      const { data: template, error: selectError } = await supabase
+      const { data: template, error: fetchError } = await supabase
         .from(this.tableName)
-        .select('is_custom')
+        .select('is_custom, advocate_id')
         .eq('id', templateId)
         .single();
 
-      if (selectError) {
+      if (fetchError) {
         return {
           data: null,
-          error: this.transformError(selectError, requestId)
+          error: this.transformError(fetchError, requestId)
         };
       }
 
-      if (!template.is_custom) {
+      if (!template.is_custom || template.advocate_id === 'system') {
         return {
           data: null,
           error: {
-            type: 'VALIDATION_ERROR' as const,
-            message: 'Cannot edit system default templates',
+            type: 'VALIDATION_ERROR' as any,
+            message: 'Cannot edit system templates',
             timestamp: new Date(),
             requestId
           }
         };
       }
 
+      // Update the template
       const { data: updated, error: updateError } = await supabase
         .from(this.tableName)
-        .update({ value })
+        .update({ value: newValue })
         .eq('id', templateId)
-        .select()
+        .select(this.selectFields)
         .single();
 
       if (updateError) {
@@ -476,9 +425,36 @@ export class QuickBriefTemplateService extends BaseApiService<QuickBriefTemplate
         };
       }
 
-      toast.success('Template updated successfully');
       return {
-        data: updated as QuickBriefTemplate,
+        data: updated,
+        error: null
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: this.transformError(error as Error, requestId)
+      };
+    }
+  }
+
+  /**
+   * Batch update template usage (for when multiple templates are used in one operation)
+   */
+  async batchUpdateUsage(
+    advocateId: string,
+    updates: { category: TemplateCategory; value: string }[]
+  ): Promise<ApiResponse<void>> {
+    const requestId = this.generateRequestId();
+
+    try {
+      const promises = updates.map(({ category, value }) =>
+        this.upsertTemplate(advocateId, category, value)
+      );
+
+      await Promise.all(promises);
+
+      return {
+        data: undefined as void,
         error: null
       };
     } catch (error) {

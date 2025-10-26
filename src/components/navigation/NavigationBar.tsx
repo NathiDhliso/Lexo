@@ -382,7 +382,10 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   // Subscribe to notifications
   useEffect(() => {
-    const unsubscribeBadges = smartNotificationsService.subscribeToBadges(setNotificationBadges);
+    const unsubscribeBadges = smartNotificationsService.subscribeToBadges((badge) => {
+      // Wrap single badge in array for compatibility
+      setNotificationBadges([badge]);
+    });
     const unsubscribeNotifications = smartNotificationsService.subscribe(setNotifications);
 
     return () => {
@@ -402,8 +405,9 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   // Get notification badge for a category
   const getCategoryBadge = (categoryPage?: Page) => {
-    if (!categoryPage) return null;
-    return notificationBadges.find(badge => badge.page === categoryPage);
+    if (!categoryPage || notificationBadges.length === 0) return null;
+    // Return the global badge (no per-page filtering for now)
+    return notificationBadges[0];
   };
 
   return (
@@ -466,8 +470,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                           className={`inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-medium rounded-full ${
                             badge.hasUrgent 
                               ? 'bg-status-error-500 text-white' 
-                              : badge.highestPriority >= 7
-                              ? 'bg-status-warning-500 text-white'
                               : 'bg-mpondo-gold-500 text-white'
                           }`}
                           aria-label={`${badge.count} notifications`}
