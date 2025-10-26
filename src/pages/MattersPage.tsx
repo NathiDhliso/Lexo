@@ -17,7 +17,8 @@ import {
   FileText,
   Info,
   CheckCircle,
-  X
+  X,
+  Phone
 } from 'lucide-react';
 import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
 import { SkeletonMatterCard } from '../components/design-system/components';
@@ -29,6 +30,7 @@ import { AcceptBriefModal } from '../components/matters/AcceptBriefModal';
 import { RequestScopeAmendmentModal } from '../components/matters/RequestScopeAmendmentModal';
 import { SimpleFeeEntryModal } from '../components/matters/SimpleFeeEntryModal';
 import { QuickAddMatterModal, type QuickAddMatterData } from '../components/matters/QuickAddMatterModal';
+import { QuickBriefCaptureModal } from '../components/matters/quick-brief/QuickBriefCaptureModal';
 import { MatterSearchBar } from '../components/matters/MatterSearchBar';
 import { AdvancedFiltersModal } from '../components/matters/AdvancedFiltersModal';
 import { NotificationBadge } from '../components/navigation/NotificationBadge';
@@ -62,6 +64,8 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [showRequestInfoModal, setShowRequestInfoModal] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showQuickAddModal, setShowQuickAddModal] = useState(false);
+  const [showQuickBriefModal, setShowQuickBriefModal] = useState(false);
+  const [firms, setFirms] = useState<any[]>([]);
   
   // TIER 1 & TIER 2 Feature modals
   const [showScopeAmendmentModal, setShowScopeAmendmentModal] = useState(false);
@@ -245,9 +249,29 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     }
   }, [loading, isAuthenticated, user?.id, searchFilters]);
 
+  // Load firms for Quick Brief Capture
+  const loadFirms = React.useCallback(async () => {
+    if (!user?.id) return;
+    
+    try {
+      const { data, error } = await supabase
+        .from('firms')
+        .select('*')
+        .eq('advocate_id', user.id)
+        .order('name');
+      
+      if (!error && data) {
+        setFirms(data);
+      }
+    } catch (error) {
+      console.error('Error loading firms:', error);
+    }
+  }, [user?.id]);
+
   React.useEffect(() => {
     loadFilterOptions();
-  }, [loadFilterOptions]);
+    loadFirms();
+  }, [loadFilterOptions, loadFirms]);
 
   React.useEffect(() => {
     fetchMatters();
@@ -635,6 +659,14 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           >
             <Download className="w-4 h-4" />
             <span>Export CSV</span>
+          </Button>
+          <Button 
+            variant="secondary" 
+            onClick={() => setShowQuickBriefModal(true)}
+            className="flex items-center space-x-2"
+          >
+            <Phone className="w-4 h-4" />
+            <span>Quick Brief</span>
           </Button>
           <Button 
             variant="primary" 
@@ -1215,6 +1247,17 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         onApply={handleApplyFilters}
         currentFilters={searchFilters}
         filterOptions={filterOptions}
+      />
+
+      {/* Quick Brief Capture Modal (Path B) */}
+      <QuickBriefCaptureModal
+        isOpen={showQuickBriefModal}
+        onClose={() => setShowQuickBriefModal(false)}
+        onSuccess={(matterId) => {
+          fetchMatters();
+          navigate(`/matter-workbench/${matterId}`);
+        }}
+        firms={firms}
       />
     </div>
   );

@@ -1358,13 +1358,13 @@ export class InvoiceService {
 
   // Helper: Validate status transitions
   private static isValidStatusTransition(from: InvoiceStatus, to: InvoiceStatus): boolean {
-    const validTransitions: Record<InvoiceStatus, InvoiceStatus[]> = {
-      'Draft': ['Sent', 'Unpaid'],
-      'Sent': ['Paid', 'Overdue', 'Unpaid'],
-      'Unpaid': ['Paid', 'Overdue', 'Sent'],
-      'Overdue': ['Paid', 'Unpaid'],
-      'Paid': [], // No transitions from paid
-      'Pending': ['Draft', 'Sent', 'Unpaid']
+    const validTransitions: Partial<Record<InvoiceStatus, InvoiceStatus[]>> = {
+      [InvoiceStatus.DRAFT]: [InvoiceStatus.SENT, InvoiceStatus.VIEWED],
+      [InvoiceStatus.SENT]: [InvoiceStatus.PAID, InvoiceStatus.OVERDUE, InvoiceStatus.VIEWED],
+      [InvoiceStatus.VIEWED]: [InvoiceStatus.PAID, InvoiceStatus.OVERDUE],
+      [InvoiceStatus.OVERDUE]: [InvoiceStatus.PAID, InvoiceStatus.WRITTEN_OFF],
+      [InvoiceStatus.PAID]: [], // No transitions from paid
+      [InvoiceStatus.PRO_FORMA]: [InvoiceStatus.DRAFT, InvoiceStatus.CONVERTED]
     };
 
     return validTransitions[from]?.includes(to) ?? false;

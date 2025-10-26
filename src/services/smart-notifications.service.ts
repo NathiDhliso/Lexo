@@ -1,13 +1,13 @@
 export interface NotificationAction {
   label: string;
-  action: () => void;
+  action: 'navigate' | 'api_call' | 'dismiss' | 'snooze' | string;
   target?: string;
   parameters?: Record<string, any>;
 }
 
 export interface SmartNotification {
   id: string;
-  type: 'info' | 'warning' | 'error' | 'success';
+  type: 'info' | 'warning' | 'error' | 'success' | 'urgent' | 'attention';
   title: string;
   message: string;
   timestamp: Date;

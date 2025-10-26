@@ -1,0 +1,79 @@
+
+> vite-react-typescript-starter@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+
+src/components/disbursements/DisbursementsTable.tsx(62,7): error TS2353: Object literal may only specify known properties, and 'confirmVariant' does not exist in type 'ConfirmationOptions'.
+src/components/disbursements/EditDisbursementModal.tsx(258,15): error TS2322: Type '{ children: string; type: "submit"; variant: "primary"; disabled: boolean; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'. Did you mean 'loading'?
+src/components/disbursements/LogDisbursementModal.tsx(268,15): error TS2322: Type '{ children: string; type: "submit"; variant: "primary"; disabled: boolean; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'. Did you mean 'loading'?
+src/components/invoices/MatterTimeEntriesView.tsx(57,22): error TS2345: Argument of type 'TimeEntry[]' is not assignable to parameter of type 'SetStateAction<TimeEntry[]>'.
+  Type 'import("C:/Users/nathi/Downloads/LexoHub/src/types/index").TimeEntry[]' is not assignable to type 'TimeEntry[]'.
+    Type 'import("C:/Users/nathi/Downloads/LexoHub/src/types/index").TimeEntry' is not assignable to type 'TimeEntry'.
+      Types of property 'amount' are incompatible.
+        Type 'number | null' is not assignable to type 'number'.
+          Type 'null' is not assignable to type 'number'.
+src/components/invoices/PaymentTrackingDashboard.tsx(268,39): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/components/invoices/PaymentTrackingDashboard.tsx(384,35): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/components/invoices/UnifiedInvoiceWizard.tsx(105,22): error TS2345: Argument of type 'TimeEntry[]' is not assignable to parameter of type 'SetStateAction<TimeEntryItem[]>'.
+  Type 'TimeEntry[]' is not assignable to type 'TimeEntryItem[]'.
+    Type 'TimeEntry' is not assignable to type 'TimeEntryItem'.
+      Types of property 'amount' are incompatible.
+        Type 'number | null' is not assignable to type 'number'.
+          Type 'null' is not assignable to type 'number'.
+src/components/matters/EditMatterModal.tsx(86,63): error TS2345: Argument of type '{ title: string; matter_type: string; description: string; client_name: string; client_email: string; client_phone: string; client_address: string; instructing_attorney: string; instructing_firm: string; instructing_attorney_email: string; instructing_attorney_phone: string; estimated_fee: number; status: string; }' is not assignable to parameter of type 'Partial<Matter>'.
+  Types of property 'status' are incompatible.
+    Type 'string' is not assignable to type 'MatterStatus | undefined'.
+src/components/matters/MatterCard.tsx(232,47): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(18,15): error TS2305: Module '"../../../types"' has no exported member 'Firm'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(164,52): error TS2345: Argument of type '{ category: "work_type"; value: string; }' is not assignable to parameter of type 'never'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(165,56): error TS2345: Argument of type '{ category: "practice_area"; value: string; }' is not assignable to parameter of type 'never'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(166,57): error TS2345: Argument of type '{ category: "issue_template"; value: string; }' is not assignable to parameter of type 'never'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(187,54): error TS2345: Argument of type '{ advocate_id: string; firm_id: string; title: string; matter_type: string; practice_area: string | undefined; description: string; deadline: string; status: "active"; creation_source: string; is_quick_create: boolean; urgency: UrgencyLevel | undefined; }' is not assignable to parameter of type 'Partial<Matter>'.
+  Types of property 'status' are incompatible.
+    Type '"active"' is not assignable to type 'MatterStatus | undefined'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(531,15): error TS2322: Type '"outline"' is not assignable to type '"primary" | "secondary" | "ghost" | "success" | "danger" | undefined'.
+src/components/matters/workbench/WorkbenchServicesTab.tsx(154,11): error TS2322: Type '{ isOpen: true; onClose: () => void; matterId: string; onSuccess: () => void; }' is not assignable to type 'IntrinsicAttributes & LogServiceModalProps'.
+  Property 'onSuccess' does not exist on type 'IntrinsicAttributes & LogServiceModalProps'.
+src/components/onboarding/OnboardingChecklist.tsx(48,56): error TS2339: Property 'getPreferences' does not exist on type 'UserPreferencesService'.
+src/components/onboarding/OnboardingChecklist.tsx(232,56): error TS2339: Property 'getPreferences' does not exist on type 'UserPreferencesService'.
+src/components/onboarding/OnboardingChecklist.tsx(236,36): error TS2551: Property 'updatePreferences' does not exist on type 'UserPreferencesService'. Did you mean 'bulkUpdatePreferences'?
+src/components/onboarding/OnboardingChecklist.tsx(248,56): error TS2339: Property 'getPreferences' does not exist on type 'UserPreferencesService'.
+src/components/onboarding/OnboardingChecklist.tsx(249,36): error TS2551: Property 'updatePreferences' does not exist on type 'UserPreferencesService'. Did you mean 'bulkUpdatePreferences'?
+src/components/onboarding/OnboardingChecklist.tsx(265,56): error TS2339: Property 'getPreferences' does not exist on type 'UserPreferencesService'.
+src/components/onboarding/OnboardingChecklist.tsx(266,36): error TS2551: Property 'updatePreferences' does not exist on type 'UserPreferencesService'. Did you mean 'bulkUpdatePreferences'?
+src/components/pricing/RateCardSelector.tsx(707,16): error TS2741: Property 'children' is missing in type '{}' but required in type 'CardProps'.
+src/components/retainer/RetainerDashboard.tsx(21,46): error TS2576: Property 'getByMatterId' does not exist on type 'RetainerService'. Did you mean to access the static member 'RetainerService.getByMatterId' instead?
+src/components/retainer/RetainerDashboard.tsx(23,51): error TS2576: Property 'getSummary' does not exist on type 'RetainerService'. Did you mean to access the static member 'RetainerService.getSummary' instead?
+src/hooks/useEnhancedDashboard.ts(70,37): error TS2554: Expected 1 arguments, but got 0.
+src/hooks/useEnhancedDashboard.ts(134,37): error TS2554: Expected 1 arguments, but got 0.
+src/hooks/useEnhancedDashboard.ts(177,37): error TS2339: Property 'getActiveMatters' does not exist on type 'DashboardService'.
+src/hooks/useEnhancedDashboard.ts(194,37): error TS2554: Expected 1 arguments, but got 0.
+src/hooks/useEnhancedDashboard.ts(237,37): error TS2554: Expected 1 arguments, but got 0.
+src/hooks/useEnhancedDashboard.ts(253,37): error TS2554: Expected 1 arguments, but got 0.
+src/hooks/useEnhancedDashboard.ts(297,9): error TS2322: Type '{ urgentAttention: UrgentAttentionItem[] | { deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }; thisWeekDeadlines: any; financialSnapshot: FinancialSnapshot | { ...; }; activeMatters: any; pendingActions: PendingActions; quickStats: QuickStats | { ...; }; } | undefined' is not assignable to type 'DashboardMetrics | undefined'.
+  Type '{ urgentAttention: UrgentAttentionItem[] | { deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }; thisWeekDeadlines: any; financialSnapshot: FinancialSnapshot | { ...; }; activeMatters: any; pendingActions: PendingActions; quickStats: QuickStats | { ...; }; }' is not assignable to type 'DashboardMetrics'.
+    Types of property 'urgentAttention' are incompatible.
+      Type 'UrgentAttentionItem[] | { deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }' is not assignable to type '{ deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }'.
+        Type 'UrgentAttentionItem[]' is missing the following properties from type '{ deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }': deadlinesToday, overdue45Days, pendingProformas5Days
+src/hooks/useEnhancedDashboard.ts(305,48): error TS2339: Property 'count' does not exist on type 'ThisWeekDeadline[]'.
+src/hooks/useEnhancedDashboard.ts(386,39): error TS2554: Expected 1 arguments, but got 0.
+src/hooks/useEnhancedDashboard.ts(392,39): error TS2554: Expected 1 arguments, but got 0.
+src/hooks/useEnhancedDashboard.ts(398,39): error TS2339: Property 'getActiveMatters' does not exist on type 'DashboardService'.
+src/hooks/useEnhancedDashboard.ts(404,39): error TS2554: Expected 1 arguments, but got 0.
+src/services/api/invoices.service.ts(1587,5): error TS2740: Type '{ id: string; invoiceNumber: string; matterId: string; matterTitle: string; clientName: string; amount: number; vatAmount: number; totalAmount: number; dateIssued: string; dateDue: string; ... 12 more ...; paymentReference: string | null; }' is missing the following properties from type 'Invoice': matter_id, advocate_id, invoice_number, fees_amount, and 14 more.
+src/services/api/matter-api.service.ts(145,17): error TS2304: Cannot find name 'ErrorType'.
+src/services/api/partner-approval.service.ts(213,39): error TS2339: Property 'full_name' does not exist on type '{ full_name: any; }[]'.
+src/services/api/retainer.service.ts(68,9): error TS2353: Object literal may only specify known properties, and 'notes' does not exist in type '{ advocate_id: string; auto_renew?: boolean | null | undefined; billing_period?: string | null | undefined; can_fund_multiple_matters?: boolean | null | undefined; client_id?: string | null | undefined; ... 15 more ...; updated_at?: string | undefined; }'.
+src/services/api/retainer.service.ts(111,9): error TS2353: Object literal may only specify known properties, and 'retainer_id' does not exist in type '{ advocate_id: string; amount: number; balance_after: number; balance_before: number; created_at?: string | undefined; deleted_at?: string | null | undefined; description: string; id?: string | undefined; ... 6 more ...; transaction_type: string; }'.
+src/services/api/retainer.service.ts(167,9): error TS2353: Object literal may only specify known properties, and 'retainer_id' does not exist in type '{ advocate_id: string; amount: number; balance_after: number; balance_before: number; created_at?: string | undefined; deleted_at?: string | null | undefined; description: string; id?: string | undefined; ... 6 more ...; transaction_type: string; }'.
+src/services/api/retainer.service.ts(225,9): error TS2353: Object literal may only specify known properties, and 'retainer_id' does not exist in type '{ advocate_id: string; amount: number; balance_after: number; balance_before: number; created_at?: string | undefined; deleted_at?: string | null | undefined; description: string; id?: string | undefined; ... 6 more ...; transaction_type: string; }'.
+src/services/api/scope-amendment.service.ts(46,9): error TS2353: Object literal may only specify known properties, and 'original_timeline_days' does not exist in type '{ advocate_id: string; amendment_type: string; approved_at?: string | null | undefined; client_approved_at?: string | null | undefined; client_notified_at?: string | null | undefined; ... 15 more ...; variance_percentage?: number | ... 1 more ... | undefined; }'.

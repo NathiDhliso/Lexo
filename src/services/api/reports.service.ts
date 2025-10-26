@@ -21,18 +21,25 @@ export interface WIPReportData {
     client: string;
     unbilledAmount: number;
     hours: number;
+    disbursements?: number;
+    daysInWIP?: number;
   }>;
   totalUnbilled: number;
+  totalDisbursements?: number;
 }
 
 export interface RevenueReportData {
   totalRevenue: number;
+  creditNotes?: number;
+  netRevenue?: number;
   paidInvoices: number;
   unpaidInvoices: number;
+  paymentRate?: number;
   breakdown: Array<{
     period: string;
     amount: number;
     invoicedAmount?: number;
+    creditNotes?: number;
   }>;
 }
 
@@ -46,6 +53,32 @@ export interface PipelineReportData {
     status: string;
     value: number;
   }>;
+}
+
+export interface OutstandingFeesReportData {
+  invoices: Array<{
+    id: string;
+    invoiceId: string;
+    client: string;
+    attorney: string;
+    totalAmount: number;
+    amountPaid: number;
+    outstandingBalance: number;
+    dueDate: string;
+    invoiceDate: string;
+    daysOverdue: number;
+    agingBracket: string;
+    paymentStatus: string;
+    paymentProgress?: number;
+  }>;
+  totalOutstanding: number;
+  agingBrackets: {
+    current: number;
+    days0to30: number;
+    days31to60: number;
+    days61to90: number;
+    days90plus: number;
+  };
 }
 
 class ReportsService {
@@ -94,9 +127,10 @@ class ReportsService {
 
       if (error) throw error;
 
-      // Get time entries for each matter to calculate hours
-      const mattersWithHours = await Promise.all(
+      // Get time entries and disbursements for each matter
+      const mattersWithDetails = await Promise.all(
         (matters || []).map(async (matter) => {
+          // Get unbilled time entries
           const { data: timeEntries } = await supabase
             .from('time_entries')
             .select('hours_worked')
@@ -105,32 +139,54 @@ class ReportsService {
 
           const totalHours = timeEntries?.reduce((sum, entry) => sum + (entry.hours_worked || 0), 0) || 0;
 
+          // Get unbilled disbursements (NEW!)
+          const { data: disbursements } = await supabase
+            .from('disbursements')
+            .select('amount, vat_amount')
+            .eq('matter_id', matter.id)
+            .is('invoice_id', null); // Only unbilled disbursements
+
+          const totalDisbursements = disbursements?.reduce(
+            (sum, d) => sum + d.amount + (d.vat_amount || 0), 
+            0
+          ) || 0;
+
+          // Calculate days in WIP (NEW!)
+          const createdDate = new Date(matter.created_at);
+          const today = new Date();
+          const daysInWIP = Math.floor((today.getTime() - createdDate.getTime()) / (1000 * 60 * 60 * 24));
+
           return {
             id: matter.id,
             name: matter.title,
             client: matter.client_name,
-            unbilledAmount: matter.wip_value || 0,
-            hours: totalHours
+            unbilledAmount: (matter.wip_value || 0) + totalDisbursements,
+            hours: totalHours,
+            disbursements: totalDisbursements,
+            daysInWIP
           };
         })
       );
 
-      const totalUnbilled = mattersWithHours.reduce((sum, m) => sum + m.unbilledAmount, 0);
+      const totalUnbilled = mattersWithDetails.reduce((sum, m) => sum + m.unbilledAmount, 0);
+      const totalDisbursements = mattersWithDetails.reduce((sum, m) => sum + (m.disbursements || 0), 0);
 
       return {
-        matters: mattersWithHours,
-        totalUnbilled
+        matters: mattersWithDetails,
+        totalUnbilled,
+        totalDisbursements
       };
     } catch (error) {
       console.warn('Failed to fetch real WIP data, using mock:', error);
       // Fallback to mock data
       const mockData: WIPReportData = {
         matters: [
-          { id: '1', name: 'Smith v. Jones', client: 'John Smith', unbilledAmount: 15000, hours: 45 },
-          { id: '2', name: 'Estate Planning - Brown', client: 'Sarah Brown', unbilledAmount: 8500, hours: 28 },
-          { id: '3', name: 'Contract Review - Tech Corp', client: 'Tech Corp Ltd', unbilledAmount: 22000, hours: 67 },
+          { id: '1', name: 'Smith v. Jones', client: 'John Smith', unbilledAmount: 15000, hours: 45, disbursements: 1200, daysInWIP: 12 },
+          { id: '2', name: 'Estate Planning - Brown', client: 'Sarah Brown', unbilledAmount: 8500, hours: 28, disbursements: 500, daysInWIP: 8 },
+          { id: '3', name: 'Contract Review - Tech Corp', client: 'Tech Corp Ltd', unbilledAmount: 22000, hours: 67, disbursements: 2300, daysInWIP: 21 },
         ],
         totalUnbilled: 45500,
+        totalDisbursements: 4000,
       };
       return mockData;
     }
@@ -177,9 +233,26 @@ class ReportsService {
 
       if (invoicesError) throw invoicesError;
 
-      // Group payments by month
+      // Get credit notes (NEW!)
+      let creditNotesQuery = supabase
+        .from('credit_notes')
+        .select('amount, created_at, status')
+        .eq('advocate_id', user.id)
+        .eq('status', 'applied'); // Only applied credit notes
+
+      if (filters.startDate) {
+        creditNotesQuery = creditNotesQuery.gte('created_at', filters.startDate);
+      }
+      if (filters.endDate) {
+        creditNotesQuery = creditNotesQuery.lte('created_at', filters.endDate);
+      }
+
+      const { data: creditNotes } = await creditNotesQuery;
+
+      // Group payments, invoices, and credit notes by month
       const paymentsByMonth: { [key: string]: number } = {};
       const invoicesByMonth: { [key: string]: number } = {};
+      const creditNotesByMonth: { [key: string]: number } = {};
 
       (payments || []).forEach((payment: any) => {
         const date = new Date(payment.payment_date);
@@ -193,24 +266,46 @@ class ReportsService {
         invoicesByMonth[monthKey] = (invoicesByMonth[monthKey] || 0) + invoice.total_amount;
       });
 
-      // Create breakdown with both payments received and invoiced amounts
-      const allMonths = new Set([...Object.keys(paymentsByMonth), ...Object.keys(invoicesByMonth)]);
+      (creditNotes || []).forEach((cn: any) => {
+        const date = new Date(cn.created_at);
+        const monthKey = `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
+        creditNotesByMonth[monthKey] = (creditNotesByMonth[monthKey] || 0) + cn.amount;
+      });
+
+      // Create breakdown with payments, invoices, and credit notes
+      const allMonths = new Set([
+        ...Object.keys(paymentsByMonth), 
+        ...Object.keys(invoicesByMonth),
+        ...Object.keys(creditNotesByMonth)
+      ]);
+      
       const breakdown = Array.from(allMonths).map(month => ({
         period: month,
         amount: paymentsByMonth[month] || 0,
-        invoicedAmount: invoicesByMonth[month] || 0
+        invoicedAmount: invoicesByMonth[month] || 0,
+        creditNotes: creditNotesByMonth[month] || 0
       })).sort((a, b) => {
         const dateA = new Date(a.period);
         const dateB = new Date(b.period);
         return dateA.getTime() - dateB.getTime();
       });
 
+      // Calculate totals (NEW!)
       const totalRevenue = (payments || []).reduce((sum: number, p: any) => sum + p.amount, 0);
+      const totalCreditNotes = (creditNotes || []).reduce((sum: number, cn: any) => sum + cn.amount, 0);
+      const netRevenue = totalRevenue - totalCreditNotes;
+      
+      const totalInvoiced = (invoices || []).reduce((sum: number, inv: any) => sum + inv.total_amount, 0);
+      const paymentRate = totalInvoiced > 0 ? (totalRevenue / totalInvoiced) * 100 : 0;
+
       const paidInvoices = (invoices || []).filter((inv: any) => inv.payment_status === 'paid').length;
       const unpaidInvoices = (invoices || []).filter((inv: any) => inv.payment_status === 'unpaid' || inv.payment_status === 'partially_paid').length;
 
       return {
         totalRevenue,
+        creditNotes: totalCreditNotes,
+        netRevenue,
+        paymentRate,
         paidInvoices,
         unpaidInvoices,
         breakdown
@@ -220,13 +315,16 @@ class ReportsService {
       // Fallback to mock data
       const mockData: RevenueReportData = {
         totalRevenue: 125000,
+        creditNotes: 5000,
+        netRevenue: 120000,
+        paymentRate: 79.2,
         paidInvoices: 15,
         unpaidInvoices: 5,
         breakdown: [
-          { period: 'Jan 2024', amount: 25000 },
-          { period: 'Feb 2024', amount: 30000 },
-          { period: 'Mar 2024', amount: 28000 },
-          { period: 'Apr 2024', amount: 42000 },
+          { period: 'Jan 2024', amount: 25000, invoicedAmount: 28000, creditNotes: 1000 },
+          { period: 'Feb 2024', amount: 30000, invoicedAmount: 35000, creditNotes: 1500 },
+          { period: 'Mar 2024', amount: 28000, invoicedAmount: 32000, creditNotes: 1000 },
+          { period: 'Apr 2024', amount: 42000, invoicedAmount: 50000, creditNotes: 1500 },
         ],
       };
       return mockData;
@@ -275,7 +373,11 @@ class ReportsService {
     return this.callRPC('generate_time_entry_report', filters, mockData);
   }
 
-  async generateOutstandingInvoicesReport(filters: ReportFilter): Promise<any> {
+  /**
+   * Generate Outstanding Fees Report with partial payment tracking
+   * NEW: Enhanced with payment progress and aging brackets
+   */
+  async generateOutstandingFeesReport(filters: ReportFilter): Promise<OutstandingFeesReportData> {
     try {
       // Try to get real data from database
       const { data: { user } } = await supabase.auth.getUser();
@@ -332,6 +434,11 @@ class ReportsService {
           agingBracket = '0-30 days';
         }
 
+        // Calculate payment progress (NEW!)
+        const paymentProgress = invoice.total_amount > 0
+          ? ((invoice.amount_paid || 0) / invoice.total_amount) * 100
+          : 0;
+
         return {
           id: invoice.invoice_number,
           invoiceId: invoice.id,
@@ -340,13 +447,12 @@ class ReportsService {
           totalAmount: invoice.total_amount,
           amountPaid: invoice.amount_paid || 0,
           outstandingBalance: invoice.outstanding_balance,
-          amount: invoice.outstanding_balance, // For backward compatibility
           dueDate: invoice.date_due,
           invoiceDate: invoice.invoice_date,
           daysOverdue,
           agingBracket,
           paymentStatus: invoice.payment_status,
-          status: invoice.status
+          paymentProgress
         };
       });
 
@@ -365,47 +471,56 @@ class ReportsService {
         invoices: formattedInvoices,
         totalOutstanding,
         agingBrackets
-      };
+      } as OutstandingFeesReportData;
     } catch (error) {
       console.warn('Failed to fetch real outstanding invoices data, using mock:', error);
       // Fallback to mock data
-      const mockData = {
+      const mockData: OutstandingFeesReportData = {
         invoices: [
           { 
-            id: 'INV-001', 
+            id: 'INV-2025-001', 
+            invoiceId: '1',
             client: 'Tech Corp', 
+            attorney: 'Smith & Associates',
             totalAmount: 15000,
             amountPaid: 0,
             outstandingBalance: 15000,
-            amount: 15000, 
             dueDate: '2024-04-30', 
+            invoiceDate: '2024-04-15',
             daysOverdue: 0,
             agingBracket: 'Current',
-            paymentStatus: 'unpaid'
+            paymentStatus: 'unpaid',
+            paymentProgress: 0
           },
           { 
-            id: 'INV-002', 
+            id: 'INV-2025-002', 
+            invoiceId: '2',
             client: 'John Smith', 
+            attorney: 'Jones Inc',
             totalAmount: 10000,
             amountPaid: 1500,
             outstandingBalance: 8500,
-            amount: 8500, 
             dueDate: '2024-04-15', 
+            invoiceDate: '2024-04-01',
             daysOverdue: 15,
             agingBracket: '0-30 days',
-            paymentStatus: 'partially_paid'
+            paymentStatus: 'partially_paid',
+            paymentProgress: 15
           },
           { 
-            id: 'INV-003', 
+            id: 'INV-2025-003', 
+            invoiceId: '3',
             client: 'ABC Ltd', 
+            attorney: 'Brown & Co',
             totalAmount: 22000,
             amountPaid: 0,
             outstandingBalance: 22000,
-            amount: 22000, 
             dueDate: '2024-05-10', 
+            invoiceDate: '2024-04-25',
             daysOverdue: 0,
             agingBracket: 'Current',
-            paymentStatus: 'unpaid'
+            paymentStatus: 'unpaid',
+            paymentProgress: 0
           },
         ],
         totalOutstanding: 45500,
@@ -448,6 +563,13 @@ class ReportsService {
     };
     
     return this.callRPC('generate_profitability_report', filters, mockData);
+  }
+
+  /**
+   * Alias for backward compatibility
+   */
+  async generateOutstandingInvoicesReport(filters: ReportFilter): Promise<OutstandingFeesReportData> {
+    return this.generateOutstandingFeesReport(filters);
   }
 
   async generateCustomReport(filters: ReportFilter & { includeWIP?: boolean; includeInvoices?: boolean; includePayments?: boolean }): Promise<any> {

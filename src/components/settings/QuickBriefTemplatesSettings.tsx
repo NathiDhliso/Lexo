@@ -67,7 +67,11 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
         toast.error('Failed to load templates');
         return;
       }
-      setTemplates(response.data || []);
+      // Flatten the grouped templates into a single array
+      const flatTemplates = response.data 
+        ? Object.values(response.data).flat()
+        : [];
+      setTemplates(flatTemplates);
     } catch (error) {
       console.error('Error loading templates:', error);
       toast.error('Failed to load templates');
@@ -119,7 +123,7 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
   const handleSaveEdit = async () => {
     if (!editingId || !editValue.trim()) return;
 
-    const response = await quickBriefTemplateService.updateTemplate(editingId, editValue.trim());
+    const response = await quickBriefTemplateService.updateTemplate(editingId, { value: editValue.trim() });
     if (response.error) {
       toast.error('Failed to update template');
       return;
@@ -177,13 +181,8 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
 
   const handleExport = async () => {
     try {
-      const response = await quickBriefTemplateService.exportTemplates(advocateId);
-      if (response.error) {
-        toast.error('Failed to export templates');
-        return;
-      }
-
-      const dataStr = JSON.stringify(response.data, null, 2);
+      const dataStr = await quickBriefTemplateService.exportTemplates(advocateId);
+      
       const dataBlob = new Blob([dataStr], { type: 'application/json' });
       const url = URL.createObjectURL(dataBlob);
       const link = document.createElement('a');
@@ -216,7 +215,7 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
       }
 
       const result = response.data!;
-      if (result.errors.length > 0) {
+      if (result.errors && result.errors.length > 0) {
         console.warn('Import errors:', result.errors);
       }
 
@@ -263,7 +262,7 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
               onChange={handleImport}
               className="hidden"
             />
-            <Button variant="secondary" as="span">
+            <Button variant="secondary">
               <Upload className="w-4 h-4 mr-2" />
               Import
             </Button>

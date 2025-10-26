@@ -178,6 +178,7 @@ export class PDFTemplateHelper {
   ): number {
     const section = template.sections[sectionKey];
     let currentY = yPosition;
+    const sectionPadding = section.padding || 5;
 
     if (section.backgroundColor) {
       this.applyFillColor(doc, section.backgroundColor);
@@ -185,7 +186,7 @@ export class PDFTemplateHelper {
         template.pageMargins.left,
         currentY,
         pageWidth - template.pageMargins.left - template.pageMargins.right,
-        section.padding * 2,
+        sectionPadding * 2,
         'F'
       );
     }
@@ -197,11 +198,11 @@ export class PDFTemplateHelper {
         template.pageMargins.left,
         currentY,
         pageWidth - template.pageMargins.left - template.pageMargins.right,
-        section.padding * 2
+        sectionPadding * 2
       );
     }
 
-    currentY += section.padding;
+    currentY += sectionPadding;
 
     this.applyTextStyle(doc, section.titleStyle);
     doc.text(section.title, template.pageMargins.left + 5, currentY);
@@ -210,7 +211,7 @@ export class PDFTemplateHelper {
     this.applyTextStyle(doc, section.contentStyle);
     currentY = content();
 
-    currentY += section.padding;
+    currentY += sectionPadding;
 
     return currentY;
   }

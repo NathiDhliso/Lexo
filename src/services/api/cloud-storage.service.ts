@@ -1,11 +1,9 @@
-import { supabase } from '@/lib/supabase';
+import { supabase, supabaseUrl } from '@/lib/supabase';
 import { toast } from 'react-hot-toast';
 import type {
   CloudStorageConnection,
   CloudStorageProvider,
   CloudStorageAuthResponse,
-  CloudStorageUploadOptions,
-  CloudStorageSyncResult,
   CloudStorageQuota,
   CloudStorageLinkOptions,
   CloudStorageVerificationResult,
@@ -635,7 +633,7 @@ export class CloudStorageService {
 
       const folderId = folderPath === 'Root' || !folderPath ? 'root' : folderPath;
       
-      const response = await fetch(`${supabase.supabaseUrl}/functions/v1/google-drive-files?folderId=${folderId}`, {
+      const response = await fetch(`${supabaseUrl}/functions/v1/google-drive-files?folderId=${folderId}`, {
         headers: {
           'Authorization': `Bearer ${session.access_token}`,
           'Content-Type': 'application/json'

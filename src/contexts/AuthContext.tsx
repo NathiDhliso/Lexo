@@ -2,7 +2,7 @@
  * Authentication Context
  * Provides authentication state and methods throughout the application
  */
-import { createContext, useEffect, useState, ReactNode, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, ReactNode, useCallback } from 'react';
 import React from 'react';
 import { authService, type ExtendedUser, type UserMetadata } from '../services/auth.service';
 import { advocateService } from '../services/advocate.service';
@@ -294,6 +294,15 @@ const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Hook for using auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };
 
 // Export components and context for Fast Refresh compatibility

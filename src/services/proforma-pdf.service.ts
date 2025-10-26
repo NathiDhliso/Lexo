@@ -422,21 +422,22 @@ export class ProFormaPDFService {
       console.log('📊 Table data prepared:', tableData);
 
       // Apply table styling from template
+      const primaryColorHex = template?.colorScheme?.primary || '#DAA520';
       const tableStyle = template?.table || {
-        headerBackgroundColor: primaryColor,
+        headerBackgroundColor: primaryColorHex,
         headerTextColor: '#FFFFFF',
+        rowBackgroundColor: '#FFFFFF',
+        alternateRowColor: '#FAFAFA',
         showBorders: true,
         borderColor: '#C8C8C8',
-        borderStyle: 'solid',
-        rowBackgroundColor: '#FFFFFF',
-        alternateRowColor: '#FAFAFA'
+        borderStyle: 'solid'
       };
 
-      const headerBgColor = this.hexToRgb(tableStyle.headerBackgroundColor);
-      const headerTextColor = this.hexToRgb(tableStyle.headerTextColor);
-      const rowBgColor = this.hexToRgb(tableStyle.rowBackgroundColor);
-      const altRowColor = this.hexToRgb(tableStyle.alternateRowColor);
-      const borderColor = this.hexToRgb(tableStyle.borderColor);
+      const headerBgColor = this.hexToRgb(tableStyle.headerBackgroundColor || primaryColorHex);
+      const headerTextColor = this.hexToRgb(tableStyle.headerTextColor || '#FFFFFF');
+      const rowBgColor = this.hexToRgb(tableStyle.rowBackgroundColor || '#FFFFFF');
+      const altRowColor = this.hexToRgb(tableStyle.alternateRowColor || '#FAFAFA');
+      const borderColor = this.hexToRgb(tableStyle.borderColor || '#C8C8C8');
 
       autoTable(doc, {
         startY: yPosition,

@@ -4,7 +4,7 @@
  * Extends BaseApiService for consistent error handling and CRUD operations
  */
 
-import { BaseApiService, type ApiResponse, type FilterOptions, type PaginationOptions } from './base-api.service';
+import { BaseApiService, ErrorType, type ApiResponse, type FilterOptions, type PaginationOptions } from './base-api.service';
 import { supabase } from '@/lib/supabase';
 import { toast } from 'react-hot-toast';
 import type { Matter, MatterStatus, NewMatterForm } from '../../types';
@@ -142,8 +142,11 @@ export class MatterApiService extends BaseApiService<Matter> {
       return {
         data: null,
         error: {
+          type: ErrorType.AUTHENTICATION_ERROR,
           code: 'AUTHENTICATION_ERROR',
           message: 'User not authenticated',
+          timestamp: new Date(),
+          requestId: this.generateRequestId(),
           details: undefined
         }
       };
@@ -532,11 +535,6 @@ export class MatterApiService extends BaseApiService<Matter> {
     const paddedCount = count.toString().padStart(3, '0');
     
     return `${advocateInitials}${year}${paddedCount}`;
-  }
-
-  // Helper method to generate request ID (inherited from BaseApiService)
-  private generateRequestId(): string {
-    return `req_${Date.now()}_${Math.random().toString(36).substring(2)}`;
   }
 
   /**
