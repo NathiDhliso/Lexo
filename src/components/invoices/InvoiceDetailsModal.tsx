@@ -8,7 +8,8 @@ import {
   CheckCircle,
   AlertTriangle,
   Edit3,
-  X
+  X,
+  DollarSign
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Input } from '../design-system/components';
@@ -19,6 +20,8 @@ import { supabase } from '../../lib/supabase';
 import { toast } from 'react-hot-toast';
 import type { Invoice } from '../../types';
 import { InvoiceStatus } from '../../types';
+import { RecordPaymentModal } from './RecordPaymentModal';
+import { PaymentHistoryTable } from './PaymentHistoryTable';
 
 interface InvoiceDetailsModalProps {
   invoice: Invoice;
@@ -38,6 +41,8 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
   const [creditNoteAmount, setCreditNoteAmount] = useState('');
   const [creditNoteReason, setCreditNoteReason] = useState('');
   const [creditNoteCategory, setCreditNoteCategory] = useState<'billing_error' | 'service_issue' | 'client_dispute' | 'goodwill' | 'other'>('billing_error');
+  const [showRecordPaymentModal, setShowRecordPaymentModal] = useState(false);
+  const [paymentHistoryKey, setPaymentHistoryKey] = useState(0);
 
   const getStatusConfig = (status: InvoiceStatus) => {
     switch (status) {
@@ -121,6 +126,13 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
         .select('*')
         .eq('invoice_id', invoice.id);
 
+      // Fetch disbursements (new disbursements table)
+      const { data: disbursements } = await supabase
+        .from('disbursements')
+        .select('*')
+        .eq('invoice_id', invoice.id)
+        .is('deleted_at', null);
+
       const { data: services } = await supabase
         .from('matter_services')
         .select(`
@@ -136,11 +148,23 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
         `)
         .eq('matter_id', invoice.matterId || (invoice as any).matter_id);
 
+      // Combine old expenses and new disbursements for PDF display
+      const allExpenses = [
+        ...(expenses || []),
+        ...(disbursements || []).map(d => ({
+          id: d.id,
+          expense_date: d.date_incurred,
+          description: d.description,
+          category: d.vat_applicable ? 'Disbursement (incl. VAT)' : 'Disbursement',
+          amount: d.total_amount
+        }))
+      ];
+
       const invoiceWithDetails = {
         ...invoice,
         matter: matter || undefined,
         time_entries: timeEntries || [],
-        expenses: expenses || [],
+        expenses: allExpenses,
         services: services || [],
       };
 
@@ -456,7 +480,34 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
           )}
         </div>
 
-        {/* Payment History */}
+        {/* Payment History Section */}
+        <div className="border-t border-neutral-200 pt-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-medium text-neutral-900">Payment History</h3>
+            {invoice.status !== InvoiceStatus.PAID && invoice.balance_due > 0 && (
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setShowRecordPaymentModal(true)}
+                className="bg-mpondo-gold-600 hover:bg-mpondo-gold-700"
+              >
+                <DollarSign className="w-4 h-4 mr-2" />
+                Record Payment
+              </Button>
+            )}
+          </div>
+          
+          <PaymentHistoryTable 
+            key={paymentHistoryKey}
+            invoiceId={invoice.id} 
+            onPaymentChange={() => {
+              setPaymentHistoryKey(prev => prev + 1);
+              onInvoiceUpdated?.();
+            }}
+          />
+        </div>
+
+        {/* Reminder History */}
         {invoice.reminders_sent > 0 && (
           <div className="border-t border-neutral-200 pt-6">
             <h3 className="font-medium text-neutral-900 mb-4">Reminder History</h3>
@@ -609,6 +660,17 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
           </div>
         </div>
       )}
+
+      {/* Record Payment Modal */}
+      <RecordPaymentModal
+        isOpen={showRecordPaymentModal}
+        invoice={invoice}
+        onClose={() => setShowRecordPaymentModal(false)}
+        onSuccess={() => {
+          setPaymentHistoryKey(prev => prev + 1);
+          onInvoiceUpdated?.();
+        }}
+      />
     </Modal>
   );
 };

@@ -27,7 +27,7 @@ export interface PDFHeaderConfig {
   logoHeight?: number;
   logoOpacity?: number;
   logoRotation?: number;
-  logoPlacement: LogoPlacement;
+  logoPlacement?: LogoPlacement;
   showQRCode: boolean;
   qrCodeContent?: string;
   title: string;
@@ -39,15 +39,16 @@ export interface PDFHeaderConfig {
   borderColor?: string;
   borderStyle: 'solid' | 'dashed' | 'dotted';
   borderWidth: number;
+  secondaryBrandingUrl?: string;
 }
 
 export interface PDFFooterConfig {
-  showFooter: boolean;
+  showFooter?: boolean;
   text?: string;
   textStyle?: PDFTextStyle;
-  showPageNumbers: boolean;
-  showTimestamp: boolean;
-  showBankDetails: boolean;
+  showPageNumbers?: boolean;
+  showTimestamp?: boolean;
+  showBankDetails?: boolean;
   bankDetails?: {
     accountName: string;
     accountNumber: string;
@@ -55,28 +56,28 @@ export interface PDFFooterConfig {
     branchCode: string;
     swiftCode?: string;
   };
-  showDigitalSignature: boolean;
+  showDigitalSignature?: boolean;
   signatureImageUrl?: string;
-  showThankYouNote: boolean;
+  showThankYouNote?: boolean;
   thankYouText?: string;
-  showLegalDisclaimer: boolean;
+  showLegalDisclaimer?: boolean;
   disclaimerText?: string;
 }
 
 export interface PDFSectionConfig {
-  id: string;
+  id?: string;
   title: string;
   titleStyle: PDFTextStyle;
   contentStyle: PDFTextStyle;
   backgroundColor?: string;
-  showBorder: boolean;
+  showBorder?: boolean;
   borderColor?: string;
-  borderStyle: 'solid' | 'dashed' | 'dotted';
-  borderWidth: number;
-  padding: number;
-  order: number;
-  isCollapsible: boolean;
-  isVisible: boolean;
+  borderStyle?: 'solid' | 'dashed' | 'dotted';
+  borderWidth?: number;
+  padding?: number;
+  order?: number;
+  isCollapsible?: boolean;
+  isVisible?: boolean;
   customContent?: string;
 }
 
@@ -85,16 +86,16 @@ export interface PDFTableConfig {
   headerTextColor: string;
   rowBackgroundColor: string;
   alternateRowColor?: string;
-  borderColor: string;
-  borderStyle: 'solid' | 'dashed' | 'dotted';
-  borderWidth: number;
-  showBorders: boolean;
+  borderColor?: string;
+  borderStyle?: 'solid' | 'dashed' | 'dotted';
+  borderWidth?: number;
+  showBorders?: boolean;
   headerStyle: PDFTextStyle;
   cellStyle: PDFTextStyle;
   columnWidths?: number[];
   columnAlignments?: ('left' | 'center' | 'right')[];
-  highlightOverdue: boolean;
-  overdueColor: string;
+  highlightOverdue?: boolean;
+  overdueColor?: string;
 }
 
 export interface PDFTemplate {

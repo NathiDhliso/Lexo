@@ -14,16 +14,16 @@ interface QuickDisbursementModalProps {
 }
 
 const DISBURSEMENT_TYPES: { value: DisbursementType; label: string }[] = [
-  { value: 'court_fees', label: 'Court Fees' },
-  { value: 'filing_fees', label: 'Filing Fees' },
-  { value: 'expert_witness', label: 'Expert Witness' },
-  { value: 'travel', label: 'Travel' },
-  { value: 'accommodation', label: 'Accommodation' },
-  { value: 'courier', label: 'Courier' },
-  { value: 'photocopying', label: 'Photocopying' },
-  { value: 'research', label: 'Research' },
-  { value: 'translation', label: 'Translation' },
-  { value: 'other', label: 'Other' }
+  { value: 'court_fees' as DisbursementType, label: 'Court Fees' },
+  { value: 'filing_fees' as DisbursementType, label: 'Filing Fees' },
+  { value: 'expert_witness' as DisbursementType, label: 'Expert Witness' },
+  { value: 'travel' as DisbursementType, label: 'Travel' },
+  { value: 'accommodation' as DisbursementType, label: 'Accommodation' },
+  { value: 'courier' as DisbursementType, label: 'Courier' },
+  { value: 'photocopying' as DisbursementType, label: 'Photocopying' },
+  { value: 'research' as DisbursementType, label: 'Research' },
+  { value: 'translation' as DisbursementType, label: 'Translation' },
+  { value: 'other' as DisbursementType, label: 'Other' }
 ];
 
 export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
@@ -38,7 +38,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
     matter_id: matterId,
     description: '',
     amount: 0,
-    disbursement_type: 'other',
+    disbursement_type: 'other' as DisbursementType,
     payment_date: new Date().toISOString().split('T')[0],
     receipt_number: '',
     vendor_name: ''
@@ -108,7 +108,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
         matter_id: matterId,
         description: '',
         amount: 0,
-        disbursement_type: 'other',
+        disbursement_type: 'other' as DisbursementType,
         payment_date: new Date().toISOString().split('T')[0],
         receipt_number: '',
         vendor_name: ''
@@ -152,7 +152,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
               </label>
               <Select
                 value={formData.disbursement_type}
-                onChange={(e) => handleInputChange('disbursement_type', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => handleInputChange('disbursement_type', e.target.value)}
                 error={errors.disbursement_type}
                 disabled={isSubmitting}
               >
@@ -168,7 +168,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
               </label>
               <Textarea
                 value={formData.description}
-                onChange={(e) => handleInputChange('description', e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleInputChange('description', e.target.value)}
                 placeholder="e.g., Court filing fee for application"
                 rows={3}
                 error={errors.description}
@@ -187,7 +187,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
                     type="number"
                     step="0.01"
                     value={formData.amount}
-                    onChange={(e) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('amount', parseFloat(e.target.value) || 0)}
                     placeholder="0.00"
                     className="pl-10"
                     error={errors.amount}
@@ -203,7 +203,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
                 <Input
                   type="date"
                   value={formData.payment_date}
-                  onChange={(e) => handleInputChange('payment_date', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('payment_date', e.target.value)}
                   disabled={isSubmitting}
                 />
               </div>
@@ -216,7 +216,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
                 </label>
                 <Input
                   value={formData.receipt_number}
-                  onChange={(e) => handleInputChange('receipt_number', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('receipt_number', e.target.value)}
                   placeholder="Receipt or invoice number"
                   disabled={isSubmitting}
                 />
@@ -228,7 +228,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
                 </label>
                 <Input
                   value={formData.vendor_name}
-                  onChange={(e) => handleInputChange('vendor_name', e.target.value)}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange('vendor_name', e.target.value)}
                   placeholder="Vendor or service provider"
                   disabled={isSubmitting}
                 />

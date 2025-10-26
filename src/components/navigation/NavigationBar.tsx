@@ -5,11 +5,9 @@ import { Button, Icon } from '../design-system/components';
 import { MegaMenu } from './MegaMenu';
 import { MobileMegaMenu } from './MobileMegaMenu';
 import GlobalCommandBar from './GlobalCommandBar';
-import QuickActionsMenu from './QuickActionsMenu';
 import { RealTimeTicker, TickerItem } from './RealTimeTicker';
 import AlertsDropdown from '../notifications/AlertsDropdown';
 import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
-import { SimpleProFormaModal } from '../proforma/SimpleProFormaModal';
 
 import { navigationConfig, getFilteredNavigationConfig } from '../../config/navigation.config';
 import { useKeyboardShortcuts, useClickOutside } from '../../hooks';
@@ -54,7 +52,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   });
 
   const [commandBarOpen, setCommandBarOpen] = useState(false);
-  const [quickActionsOpen, setQuickActionsOpen] = useState(false);
   const [notificationBadges, setNotificationBadges] = useState<NotificationBadge[]>([]);
   const [notifications, setNotifications] = useState<SmartNotification[]>([]);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -70,7 +67,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   const navBarRef = useRef<HTMLElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const commandBarRef = useRef<HTMLDivElement>(null);
-  const quickActionsRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
   
   const { user, signOut } = useAuth();
@@ -146,7 +142,8 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         setModalState(prev => ({ ...prev, createMatter: true }));
         break;
       case 'create-proforma':
-        setModalState(prev => ({ ...prev, createProForma: true }));
+        handlePageNavigation('proforma-requests');
+        toast.success('Opening Pro Forma creation...');
         break;
       case 'create-invoice':
         setModalState(prev => ({ ...prev, createInvoice: true }));
@@ -218,43 +215,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
     }
   };
 
-  // Handle quick action execution
-  const handleQuickAction = (actionId: string) => {
-    switch (actionId) {
-      case 'create-proforma':
-        // Navigate to proforma requests page
-        handlePageNavigation('proforma-requests');
-        break;
-      
-      case 'add-matter':
-        // Show placeholder notification for add matter
-        toast.success('Add Matter feature coming soon!', {
-          duration: 3000,
-          position: 'top-right'
-        });
-        break;
-      
-      case 'analyze-brief':
-        // Show placeholder notification for brief analysis
-        toast.success('AI Brief Analysis feature coming soon!', {
-          duration: 3000,
-          position: 'top-right'
-        });
-        break;
-      
-      case 'quick-invoice':
-        // Show placeholder notification for quick invoice
-        toast.success('Quick Invoice feature coming soon!', {
-          duration: 3000,
-          position: 'top-right'
-        });
-        break;
-      
-      default:
-        break;
-    }
-  };
-
   // Handle mobile menu toggle
   const toggleMobileMenu = () => {
     setNavigationState(prev => ({
@@ -266,11 +226,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   // Handle command bar toggle
   const toggleCommandBar = () => {
     setCommandBarOpen(!commandBarOpen);
-  };
-
-  // Handle quick actions toggle
-  const toggleQuickActions = () => {
-    setQuickActionsOpen(!quickActionsOpen);
   };
 
   // Handle sign out
@@ -297,7 +252,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
   // Close all dropdowns
   const closeAllDropdowns = () => {
     setCommandBarOpen(false);
-    setQuickActionsOpen(false);
     setNavigationState(prev => ({
       ...prev,
       megaMenuOpen: false,
@@ -321,13 +275,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
       description: 'Open command bar'
     },
     {
-      key: 'n',
-      ctrlKey: true,
-      shiftKey: true,
-      action: toggleQuickActions,
-      description: 'Open quick actions'
-    },
-    {
       key: 'Escape',
       action: closeAllDropdowns,
       description: 'Close all menus'
@@ -336,7 +283,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
 
   // Click outside handlers
   useClickOutside(commandBarRef, () => setCommandBarOpen(false), commandBarOpen);
-  useClickOutside(quickActionsRef, () => setQuickActionsOpen(false), quickActionsOpen);
 
   // Keyboard navigation for categories
   const handleKeyDown = (event: React.KeyboardEvent, categoryId?: string) => {
@@ -423,10 +369,14 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         <div className="flex items-center justify-between h-16">
           {/* Logo and Brand */}
           <div className="flex items-center gap-8">
-            <div className="flex items-center gap-2">
+            <button
+              onClick={() => handlePageNavigation('dashboard')}
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              aria-label="Go to dashboard"
+            >
               <img src={lexoLogo} alt="LexoHub Logo" className="w-8 h-8 sm:w-9 sm:h-9 md:w-10 md:h-10 object-contain" style={{ background: 'transparent' }} />
               <span className="text-lg sm:text-xl font-bold text-neutral-900 dark:text-neutral-100">LexoHub</span>
-            </div>
+            </button>
 
             {/* Desktop Navigation Categories */}
             <div className="hidden lg:flex items-center space-x-1">
@@ -461,7 +411,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                       role={a11yProps.role}
                       tabIndex={a11yProps.tabIndex}
                     >
-                      <Icon icon={CategoryIcon} className="w-4 h-4" />
+                      <CategoryIcon className="w-4 h-4" />
                       <span>{category.label}</span>
                       
                       {/* Notification Badge */}
@@ -493,29 +443,24 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
           </div>
 
           {/* Right Side Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2">
+            {/* Search Button - Opens Command Bar */}
+            <button
+              onClick={toggleCommandBar}
+              className="hidden sm:flex items-center gap-2 px-3 py-2 text-sm text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 rounded-lg transition-colors"
+              aria-label="Search (Ctrl+K)"
+              title="Search (Ctrl+K)"
+            >
+              <Search className="w-4 h-4" />
+              <span className="hidden md:inline">Search...</span>
+              <kbd className="hidden md:inline-flex items-center px-1.5 py-0.5 text-xs font-mono bg-neutral-100 dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded">
+                ⌘K
+              </kbd>
+            </button>
+
             {/* Theme Toggle - Desktop Only */}
             <div className="hidden lg:block">
               <ThemeToggle />
-            </div>
-
-            {/* Global Command Bar */}
-            <div ref={commandBarRef}>
-              <GlobalCommandBar
-                onNavigate={handlePageNavigation}
-                onAction={(actionId: string) => {
-                  // Handle action execution
-                  console.log('Action executed:', actionId);
-                }}
-              />
-            </div>
-
-            {/* Quick Actions Menu */}
-            <div ref={quickActionsRef}>
-              <QuickActionsMenu
-                onAction={handleQuickAction}
-                userTier={userTier}
-              />
             </div>
 
              {/* Notifications Button */}
@@ -536,7 +481,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                  )}
                </Button>
                {alertsOpen && (
-                 <AlertsDropdown onNavigate={handlePageNavigation} onClose={() => setAlertsOpen(false)} />
+                 <AlertsDropdown onNavigate={(page: string) => handlePageNavigation(page as Page)} onClose={() => setAlertsOpen(false)} />
                )}
              </div>
 
@@ -579,30 +524,20 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
               )}
             </div>
 
-             {/* Mobile Menu Toggle - Enhanced */}
+             {/* Mobile Menu Toggle */}
              <button
                aria-controls="mobile-mega-menu"
                aria-expanded={navigationState.mobileMenuOpen}
                aria-label={navigationState.mobileMenuOpen ? 'Close menu' : 'Open menu'}
                onClick={() => setNavigationState(prev => ({ ...prev, mobileMenuOpen: !prev.mobileMenuOpen }))}
-               className="lg:hidden mobile-menu-toggle flex items-center justify-center"
+               className="lg:hidden p-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-metallic-gray-800 transition-colors"
                title={navigationState.mobileMenuOpen ? 'Close Menu' : 'Open Menu'}
                type="button"
-               style={{
-                 background: 'linear-gradient(135deg, #D4AF37 0%, #C5A028 100%)',
-                 padding: '12px',
-                 borderRadius: '12px',
-                 boxShadow: '0 4px 12px rgba(212, 175, 55, 0.3)',
-                 minHeight: '48px',
-                 minWidth: '48px',
-                 border: '2px solid rgba(255, 255, 255, 0.2)',
-                 transition: 'all 0.3s ease'
-               }}
              >
                {navigationState.mobileMenuOpen ? (
-                 <X className="w-6 h-6 text-white" />
+                 <X className="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
                ) : (
-                 <Menu className="w-6 h-6 text-white" />
+                 <Menu className="w-6 h-6 text-neutral-700 dark:text-neutral-300" />
                )}
              </button>
           </div>
@@ -619,7 +554,7 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         >
           <MegaMenu
             category={filteredConfig.categories.find(c => c.id === navigationState.activeCategory)!}
-            onItemClick={handlePageNavigation}
+            onItemClick={(page: Page, _queryParams?: Record<string, string>) => handlePageNavigation(page)}
             onActionClick={handleActionClick}
             userTier={userTier}
           />
@@ -638,6 +573,25 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
         />
       )}
 
+      {/* Command Bar Modal */}
+      {commandBarOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center pt-20 px-4">
+          <div className="absolute inset-0 bg-black/50 dark:bg-black/70" onClick={toggleCommandBar} />
+          <div ref={commandBarRef} className="relative w-full max-w-2xl">
+            <GlobalCommandBar
+              onNavigate={(page) => {
+                handlePageNavigation(page);
+                toggleCommandBar();
+              }}
+              onAction={(actionId: string) => {
+                handleActionClick(actionId);
+                toggleCommandBar();
+              }}
+            />
+          </div>
+        </div>
+      )}
+
       {/* Modals */}
       {modalState.createMatter && (
         <NewMatterMultiStep
@@ -647,18 +601,6 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
             setModalState(prev => ({ ...prev, createMatter: false }));
             toast.success(`Matter "${newMatter.title}" created successfully`);
             handlePageNavigation('matters');
-          }}
-        />
-      )}
-
-      {modalState.createProForma && (
-        <SimpleProFormaModal
-          isOpen={modalState.createProForma}
-          onClose={() => setModalState(prev => ({ ...prev, createProForma: false }))}
-          onSuccess={(proforma) => {
-            setModalState(prev => ({ ...prev, createProForma: false }));
-            toast.success('Pro Forma created successfully');
-            handlePageNavigation('proforma-requests');
           }}
         />
       )}

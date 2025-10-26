@@ -168,7 +168,8 @@ export const ReportsPage: React.FC = () => {
         if (data.breakdown) {
           exportData = data.breakdown.map((b: any) => ({
             'Period': b.period,
-            'Amount': b.amount,
+            'Payments Received': b.amount,
+            'Invoiced Amount': b.invoicedAmount || 0,
           }));
         }
         break;
@@ -179,9 +180,13 @@ export const ReportsPage: React.FC = () => {
           'Invoice': inv.id,
           'Client': inv.client,
           'Attorney': inv.attorney,
-          'Amount': inv.amount,
+          'Total Amount': inv.totalAmount,
+          'Amount Paid': inv.amountPaid,
+          'Outstanding Balance': inv.outstandingBalance,
           'Due Date': inv.dueDate,
           'Days Overdue': inv.daysOverdue || 0,
+          'Aging Bracket': inv.agingBracket,
+          'Payment Status': inv.paymentStatus?.toUpperCase() || 'UNPAID',
           'Status': inv.status.toUpperCase(),
         }));
         break;

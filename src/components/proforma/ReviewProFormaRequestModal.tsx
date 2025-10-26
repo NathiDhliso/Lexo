@@ -1,5 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { X, FileText, User, Mail, Phone, Building, Calendar, AlertCircle, CheckCircle, XCircle } from 'lucide-react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { X, FileText, User, Mail, Phone, Building, Calendar, AlertCircle, CheckCircle, XCircle, Clock } from 'lucide-react';
 import { proformaRequestService } from '../../services/api/proforma-request.service';
 import { AsyncButton } from '../ui/AsyncButton';
 import { Button } from '../design-system/components';
@@ -26,8 +26,21 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
 }) => {
   const [showDeclineConfirm, setShowDeclineConfirm] = useState(false);
   const [declineReason, setDeclineReason] = useState('');
+  const [isProcessing, setIsProcessing] = useState(false);
+
+  // Close modal on Escape key
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && isOpen && !showDeclineConfirm) {
+        onClose();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isOpen, showDeclineConfirm, onClose]);
 
   const handleCreateQuote = () => {
+    setIsProcessing(true);
     // Navigate to MatterWorkbenchPage to create pro forma using Universal Toolset
     // This follows Path A: "Quote First" workflow
     if (onNavigate) {
@@ -44,6 +57,7 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
       });
       onClose();
     } else {
+      setIsProcessing(false);
       toast.error('Navigation not available');
     }
   };
@@ -78,21 +92,35 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-50 p-4">
-        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
+      <div 
+        className="fixed inset-0 bg-black/50 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 p-4 animate-in fade-in duration-200"
+        onClick={(e) => {
+          if (e.target === e.currentTarget && !showDeclineConfirm) {
+            onClose();
+          }
+        }}
+      >
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-xl theme-shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col animate-in slide-in-from-bottom-4 duration-300">
           {/* Header */}
-          <div className="border-b border-neutral-200 dark:border-metallic-gray-700 px-6 py-4 flex items-center justify-between">
-            <div>
-              <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-                Review Pro Forma Request
-              </h2>
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-                {request.quote_number}
-              </p>
+          <div className="border-b border-neutral-200 dark:border-metallic-gray-700 px-6 py-5 flex items-center justify-between bg-gradient-to-r from-neutral-50 to-neutral-100 dark:from-metallic-gray-900 dark:to-metallic-gray-800">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-mpondo-gold-100 dark:bg-mpondo-gold-900/30 rounded-xl">
+                <FileText className="w-6 h-6 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
+              </div>
+              <div>
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
+                  Review Pro Forma Request
+                </h2>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-0.5 font-mono">
+                  {request.quote_number}
+                </p>
+              </div>
             </div>
             <button
               onClick={onClose}
-              className="text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300"
+              disabled={isProcessing}
+              className="p-2 text-neutral-400 dark:text-neutral-500 hover:text-neutral-600 dark:hover:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-metallic-gray-700 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              aria-label="Close modal"
             >
               <X className="w-5 h-5" />
             </button>
@@ -230,21 +258,32 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
           </div>
 
           {/* Footer */}
-          <div className="border-t border-neutral-200 dark:border-metallic-gray-700 px-6 py-4 flex justify-between gap-3">
+          <div className="border-t border-neutral-200 dark:border-metallic-gray-700 px-6 py-5 flex justify-between gap-3 bg-neutral-50 dark:bg-metallic-gray-900">
             <Button
               variant="outline"
               onClick={() => setShowDeclineConfirm(true)}
-              className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+              disabled={isProcessing}
+              className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-400 dark:hover:border-red-600 transition-all"
             >
               <XCircle className="w-4 h-4 mr-2" />
               Decline Request
             </Button>
             <div className="flex gap-3">
-              <Button variant="secondary" onClick={onClose}>
+              <Button 
+                variant="outline" 
+                onClick={onClose}
+                disabled={isProcessing}
+              >
                 Close
               </Button>
-              <Button variant="primary" onClick={handleCreateQuote}>
-                <CheckCircle className="w-4 h-4 mr-2" />
+              <Button 
+                variant="primary" 
+                onClick={handleCreateQuote}
+                disabled={isProcessing}
+                loading={isProcessing}
+                className="min-w-[200px]"
+              >
+                {!isProcessing && <CheckCircle className="w-4 h-4 mr-2" />}
                 Create Pro Forma Quote
               </Button>
             </div>
@@ -254,38 +293,42 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
 
       {/* Decline Confirmation Modal */}
       {showDeclineConfirm && (
-        <div className="fixed inset-0 bg-black/50 dark:bg-black/70 flex items-center justify-center z-[60] p-4">
-          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-xl max-w-md w-full p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
+          <div className="bg-white dark:bg-metallic-gray-800 rounded-xl theme-shadow-2xl max-w-md w-full p-6 animate-in slide-in-from-bottom-4 duration-300">
+            <div className="flex items-start gap-4 mb-5">
+              <div className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
                 <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
               </div>
-              <div>
-                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
+              <div className="flex-1">
+                <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-1">
                   Decline Request?
                 </h3>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">
-                  This action cannot be undone
+                  This action cannot be undone. The attorney will be notified.
                 </p>
               </div>
             </div>
 
-            <div className="mb-4">
-              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+            <div className="mb-5">
+              <label className="block text-sm font-semibold text-neutral-700 dark:text-neutral-300 mb-2">
                 Reason for declining (optional):
               </label>
               <textarea
                 value={declineReason}
                 onChange={handleDeclineReasonChange}
                 rows={3}
-                className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                placeholder="e.g., Conflict of interest, outside area of expertise, etc."
+                className="w-full px-3 py-2.5 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all resize-none"
+                placeholder="e.g., Conflict of interest, outside area of expertise, insufficient information..."
+                maxLength={500}
               />
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                {declineReason.length}/500 characters
+              </p>
             </div>
 
             <div className="flex gap-3">
               <Button
-                variant="secondary"
+                variant="outline"
                 onClick={() => {
                   setShowDeclineConfirm(false);
                   setDeclineReason('');
@@ -296,9 +339,10 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
               </Button>
               <AsyncButton
                 onAsyncClick={handleDecline}
-                variant="primary"
-                className="flex-1 bg-red-600 hover:bg-red-700"
-                successMessage="Request declined"
+                variant="danger"
+                className="flex-1"
+                successMessage="Request declined successfully"
+                errorMessage="Failed to decline request"
               >
                 <XCircle className="w-4 h-4 mr-2" />
                 Decline Request

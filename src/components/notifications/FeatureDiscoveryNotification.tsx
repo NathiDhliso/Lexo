@@ -10,11 +10,13 @@ import { userPreferencesService } from '../../services/api/user-preferences.serv
 import { toast } from 'react-hot-toast';
 
 interface FeatureDiscoveryNotificationProps {
+  featureId?: string;
   onNavigateToSettings?: () => void;
   className?: string;
 }
 
 export const FeatureDiscoveryNotification: React.FC<FeatureDiscoveryNotificationProps> = ({
+  featureId = 'advanced-features',
   onNavigateToSettings,
   className = ''
 }) => {
@@ -28,7 +30,7 @@ export const FeatureDiscoveryNotification: React.FC<FeatureDiscoveryNotification
 
   const checkShouldShow = async () => {
     try {
-      const response = await userPreferencesService.shouldShowFeatureNotification();
+      const response = await userPreferencesService.shouldShowFeatureNotification(featureId);
       
       if (response.error) {
         const code = response.error.code;
@@ -61,7 +63,7 @@ export const FeatureDiscoveryNotification: React.FC<FeatureDiscoveryNotification
     setDismissing(true);
     
     try {
-      const response = await userPreferencesService.dismissNotification();
+      const response = await userPreferencesService.dismissNotification(featureId);
       
       if (response.error) {
         console.error('Error dismissing notification:', response.error);
@@ -82,7 +84,7 @@ export const FeatureDiscoveryNotification: React.FC<FeatureDiscoveryNotification
   const handleExploreFeatures = async () => {
     try {
       // Mark as shown when user clicks to explore
-      await userPreferencesService.markNotificationShown();
+      await userPreferencesService.markNotificationShown(featureId);
       
       if (onNavigateToSettings) {
         onNavigateToSettings();
@@ -160,7 +162,7 @@ export const FeatureDiscoveryNotification: React.FC<FeatureDiscoveryNotification
 /**
  * Hook for managing feature discovery notification
  */
-export const useFeatureDiscoveryNotification = () => {
+export const useFeatureDiscoveryNotification = (featureId = 'advanced-features') => {
   const [shouldShow, setShouldShow] = useState(false);
   const [loading, setLoading] = useState(true);
 
@@ -170,7 +172,7 @@ export const useFeatureDiscoveryNotification = () => {
 
   const checkNotificationStatus = async () => {
     try {
-      const response = await userPreferencesService.shouldShowFeatureNotification();
+      const response = await userPreferencesService.shouldShowFeatureNotification(featureId);
       
       if (response.error) {
         const code = response.error.code;
@@ -200,7 +202,7 @@ export const useFeatureDiscoveryNotification = () => {
 
   const dismissNotification = async () => {
     try {
-      await userPreferencesService.dismissNotification();
+      await userPreferencesService.dismissNotification(featureId);
       setShouldShow(false);
       return true;
     } catch (error) {
@@ -211,7 +213,7 @@ export const useFeatureDiscoveryNotification = () => {
 
   const markAsShown = async () => {
     try {
-      await userPreferencesService.markNotificationShown();
+      await userPreferencesService.markNotificationShown(featureId);
       setShouldShow(false);
       return true;
     } catch (error) {

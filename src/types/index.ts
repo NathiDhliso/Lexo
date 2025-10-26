@@ -108,6 +108,7 @@ export interface QuickAction {
   minTier?: UserTier;
   usageCount?: number;
   lastUsed?: string;
+  isEnabled?: boolean;
 }
 
 export interface QuickActionsState {
@@ -341,6 +342,10 @@ export interface Matter {
   creation_source?: MatterCreationSource;
   is_quick_create?: boolean;
   parent_matter_id?: string;
+  is_archived?: boolean;
+  archived_at?: string;
+  archived_by?: string;
+  archive_reason?: string;
 }
 
 export interface Invoice {
@@ -350,6 +355,7 @@ export interface Invoice {
   invoice_number: string;
   dateIssued: string;
   dateDue: string;
+  dueDate?: string; // Alias for dateDue used in some services
   bar: BarAssociation;
   fees_amount: number;
   disbursements_amount: number;
@@ -358,15 +364,17 @@ export interface Invoice {
   vat_amount: number;
   total_amount: number;
   status: InvoiceStatus;
-  is_pro_forma: boolean;
+  is_pro_forma?: boolean;
   amount_paid: number;
   balance_due: number;
-  datePaid?: string;
+  outstanding_balance?: number; // Alias for balance_due
+  datePaid?: string | null;
   payment_method?: PaymentMethod;
   payment_reference?: string;
   fee_narrative: string;
   internal_notes?: string;
   reminders_sent: number;
+  reminderCount?: number; // Alias for reminders_sent used in some services
   last_reminder_date?: string;
   next_reminder_date?: string;
   reminder_history: unknown[];
@@ -405,8 +413,10 @@ export interface TimeEntry {
   advocate_id: string;
   invoice_id?: string | null;
   entry_date: string;
+  date?: string; // Alias for entry_date used in some services
   hours: number;
   hourly_rate: number;
+  rate?: number; // Alias for hourly_rate used in some services
   amount: number | null;
   description: string;
   is_billed: boolean | null;

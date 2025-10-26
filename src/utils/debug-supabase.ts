@@ -8,8 +8,9 @@ export const debugSupabaseConnection = async () => {
     console.log('Environment Variables:');
     console.log('- VITE_SUPABASE_URL:', import.meta.env.VITE_SUPABASE_URL);
     console.log('- VITE_SUPABASE_ANON_KEY exists:', !!import.meta.env.VITE_SUPABASE_ANON_KEY);
-    console.log('- Supabase client URL:', supabase.supabaseUrl);
-    console.log('- Supabase client key exists:', !!supabase.supabaseKey);
+  // Access protected properties via index signature to avoid TypeScript protected access errors
+  console.log('- Supabase client URL (exists):', !!(supabase as any)['supabaseUrl']);
+  console.log('- Supabase client key exists:', !!(supabase as any)['supabaseKey']);
     
     // Check authentication status
     const { data: { user }, error: authError } = await supabase.auth.getUser();

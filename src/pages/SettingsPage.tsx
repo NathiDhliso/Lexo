@@ -4,23 +4,29 @@
  */
 
 import React, { useState } from 'react';
-import { User, CreditCard, Users, FileText, DollarSign, Cloud } from 'lucide-react';
+import { User, CreditCard, Users, FileText, DollarSign, Cloud, Receipt, Zap } from 'lucide-react';
 import { SubscriptionManagement } from '../components/subscription/SubscriptionManagement';
 import { TeamManagement } from '../components/settings/TeamManagement';
 import { ProfileSettings } from '../components/settings/ProfileSettings';
 import { PDFTemplateEditor } from '../components/settings/PDFTemplateEditor';
 import { RateCardManagement } from '../components/settings/RateCardManagement';
 import { CloudStorageSettings } from '../components/settings/CloudStorageSettings';
+import { InvoiceSettingsForm } from '../components/settings/InvoiceSettingsForm';
+import { InvoiceNumberingAuditLog } from '../components/settings/InvoiceNumberingAuditLog';
+import { VATRateHistory } from '../components/settings/VATRateHistory';
+import { QuickActionsSettings } from '../components/settings/QuickActionsSettings';
 
-type SettingsTab = 'profile' | 'subscription' | 'team' | 'rate-cards' | 'pdf-templates' | 'cloud-storage';
+type SettingsTab = 'profile' | 'subscription' | 'team' | 'rate-cards' | 'pdf-templates' | 'cloud-storage' | 'invoicing' | 'quick-actions';
 
 const SettingsPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState<SettingsTab>('profile');
 
   const tabs = [
     { id: 'profile' as SettingsTab, label: 'Profile', icon: User },
+    { id: 'quick-actions' as SettingsTab, label: 'Quick Actions', icon: Zap },
     { id: 'subscription' as SettingsTab, label: 'Subscription & Billing', icon: CreditCard },
     { id: 'team' as SettingsTab, label: 'Team Members', icon: Users },
+    { id: 'invoicing' as SettingsTab, label: 'Invoicing', icon: Receipt },
     { id: 'rate-cards' as SettingsTab, label: 'Rate Cards', icon: DollarSign },
     { id: 'pdf-templates' as SettingsTab, label: 'PDF Templates', icon: FileText },
     { id: 'cloud-storage' as SettingsTab, label: 'Cloud Storage', icon: Cloud },
@@ -64,8 +70,37 @@ const SettingsPage: React.FC = () => {
         <div className="flex-1 min-w-0">
           <div className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-gray-200 dark:border-metallic-gray-700 p-6">
             {activeTab === 'profile' && <ProfileSettings />}
+            {activeTab === 'quick-actions' && <QuickActionsSettings />}
             {activeTab === 'subscription' && <SubscriptionManagement />}
             {activeTab === 'team' && <TeamManagement />}
+            {activeTab === 'invoicing' && (
+              <div className="space-y-8">
+                <div>
+                  <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    Invoice Settings
+                  </h2>
+                  <p className="text-gray-600 dark:text-neutral-400">
+                    Configure invoice numbering, VAT settings, and SARS compliance
+                  </p>
+                </div>
+                
+                <InvoiceSettingsForm />
+                
+                <div className="border-t border-gray-200 dark:border-metallic-gray-700 pt-8">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    VAT Rate History
+                  </h3>
+                  <VATRateHistory />
+                </div>
+                
+                <div className="border-t border-gray-200 dark:border-metallic-gray-700 pt-8">
+                  <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    Numbering Audit Log
+                  </h3>
+                  <InvoiceNumberingAuditLog />
+                </div>
+              </div>
+            )}
             {activeTab === 'rate-cards' && <RateCardManagement />}
             {activeTab === 'pdf-templates' && <PDFTemplateEditor />}
             {activeTab === 'cloud-storage' && <CloudStorageSettings />}

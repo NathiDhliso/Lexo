@@ -612,6 +612,7 @@ export class MatterApiService extends BaseApiService<Matter> {
     description: string;
     matter_type: string;
     urgency?: 'routine' | 'standard' | 'urgent' | 'emergency';
+    firm_id?: string;
   }): Promise<Matter> {
     // Get current user (advocate)
     const { data: { user }, error: userError } = await supabase.auth.getUser();
@@ -625,6 +626,8 @@ export class MatterApiService extends BaseApiService<Matter> {
       .from('matters')
       .insert({
         advocate_id: user.id,
+        // include firm_id when provided (selected registered firm)
+        firm_id: data.firm_id,
         title: data.title,
         description: data.description,
         matter_type: data.matter_type,

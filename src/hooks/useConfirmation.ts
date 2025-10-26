@@ -48,6 +48,7 @@ interface ConfirmationState extends ConfirmationOptions {
 
 export interface UseConfirmationReturn {
   confirm: (options: ConfirmationOptions) => Promise<boolean>;
+  showConfirmation: (options: ConfirmationOptions) => Promise<boolean>; // Alias for confirm
   confirmationState: ConfirmationState;
   closeConfirmation: () => void;
 }
@@ -98,6 +99,7 @@ export const useConfirmation = (): UseConfirmationReturn => {
 
   return {
     confirm,
+    showConfirmation: confirm, // Alias for backwards compatibility
     confirmationState: {
       ...confirmationState,
       onConfirm: handleConfirm,

@@ -36,82 +36,42 @@ export const useCloudStorage = () => {
   };
 
   const linkFile = async (options: CloudStorageLinkOptions) => {
-    try {
-      const result = await CloudStorageService.linkFromCloudStorage(options);
-      return result;
-    } catch (err) {
-      throw err;
-    }
+    return await CloudStorageService.linkFromCloudStorage(options);
   };
 
   const getDocumentReferences = async (matterId: string) => {
-    try {
-      const result = await CloudStorageService.getDocumentReferences(matterId);
-      return result;
-    } catch (err) {
-      throw err;
-    }
+    return await CloudStorageService.getDocumentReferences(matterId);
   };
 
   const listFiles = async (connectionId: string, folderPath?: string) => {
-    try {
-      const result = await CloudStorageService.listFiles(connectionId, folderPath);
-      return result;
-    } catch (err) {
-      throw err;
-    }
+    return await CloudStorageService.listFiles(connectionId, folderPath);
   };
 
   const openDocument = async (docRef: DocumentReference) => {
-    try {
-      await CloudStorageService.openDocument(docRef);
-    } catch (err) {
-      throw err;
-    }
+    await CloudStorageService.openDocument(docRef);
   };
 
   const deleteDocumentReference = async (docRefId: string) => {
-    try {
-      await CloudStorageService.deleteDocumentReference(docRefId);
-    } catch (err) {
-      throw err;
-    }
+    await CloudStorageService.deleteDocumentReference(docRefId);
   };
 
   const verifyDocuments = async (matterId?: string) => {
-    try {
-      const result = await CloudStorageService.verifyAllDocuments(matterId);
-      return result;
-    } catch (err) {
-      throw err;
-    }
+    return await CloudStorageService.verifyAllDocuments(matterId);
   };
 
   const setPrimary = async (connectionId: string) => {
-    try {
-      await CloudStorageService.setPrimaryConnection(connectionId);
-      await loadConnections();
-    } catch (err) {
-      throw err;
-    }
+    await CloudStorageService.setPrimaryConnection(connectionId);
+    await loadConnections();
   };
 
   const disconnect = async (connectionId: string) => {
-    try {
-      await CloudStorageService.disconnect(connectionId);
-      await loadConnections();
-    } catch (err) {
-      throw err;
-    }
+    await CloudStorageService.disconnect(connectionId);
+    await loadConnections();
   };
 
   const deleteConnection = async (connectionId: string) => {
-    try {
-      await CloudStorageService.deleteConnection(connectionId);
-      await loadConnections();
-    } catch (err) {
-      throw err;
-    }
+    await CloudStorageService.deleteConnection(connectionId);
+    await loadConnections();
   };
 
   return {

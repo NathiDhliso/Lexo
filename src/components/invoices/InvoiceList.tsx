@@ -232,6 +232,13 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '', initia
         .select('*')
         .eq('invoice_id', invoice.id);
 
+      // Fetch disbursements (new disbursements table)
+      const { data: disbursements } = await supabase
+        .from('disbursements')
+        .select('*')
+        .eq('invoice_id', invoice.id)
+        .is('deleted_at', null);
+
       const { data: services } = await supabase
         .from('matter_services')
         .select(`
@@ -247,11 +254,23 @@ export const InvoiceList: React.FC<InvoiceListProps> = ({ className = '', initia
         `)
         .eq('matter_id', invoice.matterId || (invoice as any).matter_id);
 
+      // Combine old expenses and new disbursements for PDF display
+      const allExpenses = [
+        ...(expenses || []),
+        ...(disbursements || []).map(d => ({
+          id: d.id,
+          expense_date: d.date_incurred,
+          description: d.description,
+          category: d.vat_applicable ? 'Disbursement (incl. VAT)' : 'Disbursement',
+          amount: d.total_amount
+        }))
+      ];
+
       const invoiceWithDetails = {
         ...invoice,
         matter: matter || undefined,
         time_entries: timeEntries || [],
-        expenses: expenses || [],
+        expenses: allExpenses,
         services: services || [],
       };
 

@@ -7,7 +7,9 @@ import type {
   CloudStorageUploadOptions,
   CloudStorageSyncResult,
   CloudStorageQuota,
-  DocumentCloudStorage
+  CloudStorageLinkOptions,
+  CloudStorageVerificationResult,
+  DocumentReference
 } from '@/types/cloud-storage.types';
 import { OAUTH_CONFIG, OAUTH_REDIRECT_URI } from '@/config/cloud-storage-providers.config';
 

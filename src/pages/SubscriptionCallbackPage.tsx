@@ -9,7 +9,7 @@ import { CheckCircle, XCircle, Loader } from 'lucide-react';
 import { Button } from '../components/ui/Button';
 import { paymentGatewayService } from '../services/payment/payment-gateway.service';
 import { subscriptionService } from '../services/api/subscription.service';
-import { toast } from '../services/toast.service';
+import toast from '../services/toast.service';
 import { PaymentGateway } from '../types/subscription.types';
 
 type PaymentStatus = 'processing' | 'success' | 'failed';

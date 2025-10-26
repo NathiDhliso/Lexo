@@ -149,25 +149,40 @@ export abstract class BaseApiService<T = unknown> {
   /**
    * Execute database operation with error handling
    */
+  // Accept a variety of operation return shapes (PostgrestResponse, PostgrestSingleResponse, ApiResponse, raw data)
   protected async executeQuery<R>(
-    operation: () => Promise<PostgrestResponse<R>>
+    operation: () => Promise<any>
   ): Promise<ApiResponse<R>> {
     const requestId = this.generateRequestId();
 
     try {
-      const response = await operation();
+      const result = await operation();
 
-      if (response.error) {
+      // If operation already returned an ApiResponse (our internal shape), return as-is
+      if (result && typeof result === 'object' && 'data' in result && 'error' in result) {
+        return result as ApiResponse<R>;
+      }
+
+      // If result matches Supabase PostgrestResponse shape (has .error and .data)
+      if (result && typeof result === 'object' && 'error' in result && 'data' in result) {
+        if (result.error) {
+          return {
+            data: null,
+            error: this.transformError(result.error, requestId)
+          };
+        }
+
         return {
-          data: null,
-          error: this.transformError(response.error, requestId)
+          data: result.data as R,
+          error: null,
+          count: result.count || undefined
         };
       }
 
+      // Otherwise assume the operation returned raw data
       return {
-        data: response.data,
-        error: null,
-        count: response.count || undefined
+        data: result as R,
+        error: null
       };
     } catch (error) {
       return {

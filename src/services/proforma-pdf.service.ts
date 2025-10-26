@@ -3,6 +3,7 @@ import autoTable from 'jspdf-autotable';
 import { Database } from '../../types/database';
 import { PDFTemplateService } from './pdf-template.service';
 import { supabase } from '../lib/supabase';
+import type { PDFFooterConfig } from '../types/pdf-template.types';
 
 type ProFormaRequest = Database['public']['Tables']['proforma_requests']['Row'];
 
@@ -557,12 +558,14 @@ export class ProFormaPDFService {
     yPosition += 15;
 
     // Footer sections
-    const footerStyle = template?.footer || {
+    const footerStyle: PDFFooterConfig = template?.footer || {
       showFooter: true,
       showTimestamp: true,
       showPageNumbers: false,
       text: '',
-      textStyle: { fontSize: 8, fontFamily: 'helvetica', color: '#969696' }
+      showThankYouNote: false,
+      thankYouText: '',
+      textStyle: { fontSize: 8, fontFamily: 'helvetica', fontWeight: 'normal', color: '#969696' }
     };
 
     // Thank You Note

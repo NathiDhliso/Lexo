@@ -27,6 +27,7 @@ const FirmsPage: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [showAddAttorneyModal, setShowAddAttorneyModal] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [selectedFirmForAttorney, setSelectedFirmForAttorney] = useState<Firm | null>(null);
 
   const [firms, setFirms] = useState<Firm[]>([]);
   const [loadingFirms, setLoadingFirms] = useState(true);
@@ -117,6 +118,26 @@ const FirmsPage: React.FC = () => {
     });
   }, [firms, searchTerm, activeTab]);
 
+  // Transform firm data to include attorney information
+  const getAttorneysForFirm = (firm: Firm) => {
+    if (!firm.attorney_name) return [];
+    
+    // Extract initials from attorney name
+    const nameParts = firm.attorney_name.trim().split(' ');
+    const initials = nameParts
+      .map(part => part.charAt(0).toUpperCase())
+      .join('')
+      .slice(0, 2);
+    
+    return [{
+      id: firm.id,
+      initials: initials,
+      name: firm.attorney_name,
+      role: 'Attorney',
+      isActive: firm.status === 'active'
+    }];
+  };
+
   // Selection management
   const {
     selectedItems,
@@ -133,7 +154,8 @@ const FirmsPage: React.FC = () => {
     setShowCreateModal(true);
   };
 
-  const handleAddAttorney = (_firm: Firm) => {
+  const handleAddAttorney = (firm: Firm) => {
+    setSelectedFirmForAttorney(firm);
     setShowAddAttorneyModal(true);
   };
 
@@ -377,7 +399,7 @@ const FirmsPage: React.FC = () => {
             <FirmCard
               key={firm.id}
               firm={firm}
-              attorneys={[]} // TODO: Fetch attorneys for each firm
+              attorneys={getAttorneysForFirm(firm)}
               activeMattersCount={0} // TODO: Fetch active matters count
               onAddAttorney={handleAddAttorney}
               onManageFirm={handleManageFirm}
@@ -400,11 +422,16 @@ const FirmsPage: React.FC = () => {
       {/* Add Attorney Modal */}
       <AddAttorneyModal
         isOpen={showAddAttorneyModal}
-        onClose={() => setShowAddAttorneyModal(false)}
+        onClose={() => {
+          setShowAddAttorneyModal(false);
+          setSelectedFirmForAttorney(null);
+        }}
         onSuccess={() => {
           fetchFirms(); // Reload firms list
           setShowAddAttorneyModal(false);
+          setSelectedFirmForAttorney(null);
         }}
+        initialFirmName={selectedFirmForAttorney?.firm_name}
       />
     </div>
   );

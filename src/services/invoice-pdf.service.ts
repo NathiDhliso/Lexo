@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import autoTable from 'jspdf-autotable';
 import { Database } from '../../types/database';
 import { pdfTemplateService } from './pdf-template.service';
-import { PDFTemplate } from '../types/pdf-template.types';
+import { PDFTemplate, PDFFooterConfig } from '../types/pdf-template.types';
 
 type Invoice = Database['public']['Tables']['invoices']['Row'];
 type TimeEntry = Database['public']['Tables']['time_entries']['Row'];
@@ -45,6 +45,9 @@ export class InvoicePDFService {
       email?: string;
       phone?: string;
       advocate_id?: string;
+      vat_number?: string;
+      vat_registered?: boolean;
+      address?: string;
     },
     template?: PDFTemplate
   ): Promise<Blob> {
@@ -111,7 +114,11 @@ export class InvoicePDFService {
       doc.setFont(titleFontFamily, titleFontWeight);
       doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
 
-      const titleText = pdfTemplate?.header?.title || 'INVOICE';
+      // Requirement 3.5: Add "TAX INVOICE" header if VAT registered
+      const titleText = advocateInfo.vat_registered 
+        ? 'TAX INVOICE' 
+        : (pdfTemplate?.header?.title || 'INVOICE');
+      
       if (titleAlignment === 'center') {
         doc.text(titleText, pageWidth / 2, yPosition, { align: 'center' });
       } else if (titleAlignment === 'right') {
@@ -183,6 +190,21 @@ export class InvoicePDFService {
       doc.text(`Practice Number: ${advocateInfo.practice_number}`, leftContentMargin, fromY);
       fromY += lineHeight;
 
+      // Requirement 3.5: Display VAT number prominently if VAT registered
+      if (advocateInfo.vat_registered && advocateInfo.vat_number) {
+        doc.setFont(fromSectionStyle.contentStyle.fontFamily, 'bold');
+        doc.text(`VAT Number: ${advocateInfo.vat_number}`, leftContentMargin, fromY);
+        doc.setFont(fromSectionStyle.contentStyle.fontFamily, 'normal');
+        fromY += lineHeight;
+      }
+
+      // Requirement 3.5: Show advocate address for tax invoices
+      if (advocateInfo.address) {
+        const addressLines = doc.splitTextToSize(advocateInfo.address, columnWidth - 5);
+        doc.text(addressLines, leftContentMargin, fromY);
+        fromY += addressLines.length * lineHeight;
+      }
+
       if (advocateInfo.email) {
         const emailLines = doc.splitTextToSize(`Email: ${advocateInfo.email}`, columnWidth - 5);
         doc.text(emailLines, leftContentMargin, fromY);
@@ -212,6 +234,13 @@ export class InvoicePDFService {
         doc.text(nameLines, rightColumnX, toY);
         toY += nameLines.length * lineHeight;
       }
+      
+      // Requirement 3.5: Include customer VAT number if available
+      if ((invoice as any).client_vat_number) {
+        doc.text(`VAT Number: ${(invoice as any).client_vat_number}`, rightColumnX, toY);
+        toY += lineHeight;
+      }
+      
       if ((invoice as any).client_email) {
         const emailLines = doc.splitTextToSize((invoice as any).client_email, columnWidth - 5);
         doc.text(emailLines, rightColumnX, toY);
@@ -594,7 +623,13 @@ export class InvoicePDFService {
     doc.text(`R ${subtotal.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, summaryValueX, yPosition, { align: 'right' });
 
     yPosition += 6;
-    doc.setFont(summaryStyle.contentStyle.fontFamily, 'normal');
+    // Requirement 3.5: Format amounts with clear VAT breakdown
+    // Make VAT line bold for tax invoices
+    if (advocateInfo.vat_registered) {
+      doc.setFont(summaryStyle.contentStyle.fontFamily, 'bold');
+    } else {
+      doc.setFont(summaryStyle.contentStyle.fontFamily, 'normal');
+    }
     doc.text(`VAT (${((invoice.vat_rate || 0.15) * 100).toFixed(0)}%):`, summaryLabelX, yPosition);
     doc.text(`R ${vatAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, summaryValueX, yPosition, { align: 'right' });
 
@@ -725,10 +760,11 @@ export class InvoicePDFService {
     }
 
     // Footer timestamp
-    const footerStyle = pdfTemplate?.footer || {
+    const footerStyle: PDFFooterConfig = pdfTemplate?.footer || {
       showFooter: true,
       showTimestamp: true,
-      textStyle: { fontSize: 8, fontFamily: 'helvetica', color: '#969696' }
+      text: '',
+      textStyle: { fontSize: 8, fontFamily: 'helvetica', fontWeight: 'normal', color: '#969696' }
     };
 
     if (footerStyle.showFooter) {

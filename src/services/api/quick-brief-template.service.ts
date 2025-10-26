@@ -55,13 +55,13 @@ export class QuickBriefTemplateService extends BaseApiService<TemplateItem> {
       }
 
       // Merge and deduplicate (custom templates take precedence)
-      const customValues = new Set((customTemplates || []).map(t => t.value.toLowerCase()));
+      const customValues = new Set((customTemplates || []).map((t: any) => t.value.toLowerCase()));
       const uniqueSystemTemplates = (systemTemplates || []).filter(
-        t => !customValues.has(t.value.toLowerCase())
+        (t: any) => !customValues.has(t.value.toLowerCase())
       );
 
       // Combine: system templates first (alphabetically), then custom (by usage)
-      const merged = [...uniqueSystemTemplates, ...(customTemplates || [])];
+      const merged = [...uniqueSystemTemplates, ...(customTemplates || [])] as unknown as TemplateItem[];
 
       return {
         data: merged,
@@ -147,10 +147,10 @@ export class QuickBriefTemplateService extends BaseApiService<TemplateItem> {
         const { data: updated, error: updateError } = await supabase
           .from(this.tableName)
           .update({
-            usage_count: existing.usage_count + 1,
+            usage_count: (existing as unknown as TemplateItem).usage_count + 1,
             last_used_at: new Date().toISOString()
           })
-          .eq('id', existing.id)
+          .eq('id', (existing as unknown as TemplateItem).id)
           .select(this.selectFields)
           .single();
 
@@ -162,7 +162,7 @@ export class QuickBriefTemplateService extends BaseApiService<TemplateItem> {
         }
 
         return {
-          data: updated,
+          data: updated as unknown as TemplateItem,
           error: null
         };
       } else {
@@ -188,10 +188,46 @@ export class QuickBriefTemplateService extends BaseApiService<TemplateItem> {
         }
 
         return {
-          data: created,
+          data: created as unknown as TemplateItem,
           error: null
         };
       }
+    } catch (error) {
+      return {
+        data: null,
+        error: this.transformError(error as Error, requestId)
+      };
+    }
+  }
+
+  /**
+   * Update template (alias for upsertTemplate for backwards compatibility)
+   */
+  async updateTemplate(
+    templateId: string,
+    updates: Partial<TemplateItem>
+  ): Promise<ApiResponse<TemplateItem>> {
+    const requestId = this.generateRequestId();
+
+    try {
+      const { data, error } = await supabase
+        .from(this.tableName)
+        .update(updates)
+        .eq('id', templateId)
+        .select(this.selectFields)
+        .single();
+
+      if (error) {
+        return {
+          data: null,
+          error: this.transformError(error, requestId)
+        };
+      }
+
+      return {
+        data: data as unknown as TemplateItem,
+        error: null
+      };
     } catch (error) {
       return {
         data: null,
@@ -426,7 +462,7 @@ export class QuickBriefTemplateService extends BaseApiService<TemplateItem> {
       }
 
       return {
-        data: updated,
+        data: updated as unknown as TemplateItem,
         error: null
       };
     } catch (error) {
@@ -468,3 +504,6 @@ export class QuickBriefTemplateService extends BaseApiService<TemplateItem> {
 
 // Export singleton instance
 export const quickBriefTemplateService = new QuickBriefTemplateService();
+
+// Export type alias for backwards compatibility
+export type QuickBriefTemplate = TemplateItem;

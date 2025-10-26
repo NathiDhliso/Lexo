@@ -106,7 +106,7 @@ export function UnifiedInvoiceWizard({
       setSelectedEntries(unbilledEntries.map((e: any) => e.id));
 
       if (matter.sourceProFormaId) {
-        const proForma = await proformaRequestService.getById(matter.sourceProFormaId);
+        const proForma = await proformaRequestService.getById(matter.sourceProFormaId) as any;
         if (proForma && proForma.services) {
           const services = Array.isArray(proForma.services) ? proForma.services : [];
           setProFormaServices(services);

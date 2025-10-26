@@ -39,12 +39,16 @@ export { ExpensesService } from './expenses.service';
 
 export {
   QuickBriefTemplateService,
-  quickBriefTemplateService,
-  type QuickBriefTemplate,
-  type TemplateCategory,
-  type TemplateExportData,
-  type TemplateImportResult
+  quickBriefTemplateService
 } from './quick-brief-template.service';
+
+// Re-export types from quick-brief.types through the service
+export type { 
+  TemplateItem as QuickBriefTemplate,
+  TemplateCategory,
+  TemplateExport as TemplateExportData,
+  TemplateImportResult
+} from '../../types/quick-brief.types';
 
 export { 
   EngagementAgreementService,
@@ -61,22 +65,17 @@ export {
 
 export {
   PaymentDisputeService,
-  paymentDisputeService,
-  type CreateDisputeRequest,
-  type ResolveDisputeRequest
+  paymentDisputeService
 } from './payment-dispute.service';
 
 export {
   PaymentService,
-  paymentService,
-  type RecordPaymentRequest,
-  type PaymentSummary
+  paymentService
 } from './payment.service';
 
 export {
   CreditNoteService,
-  creditNoteService,
-  type CreateCreditNoteRequest
+  creditNoteService
 } from './credit-note.service';
 
 export {
@@ -105,6 +104,17 @@ export {
 export {
   subscriptionService
 } from './subscription.service';
+
+export {
+  dashboardService,
+  type DashboardMetrics,
+  type UrgentAttentionItem,
+  type ThisWeekDeadline,
+  type FinancialSnapshot,
+  type ActiveMatterWithProgress,
+  type PendingActions,
+  type QuickStats
+} from './dashboard.service';
 
 // Re-export commonly used types from the main types file
 export type {

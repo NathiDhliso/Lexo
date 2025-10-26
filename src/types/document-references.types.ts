@@ -249,24 +249,4 @@ export interface BulkVerificationResult {
   [documentId: string]: DocumentVerificationResult;
 }
 
-// ============================================================================
-// EXPORT ALL TYPES
-// ============================================================================
-
-export type {
-  DocumentReference,
-  DocumentAccessLog,
-  MatterDocumentLink,
-  DocumentSharing,
-  DocumentReferenceWithMatter,
-  MatterDocumentSummary,
-  DocumentStatistics,
-  CreateDocumentReferenceForm,
-  LinkDocumentToMatterForm,
-  ShareDocumentForm,
-  DocumentReferenceFilters,
-  CloudStorageFile,
-  CloudStorageProvider,
-  DocumentVerificationResult,
-  BulkVerificationResult
-};
+// Note: types are exported individually above. No bulk re-export to avoid duplicate export errors.

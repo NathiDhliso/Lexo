@@ -6,7 +6,8 @@ import {
   TimeEntry,
   Matter,
   BarPaymentRules,
-  InvoiceGenerationRequest
+  InvoiceGenerationRequest,
+  BarAssociation
 } from '../../types';
 import { toast } from 'react-hot-toast';
 import { format, addDays } from 'date-fns';
@@ -153,59 +154,98 @@ export class InvoiceService {
         return sum + ((entry.duration / 60) * entry.rate);
       }, 0);
 
-      // Get disbursements
-      const disbursements = matter.disbursements || 0;
+      // Fetch unbilled disbursements
+      const { data: unbilledDisbursements, error: disbursementsError } = await supabase
+        .rpc('get_unbilled_disbursements', { matter_id_param: matterId });
+
+      if (disbursementsError) {
+        console.error('Error fetching disbursements:', disbursementsError);
+      }
+
+      const disbursementsList = unbilledDisbursements || [];
+      const totalDisbursements = disbursementsList.reduce((sum: number, d: any) => sum + d.total_amount, 0);
 
       // Generate fee narrative
       const narrative = customNarrative || await this.generateFeeNarrative(
         matter,
         timeEntries,
-        disbursements
+        disbursementsList
       );
 
       // Generate invoice number
+      // Requirement: 3.2 - Use sequential numbering
       const invoiceNumber = await this.generateInvoiceNumber(matter.bar);
 
       // Calculate dates based on Bar rules
       const rules = BAR_PAYMENT_RULES[matter.bar];
       if (!rules) {
+        // Void the invoice number if we can't proceed
+        await this.voidInvoiceNumberOnFailure(invoiceNumber, 'Payment rules not found');
         throw new Error(`Payment rules not found for bar: ${matter.bar}`);
       }
 
       const invoiceDate = new Date();
       const dueDate = addDays(invoiceDate, rules.paymentTermDays);
       const vatAmount = totalFees * rules.vatRate;
-      const totalAmount = totalFees + vatAmount + disbursements;
+      // Note: disbursements already include their VAT in total_amount
+      const totalAmount = totalFees + vatAmount + totalDisbursements;
 
-      // Create invoice
-      const { data: invoice, error: invoiceError } = await supabase
-        .from('invoices')
-        .insert({
-          matter_id: matterId,
-          invoice_number: invoiceNumber,
-          matter_title: matter.title,
-          client_name: matter.client_name,
-          invoice_date: format(invoiceDate, 'yyyy-MM-dd'),
-          due_date: format(dueDate, 'yyyy-MM-dd'),
-          bar: matter.bar,
-          amount: totalFees,
-          vat_amount: vatAmount,
-          total_amount: totalAmount,
-          disbursements: disbursements,
-          // Set proper status and flag for pro forma invoices
-          status: isProForma ? 'pro_forma' : 'draft',
-          is_pro_forma: isProForma,
-          internal_notes: null,
-          fee_narrative: narrative,
-          reminders_sent: 0,
-          next_reminder_date: format(addDays(invoiceDate, rules.reminderSchedule[0]), 'yyyy-MM-dd'),
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        })
-        .select()
-        .single();
+      // Create invoice with error handling
+      // Requirement: 3.3 - Void number if invoice creation fails
+      let invoice;
+      try {
+        const { data, error: invoiceError } = await supabase
+          .from('invoices')
+          .insert({
+            matter_id: matterId,
+            invoice_number: invoiceNumber,
+            matter_title: matter.title,
+            client_name: matter.client_name,
+            invoice_date: format(invoiceDate, 'yyyy-MM-dd'),
+            due_date: format(dueDate, 'yyyy-MM-dd'),
+            bar: matter.bar,
+            amount: totalFees,
+            vat_amount: vatAmount,
+            total_amount: totalAmount,
+            disbursements: totalDisbursements,
+            // Set proper status and flag for pro forma invoices
+            status: isProForma ? 'pro_forma' : 'draft',
+            is_pro_forma: isProForma,
+            internal_notes: null,
+            fee_narrative: narrative,
+            reminders_sent: 0,
+            next_reminder_date: format(addDays(invoiceDate, rules.reminderSchedule[0]), 'yyyy-MM-dd'),
+            created_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          })
+          .select()
+          .single();
 
-      if (invoiceError) throw invoiceError;
+        if (invoiceError) {
+          // Void the invoice number since creation failed
+          await this.voidInvoiceNumberOnFailure(invoiceNumber, `Invoice creation failed: ${invoiceError.message}`);
+          throw invoiceError;
+        }
+        
+        invoice = data;
+      } catch (error) {
+        // Ensure number is voided on any failure
+        await this.voidInvoiceNumberOnFailure(invoiceNumber, error instanceof Error ? error.message : 'Unknown error');
+        throw error;
+      }
+
+      // Audit log: Invoice created successfully
+      // Requirement: 3.3 - Add audit logging for all invoice number assignments
+      console.log(`[Audit] Invoice created successfully: ${invoiceNumber}, Invoice ID: ${invoice.id}, Matter ID: ${matterId}`);
+      
+      // Update audit record with invoice ID
+      try {
+        const { invoiceNumberingService } = await import('./invoice-numbering.service');
+        await invoiceNumberingService.updateAuditRecordWithInvoiceId(invoiceNumber, invoice.id);
+      } catch (error) {
+        console.error('Failed to update audit record with invoice ID:', error);
+        // Non-critical, continue
+      }
 
       // Mark time entries as billed (only for final invoices, not pro forma)
       if (!isProForma) {
@@ -229,7 +269,7 @@ export class InvoiceService {
           .eq('is_estimate', false)
           .is('invoice_id', null);
 
-        // Mark expenses as invoiced
+        // Mark expenses as invoiced (old expenses table)
         await supabase
           .from('expenses')
           .update({
@@ -238,6 +278,15 @@ export class InvoiceService {
           })
           .eq('matter_id', matterId)
           .is('invoice_id', null);
+
+        // Mark disbursements as billed (new disbursements table)
+        if (disbursementsList.length > 0) {
+          const disbursementIds = disbursementsList.map((d: any) => d.id);
+          await supabase.rpc('mark_disbursements_as_billed', {
+            disbursement_ids: disbursementIds,
+            invoice_id_param: invoice.id
+          });
+        }
       }
 
       // Update matter WIP value (only for final invoices, not pro forma)
@@ -1253,33 +1302,46 @@ export class InvoiceService {
     }
   }
 
-  // Helper: Generate invoice number
+  // Helper: Generate invoice number using sequential numbering system
+  // Requirement: 3.2, 3.3
   private static async generateInvoiceNumber(bar: string): Promise<string> {
-    const year = new Date().getFullYear();
-    const month = (new Date().getMonth() + 1).toString().padStart(2, '0');
-    const prefix = bar === 'johannesburg' ? 'JHB' : 'CPT';
-
     try {
-      // Get the last invoice number for this month and bar
-      const { data } = await supabase
-        .from('invoices')
-        .select('invoice_number')
-        .like('invoice_number', `${prefix}-${year}${month}-%`)
-        .order('invoice_number', { ascending: false })
-        .limit(1);
-
-      let nextNumber = 1;
-      if (data && data.length > 0) {
-        const lastInvoice = data[0].invoice_number;
-        const lastNumber = parseInt(lastInvoice.split('-').pop() || '0');
-        nextNumber = lastNumber + 1;
-      }
-
-      return `${prefix}-${year}${month}-${nextNumber.toString().padStart(4, '0')}`;
+      // Import the invoice numbering service
+      const { invoiceNumberingService } = await import('./invoice-numbering.service');
+      
+      // Use the new sequential numbering system
+      const invoiceNumber = await invoiceNumberingService.generateNextInvoiceNumber();
+      
+      // Audit log: Invoice number generated
+      console.log(`[Audit] Invoice number generated: ${invoiceNumber}`);
+      
+      return invoiceNumber;
     } catch (error) {
       console.error('Error generating invoice number:', error);
-      // Fallback to timestamp-based number
-      return `${prefix}-${year}${month}-${Date.now().toString().slice(-4)}`;
+      
+      // If sequential numbering fails, void the number if it was generated
+      if (error instanceof Error && error.message.includes('Invoice settings not found')) {
+        // User hasn't configured invoice settings yet, provide helpful error
+        throw new Error('Please configure invoice settings before generating invoices. Go to Settings > Invoicing to set up your invoice numbering format.');
+      }
+      
+      // For other errors, re-throw
+      throw error;
+    }
+  }
+
+  // Helper: Void invoice number on failure
+  // Requirement: 3.3 - Handle invoice generation failures
+  private static async voidInvoiceNumberOnFailure(invoiceNumber: string, reason: string): Promise<void> {
+    try {
+      const { invoiceNumberingService } = await import('./invoice-numbering.service');
+      await invoiceNumberingService.voidInvoiceNumber(invoiceNumber, reason);
+      
+      // Audit log: Invoice number voided
+      console.log(`[Audit] Invoice number voided: ${invoiceNumber}, Reason: ${reason}`);
+    } catch (error) {
+      // Log but don't throw - voiding failure shouldn't block the main error
+      console.error('Failed to void invoice number:', error);
     }
   }
 
@@ -1312,14 +1374,14 @@ export class InvoiceService {
   static async generateFeeNarrative(
     matter: Matter,
     timeEntries: TimeEntry[],
-    disbursements: number
+    disbursements: any[]
   ): Promise<string> {
     // Group time entries by type of work
     const workSummary = this.summarizeWork(timeEntries);
 
     let narrative = `PROFESSIONAL SERVICES RENDERED\n\n`;
     narrative += `Matter: ${matter.title}\n`;
-    narrative += `Client: ${matter.clientName}\n`;
+    narrative += `Client: ${matter.client_name}\n`;
     narrative += `Period: ${this.getPeriodDescription(timeEntries)}\n\n`;
     narrative += `SUMMARY OF SERVICES:\n`;
 
@@ -1331,9 +1393,14 @@ export class InvoiceService {
     });
 
     // Add disbursements if any
-    if (disbursements > 0) {
+    if (disbursements && disbursements.length > 0) {
       narrative += `\nDISBURSEMENTS:\n`;
-      narrative += `Various expenses incurred: R${disbursements.toFixed(2)}\n`;
+      disbursements.forEach((d: any) => {
+        const vatText = d.vat_applicable ? ` (incl. VAT)` : '';
+        narrative += `${d.description}: R${d.total_amount.toFixed(2)}${vatText}\n`;
+      });
+      const totalDisbursements = disbursements.reduce((sum: number, d: any) => sum + d.total_amount, 0);
+      narrative += `Disbursements Total: R${totalDisbursements.toFixed(2)}\n`;
     }
 
     // Add professional closing
@@ -1369,7 +1436,7 @@ export class InvoiceService {
         const reminderCount = invoice.reminders_sent + 1;
         const nextReminderIndex = reminderCount;
 
-        let nextReminderDate = null;
+        let nextReminderDate: string | null = null;
         if (nextReminderIndex < rules.reminderSchedule.length) {
           nextReminderDate = format(
             addDays(new Date(invoice.invoice_date), rules.reminderSchedule[nextReminderIndex]),
@@ -1396,7 +1463,7 @@ export class InvoiceService {
 
   // Helper: Summarize work for narrative
   private static summarizeWork(timeEntries: TimeEntry[]) {
-    const categories = new Map<string, { hours: number; entries: TimeEntry[] }>();
+    const categories = new Map<string, { description: string; hours: number; total: number; rates: number[]; entries: TimeEntry[] }>();
 
     timeEntries.forEach(entry => {
       const category = this.categorizeWork(entry.description);
@@ -1412,16 +1479,19 @@ export class InvoiceService {
       }
 
       const cat = categories.get(category);
-      const hours = entry.duration / 60;
-      cat.hours += hours;
-      cat.total += hours * entry.rate;
-      cat.rates.push(entry.rate);
-      cat.entries.push(entry);
+      if (cat) {
+        const hours = entry.hours || 0;
+        const rate = entry.rate || entry.hourly_rate || 0;
+        cat.hours += hours;
+        cat.total += hours * rate;
+        cat.rates.push(rate);
+        cat.entries.push(entry);
+      }
     });
 
     return Array.from(categories.values()).map(cat => ({
       ...cat,
-      averageRate: cat.rates.reduce((a: number, b: number) => a + b, 0) / cat.rates.length
+      averageRate: cat.rates.length > 0 ? cat.rates.reduce((a: number, b: number) => a + b, 0) / cat.rates.length : 0
     }));
   }
 
@@ -1440,7 +1510,10 @@ export class InvoiceService {
 
   // Helper: Get period description
   private static getPeriodDescription(timeEntries: TimeEntry[]): string {
-    const dates = timeEntries.map(e => new Date(e.date));
+    const dates = timeEntries.map(e => new Date(e.date || e.entry_date)).filter(d => !isNaN(d.getTime()));
+    if (dates.length === 0) {
+      return 'No dates available';
+    }
     const minDate = new Date(Math.min(...dates.map(d => d.getTime())));
     const maxDate = new Date(Math.max(...dates.map(d => d.getTime())));
 
@@ -1467,28 +1540,28 @@ export class InvoiceService {
 
       if (clientEmail && awsEmailService.isConfigured()) {
         // Calculate days overdue
-        const dueDate = new Date(invoice.dueDate);
+        const dueDate = new Date(invoice.dueDate || invoice.dateDue);
         const today = new Date();
         const daysOverdue = Math.floor((today.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
 
         const emailResult = await awsEmailService.sendPaymentReminderEmail({
           recipientEmail: clientEmail,
           recipientName: clientName,
-          invoiceNumber: invoice.invoiceNumber,
-          amountDue: invoice.totalAmount,
+          invoiceNumber: invoice.invoiceNumber || invoice.invoice_number,
+          amountDue: invoice.totalAmount || invoice.total_amount,
           dueDate: format(dueDate, 'dd MMM yyyy'),
           daysOverdue: Math.max(0, daysOverdue)
         });
 
         if (emailResult.success) {
-          console.log(`Payment reminder sent for invoice ${invoice.invoiceNumber}`);
+          console.log(`Payment reminder sent for invoice ${invoice.invoiceNumber || invoice.invoice_number}`);
 
           // Update reminder tracking
           await supabase
             .from('invoices')
             .update({
               last_reminder_sent: new Date().toISOString(),
-              reminder_count: (invoice.reminderCount || 0) + 1,
+              reminder_count: (invoice.reminderCount || invoice.reminders_sent || 0) + 1,
               updated_at: new Date().toISOString()
             })
             .eq('id', invoice.id);
@@ -1522,9 +1595,9 @@ export class InvoiceService {
       totalAmount: dbInvoice.total_amount as number,
       dateIssued: dbInvoice.invoice_date as string,
       dateDue: dbInvoice.due_date as string,
-      datePaid: dbInvoice.date_paid as string | null,
+      datePaid: (dbInvoice.date_paid as string | null) || undefined,
       status: dbInvoice.status as InvoiceStatus,
-      bar: dbInvoice.bar as string,
+      bar: dbInvoice.bar as BarAssociation,
       paymentMethod: dbInvoice.payment_method as string | null,
       remindersSent: dbInvoice.reminders_sent as number,
       lastReminderDate: dbInvoice.last_reminder_date as string | null,

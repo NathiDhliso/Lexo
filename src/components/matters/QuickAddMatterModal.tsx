@@ -30,6 +30,7 @@ export interface QuickAddMatterData {
   instructing_attorney: string;
   instructing_attorney_email: string;
   instructing_attorney_phone?: string;
+  firm_id?: string;
   client_name?: string;
   description: string;
   matter_type: string;
@@ -182,7 +183,13 @@ export const QuickAddMatterModal: React.FC<QuickAddMatterModalProps> = ({
 
   const handleSubmit = () => {
     if (validate()) {
-      onConfirm(formData);
+      // Attach selected firm id when a registered firm was chosen
+      const payload = {
+        ...formData,
+        firm_id: selectedFirmId && selectedFirmId !== 'prefilled' ? selectedFirmId : undefined
+      } as QuickAddMatterData;
+
+      onConfirm(payload);
       // Reset form
       setSelectedFirmId('');
       setFormData({

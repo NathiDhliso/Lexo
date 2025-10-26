@@ -1,0 +1,83 @@
+
+> vite-react-typescript-starter@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+
+src/components/disbursements/DisbursementsTable.tsx(62,7): error TS2353: Object literal may only specify known properties, and 'confirmVariant' does not exist in type 'ConfirmationOptions'.
+src/components/disbursements/EditDisbursementModal.tsx(258,15): error TS2322: Type '{ children: string; type: "submit"; variant: "primary"; disabled: boolean; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'. Did you mean 'loading'?
+src/components/disbursements/LogDisbursementModal.tsx(268,15): error TS2322: Type '{ children: string; type: "submit"; variant: "primary"; disabled: boolean; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'. Did you mean 'loading'?
+src/components/invoices/MatterTimeEntriesView.tsx(57,22): error TS2345: Argument of type 'TimeEntry[]' is not assignable to parameter of type 'SetStateAction<TimeEntry[]>'.
+  Type 'import("C:/Users/nathi/Downloads/LexoHub/src/types/index").TimeEntry[]' is not assignable to type 'TimeEntry[]'.
+    Type 'import("C:/Users/nathi/Downloads/LexoHub/src/types/index").TimeEntry' is not assignable to type 'TimeEntry'.
+      Types of property 'amount' are incompatible.
+        Type 'number | null' is not assignable to type 'number'.
+          Type 'null' is not assignable to type 'number'.
+src/components/invoices/PaymentTrackingDashboard.tsx(268,39): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/components/invoices/PaymentTrackingDashboard.tsx(384,35): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/components/invoices/UnifiedInvoiceWizard.tsx(105,22): error TS2345: Argument of type 'TimeEntry[]' is not assignable to parameter of type 'SetStateAction<TimeEntryItem[]>'.
+  Type 'TimeEntry[]' is not assignable to type 'TimeEntryItem[]'.
+    Type 'TimeEntry' is not assignable to type 'TimeEntryItem'.
+      Types of property 'amount' are incompatible.
+        Type 'number | null' is not assignable to type 'number'.
+          Type 'null' is not assignable to type 'number'.
+src/components/matters/EditMatterModal.tsx(86,63): error TS2345: Argument of type '{ title: string; matter_type: string; description: string; client_name: string; client_email: string; client_phone: string; client_address: string; instructing_attorney: string; instructing_firm: string; instructing_attorney_email: string; instructing_attorney_phone: string; estimated_fee: number; status: string; }' is not assignable to parameter of type 'Partial<Matter>'.
+  Types of property 'status' are incompatible.
+    Type 'string' is not assignable to type 'MatterStatus | undefined'.
+src/components/matters/MatterCard.tsx(232,47): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/matters/workbench/WorkbenchServicesTab.tsx(154,11): error TS2322: Type '{ isOpen: true; onClose: () => void; matterId: string; onSuccess: () => void; }' is not assignable to type 'IntrinsicAttributes & LogServiceModalProps'.
+  Property 'onSuccess' does not exist on type 'IntrinsicAttributes & LogServiceModalProps'.
+src/components/notifications/AlertsDropdown.tsx(12,10): error TS2678: Type '"urgent"' is not comparable to type '"success" | "warning" | "error" | "info"'.
+src/components/notifications/AlertsDropdown.tsx(14,10): error TS2678: Type '"attention"' is not comparable to type '"success" | "warning" | "error" | "info"'.
+src/components/notifications/AlertsDropdown.tsx(42,9): error TS2367: This comparison appears to be unintentional because the types '() => void' and 'string' have no overlap.
+src/components/notifications/AlertsDropdown.tsx(46,16): error TS2367: This comparison appears to be unintentional because the types '() => void' and 'string' have no overlap.
+src/components/notifications/AlertsDropdown.tsx(56,16): error TS2367: This comparison appears to be unintentional because the types '() => void' and 'string' have no overlap.
+src/components/notifications/AlertsDropdown.tsx(58,16): error TS2367: This comparison appears to be unintentional because the types '() => void' and 'string' have no overlap.
+src/components/notifications/AlertsDropdown.tsx(82,16): error TS2367: This comparison appears to be unintentional because the types '"success" | "warning" | "error" | "info"' and '"urgent"' have no overlap.
+src/components/pricing/RateCardSelector.tsx(707,16): error TS2741: Property 'children' is missing in type '{}' but required in type 'CardProps'.
+src/components/retainer/RetainerDashboard.tsx(21,46): error TS2576: Property 'getByMatterId' does not exist on type 'RetainerService'. Did you mean to access the static member 'RetainerService.getByMatterId' instead?
+src/components/retainer/RetainerDashboard.tsx(23,51): error TS2576: Property 'getSummary' does not exist on type 'RetainerService'. Did you mean to access the static member 'RetainerService.getSummary' instead?
+src/components/services/LogServiceModal.tsx(55,9): error TS2322: Type '"other" | "research" | "drafting" | "consultation" | "court_appearance" | "negotiation" | "review"' is not assignable to type '"consultation"'.
+  Type '"other"' is not assignable to type '"consultation"'.
+src/components/services/LogServiceModal.tsx(237,17): error TS2322: Type '{ matterId: string; onSelect: (rateCardId: string, rate: number) => void; selectedRateCardId: string; }' is not assignable to type 'IntrinsicAttributes & RateCardSelectorProps'.
+  Property 'matterId' does not exist on type 'IntrinsicAttributes & RateCardSelectorProps'.
+src/components/settings/QuickBriefTemplatesSettings.tsx(70,20): error TS2345: Argument of type 'never[] | Record<TemplateCategory, TemplateItem[]>' is not assignable to parameter of type 'SetStateAction<TemplateItem[]>'.
+  Type 'Record<TemplateCategory, TemplateItem[]>' is not assignable to type 'SetStateAction<TemplateItem[]>'.
+src/components/settings/QuickBriefTemplatesSettings.tsx(122,80): error TS2559: Type 'string' has no properties in common with type 'Partial<TemplateItem>'.
+src/components/settings/QuickBriefTemplatesSettings.tsx(181,20): error TS2339: Property 'error' does not exist on type 'string'.
+src/components/settings/QuickBriefTemplatesSettings.tsx(186,47): error TS2339: Property 'data' does not exist on type 'string'.
+src/components/settings/QuickBriefTemplatesSettings.tsx(219,11): error TS18048: 'result.errors' is possibly 'undefined'.
+src/components/settings/QuickBriefTemplatesSettings.tsx(266,41): error TS2322: Type '{ children: (string | Element)[]; variant: "secondary"; as: string; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'as' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+src/services/api/cloud-storage.service.ts(7,3): error TS2724: '"@/types/cloud-storage.types"' has no exported member named 'CloudStorageUploadOptions'. Did you mean 'CloudStorageDownloadOptions'?
+src/services/api/cloud-storage.service.ts(8,3): error TS2724: '"@/types/cloud-storage.types"' has no exported member named 'CloudStorageSyncResult'. Did you mean 'CloudStorageSyncLog'?
+src/services/api/cloud-storage.service.ts(638,48): error TS2445: Property 'supabaseUrl' is protected and only accessible within class 'SupabaseClient<Database, SchemaNameOrClientOptions, SchemaName, Schema, ClientOptions>' and its subclasses.
+src/services/api/invoices.service.ts(1362,7): error TS2353: Object literal may only specify known properties, and ''Draft'' does not exist in type 'Record<InvoiceStatus, InvoiceStatus[]>'.
+src/services/api/invoices.service.ts(1587,5): error TS2740: Type '{ id: string; invoiceNumber: string; matterId: string; matterTitle: string; clientName: string; amount: number; vatAmount: number; totalAmount: number; dateIssued: string; dateDue: string; ... 12 more ...; paymentReference: string | null; }' is missing the following properties from type 'Invoice': matter_id, advocate_id, invoice_number, fees_amount, and 14 more.
+src/services/api/matter-api.service.ts(44,14): error TS2415: Class 'MatterApiService' incorrectly extends base class 'BaseApiService<Matter>'.
+  Property 'generateRequestId' is private in type 'MatterApiService' but not in type 'BaseApiService<Matter>'.
+src/services/api/matter-api.service.ts(144,9): error TS2739: Type '{ code: string; message: string; details: undefined; }' is missing the following properties from type 'ApiError': type, timestamp, requestId
+src/services/api/partner-approval.service.ts(213,39): error TS2339: Property 'full_name' does not exist on type '{ full_name: any; }[]'.
+src/services/api/retainer.service.ts(68,9): error TS2353: Object literal may only specify known properties, and 'notes' does not exist in type '{ advocate_id: string; auto_renew?: boolean | null | undefined; billing_period?: string | null | undefined; can_fund_multiple_matters?: boolean | null | undefined; client_id?: string | null | undefined; ... 15 more ...; updated_at?: string | undefined; }'.
+src/services/api/retainer.service.ts(111,9): error TS2353: Object literal may only specify known properties, and 'retainer_id' does not exist in type '{ advocate_id: string; amount: number; balance_after: number; balance_before: number; created_at?: string | undefined; deleted_at?: string | null | undefined; description: string; id?: string | undefined; ... 6 more ...; transaction_type: string; }'.
+src/services/api/retainer.service.ts(167,9): error TS2353: Object literal may only specify known properties, and 'retainer_id' does not exist in type '{ advocate_id: string; amount: number; balance_after: number; balance_before: number; created_at?: string | undefined; deleted_at?: string | null | undefined; description: string; id?: string | undefined; ... 6 more ...; transaction_type: string; }'.
+src/services/api/retainer.service.ts(225,9): error TS2353: Object literal may only specify known properties, and 'retainer_id' does not exist in type '{ advocate_id: string; amount: number; balance_after: number; balance_before: number; created_at?: string | undefined; deleted_at?: string | null | undefined; description: string; id?: string | undefined; ... 6 more ...; transaction_type: string; }'.
+src/services/api/scope-amendment.service.ts(46,9): error TS2353: Object literal may only specify known properties, and 'original_timeline_days' does not exist in type '{ advocate_id: string; amendment_type: string; approved_at?: string | null | undefined; client_approved_at?: string | null | undefined; client_notified_at?: string | null | undefined; ... 15 more ...; variance_percentage?: number | ... 1 more ... | undefined; }'.
+src/services/proforma-pdf.service.ts(435,43): error TS2345: Argument of type 'string | number[]' is not assignable to parameter of type 'string'.
+  Type 'number[]' is not assignable to type 'string'.
+src/services/proforma-pdf.service.ts(438,41): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/services/proforma-pdf.service.ts(439,41): error TS2345: Argument of type 'string | undefined' is not assignable to parameter of type 'string'.
+  Type 'undefined' is not assignable to type 'string'.
+src/utils/pdf-template-helper.ts(188,9): error TS18048: 'section.padding' is possibly 'undefined'.
+src/utils/pdf-template-helper.ts(200,9): error TS18048: 'section.padding' is possibly 'undefined'.
+src/utils/pdf-template-helper.ts(204,17): error TS18048: 'section.padding' is possibly 'undefined'.
+src/utils/pdf-template-helper.ts(213,17): error TS18048: 'section.padding' is possibly 'undefined'.

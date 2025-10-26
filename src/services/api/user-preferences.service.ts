@@ -3,7 +3,7 @@
  * Manages user preferences for the 3-step workflow (Pro Forma → Matter → Invoice)
  */
 
-import { BaseApiService, ApiResponse, ErrorType } from './base-api.service';
+import { BaseApiService, ApiResponse, ApiError, ErrorType } from './base-api.service';
 import { supabase } from '../../lib/supabase';
 
 // Core user preferences for the 3-step workflow only
@@ -93,7 +93,7 @@ class UserPreferencesService extends BaseApiService<UserPreferences> {
       return { data: null, error: null };
     }
 
-    return result;
+    return result as ApiResponse<UserPreferences>;
   }
 
   /**
@@ -135,7 +135,7 @@ class UserPreferencesService extends BaseApiService<UserPreferences> {
       return { data: null, error: null };
     }
 
-    return result;
+    return result as ApiResponse<UserPreferences>;
   }
 
   /**
@@ -328,7 +328,7 @@ class UserPreferencesService extends BaseApiService<UserPreferences> {
 
     try {
       const results: UserPreferences[] = [];
-      const errors: Array<{ userId: string; error: string }> = [];
+      const errors: Array<{ userId: string; error: ApiError }> = [];
 
       // Execute updates in parallel
       const promises = updates.map(async ({ userId, preferences }) => {
@@ -364,9 +364,61 @@ class UserPreferencesService extends BaseApiService<UserPreferences> {
     }
   }
 
-  // Private method to generate request ID (inherited from BaseApiService)
-  private generateRequestId(): string {
-    return `req_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+  /**
+   * Check if a feature notification should be shown
+   */
+  async shouldShowFeatureNotification(featureId: string): Promise<ApiResponse<boolean>> {
+    try {
+      const storageKey = `feature_notification_${featureId}`;
+      const dismissed = localStorage.getItem(storageKey);
+      return {
+        data: dismissed !== 'true',
+        error: null
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: this.transformError(error as Error, this.generateRequestId())
+      };
+    }
+  }
+
+  /**
+   * Dismiss a feature notification
+   */
+  async dismissNotification(featureId: string): Promise<ApiResponse<void>> {
+    try {
+      const storageKey = `feature_notification_${featureId}`;
+      localStorage.setItem(storageKey, 'true');
+      return {
+        data: undefined as any,
+        error: null
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: this.transformError(error as Error, this.generateRequestId())
+      };
+    }
+  }
+
+  /**
+   * Mark a notification as shown
+   */
+  async markNotificationShown(featureId: string): Promise<ApiResponse<void>> {
+    try {
+      const storageKey = `feature_notification_shown_${featureId}`;
+      localStorage.setItem(storageKey, 'true');
+      return {
+        data: undefined as any,
+        error: null
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: this.transformError(error as Error, this.generateRequestId())
+      };
+    }
   }
 }
 

@@ -92,19 +92,14 @@ export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
           invoice_number: invoiceNumber,
           matter_id: matter.id,
           advocate_id: user.id,
-          bar: (matter as any).bar || 'johannesburg',
           fees_amount: briefFeeAmount,
           disbursements_amount: disbursementsTotal,
-          subtotal: subtotal,
           vat_rate: 0.15,
-          vat_amount: vatAmount,
-          total_amount: totalAmount,
-          balance_due: totalAmount,
           amount_paid: 0,
           fee_narrative: feeDescription,
           status: 'draft',
-          date_issued: new Date().toISOString(),
-          date_due: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString() // 30 days from now
+          invoice_date: new Date().toISOString().split('T')[0],
+          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
         })
         .select()
         .single();

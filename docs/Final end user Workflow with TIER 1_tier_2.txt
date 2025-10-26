@@ -1,0 +1,674 @@
+# Complete Workflow with TIER 1 & TIER 2 Features Integrated
+
+## 🔒 **IMPORTANT: No Document Uploads**
+This system does NOT store sensitive legal documents on servers. Instead:
+- ✅ Attorneys can **link** to documents in their own cloud storage (Google Drive, OneDrive, Dropbox)
+- ✅ You maintain complete control over sensitive materials
+- ✅ Links are stored for reference, but documents stay in YOUR secure environment
+
+---
+
+## **Path A: "Quote First" Path (Complex Matters)**
+
+### **Stage 1: PRO FORMA (The Estimate)**
+```
+Attorney submits brief → Matter status: "New Request" →
+You → Open matter → Review brief details →
+You → ProFormaRequestPage → Use Universal Toolset →
+You → Add services → Build estimate → Generate PDF →
+You → Send pro forma to attorney → Matter status: "Awaiting Approval" →
+Attorney → Reviews estimate → Approves OR Declines →
+
+IF APPROVED:
+  Attorney → Approves estimate → Matter status: "Active" →
+  You → Proceed with work →
+
+IF DECLINED:
+  Attorney → Declines estimate → Matter status: "Declined" →
+  You → Matter archived →
+```
+
+**What the Brief Contains:**
+```
+STRUCTURED DATA (Required):
+├─ Matter Title: "Contract Dispute - ABC Corp"
+├─ Matter Type: [Opinion | Court Appearance | Drafting | Research]
+├─ Practice Area: [Commercial | Labour | Tax | etc.]
+├─ Brief Description: [Text area - attorney explains the issue]
+├─ Deadline: [Date picker]
+├─ Estimated Complexity: [Simple | Medium | Complex]
+└─ Special Instructions: [Optional notes]
+
+REFERENCE MATERIALS (Optional - External Links Only):
+├─ Link to contract: https://drive.google.com/...
+├─ Link to correspondence: https://onedrive.com/...
+└─ Link to court papers: https://dropbox.com/...
+
+Note: Documents stay in attorney's cloud storage.
+You access them via links, not downloads from our system.
+```
+
+### **Stage 2: MATTERS/WIP (Detailed Tracking)**
+```
+You → MatterWorkbenchPage → Log time entries as work happens →
+You → Log expenses → Log services → WIP value accumulates →
+
+🔄 SCOPE AMENDMENT TRIGGER:
+Attorney → Phones: "Can you also draft heads of argument?" →
+You → MatterWorkbenchPage → Click "Request Scope Amendment" button →
+You → Add new line items (e.g., "Draft heads of argument - 8 hours @ R2,500") →
+You → System shows: Original estimate + Amendment = New total →
+You → Send amendment request to attorney →
+Attorney → Reviews → Approves OR Declines →
+
+IF AMENDMENT APPROVED:
+  Matter budget updates → You continue work with new scope →
+
+IF AMENDMENT DECLINED:
+  Work only on original scope → Amendment archived →
+
+You → Track actual costs vs estimate (including amendments) →
+You → Complete work → Mark matter ready for invoicing →
+
+📊 WIP REPORT (Tier 2):
+At any time → Navigate to Reports → WIP Report →
+See: All active matters with unbilled work →
+Shows: Matter name, hours logged, estimated value, days in WIP →
+Helps you: "I have R45,000 in unbilled work across 6 matters" →
+```
+
+### **Stage 3: INVOICE (The Final Bill)**
+```
+You → InvoicesPage → Convert WIP to invoice →
+You → System pulls all logged time/expenses/services → Generate invoice PDF →
+You → Review invoice → Send to attorney → Invoice status: "Sent" →
+You → Track payment status →
+
+Attorney → Pays invoice → You mark as "Paid" → Matter closes →
+
+📊 OUTSTANDING FEES REPORT (Tier 1):
+Navigate to Reports → Outstanding Fees →
+See: All unpaid invoices sorted by days overdue →
+Shows: 
+  - Smith & Associates | Matter: Contract dispute | R15,000 | 45 days overdue
+  - Jones Inc | Matter: Opinion on tax | R8,500 | 12 days overdue
+Use this to: Follow up on late payments, manage cashflow →
+
+📊 REVENUE REPORT (Tier 1):
+Navigate to Reports → Revenue →
+See: Total fees earned per month/quarter/year →
+Filter by: Date range, attorney firm, practice area →
+Use for: SARS provisional tax, income tracking, year-end accounting →
+
+💳 CREDIT NOTE SCENARIO:
+Attorney → "There's an error, you charged 10 hours but we agreed on 8" →
+You → InvoicesPage → Open invoice → Click "Issue Credit Note" →
+You → Select reason: "Fee adjustment - hours correction" →
+You → Enter credit amount: R5,000 →
+System → Generates credit note PDF with proper SARS format →
+System → Updates invoice: Original R25,000 - Credit R5,000 = Balance R20,000 →
+You → Send credit note to attorney →
+Outstanding Fees Report → Updates automatically to show R20,000 balance →
+Revenue Report → Adjusts total revenue for that period →
+```
+
+---
+
+## **Path B: "Accept & Work" Path (Traditional Brief Fee) - ENHANCED**
+
+### **🚀 Scenario: Attorney Phones You Directly**
+
+```
+Ring ring! Attorney on the phone:
+"Hi, I need an opinion on a restraint of trade clause. Can you help?"
+
+You think: "This is straightforward, I don't need a formal pro forma."
+You decide: Path B - Accept & Work immediately.
+```
+
+---
+
+### **📋 QUICK BRIEF CAPTURE (NEW FEATURE)**
+
+Instead of asking attorney to submit through portal, you capture the brief details yourself while on the call:
+
+```
+You → MattersPage → Click [+ Quick Brief Entry] →
+System → Opens Quick Brief Questionnaire Modal →
+
+┌──────────────────────────────────────────────────────────────┐
+│ 📞 QUICK BRIEF CAPTURE                            [Save] [×] │
+├──────────────────────────────────────────────────────────────┤
+│                                                               │
+│ 1️⃣ ATTORNEY & MATTER BASICS                                  │
+│                                                               │
+│ Attorney Firm: * [Smith & Associates ▼] (from your firms)    │
+│ Contact Person: [John Smith ▼] (from firm contacts)          │
+│ Matter Title: * [Restraint of Trade Opinion_______]          │
+│                                                               │
+│ ─────────────────────────────────────────────────────────── │
+│                                                               │
+│ 2️⃣ WHAT TYPE OF WORK? *                                      │
+│                                                               │
+│ Quick Select:                                                 │
+│ [Opinion] [Court Appearance] [Drafting] [Research]          │
+│ [Consultation] [Heads of Argument] [+ Add Custom]           │
+│                                                               │
+│ Selected: Opinion ✓                                          │
+│                                                               │
+│ ─────────────────────────────────────────────────────────── │
+│                                                               │
+│ 3️⃣ PRACTICE AREA? *                                          │
+│                                                               │
+│ Quick Select:                                                 │
+│ [Labour Law] [Commercial] [Tax] [Constitutional]            │
+│ [Criminal] [Family] [Property] [+ Add Custom]               │
+│                                                               │
+│ Selected: Labour Law ✓                                       │
+│                                                               │
+│ ─────────────────────────────────────────────────────────── │
+│                                                               │
+│ 4️⃣ URGENCY/DEADLINE? *                                       │
+│                                                               │
+│ Quick Select:                                                 │
+│ [Same Day] [1-2 Days] [Within a Week] [Within 2 Weeks]      │
+│ [Within a Month] [Custom Date: 📅]                          │
+│                                                               │
+│ Selected: Within a Week ✓                                    │
+│ (System sets deadline: 4 Nov 2025)                           │
+│                                                               │
+│ ─────────────────────────────────────────────────────────── │
+│                                                               │
+│ 5️⃣ BRIEF SUMMARY (What's the core issue?)                    │
+│                                                               │
+│ Common Issues (Click to auto-fill):                          │
+│ [Breach of Contract] [Employment Dispute]                    │
+│ [Restraint of Trade] [Shareholder Dispute]                  │
+│ [Tax Assessment Challenge] [+ Add Custom Template]          │
+│                                                               │
+│ Selected: Restraint of Trade ✓                              │
+│                                                               │
+│ Auto-filled text (editable):                                 │
+│ ┌──────────────────────────────────────────────────────────┐│
+│ │ Client subject to restraint of trade clause. Need opinion││
+│ │ on enforceability under current law. Clause restricts    ││
+│ │ [edit: specify industry/geography/duration].             ││
+│ └──────────────────────────────────────────────────────────┘│
+│                                                               │
+│ ─────────────────────────────────────────────────────────── │
+│                                                               │
+│ 6️⃣ REFERENCE MATERIALS (Optional)                            │
+│                                                               │
+│ 🔗 Add links to documents (Google Drive, OneDrive, etc.):   │
+│ [+ Add Link]                                                 │
+│                                                               │
+│ Employment Contract: https://drive.google.com/file/d/... ✓   │
+│ Restraint Clause Extract: https://onedrive.com/... ✓        │
+│                                                               │
+│ Note: Documents stay in attorney's cloud storage.            │
+│                                                               │
+│ ─────────────────────────────────────────────────────────── │
+│                                                               │
+│ [Cancel] [Save & Accept Brief] [Save & Quote Later]         │
+│                                                               │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+### **🎯 How Preconfigured Answers Work:**
+
+**Custom Answers Save to Your Profile:**
+```
+First Time:
+You select "Practice Area" → None of the options fit →
+You click [+ Add Custom] → Type: "Insolvency Law" →
+System → Saves "Insolvency Law" to YOUR profile →
+
+Next Time:
+You open Quick Brief → Practice Area dropdown now shows:
+[Labour Law] [Commercial] [Tax] [Insolvency Law] ← Your custom one!
+
+Your Profile:
+Navigate to Settings → My Quick Brief Templates →
+See all your custom options:
+  - Practice Areas: Insolvency Law, Mining Law
+  - Matter Types: Arbitration, CCMA Representation
+  - Common Issues: Transfer duty dispute, VAT refund opinion
+  
+You can: Edit, Delete, Reorder these for faster selection next time
+```
+
+---
+
+### **After Quick Brief Capture:**
+
+```
+You click [Save & Accept Brief] →
+System → Creates matter instantly:
+  - Matter status: "Active" (skips "New Request")
+  - All details from questionnaire populated
+  - Ready to work immediately →
+
+You → Do the work (write opinion/attend court/draft) →
+You → MatterWorkbenchPage → Choose billing method:
+```
+
+---
+
+### **OPTION 1: Simple Fee Entry (Traditional Brief Fee)**
+
+```
+You → Click "Simple Fee Entry" →
+You → Enter: "Brief fee: R15,000" →
+You → Add disbursements: "Travel to Pretoria: R800" →
+You → Click "Generate Fee Note" →
+System → Creates invoice →
+You → Send to attorney → Invoice status: "Sent" →
+```
+
+---
+
+### **OPTION 2: Time Tracking (Hybrid with Path A)**
+
+```
+You → Log time as you work:
+  - "Research case law" - 2 hours @ R2,500 = R5,000
+  - "Draft opinion" - 3 hours @ R2,500 = R7,500
+  - "Telephone consultation with attorney" - 0.5 hours @ R2,000 = R1,000
+
+System → Running total: R13,500 →
+
+📊 WIP REPORT (Tier 2):
+Matter appears in WIP Report until invoiced →
+Shows: "Restraint of Trade Opinion - 5.5 hours logged - R13,500 unbilled" →
+
+You → Complete work → Click "Generate Invoice from Time" →
+System → Pulls all logged time + expenses →
+You → Review → Send to attorney →
+```
+
+---
+
+### **After Invoice Sent:**
+
+```
+You → Track payment →
+Attorney → Pays → You mark as "Paid" → Matter closes →
+
+📊 OUTSTANDING FEES REPORT (Tier 1):
+After sending invoice → Appears in Outstanding Fees Report →
+Shows: Days since invoice sent, amount owing →
+Updates when payment received →
+
+📊 REVENUE REPORT (Tier 1):
+After payment → Counted in Revenue Report for that period →
+
+💳 CREDIT NOTE SCENARIO:
+Attorney → "You charged travel to Pretoria but the hearing was in Joburg" →
+You → InvoicesPage → Open fee note → Click "Issue Credit Note" →
+You → Credit R800 for incorrect disbursement →
+System → Generates credit note →
+System → Updates balance: R15,800 - R800 = R15,000 →
+Reports → Auto-update →
+```
+
+---
+
+## **🆚 Path A vs Path B Comparison**
+
+| Feature | Path A (Quote First) | Path B (Accept & Work) |
+|---------|---------------------|------------------------|
+| **When to Use** | Complex matters, uncertain scope | Routine matters, known scope |
+| **Entry Point** | Attorney submits via portal OR you use Quick Brief | Quick Brief Capture (phone call) |
+| **Pro Forma** | Required before work starts | Not required |
+| **Matter Status** | New Request → Awaiting Approval → Active | Active immediately |
+| **Scope Changes** | Common (amendments expected) | Rare (brief fee usually fixed) |
+| **Time Tracking** | Always used (detailed WIP) | Optional (can use simple fee) |
+| **Best For** | Litigation, research projects, drafting | Opinions, consultations, court appearances |
+
+---
+
+## **Navigation & Reports Hub**
+
+### **Main Navigation:**
+```
+Dashboard
+  ├─ Matters (see all matters by status)
+  │   └─ [+ Quick Brief Entry] ← NEW for Path B
+  ├─ Invoices (all invoices & fee notes)
+  ├─ Firms (attorney firms & contacts)
+  └─ 📊 Reports (new section)
+       ├─ Outstanding Fees → (Tier 1 - HIGH priority)
+       ├─ Revenue → (Tier 1 - HIGH priority)
+       └─ WIP (Tier 2 - Medium priority)
+```
+
+### **Settings → My Quick Brief Templates:**
+```
+Manage your preconfigured answers for Quick Brief Capture:
+
+┌────────────────────────────────────────────────────────┐
+│ MY QUICK BRIEF TEMPLATES                     [+ Add]   │
+├────────────────────────────────────────────────────────┤
+│                                                         │
+│ 📋 MATTER TYPES (7)                                    │
+│ ├─ Opinion ⭐ (most used)                              │
+│ ├─ Court Appearance                                    │
+│ ├─ Drafting                                            │
+│ ├─ Research                                            │
+│ ├─ Consultation                                        │
+│ ├─ Heads of Argument                                   │
+│ └─ Arbitration (custom)                       [Edit]   │
+│                                                         │
+│ 🏛️ PRACTICE AREAS (9)                                  │
+│ ├─ Labour Law ⭐ (most used)                           │
+│ ├─ Commercial                                          │
+│ ├─ Tax                                                 │
+│ ├─ Constitutional                                      │
+│ ├─ Criminal                                            │
+│ ├─ Family                                              │
+│ ├─ Property                                            │
+│ ├─ Insolvency Law (custom)                   [Edit]   │
+│ └─ Mining Law (custom)                        [Edit]   │
+│                                                         │
+│ ⏰ URGENCY PRESETS (6)                                 │
+│ ├─ Same Day                                            │
+│ ├─ 1-2 Days                                            │
+│ ├─ Within a Week ⭐                                    │
+│ ├─ Within 2 Weeks                                      │
+│ ├─ Within a Month                                      │
+│ └─ Custom Date                                         │
+│                                                         │
+│ 📝 COMMON ISSUE TEMPLATES (8)                          │
+│ ├─ Breach of Contract                                  │
+│ ├─ Employment Dispute                                  │
+│ ├─ Restraint of Trade ⭐                               │
+│ ├─ Shareholder Dispute                                 │
+│ ├─ Tax Assessment Challenge                            │
+│ ├─ Transfer Duty Dispute (custom)            [Edit]   │
+│ ├─ VAT Refund Opinion (custom)               [Edit]   │
+│ └─ CCMA Representation (custom)              [Edit]   │
+│                                                         │
+└────────────────────────────────────────────────────────┘
+
+⭐ = Auto-suggest (shows first in Quick Brief dropdowns)
+
+[Reorder] [Import from CSV] [Export]
+```
+
+---
+
+## **Reports Integration Points:**
+
+**Outstanding Fees Report:**
+- Updates in real-time when:
+  - Invoice sent → Appears in report
+  - Payment received → Removed from report
+  - Credit note issued → Balance updated
+- Click any row → Jump to that invoice
+- Export to CSV for accountant
+
+**Revenue Report:**
+- Updates when:
+  - Invoice marked as "Paid"
+  - Credit note issued (reduces revenue)
+- Filters: Date range, attorney firm, matter type
+- Shows: Gross revenue, credit notes, net revenue
+- Export for SARS submission
+
+**WIP Report:**
+- Only shows matters with unbilled time/services
+- Updates when:
+  - Time entry logged → WIP value increases
+  - Invoice generated → Matter removed from WIP
+- Helps answer: "How much work have I done that I haven't billed yet?"
+
+---
+
+## **Credit Notes Workflow (Detailed)**
+
+### **Trigger Points:**
+```
+1. Fee dispute: "Your rate was supposed to be R2,000/hour not R2,500"
+2. Calculation error: "You billed 12 hours but only worked 10"
+3. Scope disagreement: "We didn't authorize the legal research"
+4. Goodwill adjustment: "Client unhappy, reduce fee by 10%"
+5. Disbursement correction: "We already paid for the transcript"
+```
+
+### **Process:**
+```
+You → InvoicesPage → Find the invoice →
+You → Click invoice → Click "Issue Credit Note" button →
+You → Credit Note Modal opens:
+  - Reason dropdown: [Fee adjustment | Calculation error | Goodwill | Other]
+  - Amount: R_____ (must be ≤ invoice total)
+  - Notes: [Free text explanation]
+  - Generate button →
+
+System → Creates credit note record →
+System → Generates PDF with:
+  - Credit Note #CN-2025-001
+  - Reference to original invoice
+  - Reason for credit
+  - Amount credited
+  - New balance owing →
+
+You → PDF downloads automatically →
+You → Email credit note to attorney →
+
+System → Updates:
+  - Invoice status: "Partially Paid" or "Credited"
+  - Outstanding balance calculation
+  - Outstanding Fees Report
+  - Revenue Report (reduces revenue for that period)
+  - Matter payment status →
+
+Attorney → Pays revised amount → You mark as "Paid" →
+```
+
+### **Credit Note on Reports:**
+```
+Outstanding Fees Report:
+  Smith & Associates | Contract dispute
+  Original: R25,000
+  Credit: -R5,000
+  Balance: R20,000 ← This is what shows
+
+Revenue Report:
+  January 2025
+  Invoices issued: R100,000
+  Credit notes: -R5,000
+  Net revenue: R95,000 ← Accurate for tax
+```
+
+---
+
+## **Scope Amendments Workflow (Detailed)**
+
+### **Trigger Scenario:**
+```
+You're 60% through a matter (logged 6 hours of 10 estimated)
+Attorney phones: "Opposing counsel filed new papers, can you draft a reply?"
+This wasn't in original scope → Need scope amendment
+```
+
+### **Process:**
+```
+You → MatterWorkbenchPage → Click "Request Scope Amendment" →
+You → Amendment Modal opens:
+  - Current pro forma shows (original services listed)
+  - Button: "+ Add Additional Services" →
+
+You → Add new line items:
+  - "Draft replying affidavit" - 6 hours @ R2,500 = R15,000
+  - "Court appearance (reply)" - 2 hours @ R3,000 = R6,000
+  Total amendment: R21,000 →
+
+You → Write note: "Additional work required due to opposing papers filed" →
+You → Click "Send Amendment Request" →
+
+System → Generates Amendment PDF showing:
+  Original Pro Forma Total: R25,000
+  + Amendment Services: R21,000
+  = New Total: R46,000 →
+
+System → Sends to attorney → Amendment status: "Pending Approval" →
+You → Continue original work while waiting →
+
+Attorney → Receives amendment → Reviews → Clicks "Approve" or "Decline" →
+
+IF APPROVED:
+  System → Updates matter budget to R46,000 →
+  System → Matter status: "Active (Amended)" →
+  You → Proceed with additional work →
+  WIP tracking → Now compares against R46,000 budget →
+
+IF DECLINED:
+  System → Amendment marked "Declined" →
+  You → Complete only original scope →
+  You → Phone attorney: "What would you like me to do instead?" →
+```
+
+### **Multiple Amendments:**
+```
+A matter can have multiple amendments:
+  Original: R25,000
+  Amendment 1 (approved): +R21,000
+  Amendment 2 (approved): +R8,000
+  Total budget: R54,000
+
+Matter page shows:
+  "Original scope: R25,000"
+  "Amendments: +R29,000"
+  "Current budget: R54,000"
+  "Work logged: R48,000"
+  "Remaining: R6,000"
+```
+
+---
+
+## **How Features Connect Across Both Paths:**
+
+| Feature | Path A (Quote First) | Path B (Accept & Work) |
+|---------|---------------------|------------------------|
+| **Quick Brief Capture** | Optional (attorney can submit via portal) | PRIMARY method (phone call) |
+| **Credit Notes** | Issue after invoice if dispute | Issue after fee note if dispute |
+| **Outstanding Fees** | Tracks unpaid invoices | Tracks unpaid fee notes |
+| **Revenue Report** | Counts paid invoices | Counts paid fee notes |
+| **WIP Report** | Shows detailed time tracking | Shows if using time tracking option |
+| **Scope Amendments** | Common (already quoting mindset) | Rare (brief fee usually fixed) |
+
+---
+
+## **Key User Flows Summary:**
+
+### **Daily Work:**
+```
+1. Check MattersPage → See new requests
+2. Path A: Attorney submitted via portal → Quote or accept
+   Path B: Attorney phones → [+ Quick Brief Entry] → Capture details → Accept
+3. Work on active matters → Log time/services
+4. Generate invoices/fee notes when done
+```
+
+### **Weekly Financial Check:**
+```
+1. Reports → Outstanding Fees → "Who owes me money?"
+2. Follow up on overdue invoices
+3. Reports → WIP → "How much unbilled work do I have?"
+```
+
+### **Monthly Accounting:**
+```
+1. Reports → Revenue → Generate for accountant
+2. Calculate SARS provisional tax
+3. Review: Invoices sent vs paid vs outstanding
+```
+
+### **Exception Handling:**
+```
+1. Attorney disputes fee → Issue credit note
+2. Scope changes mid-work → Request amendment
+3. Payment delayed → Outstanding Fees Report shows aging
+```
+
+---
+
+## **🎬 Real-World Example: Path B in Action**
+
+```
+9:15 AM - Attorney John phones:
+"Morning! I need an opinion on a restraint of trade clause. 
+Client was a sales manager, now wants to join competitor. 
+Contract says 12-month restriction within 50km. Is it enforceable?"
+
+You: "Sure, I can do that. Let me capture the details..."
+
+You → MattersPage → [+ Quick Brief Entry] →
+
+9:16 AM - You fill in Quick Brief:
+├─ Attorney: Smith & Associates (John Smith)
+├─ Matter: Restraint of Trade Opinion
+├─ Type: [Opinion] ✓
+├─ Practice Area: [Labour Law] ✓
+├─ Urgency: [Within a Week] ✓ (deadline: 4 Nov)
+├─ Summary: Click [Restraint of Trade] → Auto-fills template
+│   Edit: "12-month restriction, 50km radius, sales role"
+└─ Reference: "Link to employment contract?"
+    John: "I'll email you the Dropbox link"
+    You: [Add later] ✓
+
+9:17 AM - You click [Save & Accept Brief] →
+System → Matter created, status: "Active" →
+
+You: "Great, I'll have it for you by Friday."
+
+9:18 AM - You continue with your day...
+
+Later that day - Email from John:
+"Contract link: https://dropbox.com/contract-xyz"
+
+You → Open matter → Add link to Reference Materials →
+
+Wednesday - You work on opinion:
+├─ Log time: "Research restraint of trade case law" - 1.5 hours
+├─ Log time: "Draft opinion" - 2 hours
+├─ Log time: "Review and finalize" - 0.5 hours
+Total: 4 hours @ R2,500 = R10,000 →
+
+Friday - Opinion complete:
+You → MatterWorkbenchPage → "Generate Invoice from Time" →
+System → Creates invoice: R10,000 →
+You → Send to John → Invoice status: "Sent" →
+
+📊 Reports automatically update:
+├─ WIP Report: Matter removed (now invoiced)
+├─ Outstanding Fees: R10,000 added (awaiting payment)
+└─ Revenue Report: Will update when paid
+
+Next week - John pays:
+You → Mark invoice "Paid" →
+Matter status: "Closed" ✓
+
+📊 Reports automatically update:
+├─ Outstanding Fees: R10,000 removed
+└─ Revenue Report: R10,000 added to November revenue
+```
+
+**Total time spent on admin: 3 minutes (Quick Brief + Invoice)**
+**Time saved vs manual tracking: ~15 minutes per matter**
+
+---
+
+## **✅ System Philosophy:**
+
+1. **Path A (Quote First):** For matters where you need attorney approval before investing time
+2. **Path B (Accept & Work):** For matters where you know the scope and can bill afterward
+3. **Quick Brief Capture:** Makes Path B as fast as a phone call (no paperwork bottleneck)
+4. **Preconfigured Answers:** Learn your practice patterns, get faster over time
+5. **No Document Uploads:** Keep sensitive materials in attorney's control, not your servers
+6. **Automated Reports:** Financial visibility without spreadsheet maintenance
+
+**The system adapts to how you actually work, not how software thinks you should work.**

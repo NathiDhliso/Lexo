@@ -1,13 +1,11 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { 
-  Briefcase, 
   Plus, 
   Clock, 
   AlertTriangle,
   AlertCircle,
   Eye,
-  Search,
   Edit,
   Undo2,
   Trash2,
@@ -18,7 +16,8 @@ import {
   TrendingUp,
   FileText,
   Info,
-  CheckCircle
+  CheckCircle,
+  X
 } from 'lucide-react';
 import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
 import { SkeletonMatterCard } from '../components/design-system/components';
@@ -30,10 +29,13 @@ import { AcceptBriefModal } from '../components/matters/AcceptBriefModal';
 import { RequestScopeAmendmentModal } from '../components/matters/RequestScopeAmendmentModal';
 import { SimpleFeeEntryModal } from '../components/matters/SimpleFeeEntryModal';
 import { QuickAddMatterModal, type QuickAddMatterData } from '../components/matters/QuickAddMatterModal';
+import { MatterSearchBar } from '../components/matters/MatterSearchBar';
+import { AdvancedFiltersModal } from '../components/matters/AdvancedFiltersModal';
 import { NotificationBadge } from '../components/navigation/NotificationBadge';
 import { BulkActionToolbar, SelectionCheckbox } from '../components/ui/BulkActionToolbar';
 import { matterApiService } from '../services/api';
 import { matterConversionService } from '../services/api/matter-conversion.service';
+import { matterSearchService, type MatterSearchParams } from '../services/api/matter-search.service';
 import { useAuth } from '../hooks/useAuth';
 import { useSelection } from '../hooks/useSelection';
 import { useConfirmation } from '../hooks/useConfirmation';
@@ -65,6 +67,22 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [showScopeAmendmentModal, setShowScopeAmendmentModal] = useState(false);
   const [showSimpleFeeModal, setShowSimpleFeeModal] = useState(false);
   const [selectedMatterForAction, setSelectedMatterForAction] = useState<Matter | null>(null);
+
+  // Search and filter state
+  const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
+  const [searchFilters, setSearchFilters] = useState<MatterSearchParams>({
+    sort_by: 'created_at',
+    sort_order: 'desc',
+    include_archived: false
+  });
+  const [filterOptions, setFilterOptions] = useState({
+    practice_areas: [] as string[],
+    matter_types: [] as string[],
+    attorney_firms: [] as string[],
+    statuses: [] as MatterStatus[]
+  });
+  const [searchResultCount, setSearchResultCount] = useState<number | undefined>(undefined);
+  const [isSearching, setIsSearching] = useState(false);
 
   const [matters, setMatters] = useState<Matter[]>([]);
   const [loadingMatters, setLoadingMatters] = useState(true);
@@ -126,72 +144,110 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     }
   };
 
-  // Load matters from API based on current user
+  // Load filter options
+  const loadFilterOptions = React.useCallback(async () => {
+    if (!user?.id) return;
+    
+    try {
+      const options = await matterSearchService.getFilterOptions(user.id);
+      setFilterOptions(options);
+    } catch (error) {
+      console.error('Error loading filter options:', error);
+    }
+  }, [user?.id]);
+
+  // Load matters from API based on current user and search filters
   const fetchMatters = React.useCallback(async () => {
     if (loading || !isAuthenticated || !user?.id) return;
     setLoadingMatters(true);
+    setIsSearching(true);
     
     try {
       console.log('[MattersPage] Fetching matters for user:', user.id);
-      const { data, error } = await matterApiService.getByAdvocate(user.id);
-      console.log('[MattersPage] Matters response:', { data, error, count: data?.length });
       
-      if (error) {
-        console.error('[MattersPage] Error fetching matters:', error);
-        toast.error('Failed to load matters. Please try again.', { duration: 5000 });
-        setMatters([]);
-        return;
-      }
-      
-      // Fetch associated services for each matter
-      const mattersWithServices = await Promise.all(
-        (data || []).map(async (matter) => {
-          try {
-            const { data: matterServices } = await supabase
-              .from('matter_services')
-              .select(`
-                service_id,
-                services (
-                  id,
-                  name,
-                  description,
-                  service_categories (
+      // Use search service if filters are applied
+      const hasFilters = searchFilters.query || 
+                        searchFilters.practice_area || 
+                        searchFilters.matter_type ||
+                        searchFilters.status ||
+                        searchFilters.date_from ||
+                        searchFilters.date_to ||
+                        searchFilters.attorney_firm ||
+                        searchFilters.fee_min ||
+                        searchFilters.fee_max ||
+                        searchFilters.include_archived;
+
+      if (hasFilters) {
+        const searchResult = await matterSearchService.search(user.id, searchFilters);
+        console.log('[MattersPage] Search results:', searchResult);
+        setMatters(searchResult.matters);
+        setSearchResultCount(searchResult.total_count);
+      } else {
+        // Use regular API for unfiltered results
+        const { data, error } = await matterApiService.getByAdvocate(user.id);
+        console.log('[MattersPage] Matters response:', { data, error, count: data?.length });
+        
+        if (error) {
+          console.error('[MattersPage] Error fetching matters:', error);
+          toast.error('Failed to load matters. Please try again.', { duration: 5000 });
+          setMatters([]);
+          setSearchResultCount(0);
+          return;
+        }
+        
+        // Fetch associated services for each matter
+        const mattersWithServices = await Promise.all(
+          (data || []).map(async (matter) => {
+            try {
+              const { data: matterServices } = await supabase
+                .from('matter_services')
+                .select(`
+                  service_id,
+                  services (
                     id,
-                    name
+                    name,
+                    description,
+                    service_categories (
+                      id,
+                      name
+                    )
                   )
-                )
-              `)
-              .eq('matter_id', matter.id);
-            
-            return {
-              ...matter,
-              associatedServices: matterServices?.map(ms => ms.services) || []
-            };
-          } catch (serviceError) {
-            console.error('Error fetching services for matter:', matter.id, serviceError);
-            // Don't fail the whole operation, just skip services for this matter
-            return {
-              ...matter,
-              associatedServices: []
-            };
-          }
-        })
-      );
-      
-      console.log('[MattersPage] Successfully loaded', mattersWithServices.length, 'matters');
-      setMatters(mattersWithServices);
-      
-      // if (mattersWithServices.length > 0) {
-      //   toast.success(`Loaded ${mattersWithServices.length} matter${mattersWithServices.length > 1 ? 's' : ''}`, { duration: 2000 });
-      // }
+                `)
+                .eq('matter_id', matter.id);
+              
+              return {
+                ...matter,
+                associatedServices: matterServices?.map(ms => ms.services) || []
+              };
+            } catch (serviceError) {
+              console.error('Error fetching services for matter:', matter.id, serviceError);
+              // Don't fail the whole operation, just skip services for this matter
+              return {
+                ...matter,
+                associatedServices: []
+              };
+            }
+          })
+        );
+        
+        console.log('[MattersPage] Successfully loaded', mattersWithServices.length, 'matters');
+        setMatters(mattersWithServices);
+        setSearchResultCount(mattersWithServices.length);
+      }
     } catch (err) {
       console.error('[MattersPage] Unexpected error:', err);
       toast.error('Unexpected error loading matters. Please refresh the page.', { duration: 5000 });
       setMatters([]);
+      setSearchResultCount(0);
     } finally {
       setLoadingMatters(false);
+      setIsSearching(false);
     }
-  }, [loading, isAuthenticated, user?.id]);
+  }, [loading, isAuthenticated, user?.id, searchFilters]);
+
+  React.useEffect(() => {
+    loadFilterOptions();
+  }, [loadFilterOptions]);
 
   React.useEffect(() => {
     fetchMatters();
@@ -206,6 +262,63 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     window.addEventListener('focus', handleFocus);
     return () => window.removeEventListener('focus', handleFocus);
   }, [fetchMatters]);
+
+  // Search handlers
+  const handleSearch = React.useCallback((query: string) => {
+    setSearchFilters(prev => ({ ...prev, query: query || undefined }));
+  }, []);
+
+  const handleApplyFilters = React.useCallback((filters: MatterSearchParams) => {
+    setSearchFilters(filters);
+  }, []);
+
+  const handleExportCSV = async () => {
+    if (!user?.id) return;
+    
+    try {
+      const csvContent = await matterSearchService.exportToCSV(user.id, searchFilters);
+      matterSearchService.downloadCSV(csvContent, `matters-export-${new Date().toISOString().split('T')[0]}.csv`);
+    } catch (error) {
+      console.error('Error exporting matters:', error);
+    }
+  };
+
+  // Archive handlers
+  const handleArchiveMatter = async (matter: Matter) => {
+    if (!user?.id) return;
+
+    const confirmed = await confirm({
+      title: 'Archive Matter',
+      message: `Are you sure you want to archive "${matter.title}"? You can unarchive it later if needed.`,
+      confirmText: 'Archive',
+    });
+
+    if (!confirmed) return;
+
+    const reason = window.prompt('Optional: Enter a reason for archiving this matter');
+    
+    const success = await matterSearchService.archiveMatter(matter.id, user.id, reason || undefined);
+    if (success) {
+      await fetchMatters();
+    }
+  };
+
+  const handleUnarchiveMatter = async (matter: Matter) => {
+    if (!user?.id) return;
+
+    const confirmed = await confirm({
+      title: 'Unarchive Matter',
+      message: `Restore "${matter.title}" to active matters?`,
+      confirmText: 'Unarchive',
+    });
+
+    if (!confirmed) return;
+
+    const success = await matterSearchService.unarchiveMatter(matter.id, user.id);
+    if (success) {
+      await fetchMatters();
+    }
+  };
 
   // Function to determine if a matter is high WIP inactive
   const isHighWipInactive = (matter: Matter) => {
@@ -514,14 +627,24 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           <p className="text-neutral-600 dark:text-neutral-400 mt-1">Manage your legal matters and cases</p>
         </div>
         
-        <Button 
-          variant="primary" 
-          onClick={handleNewMatterClick}
-          className="flex items-center space-x-2"
-        >
-          <Plus className="w-4 h-4" />
-          <span>New Matter</span>
-        </Button>
+        <div className="flex gap-2">
+          <Button 
+            variant="outline" 
+            onClick={handleExportCSV}
+            className="flex items-center space-x-2"
+          >
+            <Download className="w-4 h-4" />
+            <span>Export CSV</span>
+          </Button>
+          <Button 
+            variant="primary" 
+            onClick={handleNewMatterClick}
+            className="flex items-center space-x-2"
+          >
+            <Plus className="w-4 h-4" />
+            <span>New Matter</span>
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards */}
@@ -593,17 +716,83 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         </div>
       )}
 
-      {/* Search */}
-      <div className="relative max-w-md">
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-neutral-400 dark:text-neutral-500 w-4 h-4" />
-        <input
-          type="text"
-          placeholder="Search matters, clients, or attorneys..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-900 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent"
-        />
-      </div>
+      {/* Search Bar with Advanced Filters */}
+      <MatterSearchBar
+        onSearch={handleSearch}
+        onAdvancedFilters={() => setShowAdvancedFilters(true)}
+        resultCount={searchResultCount}
+        isLoading={isSearching}
+      />
+
+      {/* Active Filter Chips */}
+      {(searchFilters.practice_area || searchFilters.matter_type || searchFilters.status || 
+        searchFilters.attorney_firm || searchFilters.date_from || searchFilters.date_to ||
+        searchFilters.fee_min || searchFilters.fee_max || searchFilters.include_archived) && (
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-sm text-gray-600">Active filters:</span>
+          {searchFilters.practice_area && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+              Practice: {searchFilters.practice_area}
+              <button
+                onClick={() => setSearchFilters(prev => ({ ...prev, practice_area: undefined }))}
+                className="ml-2 hover:text-blue-900"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+          {searchFilters.matter_type && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+              Type: {searchFilters.matter_type}
+              <button
+                onClick={() => setSearchFilters(prev => ({ ...prev, matter_type: undefined }))}
+                className="ml-2 hover:text-blue-900"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+          {searchFilters.status && searchFilters.status.length > 0 && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+              Status: {searchFilters.status.join(', ')}
+              <button
+                onClick={() => setSearchFilters(prev => ({ ...prev, status: undefined }))}
+                className="ml-2 hover:text-blue-900"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+          {searchFilters.attorney_firm && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+              Firm: {searchFilters.attorney_firm}
+              <button
+                onClick={() => setSearchFilters(prev => ({ ...prev, attorney_firm: undefined }))}
+                className="ml-2 hover:text-blue-900"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+          {searchFilters.include_archived && (
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+              Including Archived
+              <button
+                onClick={() => setSearchFilters(prev => ({ ...prev, include_archived: false }))}
+                className="ml-2 hover:text-blue-900"
+              >
+                <X className="h-3 w-3" />
+              </button>
+            </span>
+          )}
+          <button
+            onClick={() => setSearchFilters({ sort_by: 'created_at', sort_order: 'desc', include_archived: false })}
+            className="text-sm text-blue-600 hover:text-blue-800"
+          >
+            Clear all filters
+          </button>
+        </div>
+      )}
 
       {/* Tabs */}
       <div className="flex space-x-1 bg-neutral-100 dark:bg-metallic-gray-800 rounded-lg p-1 w-fit">
@@ -733,15 +922,23 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                   <div className="flex-1">
                     <div className="flex items-center gap-3 mb-2">
                       <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{matter.title}</h3>
-                      <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                        matter.status === MatterStatus.NEW_REQUEST ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 animate-pulse' :
-                        matter.status === MatterStatus.ACTIVE ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
-                        matter.status === MatterStatus.PENDING ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
-                        matter.status === MatterStatus.SETTLED ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
-                        'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300'
-                      }`}>
-                        {matter.status === MatterStatus.NEW_REQUEST ? 'NEW REQUEST' : matter.status}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
+                          matter.status === MatterStatus.NEW_REQUEST ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 animate-pulse' :
+                          matter.status === MatterStatus.ACTIVE ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
+                          matter.status === MatterStatus.PENDING ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
+                          matter.status === MatterStatus.SETTLED ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
+                          'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300'
+                        }`}>
+                          {matter.status === MatterStatus.NEW_REQUEST ? 'NEW REQUEST' : matter.status}
+                        </span>
+                        {matter.is_archived && (
+                          <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full bg-gray-100 dark:bg-gray-900/30 text-gray-800 dark:text-gray-300">
+                            <Archive className="w-3 h-3 mr-1" />
+                            ARCHIVED
+                          </span>
+                        )}
+                      </div>
                       
                       {/* Health Check Warning Icons */}
                       <div className="flex items-center gap-2">
@@ -852,6 +1049,31 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                     <Edit className="w-4 h-4" />
                     Edit
                   </Button>
+
+                  {/* Archive/Unarchive Button */}
+                  {matter.is_archived ? (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleUnarchiveMatter(matter)}
+                      className="flex items-center gap-2 text-green-600 dark:text-green-400 border-green-300 dark:border-green-700 hover:bg-green-50 dark:hover:bg-green-950/30"
+                      title="Unarchive this matter"
+                    >
+                      <Archive className="w-4 h-4" />
+                      Unarchive
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => handleArchiveMatter(matter)}
+                      className="flex items-center gap-2 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-950/30"
+                      title="Archive this matter"
+                    >
+                      <Archive className="w-4 h-4" />
+                      Archive
+                    </Button>
+                  )}
 
                   {/* Reverse Conversion Button - only show for matters converted from pro forma */}
                   {(matter as any).source_proforma_id && (
@@ -984,6 +1206,15 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           fetchMatters();
           toast.success('Fee note created successfully');
         }}
+      />
+
+      {/* Advanced Filters Modal */}
+      <AdvancedFiltersModal
+        isOpen={showAdvancedFilters}
+        onClose={() => setShowAdvancedFilters(false)}
+        onApply={handleApplyFilters}
+        currentFilters={searchFilters}
+        filterOptions={filterOptions}
       />
     </div>
   );

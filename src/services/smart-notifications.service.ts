@@ -1,3 +1,10 @@
+export interface NotificationAction {
+  label: string;
+  action: () => void;
+  target?: string;
+  parameters?: Record<string, any>;
+}
+
 export interface SmartNotification {
   id: string;
   type: 'info' | 'warning' | 'error' | 'success';
@@ -7,6 +14,9 @@ export interface SmartNotification {
   read: boolean;
   actionUrl?: string;
   actionText?: string;
+  actionable?: boolean;
+  actions?: NotificationAction[];
+  relatedId?: string;
 }
 
 export interface NotificationBadge {
@@ -50,6 +60,14 @@ class SmartNotificationsService {
     
     this.notifications.unshift(newNotification);
     this.notifyListeners();
+  }
+
+  async removeNotification(notificationId: string): Promise<void> {
+    const index = this.notifications.findIndex(n => n.id === notificationId);
+    if (index > -1) {
+      this.notifications.splice(index, 1);
+      this.notifyListeners();
+    }
   }
 
   subscribe(listener: (notifications: SmartNotification[]) => void): () => void {

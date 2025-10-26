@@ -53,23 +53,18 @@ export const usePreview = () => {
 
   const downloadPDF = useCallback(
     async (template: PDFTemplate, filename: string = 'template-preview.pdf', sampleData?: any) => {
-      try {
-        const blob = await generatePDF(template, sampleData);
-        if (!blob) return;
+      const blob = await generatePDF(template, sampleData);
+      if (!blob) return;
 
-        // Create download link
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.href = url;
-        link.download = filename;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-        URL.revokeObjectURL(url);
-      } catch (err) {
-        // Error already handled in generatePDF
-        throw err;
-      }
+      // Create download link
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = filename;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     },
     [generatePDF]
   );
