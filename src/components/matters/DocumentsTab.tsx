@@ -1,275 +1,52 @@
-import React, { useState, useEffect } from 'react';
-import { FileText, Upload, Download, Trash2, Plus } from 'lucide-react';
-import { supabase } from '../../lib/supabase';
-import { CloudStorageService } from '../../services/api/cloud-storage.service';
-import { CloudStorageEmptyState } from '../cloud-storage';
-import { CloudStorageSetupWizard } from '../cloud-storage/CloudStorageSetupWizard';
-import toast from 'react-hot-toast';
-
-interface Document {
-  id: string;
-  name: string;
-  file_type: string;
-  file_size: number;
-  created_at: string;
-  uploaded_by: string;
-  storage_path: string;
-}
+import React from 'react';
+import { FileText, LinkIcon } from 'lucide-react';
 
 interface DocumentsTabProps {
   matterId: string;
 }
 
+/**
+ * DocumentsTab - DEPRECATED
+ * 
+ * This component has been removed as part of the privacy-first initiative.
+ * Document uploads are no longer supported.
+ * 
+ * Use the document reference system in src/components/documents/DocumentsTab.tsx instead,
+ * which links to files in the user's cloud storage without uploading them.
+ */
 export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
-  const [documents, setDocuments] = useState<Document[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [showUpload, setShowUpload] = useState(false);
-  const [cloudConnection, setCloudConnection] = useState<{id: string; provider: string} | null>(null);
-  const [checkingConnection, setCheckingConnection] = useState(true);
-  const [showSetupWizard, setShowSetupWizard] = useState(false);
-
-  // Check for cloud storage connection
-  useEffect(() => {
-    const checkCloudConnection = async () => {
-      setCheckingConnection(true);
-      try {
-        const connection = await CloudStorageService.getPrimaryConnection();
-        if (connection) {
-          setCloudConnection({
-            id: connection.id,
-            provider: connection.provider
-          });
-        }
-      } catch (error) {
-        console.error('Failed to check cloud connection:', error);
-      } finally {
-        setCheckingConnection(false);
-      }
-    };
-
-    checkCloudConnection();
-  }, []);
-
-  const fetchDocuments = async () => {
-    setLoading(true);
-    try {
-      const { data, error } = await supabase
-        .from('document_uploads')
-        .select('*')
-        .eq('matter_id', matterId)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-
-      setDocuments(data || []);
-    } catch (error) {
-      console.error('Error fetching documents:', error);
-      toast.error('Failed to load documents');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchDocuments();
-  }, [matterId]);
-
-  const handleDownload = async (doc: Document) => {
-    try {
-      const { data, error } = await supabase.storage
-        .from('documents')
-        .download(doc.storage_path);
-
-      if (error) throw error;
-
-      const url = URL.createObjectURL(data);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = doc.name;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      URL.revokeObjectURL(url);
-
-      toast.success('Document downloaded');
-    } catch (error) {
-      console.error('Error downloading document:', error);
-      toast.error('Failed to download document');
-    }
-  };
-
-  const handleDelete = async (docId: string) => {
-    if (!confirm('Are you sure you want to delete this document?')) return;
-
-    try {
-      const { error } = await supabase
-        .from('document_uploads')
-        .delete()
-        .eq('id', docId);
-
-      if (error) throw error;
-
-      toast.success('Document deleted');
-      fetchDocuments();
-    } catch (error) {
-      console.error('Error deleting document:', error);
-      toast.error('Failed to delete document');
-    }
-  };
-
-  const formatFileSize = (bytes: number): string => {
-    if (bytes === 0) return '0 Bytes';
-    const k = 1024;
-    const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-    const i = Math.floor(Math.log(bytes) / Math.log(k));
-    return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
-  };
-
-  const formatDate = (dateString: string): string => {
-    const date = new Date(dateString);
-    return date.toLocaleDateString('en-ZA', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  };
-
-  const getFileIcon = (fileType: string) => {
-    return <FileText className="w-5 h-5" />;
-  };
-
-  if (loading || checkingConnection) {
-    return (
-      <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-      </div>
-    );
-  }
-
-  // Show cloud storage setup wizard if not connected
-  if (!cloudConnection && !showUpload) {
-    return (
-      <>
-        <CloudStorageEmptyState onSetup={() => setShowSetupWizard(true)} />
-        {showSetupWizard && (
-          <CloudStorageSetupWizard
-            isOpen={showSetupWizard}
-            onClose={() => setShowSetupWizard(false)}
-            onComplete={() => {
-              setShowSetupWizard(false);
-              // Recheck connection after wizard completes
-              CloudStorageService.getPrimaryConnection().then(conn => {
-                if (conn) {
-                  setCloudConnection({ id: conn.id, provider: conn.provider });
-                }
-              });
-            }}
-          />
-        )}
-      </>
-    );
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">
-          Documents
-        </h3>
-        <button
-          onClick={() => setShowUpload(!showUpload)}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Upload Document
-        </button>
-      </div>
-
-      {showUpload && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6">
-          <div className="text-center">
-            <div className="inline-flex items-center justify-center w-16 h-16 bg-blue-100 dark:bg-blue-900/40 rounded-full mb-4">
-              <Upload className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-            </div>
-            <h4 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-2">
-              Connect Your Cloud Storage
-            </h4>
-            <p className="text-neutral-600 dark:text-neutral-400 mb-4 max-w-md mx-auto">
-              Link documents directly from OneDrive, Google Drive, or Dropbox. Your files stay in your cloud storage while being accessible here.
-            </p>
-            <button
-              onClick={() => {
-                setShowUpload(false);
-                toast.success('Please configure cloud storage in Settings to enable document linking');
-              }}
-              className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors font-medium"
-            >
-              <Upload className="w-4 h-4" />
-              Configure Cloud Storage
-            </button>
+      <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg p-6">
+        <div className="text-center">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-amber-100 dark:bg-amber-900/40 rounded-full mb-4">
+            <FileText className="w-8 h-8 text-amber-600 dark:text-amber-400" />
           </div>
-        </div>
-      )}
-
-      {documents.length === 0 ? (
-        <div className="text-center py-12 bg-neutral-50 dark:bg-metallic-gray-900 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
-          <FileText className="w-12 h-12 text-neutral-400 mx-auto mb-3" />
-          <p className="text-neutral-600 dark:text-neutral-400 mb-4">
-            No documents uploaded yet
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-2">
+            Document Upload Feature Removed
+          </h3>
+          <p className="text-neutral-600 dark:text-neutral-400 mb-4 max-w-2xl mx-auto">
+            For your privacy and security, this application no longer supports uploading documents to our servers.
           </p>
-          <button
-            onClick={() => setShowUpload(true)}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Upload First Document
-          </button>
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {documents.map((doc) => (
-            <div
-              key={doc.id}
-              className="bg-white dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700 rounded-lg p-4 hover:theme-shadow-md transition-shadow"
-            >
-              <div className="flex items-start justify-between">
-                <div className="flex items-start gap-3 flex-1">
-                  <div className="flex-shrink-0 w-10 h-10 bg-blue-100 dark:bg-blue-900/20 rounded-lg flex items-center justify-center text-blue-600 dark:text-blue-400">
-                    {getFileIcon(doc.file_type)}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-gray-900 dark:text-neutral-100 truncate">
-                      {doc.name}
-                    </h4>
-                    <div className="flex items-center gap-3 mt-1 text-sm text-neutral-600 dark:text-neutral-400">
-                      <span>{formatFileSize(doc.file_size)}</span>
-                      <span>•</span>
-                      <span>{formatDate(doc.created_at)}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 ml-4">
-                  <button
-                    onClick={() => handleDownload(doc)}
-                    className="p-2 text-neutral-600 dark:text-neutral-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
-                    title="Download"
-                  >
-                    <Download className="w-4 h-4" />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(doc.id)}
-                    className="p-2 text-neutral-600 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
-                    title="Delete"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
-                </div>
+          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-4 text-left max-w-2xl mx-auto mb-6">
+            <div className="flex items-start gap-3 mb-3">
+              <LinkIcon className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+              <div>
+                <h4 className="font-semibold text-gray-900 dark:text-neutral-100 mb-1">
+                  Use Document References Instead
+                </h4>
+                <p className="text-sm text-neutral-600 dark:text-neutral-400">
+                  Link to documents stored in your own cloud storage (Google Drive, OneDrive, Dropbox). 
+                  Your files stay secure in your control, and we only store references to help you organize them.
+                </p>
               </div>
             </div>
-          ))}
+          </div>
+          <p className="text-sm text-neutral-500 dark:text-neutral-500">
+            This change ensures your sensitive legal documents remain under your complete control.
+          </p>
         </div>
-      )}
+      </div>
     </div>
   );
 };

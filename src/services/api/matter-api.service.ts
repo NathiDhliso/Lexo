@@ -649,6 +649,123 @@ export class MatterApiService extends BaseApiService<Matter> {
     toast.success('Matter created and activated successfully!');
     return matter as Matter;
   }
+
+  /**
+   * Create matter from Quick Brief Capture
+   * Handles template tracking and document references
+   */
+  async createFromQuickBrief(
+    data: {
+      title: string;
+      firm_name: string;
+      attorney_name: string;
+      attorney_email: string;
+      attorney_phone?: string;
+      work_type: string;
+      practice_area: string;
+      urgency_level: string;
+      deadline_date: string;
+      brief_summary?: string;
+      reference_links?: string[];
+    },
+    advocateId: string,
+    templateTracker?: {
+      trackTemplate: (category: string, value: string) => Promise<void>;
+    }
+  ): Promise<ApiResponse<Matter>> {
+    const requestId = this.generateRequestId();
+
+    try {
+      // Map urgency level to database enum
+      const urgencyMap: Record<string, 'routine' | 'standard' | 'urgent' | 'emergency'> = {
+        'same_day': 'emergency',
+        '1-2_days': 'urgent',
+        'within_week': 'urgent',
+        'within_2_weeks': 'standard',
+        'within_month': 'routine',
+        'custom': 'standard'
+      };
+
+      const currentDate = new Date().toISOString();
+
+      // Create matter
+      const { data: matter, error: matterError } = await supabase
+        .from('matters')
+        .insert({
+          advocate_id: advocateId,
+          title: data.title,
+          description: data.brief_summary || `${data.work_type} - ${data.practice_area}`,
+          matter_type: data.work_type,
+          practice_area: data.practice_area,
+          urgency: urgencyMap[data.urgency_level] || 'standard',
+          deadline_date: data.deadline_date,
+          status: 'active',
+          creation_source: 'quick_brief_capture',
+          is_quick_create: true,
+          instructing_firm: data.firm_name,
+          instructing_attorney: data.attorney_name,
+          instructing_attorney_email: data.attorney_email,
+          instructing_attorney_phone: data.attorney_phone,
+          client_name: data.firm_name,
+          client_email: data.attorney_email,
+          date_instructed: currentDate,
+          date_accepted: currentDate,
+          date_commenced: currentDate
+        })
+        .select()
+        .single();
+
+      if (matterError) {
+        return {
+          data: null,
+          error: this.transformError(matterError, requestId)
+        };
+      }
+
+      // Create document references for reference links
+      if (data.reference_links && data.reference_links.length > 0) {
+        const references = data.reference_links.map(link => ({
+          matter_id: matter.id,
+          reference_type: 'url',
+          reference_url: link,
+          title: `Reference: ${link.substring(0, 50)}...`,
+          created_by: advocateId
+        }));
+
+        const { error: referencesError } = await supabase
+          .from('document_references')
+          .insert(references);
+
+        if (referencesError) {
+          console.error('Error creating document references:', referencesError);
+          // Non-critical error, continue
+        }
+      }
+
+      // Track template usage
+      if (templateTracker) {
+        await Promise.all([
+          templateTracker.trackTemplate('work_type', data.work_type),
+          templateTracker.trackTemplate('practice_area', data.practice_area),
+          data.brief_summary ? templateTracker.trackTemplate('issue_template', data.brief_summary) : Promise.resolve()
+        ]).catch(error => {
+          console.error('Error tracking templates:', error);
+          // Non-critical error, continue
+        });
+      }
+
+      toast.success('Matter created and activated successfully!');
+      return {
+        data: matter as Matter,
+        error: null
+      };
+    } catch (error) {
+      return {
+        data: null,
+        error: this.transformError(error as Error, requestId)
+      };
+    }
+  }
 }
 
 // Export singleton instance

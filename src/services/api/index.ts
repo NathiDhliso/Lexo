@@ -37,6 +37,15 @@ export { InvoiceService } from './invoices.service';
 export { TimeEntryService } from './time-entries.service';
 export { ExpensesService } from './expenses.service';
 
+export {
+  QuickBriefTemplateService,
+  quickBriefTemplateService,
+  type QuickBriefTemplate,
+  type TemplateCategory,
+  type TemplateExportData,
+  type TemplateImportResult
+} from './quick-brief-template.service';
+
 export { 
   EngagementAgreementService,
   engagementAgreementService,

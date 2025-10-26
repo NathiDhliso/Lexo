@@ -6,6 +6,14 @@ export type Json =
   | { [key: string]: Json | undefined }
   | Json[]
 
+/**
+ * Database Type Definitions
+ * 
+ * NOTE: document_uploads, document_extracted_data, and document_cloud_storage types
+ * are DEPRECATED and will be removed. These tables have been dropped as part of
+ * the privacy-first initiative. Use document_references instead for linking to
+ * files in user's own cloud storage.
+ */
 export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
