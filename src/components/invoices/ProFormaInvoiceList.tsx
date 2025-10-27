@@ -302,6 +302,7 @@ export const ProFormaInvoiceList: React.FC = () => {
             setSelectedProForma(null);
           }}
           onSuccess={handleConversionSuccess}
+          onRefresh={loadProFormaRequests}
         />
       )}
     </div>

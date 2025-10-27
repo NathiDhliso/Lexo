@@ -126,7 +126,8 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
       // Update time tracking preference based on workflow
       handleChange('show_time_tracking_by_default', selectedOption.value === 'time-based');
     }
-  }, [formData.primary_workflow, formData.default_billing_model, handleChange]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [formData.primary_workflow]);
 
   const handleClose = () => {
     if (!isLoading) {

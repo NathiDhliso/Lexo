@@ -144,6 +144,13 @@ export class MatterSearchService {
     reason?: string
   ): Promise<boolean> {
     try {
+      console.log('[archiveMatter] Starting archive operation:', {
+        matterId,
+        advocateId,
+        reason
+      });
+
+      // Try using RPC function first
       const { data, error } = await supabase
         .rpc('archive_matter', {
           p_matter_id: matterId,
@@ -151,22 +158,46 @@ export class MatterSearchService {
           p_reason: reason || null
         });
 
+      console.log('[archiveMatter] RPC response:', { data, error });
+
       if (error) {
-        console.error('Error archiving matter:', error);
-        toast.error('Failed to archive matter');
-        return false;
+        console.warn('[archiveMatter] RPC failed, trying direct update:', error);
+        
+        // Fallback to direct update if RPC fails
+        const { error: updateError } = await supabase
+          .from('matters')
+          .update({
+            is_archived: true,
+            archived_at: new Date().toISOString(),
+            archived_by: advocateId,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', matterId)
+          .eq('advocate_id', advocateId);
+
+        if (updateError) {
+          console.error('[archiveMatter] Direct update also failed:', updateError);
+          toast.error(`Failed to archive matter: ${updateError.message}`);
+          return false;
+        }
+
+        console.log('[archiveMatter] Direct update successful');
+        toast.success('Matter archived successfully');
+        return true;
       }
 
-      if (data) {
+      if (data === true) {
+        console.log('[archiveMatter] Archive successful');
         toast.success('Matter archived successfully');
         return true;
       } else {
+        console.warn('[archiveMatter] Archive returned false:', data);
         toast.error('Matter not found or already archived');
         return false;
       }
-    } catch (error) {
-      console.error('Error in archiveMatter:', error);
-      toast.error('An error occurred while archiving the matter');
+    } catch (error: any) {
+      console.error('[archiveMatter] Unexpected error:', error);
+      toast.error(`An error occurred: ${error?.message || 'Unknown error'}`);
       return false;
     }
   }
@@ -179,28 +210,58 @@ export class MatterSearchService {
     advocateId: string
   ): Promise<boolean> {
     try {
+      console.log('[unarchiveMatter] Starting unarchive operation:', {
+        matterId,
+        advocateId
+      });
+
+      // Try using RPC function first
       const { data, error } = await supabase
         .rpc('unarchive_matter', {
           p_matter_id: matterId,
           p_advocate_id: advocateId
         });
 
+      console.log('[unarchiveMatter] RPC response:', { data, error });
+
       if (error) {
-        console.error('Error unarchiving matter:', error);
-        toast.error('Failed to unarchive matter');
-        return false;
+        console.warn('[unarchiveMatter] RPC failed, trying direct update:', error);
+        
+        // Fallback to direct update if RPC fails
+        const { error: updateError } = await supabase
+          .from('matters')
+          .update({
+            is_archived: false,
+            archived_at: null,
+            archived_by: null,
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', matterId)
+          .eq('advocate_id', advocateId);
+
+        if (updateError) {
+          console.error('[unarchiveMatter] Direct update also failed:', updateError);
+          toast.error(`Failed to unarchive matter: ${updateError.message}`);
+          return false;
+        }
+
+        console.log('[unarchiveMatter] Direct update successful');
+        toast.success('Matter unarchived successfully');
+        return true;
       }
 
-      if (data) {
+      if (data === true) {
+        console.log('[unarchiveMatter] Unarchive successful');
         toast.success('Matter unarchived successfully');
         return true;
       } else {
+        console.warn('[unarchiveMatter] Unarchive returned false:', data);
         toast.error('Matter not found or not archived');
         return false;
       }
-    } catch (error) {
-      console.error('Error in unarchiveMatter:', error);
-      toast.error('An error occurred while unarchiving the matter');
+    } catch (error: any) {
+      console.error('[unarchiveMatter] Unexpected error:', error);
+      toast.error(`An error occurred: ${error?.message || 'Unknown error'}`);
       return false;
     }
   }

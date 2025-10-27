@@ -100,11 +100,14 @@ const FirmsPage: React.FC = () => {
     } finally {
       setLoadingFirms(false);
     }
-  }, [loading, isAuthenticated]);
+  }, []); // Remove dependencies to prevent re-creation
 
   useEffect(() => {
-    fetchFirms();
-  }, [fetchFirms]);
+    // Only fetch when auth is ready
+    if (!loading && isAuthenticated) {
+      fetchFirms();
+    }
+  }, [loading, isAuthenticated, fetchFirms]);
 
   // Filter firms based on search and tab
   const filteredFirms = useMemo(() => {

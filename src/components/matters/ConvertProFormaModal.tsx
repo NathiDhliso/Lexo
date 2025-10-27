@@ -8,6 +8,7 @@ interface ConvertProFormaModalProps {
   isOpen: boolean;
   onClose: () => void;
   onSuccess: (matterId: string) => void;
+  onRefresh?: () => Promise<void>;
 }
 
 export const ConvertProFormaModal: React.FC<ConvertProFormaModalProps> = ({
@@ -15,6 +16,7 @@ export const ConvertProFormaModal: React.FC<ConvertProFormaModalProps> = ({
   isOpen,
   onClose,
   onSuccess,
+  onRefresh,
 }) => {
   const [prepopulatedData, setPrepopulatedData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
@@ -44,9 +46,17 @@ export const ConvertProFormaModal: React.FC<ConvertProFormaModalProps> = ({
         proformaId,
         matterData
       );
+      
+      // Refresh parent data to show updated status
+      if (onRefresh) {
+        await onRefresh();
+      }
+      
       onSuccess(matterId);
     } catch (error) {
       console.error('Failed to convert pro forma:', error);
+      const { toast } = await import('react-hot-toast');
+      toast.error('Failed to convert pro forma to matter. Please try again.');
     } finally {
       setLoading(false);
     }

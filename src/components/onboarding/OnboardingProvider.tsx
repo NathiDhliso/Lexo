@@ -7,11 +7,30 @@
 
 import React from 'react';
 import { OnboardingChecklist } from './OnboardingChecklist';
-import { useOnboarding } from '../../hooks/useOnboarding';
+import { OnboardingContext, useOnboardingState, useOnboarding } from '../../hooks/useOnboarding';
 
 export interface OnboardingProviderProps {
   children: React.ReactNode;
 }
+
+/**
+ * Internal component that renders the onboarding UI
+ */
+const OnboardingUI: React.FC = () => {
+  const {
+    isOnboardingOpen,
+    closeOnboarding,
+    completeOnboarding,
+  } = useOnboarding();
+
+  return (
+    <OnboardingChecklist
+      isOpen={isOnboardingOpen}
+      onClose={closeOnboarding}
+      onComplete={completeOnboarding}
+    />
+  );
+};
 
 /**
  * Provider component that manages onboarding flow
@@ -25,22 +44,13 @@ export interface OnboardingProviderProps {
  * Wrap your app or main layout with this provider
  */
 export const OnboardingProvider: React.FC<OnboardingProviderProps> = ({ children }) => {
-  const {
-    isOnboardingOpen,
-    closeOnboarding,
-    completeOnboarding,
-  } = useOnboarding();
-
+  const value = useOnboardingState();
+  
   return (
-    <>
+    <OnboardingContext.Provider value={value}>
       {children}
-      
-      <OnboardingChecklist
-        isOpen={isOnboardingOpen}
-        onClose={closeOnboarding}
-        onComplete={completeOnboarding}
-      />
-    </>
+      <OnboardingUI />
+    </OnboardingContext.Provider>
   );
 };
 

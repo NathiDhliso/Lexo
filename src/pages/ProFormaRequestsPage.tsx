@@ -519,9 +519,9 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
           onSuccess={() => {
             setShowConvertModal(false);
             setSelectedProFormaId(null);
-            loadRequests();
             onNavigate?.('matters');
           }}
+          onRefresh={loadRequests}
         />
       )}
 

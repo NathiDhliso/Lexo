@@ -120,14 +120,8 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
     }
   );
 
-  // Complete milestone modal
-  const { isLoading: isCompleting, handleSubmit: handleComplete } = useSimpleModal({
-    onSubmit: async () => {
-      // This would be called with the specific milestone ID
-      throw new Error('Milestone completion not implemented yet');
-    },
-    successMessage: 'Milestone completed!',
-  });
+  // State for completing milestones
+  const [completingMilestoneId, setCompletingMilestoneId] = React.useState<string | null>(null);
 
   // Calculate progress
   const progress = useMemo(() => {
@@ -146,14 +140,24 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
 
   // Handle milestone completion
   const handleMilestoneClick = async (milestone: FeeMilestone) => {
-    if (milestone.isCompleted) return;
+    if (milestone.isCompleted || completingMilestoneId) return;
+    
+    setCompletingMilestoneId(milestone.id);
     
     try {
       await milestoneService.completeMilestone(milestone.id);
       await refetch();
       onMilestoneComplete?.(milestone);
+      
+      // Show success toast
+      const { toast } = await import('react-hot-toast');
+      toast.success(`Milestone "${milestone.name}" completed!`);
     } catch (error) {
       console.error('Error completing milestone:', error);
+      const { toast } = await import('react-hot-toast');
+      toast.error('Failed to complete milestone. Please try again.');
+    } finally {
+      setCompletingMilestoneId(null);
     }
   };
 
@@ -242,9 +246,10 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
                   : isNext
                   ? 'border-judicial-blue-200 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 dark:border-judicial-blue-800 cursor-pointer hover:shadow-md'
                   : 'border-neutral-200 bg-neutral-50 dark:bg-neutral-800 dark:border-neutral-700',
-                !milestone.isCompleted && !isNext && 'opacity-60'
+                !milestone.isCompleted && !isNext && 'opacity-60',
+                completingMilestoneId === milestone.id && 'opacity-50 cursor-wait'
               )}
-              onClick={() => isNext && !isCompleting && handleMilestoneClick(milestone)}
+              onClick={() => isNext && !completingMilestoneId && handleMilestoneClick(milestone)}
             >
               {/* Status Icon */}
               <div className={cn(
@@ -306,7 +311,7 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
 
                 {isNext && (
                   <p className="text-xs text-judicial-blue-600 dark:text-judicial-blue-400 font-medium">
-                    Click to mark as completed
+                    {completingMilestoneId === milestone.id ? 'Completing...' : 'Click to mark as completed'}
                   </p>
                 )}
               </div>

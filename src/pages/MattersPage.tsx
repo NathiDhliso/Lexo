@@ -38,6 +38,8 @@ import { matterSearchService, type MatterSearchParams } from '../services/api/ma
 import { useAuth } from '../hooks/useAuth';
 import { useSelection } from '../hooks/useSelection';
 import { useConfirmation } from '../hooks/useConfirmation';
+import { useKeyboardShortcuts, COMMON_SHORTCUTS } from '../hooks/useKeyboardShortcuts';
+import { useOptimisticUpdate } from '../hooks/useOptimisticUpdate';
 import { toast } from 'react-hot-toast';
 import { supabase } from '../lib/supabase';
 import { exportToCSV, exportToPDF } from '../utils/export.utils';
@@ -68,6 +70,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [showScopeAmendmentModal, setShowScopeAmendmentModal] = useState(false);
   const [showSimpleFeeModal, setShowSimpleFeeModal] = useState(false);
   const [selectedMatterForAction, setSelectedMatterForAction] = useState<Matter | null>(null);
+  const [archivingMatterId, setArchivingMatterId] = useState<string | null>(null);
 
   // Search and filter state
   const [showAdvancedFilters, setShowAdvancedFilters] = useState(false);
@@ -90,6 +93,10 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const { user, loading, isAuthenticated } = useAuth();
   const navigate = useNavigate();
   const { confirm } = useConfirmation();
+  const { update: optimisticUpdate } = useOptimisticUpdate<Matter[]>();
+
+  // Keyboard shortcuts (defined after handlers)
+  const keyboardShortcutsEnabled = !showMatterModal && !showRequestInfoModal && !showDeclineModal;
 
   // Read URL parameters and apply tab/view
   useEffect(() => {
@@ -306,7 +313,13 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
 
   // Archive handlers
   const handleArchiveMatter = async (matter: Matter) => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.error('[handleArchiveMatter] No user ID available');
+      toast.error('User not authenticated');
+      return;
+    }
+
+    console.log('[handleArchiveMatter] Starting archive for matter:', matter.id);
 
     const confirmed = await confirm({
       title: 'Archive Matter',
@@ -314,18 +327,57 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
       confirmText: 'Archive',
     });
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      console.log('[handleArchiveMatter] User cancelled archive');
+      return;
+    }
 
     const reason = window.prompt('Optional: Enter a reason for archiving this matter');
+    console.log('[handleArchiveMatter] Archive reason:', reason || 'none');
     
-    const success = await matterSearchService.archiveMatter(matter.id, user.id, reason || undefined);
-    if (success) {
-      await fetchMatters();
+    // Set loading state
+    setArchivingMatterId(matter.id);
+
+    // Optimistic update: immediately update UI
+    const currentMatters = [...matters];
+    const optimisticMatters = matters.map(m =>
+      m.id === matter.id
+        ? { ...m, is_archived: true, archived_at: new Date().toISOString(), archived_by: user.id }
+        : m
+    );
+
+    try {
+      await optimisticUpdate(
+        currentMatters,
+        optimisticMatters,
+        setMatters,
+        {
+          onUpdate: async () => {
+            const success = await matterSearchService.archiveMatter(matter.id, user.id, reason || undefined);
+            if (!success) {
+              throw new Error('Archive operation failed');
+            }
+          },
+          successMessage: 'Matter archived successfully',
+          errorMessage: 'Failed to archive matter',
+          onSuccess: () => {
+            console.log('[handleArchiveMatter] Archive successful');
+          },
+        }
+      );
+    } finally {
+      setArchivingMatterId(null);
     }
   };
 
   const handleUnarchiveMatter = async (matter: Matter) => {
-    if (!user?.id) return;
+    if (!user?.id) {
+      console.error('[handleUnarchiveMatter] No user ID available');
+      toast.error('User not authenticated');
+      return;
+    }
+
+    console.log('[handleUnarchiveMatter] Starting unarchive for matter:', matter.id);
 
     const confirmed = await confirm({
       title: 'Unarchive Matter',
@@ -333,11 +385,43 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
       confirmText: 'Unarchive',
     });
 
-    if (!confirmed) return;
+    if (!confirmed) {
+      console.log('[handleUnarchiveMatter] User cancelled unarchive');
+      return;
+    }
 
-    const success = await matterSearchService.unarchiveMatter(matter.id, user.id);
-    if (success) {
-      await fetchMatters();
+    // Set loading state
+    setArchivingMatterId(matter.id);
+
+    // Optimistic update: immediately update UI
+    const currentMatters = [...matters];
+    const optimisticMatters = matters.map(m =>
+      m.id === matter.id
+        ? { ...m, is_archived: false, archived_at: undefined, archived_by: undefined }
+        : m
+    );
+
+    try {
+      await optimisticUpdate(
+        currentMatters,
+        optimisticMatters,
+        setMatters,
+        {
+          onUpdate: async () => {
+            const success = await matterSearchService.unarchiveMatter(matter.id, user.id);
+            if (!success) {
+              throw new Error('Unarchive operation failed');
+            }
+          },
+          successMessage: 'Matter unarchived successfully',
+          errorMessage: 'Failed to unarchive matter',
+          onSuccess: () => {
+            console.log('[handleUnarchiveMatter] Unarchive successful');
+          },
+        }
+      );
+    } finally {
+      setArchivingMatterId(null);
     }
   };
 
@@ -397,6 +481,31 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     setSelectedMatter(null);
     setShowMatterModal(true);
   };
+
+  // Setup keyboard shortcuts after handlers are defined
+  useKeyboardShortcuts({
+    shortcuts: [
+      {
+        ...COMMON_SHORTCUTS.NEW,
+        handler: handleNewMatterClick,
+        description: 'Create new matter',
+      },
+      {
+        ...COMMON_SHORTCUTS.REFRESH,
+        handler: () => fetchMatters(),
+        description: 'Refresh matters list',
+      },
+      {
+        ...COMMON_SHORTCUTS.SEARCH,
+        handler: () => {
+          const searchInput = document.querySelector('input[type="search"]') as HTMLInputElement;
+          searchInput?.focus();
+        },
+        description: 'Focus search',
+      },
+    ],
+    enabled: keyboardShortcutsEnabled,
+  });
 
   const handleMatterModalSuccess = async (matter: Matter) => {
     setShowMatterModal(false);
@@ -1079,22 +1188,42 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                       variant="outline"
                       size="sm"
                       onClick={() => handleUnarchiveMatter(matter)}
+                      disabled={archivingMatterId === matter.id}
                       className="flex items-center gap-2 text-green-600 dark:text-green-400 border-green-300 dark:border-green-700 hover:bg-green-50 dark:hover:bg-green-950/30"
                       title="Unarchive this matter"
                     >
-                      <Archive className="w-4 h-4" />
-                      Unarchive
+                      {archivingMatterId === matter.id ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                          Unarchiving...
+                        </>
+                      ) : (
+                        <>
+                          <Archive className="w-4 h-4" />
+                          Unarchive
+                        </>
+                      )}
                     </Button>
                   ) : (
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => handleArchiveMatter(matter)}
+                      disabled={archivingMatterId === matter.id}
                       className="flex items-center gap-2 text-gray-600 dark:text-gray-400 border-gray-300 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-950/30"
                       title="Archive this matter"
                     >
-                      <Archive className="w-4 h-4" />
-                      Archive
+                      {archivingMatterId === matter.id ? (
+                        <>
+                          <div className="w-4 h-4 border-2 border-gray-600 border-t-transparent rounded-full animate-spin" />
+                          Archiving...
+                        </>
+                      ) : (
+                        <>
+                          <Archive className="w-4 h-4" />
+                          Archive
+                        </>
+                      )}
                     </Button>
                   )}
 

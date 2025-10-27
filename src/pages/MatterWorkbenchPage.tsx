@@ -100,6 +100,12 @@ const MatterWorkbenchPage: React.FC = () => {
     loadMatterData();
   };
 
+  const handleCloseBudgetModal = () => {
+    setShowBudgetModal(false);
+    // Refresh data in case budget calculations need updating
+    loadMatterData();
+  };
+
   if (loading || !matter) return <div>Loading...</div>;
 
   // Determine which tabs to show based on billing model and strategy
@@ -223,10 +229,10 @@ const MatterWorkbenchPage: React.FC = () => {
       {showSimpleFeeModal && <SimpleFeeEntryModal isOpen={showSimpleFeeModal} onClose={() => setShowSimpleFeeModal(false)} matter={matter} onSuccess={handleModalSuccess} />}
       {showBudgetModal && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-xl max-w-2xl w-full p-6">
-            <h2 className="text-2xl font-bold mb-4">Budget Comparison</h2>
+          <div className="bg-white dark:bg-metallic-gray-900 rounded-xl max-w-2xl w-full p-6">
+            <h2 className="text-2xl font-bold mb-4 text-neutral-900 dark:text-neutral-100">Budget Comparison</h2>
             <BudgetComparisonWidget originalBudget={originalBudget} amendmentTotal={amendmentTotal} wipValue={matter.wip_value || 0} amendmentCount={amendmentCount} />
-            <Button onClick={() => setShowBudgetModal(false)} className="mt-4">Close</Button>
+            <Button onClick={handleCloseBudgetModal} className="mt-4">Close</Button>
           </div>
         </div>
       )}

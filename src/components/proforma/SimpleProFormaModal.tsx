@@ -70,25 +70,31 @@ export const SimpleProFormaModal: React.FC<SimpleProFormaModalProps> = ({
   };
 
   const handleAddService = async () => {
-    if (!proFormaId) {
-      const id = await createProForma();
-      if (!id) return;
+    let currentProFormaId = proFormaId;
+    if (!currentProFormaId) {
+      currentProFormaId = await createProForma();
+      if (!currentProFormaId) return;
+      setProFormaId(currentProFormaId); // ✅ Set state immediately
     }
     setShowServiceModal(true);
   };
 
   const handleAddTime = async () => {
-    if (!proFormaId) {
-      const id = await createProForma();
-      if (!id) return;
+    let currentProFormaId = proFormaId;
+    if (!currentProFormaId) {
+      currentProFormaId = await createProForma();
+      if (!currentProFormaId) return;
+      setProFormaId(currentProFormaId); // ✅ Set state immediately
     }
     setShowTimeModal(true);
   };
 
   const handleAddExpense = async () => {
-    if (!proFormaId) {
-      const id = await createProForma();
-      if (!id) return;
+    let currentProFormaId = proFormaId;
+    if (!currentProFormaId) {
+      currentProFormaId = await createProForma();
+      if (!currentProFormaId) return;
+      setProFormaId(currentProFormaId); // ✅ Set state immediately
     }
     setShowExpenseModal(true);
   };

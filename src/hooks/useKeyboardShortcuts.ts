@@ -1,150 +1,135 @@
-import { useEffect } from 'react';
+/**
+ * useKeyboardShortcuts Hook
+ * 
+ * Provides keyboard shortcut functionality for common actions
+ * Supports Ctrl/Cmd + key combinations
+ */
+
+import { useEffect, useCallback } from 'react';
+import * as React from 'react';
 
 export interface KeyboardShortcut {
   key: string;
-  ctrlKey?: boolean;
-  shiftKey?: boolean;
-  altKey?: boolean;
-  metaKey?: boolean;
-  action?: () => void; // Legacy support
-  handler?: () => void; // New naming
-  description?: string;
+  ctrl?: boolean;
+  shift?: boolean;
+  alt?: boolean;
+  handler: () => void;
+  description: string;
   preventDefault?: boolean;
 }
 
-/**
- * useKeyboardShortcuts - Hook for managing keyboard shortcuts
- * 
- * Provides accessible keyboard navigation throughout the application.
- * Follows WCAG guidelines for keyboard accessibility.
- * 
- * Features:
- * - Global keyboard shortcuts
- * - Modifier key support (Ctrl, Shift, Alt, Meta/Cmd)
- * - Automatic event cleanup
- * - Input element handling (doesn't trigger shortcuts while typing)
- * 
- * @param shortcuts - Array of keyboard shortcuts to register
- * @param enabled - Whether shortcuts are enabled (default: true)
- * 
- * @example
- * ```tsx
- * useKeyboardShortcuts([
- *   {
- *     key: 'n',
- *     ctrlKey: true,
- *     description: 'Create new matter',
- *     handler: () => handleNewMatter(),
- *   },
- *   {
- *     key: 's',
- *     ctrlKey: true,
- *     description: 'Save changes',
- *     handler: () => handleSave(),
- *     preventDefault: true,
- *   },
- * ]);
- * ```
- */
-export const useKeyboardShortcuts = (
-  shortcuts: KeyboardShortcut[],
-  enabled = true
-) => {
-  useEffect(() => {
-    if (!enabled) return;
+interface UseKeyboardShortcutsOptions {
+  shortcuts: KeyboardShortcut[];
+  enabled?: boolean;
+}
 
-    const handleKeyDown = (event: KeyboardEvent) => {
-      // Don't trigger shortcuts when user is typing in inputs
+export const useKeyboardShortcuts = ({ shortcuts, enabled = true }: UseKeyboardShortcutsOptions) => {
+  const handleKeyDown = useCallback(
+    (event: KeyboardEvent) => {
+      if (!enabled) return;
+
+      // Don't trigger shortcuts when typing in inputs
       const target = event.target as HTMLElement;
-      const isTyping = 
+      if (
         target.tagName === 'INPUT' ||
         target.tagName === 'TEXTAREA' ||
-        target.isContentEditable;
-
-      // Allow Ctrl/Meta shortcuts even in input fields (like Ctrl+S to save)
-      const hasModifier = event.ctrlKey || event.metaKey || event.altKey;
-      
-      if (isTyping && !hasModifier) {
+        target.isContentEditable
+      ) {
         return;
       }
 
-      // Find matching shortcut
-      const matchingShortcut = shortcuts.find((shortcut) => {
-        if (!shortcut || !shortcut.key || typeof shortcut.key !== 'string') {
-          return false;
-        }
+      for (const shortcut of shortcuts) {
+        const ctrlKey = event.ctrlKey || event.metaKey; // Support both Ctrl and Cmd
+        const matchesKey = event.key.toLowerCase() === shortcut.key.toLowerCase();
+        const matchesCtrl = shortcut.ctrl ? ctrlKey : !ctrlKey;
+        const matchesShift = shortcut.shift ? event.shiftKey : !event.shiftKey;
+        const matchesAlt = shortcut.alt ? event.altKey : !event.altKey;
 
-        const keyMatches = event.key.toLowerCase() === shortcut.key.toLowerCase();
-        const ctrlMatches = shortcut.ctrlKey ? event.ctrlKey || event.metaKey : !event.ctrlKey && !event.metaKey;
-        const shiftMatches = shortcut.shiftKey ? event.shiftKey : !event.shiftKey;
-        const altMatches = shortcut.altKey ? event.altKey : !event.altKey;
-        const metaMatches = shortcut.metaKey ? event.metaKey : !event.metaKey;
-
-        return keyMatches && ctrlMatches && shiftMatches && altMatches && metaMatches;
-      });
-
-      if (matchingShortcut) {
-        if (matchingShortcut.preventDefault) {
-          event.preventDefault();
+        if (matchesKey && matchesCtrl && matchesShift && matchesAlt) {
+          if (shortcut.preventDefault !== false) {
+            event.preventDefault();
+          }
+          shortcut.handler();
+          break;
         }
-        // Support both old 'action' and new 'handler' naming
-        const callback = matchingShortcut.handler || matchingShortcut.action;
-        if (callback) {
-          callback();
-        }
+      }
+    },
+    [shortcuts, enabled]
+  );
+
+  useEffect(() => {
+    if (!enabled) return;
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [handleKeyDown, enabled]);
+
+  return { shortcuts };
+};
+
+/**
+ * Format keyboard shortcut for display
+ */
+export const getKeyboardShortcutLabel = (shortcut: KeyboardShortcut): string => {
+  const isMac = typeof navigator !== 'undefined' && navigator.platform.toUpperCase().indexOf('MAC') >= 0;
+  const parts: string[] = [];
+
+  if (shortcut.ctrl) {
+    parts.push(isMac ? '⌘' : 'Ctrl');
+  }
+  if (shortcut.shift) {
+    parts.push(isMac ? '⇧' : 'Shift');
+  }
+  if (shortcut.alt) {
+    parts.push(isMac ? '⌥' : 'Alt');
+  }
+  
+  // Format the key
+  const key = shortcut.key.length === 1 ? shortcut.key.toUpperCase() : shortcut.key;
+  parts.push(key);
+
+  return parts.join(isMac ? '' : '+');
+};
+
+/**
+ * Common keyboard shortcuts
+ */
+export const COMMON_SHORTCUTS = {
+  NEW: { key: 'n', ctrl: true, description: 'Create new item' },
+  SAVE: { key: 's', ctrl: true, description: 'Save current item' },
+  SEARCH: { key: 'k', ctrl: true, description: 'Open search' },
+  CLOSE: { key: 'Escape', description: 'Close modal/dialog' },
+  REFRESH: { key: 'r', ctrl: true, description: 'Refresh data' },
+  HELP: { key: '?', shift: true, description: 'Show keyboard shortcuts' },
+};
+
+/**
+ * useEscapeKey Hook
+ * 
+ * Simplified hook for handling Escape key press
+ * Commonly used for closing modals and dropdowns
+ */
+export const useEscapeKey = (handler: () => void, enabled = true) => {
+  useEffect(() => {
+    if (!enabled) return;
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        handler();
       }
     };
 
-    document.addEventListener('keydown', handleKeyDown);
-    
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [shortcuts, enabled]);
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, [handler, enabled]);
 };
 
 /**
- * useEscapeKey - Hook for handling Escape key press
+ * useFocusTrap Hook
  * 
- * Common pattern for closing modals, dialogs, and panels.
- * 
- * @param handler - Function to call when Escape is pressed
- * @param enabled - Whether the handler is enabled (default: true)
- * 
- * @example
- * ```tsx
- * useEscapeKey(() => setShowModal(false));
- * ```
+ * Traps focus within a container (useful for modals)
  */
-export const useEscapeKey = (handler: () => void, enabled = true) => {
-  useKeyboardShortcuts([
-    {
-      key: 'Escape',
-      description: 'Close modal or panel',
-      handler,
-    },
-  ], enabled);
-};
-
-/**
- * useFocusTrap - Hook for trapping focus within a container
- * 
- * Ensures keyboard navigation stays within a modal or dialog.
- * Essential for accessibility compliance.
- * 
- * @param containerRef - Ref to the container element
- * @param enabled - Whether focus trap is enabled (default: true)
- * 
- * @example
- * ```tsx
- * const modalRef = useRef<HTMLDivElement>(null);
- * useFocusTrap(modalRef, isModalOpen);
- * ```
- */
-export const useFocusTrap = (
-  containerRef: React.RefObject<HTMLElement>,
-  enabled = true
-) => {
+export const useFocusTrap = (containerRef: React.RefObject<HTMLElement>, enabled = true) => {
   useEffect(() => {
     if (!enabled || !containerRef.current) return;
 
@@ -152,130 +137,65 @@ export const useFocusTrap = (
     const focusableElements = container.querySelectorAll(
       'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
     );
-    
     const firstElement = focusableElements[0] as HTMLElement;
     const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
 
-    const handleTabKey = (event: KeyboardEvent) => {
-      if (event.key !== 'Tab') return;
+    const handleTab = (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
 
-      if (event.shiftKey) {
-        // Shift + Tab
+      if (e.shiftKey) {
         if (document.activeElement === firstElement) {
-          event.preventDefault();
+          e.preventDefault();
           lastElement?.focus();
         }
       } else {
-        // Tab
         if (document.activeElement === lastElement) {
-          event.preventDefault();
+          e.preventDefault();
           firstElement?.focus();
         }
       }
     };
 
-    container.addEventListener('keydown', handleTabKey);
-
-    // Focus first element when trap is enabled
+    container.addEventListener('keydown', handleTab as any);
     firstElement?.focus();
 
     return () => {
-      container.removeEventListener('keydown', handleTabKey);
+      container.removeEventListener('keydown', handleTab as any);
     };
   }, [containerRef, enabled]);
 };
 
 /**
- * useArrowNavigation - Hook for arrow key navigation in lists
+ * useArrowNavigation Hook
  * 
- * Enables keyboard navigation through lists, menus, and grids.
- * 
- * @param itemsRef - Ref to array of item elements
- * @param enabled - Whether navigation is enabled (default: true)
- * 
- * @example
- * ```tsx
- * const itemRefs = useRef<HTMLElement[]>([]);
- * useArrowNavigation(itemRefs);
- * ```
+ * Handles arrow key navigation for lists
  */
 export const useArrowNavigation = (
-  itemsRef: React.RefObject<HTMLElement[]>,
+  itemCount: number,
+  onSelect: (index: number) => void,
   enabled = true
 ) => {
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
   useEffect(() => {
-    if (!enabled || !itemsRef.current) return;
+    if (!enabled) return;
 
-    const items = itemsRef.current;
-    let currentIndex = 0;
-
-    const handleKeyDown = (event: KeyboardEvent) => {
-      if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return;
-
-      event.preventDefault();
-
-      switch (event.key) {
-        case 'ArrowDown':
-          currentIndex = Math.min(currentIndex + 1, items.length - 1);
-          break;
-        case 'ArrowUp':
-          currentIndex = Math.max(currentIndex - 1, 0);
-          break;
-        case 'Home':
-          currentIndex = 0;
-          break;
-        case 'End':
-          currentIndex = items.length - 1;
-          break;
+    const handleArrow = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev + 1) % itemCount);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        setSelectedIndex(prev => (prev - 1 + itemCount) % itemCount);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        onSelect(selectedIndex);
       }
-
-      items[currentIndex]?.focus();
     };
 
-    items.forEach((item, index) => {
-      item.addEventListener('keydown', handleKeyDown);
-      item.addEventListener('focus', () => {
-        currentIndex = index;
-      });
-    });
+    window.addEventListener('keydown', handleArrow);
+    return () => window.removeEventListener('keydown', handleArrow);
+  }, [itemCount, selectedIndex, onSelect, enabled]);
 
-    return () => {
-      items.forEach((item) => {
-        item.removeEventListener('keydown', handleKeyDown);
-      });
-    };
-  }, [itemsRef, enabled]);
+  return { selectedIndex, setSelectedIndex };
 };
-
-/**
- * getKeyboardShortcutLabel - Formats keyboard shortcut for display
- * 
- * @param shortcut - Keyboard shortcut configuration
- * @returns Formatted string (e.g., "Ctrl+N" or "Cmd+N" on Mac)
- * 
- * @example
- * ```tsx
- * const label = getKeyboardShortcutLabel({ key: 'n', ctrlKey: true });
- * // Returns: "Ctrl+N" (Windows/Linux) or "⌘N" (Mac)
- * ```
- */
-export const getKeyboardShortcutLabel = (shortcut: Omit<KeyboardShortcut, 'description' | 'handler' | 'action'>): string => {
-  const isMac = navigator.platform.toUpperCase().indexOf('MAC') >= 0;
-  const parts: string[] = [];
-
-  if (shortcut.ctrlKey || shortcut.metaKey) {
-    parts.push(isMac ? '⌘' : 'Ctrl');
-  }
-  if (shortcut.shiftKey) {
-    parts.push(isMac ? '⇧' : 'Shift');
-  }
-  if (shortcut.altKey) {
-    parts.push(isMac ? '⌥' : 'Alt');
-  }
-
-  parts.push(shortcut.key.toUpperCase());
-
-  return parts.join(isMac ? '' : '+');
-};
-
-export default useKeyboardShortcuts;

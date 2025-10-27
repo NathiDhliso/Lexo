@@ -65,6 +65,11 @@ export class BillingPreferencesService {
           console.warn('advocate_billing_preferences table not found, using default preferences');
           return this.getDefaultPreferences(advocateId);
         }
+        if (error.code === 'PGRST301' || error.message.includes('permission denied') || error.message.includes('403')) {
+          // Permission denied (RLS policy issue), return default preferences
+          console.warn('advocate_billing_preferences permission denied (RLS policy issue), using default preferences');
+          return this.getDefaultPreferences(advocateId);
+        }
         throw new AppError(
           `Failed to fetch billing preferences: ${error.message}`,
           'BILLING_PREFERENCES_FETCH_ERROR',

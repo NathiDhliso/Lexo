@@ -33,6 +33,11 @@ export const GenerateInvoiceModal: React.FC<GenerateInvoiceModalProps> = ({
 
   useEffect(() => {
     if (isOpen) {
+      // Reset state when modal opens
+      setStep('select');
+      setSelectedMatter(null);
+      setSearchQuery('');
+      
       if (preselectedMatterId) {
         loadMatterById(preselectedMatterId);
       } else {
@@ -94,6 +99,8 @@ export const GenerateInvoiceModal: React.FC<GenerateInvoiceModalProps> = ({
   const handleBack = () => {
     setSelectedMatter(null);
     setStep('select');
+    // Clear search query to show all matters again
+    setSearchQuery('');
   };
 
   const handleGenerate = (invoiceData: any) => {
@@ -101,6 +108,10 @@ export const GenerateInvoiceModal: React.FC<GenerateInvoiceModalProps> = ({
     if (onSuccess) {
       onSuccess(invoiceData);
     }
+    // Reset state before closing
+    setSelectedMatter(null);
+    setStep('select');
+    setSearchQuery('');
     onClose();
   };
 

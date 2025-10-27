@@ -16,7 +16,7 @@ import { matterApiService } from '../../../services/api/matter-api.service';
 import { useAuth } from '../../../hooks/useAuth';
 import { toastService } from '../../../services/toast.service';
 import type { QuickBriefMatterData, TemplateItem, UrgencyLevel } from '../../../types/quick-brief.types';
-import { type Firm, MatterStatus } from '../../../types';
+import { type Firm, MatterStatus, MatterCreationSource } from '../../../types';
 
 interface QuickBriefCaptureModalProps {
   isOpen: boolean;
@@ -135,6 +135,16 @@ export const QuickBriefCaptureModal: React.FC<QuickBriefCaptureModalProps> = ({
       await quickBriefTemplateService.batchUpdateUsage(user.id, templateUpdates);
     }
 
+    // Map urgency level to database enum
+    const urgencyMap: Record<string, 'routine' | 'standard' | 'urgent' | 'emergency'> = {
+      'same_day': 'emergency',
+      '1-2_days': 'urgent',
+      'within_week': 'urgent',
+      'within_2_weeks': 'standard',
+      'within_month': 'routine',
+      'custom': 'standard'
+    };
+
     // Create matter
     const matterData = {
       advocate_id: user.id,
@@ -145,9 +155,9 @@ export const QuickBriefCaptureModal: React.FC<QuickBriefCaptureModalProps> = ({
       description: formData.brief_summary || formData.issue_template || '',
       deadline: formData.deadline_date!,
       status: MatterStatus.ACTIVE,
-      creation_source: 'quick_brief',
+      creation_source: MatterCreationSource.QUICK_CREATE,
       is_quick_create: true,
-      urgency: formData.urgency_level
+      urgency: formData.urgency_level ? urgencyMap[formData.urgency_level] : undefined
     };
 
     const response = await matterApiService.create(matterData);
