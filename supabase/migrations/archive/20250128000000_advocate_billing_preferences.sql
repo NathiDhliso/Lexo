@@ -1,3 +1,7 @@
+-- ARCHIVED: Second duplicate billing preferences migration
+-- REASON: Consolidated into 20251027153935_create_advocate_billing_preferences_fix.sql
+-- DATE ARCHIVED: 2025-01-27
+
 -- Create advocate billing preferences table
 -- This migration adds user billing preferences for the billing workflow modernization
 
@@ -54,12 +58,12 @@ COMMENT ON COLUMN advocate_billing_preferences.default_fee_cap IS 'Default fee c
 
 -- Create function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_advocate_billing_preferences_updated_at()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 -- Create trigger to automatically update updated_at
 CREATE TRIGGER update_advocate_billing_preferences_timestamp
@@ -69,14 +73,14 @@ CREATE TRIGGER update_advocate_billing_preferences_timestamp
 
 -- Create function to initialize preferences for new advocates
 CREATE OR REPLACE FUNCTION initialize_advocate_billing_preferences()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 BEGIN
   INSERT INTO advocate_billing_preferences (advocate_id)
   VALUES (NEW.id)
   ON CONFLICT (advocate_id) DO NOTHING;
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 -- Create trigger to initialize preferences when new user is created
 -- Note: This assumes auth.users table exists and new advocates are created there

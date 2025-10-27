@@ -1,3 +1,7 @@
+-- ARCHIVED: Original invoice numbering system migration
+-- REASON: Consolidated into 20250127000010_enhanced_invoice_numbering.sql
+-- DATE ARCHIVED: 2025-01-27
+
 -- Migration: Invoice Numbering & VAT Compliance System
 -- Description: Creates tables and functions for sequential invoice numbering and SARS compliance
 -- Requirements: 3.1, 3.2, 3.4
@@ -71,7 +75,7 @@ CREATE POLICY "System can insert audit records"
 
 -- Function to generate next invoice number
 CREATE OR REPLACE FUNCTION generate_next_invoice_number(advocate_id_param UUID)
-RETURNS VARCHAR AS $$
+RETURNS VARCHAR AS $
 DECLARE
   settings RECORD;
   current_year INTEGER;
@@ -122,11 +126,11 @@ BEGIN
   
   RETURN invoice_number;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 -- Function to generate next credit note number
 CREATE OR REPLACE FUNCTION generate_next_credit_note_number(advocate_id_param UUID)
-RETURNS VARCHAR AS $$
+RETURNS VARCHAR AS $
 DECLARE
   settings RECORD;
   current_year INTEGER;
@@ -177,21 +181,21 @@ BEGIN
   
   RETURN credit_note_number;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 -- Function to update audit record with invoice_id
 CREATE OR REPLACE FUNCTION update_invoice_audit_record(
   invoice_number_param VARCHAR,
   invoice_id_param UUID
 )
-RETURNS VOID AS $$
+RETURNS VOID AS $
 BEGIN
   UPDATE invoice_numbering_audit
   SET invoice_id = invoice_id_param
   WHERE invoice_number = invoice_number_param
     AND status = 'used';
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 -- Function to void an invoice number
 CREATE OR REPLACE FUNCTION void_invoice_number(
@@ -199,7 +203,7 @@ CREATE OR REPLACE FUNCTION void_invoice_number(
   advocate_id_param UUID,
   void_reason_param TEXT
 )
-RETURNS VOID AS $$
+RETURNS VOID AS $
 BEGIN
   -- Update the audit record to voided status
   UPDATE invoice_numbering_audit
@@ -213,14 +217,14 @@ BEGIN
     RAISE EXCEPTION 'Invoice number % not found or already voided', invoice_number_param;
   END IF;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 -- Function to get current VAT rate for a given date
 CREATE OR REPLACE FUNCTION get_vat_rate_for_date(
   advocate_id_param UUID,
   invoice_date_param DATE
 )
-RETURNS DECIMAL AS $$
+RETURNS DECIMAL AS $
 DECLARE
   settings RECORD;
   rate_history JSONB;
@@ -250,16 +254,16 @@ BEGIN
   
   RETURN applicable_rate;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 -- Trigger to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_invoice_settings_timestamp()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 CREATE TRIGGER invoice_settings_updated_at
   BEFORE UPDATE ON invoice_settings
@@ -267,7 +271,7 @@ CREATE TRIGGER invoice_settings_updated_at
   EXECUTE FUNCTION update_invoice_settings_timestamp();
 
 -- Add invoice_number column to invoices table if it doesn't exist
-DO $$ 
+DO $ 
 BEGIN
   IF NOT EXISTS (
     SELECT 1 FROM information_schema.columns 
@@ -275,7 +279,7 @@ BEGIN
   ) THEN
     ALTER TABLE invoices ADD COLUMN invoice_number VARCHAR(50) UNIQUE;
   END IF;
-END $$;
+END $;
 
 -- Create index on invoice_number
 CREATE INDEX IF NOT EXISTS idx_invoices_invoice_number ON invoices(invoice_number);

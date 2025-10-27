@@ -1,5 +1,6 @@
 import { supabase } from '../../lib/supabase';
 import { toast } from 'react-hot-toast';
+import { DisbursementVATService } from './disbursement-vat.service';
 
 /**
  * Disbursement Service
@@ -31,6 +32,7 @@ export interface DisbursementCreate {
   date_incurred: string;
   vat_applicable?: boolean;
   receipt_link?: string;
+  disbursement_type_id?: string; // For VAT integration
 }
 
 export interface DisbursementSummary {
@@ -84,6 +86,16 @@ export class DisbursementService {
         throw new Error('Unauthorized: You can only add disbursements to your own matters');
       }
 
+      // Calculate VAT if disbursement type is provided
+      let vatSuggestion: any = null;
+      if (data.disbursement_type_id) {
+        try {
+          vatSuggestion = await DisbursementVATService.suggestVAT(data.disbursement_type_id, data.amount);
+        } catch (error) {
+          console.warn('VAT suggestion failed:', error);
+        }
+      }
+
       // Create disbursement record
       const { data: disbursement, error: disbursementError } = await supabase
         .from('disbursements')
@@ -93,8 +105,10 @@ export class DisbursementService {
           description: data.description.trim(),
           amount: data.amount,
           date_incurred: data.date_incurred,
-          vat_applicable: data.vat_applicable ?? true,
-          receipt_link: data.receipt_link?.trim() || null
+          vat_applicable: vatSuggestion ? vatSuggestion.suggested_treatment === 'vat_inclusive' : (data.vat_applicable ?? true),
+          vat_amount: vatSuggestion ? vatSuggestion.vat_amount : 0,
+          receipt_link: data.receipt_link?.trim() || null,
+          disbursement_type_id: data.disbursement_type_id || null
         })
         .select()
         .single();
@@ -436,6 +450,50 @@ export class DisbursementService {
 
     } catch (error) {
       console.error('Error fetching disbursement summary:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Calculate VAT for a disbursement using VAT service
+   * Integration point with DisbursementVATService
+   */
+  static async calculateVAT(disbursementTypeId: string, amount: number) {
+    try {
+      return await DisbursementVATService.suggestVAT(disbursementTypeId, amount);
+    } catch (error) {
+      console.error('Error calculating VAT:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Get disbursement types for VAT calculation
+   * Delegates to DisbursementVATService
+   */
+  static async getDisbursementTypes() {
+    try {
+      return await DisbursementVATService.getDisbursementTypes();
+    } catch (error) {
+      console.error('Error fetching disbursement types:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Correct VAT treatment on a disbursement
+   * Delegates to DisbursementVATService
+   */
+  static async correctVATTreatment(expenseId: string, newVATTreatment: 'vat_inclusive' | 'vat_exempt', reason: string, regenerateInvoice?: boolean) {
+    try {
+      return await DisbursementVATService.correctVATTreatment({
+        expenseId,
+        newVATTreatment,
+        reason,
+        regenerateInvoice
+      });
+    } catch (error) {
+      console.error('Error correcting VAT treatment:', error);
       throw error;
     }
   }

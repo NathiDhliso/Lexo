@@ -1,4 +1,9 @@
-import { supabase } from '@/lib/supabase';
+import { DisbursementService, DisbursementCreate } from './disbursement.service';
+
+/**
+ * @deprecated ExpensesService is deprecated. Use DisbursementService instead.
+ * This compatibility layer will be removed in a future version.
+ */
 
 export interface Expense {
   id: string;
@@ -29,173 +34,175 @@ export interface UpdateExpenseInput {
   receipt_url?: string;
 }
 
+/**
+ * @deprecated ExpensesService is deprecated. Use DisbursementService instead.
+ * This is a compatibility layer that delegates to DisbursementService.
+ */
 export class ExpensesService {
+  /**
+   * @deprecated Use DisbursementService.getDisbursementsByMatter() instead
+   */
   static async getMatterExpenses(matterId: string): Promise<Expense[]> {
-    try {
-      const { data, error } = await supabase
-        .from('expenses')
-        .select('*')
-        .eq('matter_id', matterId)
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching matter expenses:', error);
-      throw new Error('Failed to fetch expenses');
-    }
+    console.warn('ExpensesService.getMatterExpenses is deprecated. Use DisbursementService.getDisbursementsByMatter instead.');
+    
+    const disbursements = await DisbursementService.getDisbursementsByMatter(matterId);
+    
+    // Convert Disbursement to Expense format for compatibility
+    return disbursements.map(disbursement => ({
+      id: disbursement.id,
+      matter_id: disbursement.matter_id,
+      description: disbursement.description,
+      amount: disbursement.amount,
+      date: disbursement.date_incurred,
+      category: undefined, // Not available in disbursement model
+      receipt_url: disbursement.receipt_link,
+      created_at: disbursement.created_at,
+      updated_at: disbursement.updated_at
+    }));
   }
 
+  /**
+   * @deprecated Use DisbursementService directly instead
+   */
   static async getExpenseById(id: string): Promise<Expense | null> {
-    try {
-      const { data, error } = await supabase
-        .from('expenses')
-        .select('*')
-        .eq('id', id)
-        .single();
-
-      if (error) throw error;
-
-      return data;
-    } catch (error) {
-      console.error('Error fetching expense:', error);
-      throw new Error('Failed to fetch expense');
-    }
+    console.warn('ExpensesService.getExpenseById is deprecated. Use DisbursementService directly instead.');
+    
+    // This method doesn't have a direct equivalent in DisbursementService
+    // For now, we'll get all disbursements and filter (not efficient, but maintains compatibility)
+    const disbursements = await DisbursementService.getDisbursements({ pageSize: 1000 });
+    const disbursement = disbursements.data.find(d => d.id === id);
+    
+    if (!disbursement) return null;
+    
+    return {
+      id: disbursement.id,
+      matter_id: disbursement.matter_id,
+      description: disbursement.description,
+      amount: disbursement.amount,
+      date: disbursement.date_incurred,
+      category: undefined,
+      receipt_url: disbursement.receipt_link,
+      created_at: disbursement.created_at,
+      updated_at: disbursement.updated_at
+    };
   }
 
+  /**
+   * @deprecated Use DisbursementService.createDisbursement() instead
+   */
   static async createExpense(input: CreateExpenseInput): Promise<Expense> {
-    try {
-      if (!input.matter_id || !input.description || !input.amount || !input.date) {
-        throw new Error('Missing required fields: matter_id, description, amount, date');
-      }
-
-      if (input.amount <= 0) {
-        throw new Error('Amount must be greater than 0');
-      }
-
-      const { data, error } = await supabase
-        .from('expenses')
-        .insert([{
-          matter_id: input.matter_id,
-          description: input.description,
-          amount: input.amount,
-          date: input.date,
-          category: input.category || null,
-          receipt_url: input.receipt_url || null
-        }])
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return data;
-    } catch (error) {
-      console.error('Error creating expense:', error);
-      throw new Error('Failed to create expense');
-    }
+    console.warn('ExpensesService.createExpense is deprecated. Use DisbursementService.createDisbursement instead.');
+    
+    const disbursementInput: DisbursementCreate = {
+      matter_id: input.matter_id,
+      description: input.description,
+      amount: input.amount,
+      date_incurred: input.date,
+      receipt_link: input.receipt_url
+    };
+    
+    const disbursement = await DisbursementService.createDisbursement(disbursementInput);
+    
+    return {
+      id: disbursement.id,
+      matter_id: disbursement.matter_id,
+      description: disbursement.description,
+      amount: disbursement.amount,
+      date: disbursement.date_incurred,
+      category: input.category,
+      receipt_url: disbursement.receipt_link,
+      created_at: disbursement.created_at,
+      updated_at: disbursement.updated_at
+    };
   }
 
+  /**
+   * @deprecated Use DisbursementService.updateDisbursement() instead
+   */
   static async updateExpense(id: string, input: UpdateExpenseInput): Promise<Expense> {
-    try {
-      if (input.amount !== undefined && input.amount <= 0) {
-        throw new Error('Amount must be greater than 0');
-      }
-
-      const updateData: any = {
-        updated_at: new Date().toISOString()
-      };
-
-      if (input.description !== undefined) updateData.description = input.description;
-      if (input.amount !== undefined) updateData.amount = input.amount;
-      if (input.date !== undefined) updateData.date = input.date;
-      if (input.category !== undefined) updateData.category = input.category;
-      if (input.receipt_url !== undefined) updateData.receipt_url = input.receipt_url;
-
-      const { data, error } = await supabase
-        .from('expenses')
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      return data;
-    } catch (error) {
-      console.error('Error updating expense:', error);
-      throw new Error('Failed to update expense');
-    }
+    console.warn('ExpensesService.updateExpense is deprecated. Use DisbursementService.updateDisbursement instead.');
+    
+    const updateData: Partial<DisbursementCreate> = {};
+    if (input.description !== undefined) updateData.description = input.description;
+    if (input.amount !== undefined) updateData.amount = input.amount;
+    if (input.date !== undefined) updateData.date_incurred = input.date;
+    if (input.receipt_url !== undefined) updateData.receipt_link = input.receipt_url;
+    
+    const disbursement = await DisbursementService.updateDisbursement(id, updateData);
+    
+    return {
+      id: disbursement.id,
+      matter_id: disbursement.matter_id,
+      description: disbursement.description,
+      amount: disbursement.amount,
+      date: disbursement.date_incurred,
+      category: input.category,
+      receipt_url: disbursement.receipt_link,
+      created_at: disbursement.created_at,
+      updated_at: disbursement.updated_at
+    };
   }
 
+  /**
+   * @deprecated Use DisbursementService.deleteDisbursement() instead
+   */
   static async deleteExpense(id: string): Promise<void> {
-    try {
-      const { error } = await supabase
-        .from('expenses')
-        .delete()
-        .eq('id', id);
-
-      if (error) throw error;
-    } catch (error) {
-      console.error('Error deleting expense:', error);
-      throw new Error('Failed to delete expense');
-    }
+    console.warn('ExpensesService.deleteExpense is deprecated. Use DisbursementService.deleteDisbursement instead.');
+    
+    await DisbursementService.deleteDisbursement(id);
   }
 
+  /**
+   * @deprecated Use DisbursementService.getDisbursementsByMatter() and calculate total instead
+   */
   static async getTotalExpensesForMatter(matterId: string): Promise<number> {
-    try {
-      const { data, error } = await supabase
-        .from('expenses')
-        .select('amount')
-        .eq('matter_id', matterId);
-
-      if (error) throw error;
-
-      return data?.reduce((sum, expense) => sum + (expense.amount || 0), 0) || 0;
-    } catch (error) {
-      console.error('Error calculating total expenses:', error);
-      throw new Error('Failed to calculate total expenses');
-    }
+    console.warn('ExpensesService.getTotalExpensesForMatter is deprecated. Use DisbursementService.getDisbursementsByMatter and calculate total instead.');
+    
+    const disbursements = await DisbursementService.getDisbursementsByMatter(matterId);
+    return disbursements.reduce((sum, disbursement) => sum + (disbursement.amount || 0), 0);
   }
 
+  /**
+   * @deprecated Use DisbursementService.getDisbursementsByMatter() and filter by date instead
+   */
   static async getExpensesByDateRange(
     matterId: string,
     startDate: string,
     endDate: string
   ): Promise<Expense[]> {
-    try {
-      const { data, error } = await supabase
-        .from('expenses')
-        .select('*')
-        .eq('matter_id', matterId)
-        .gte('date', startDate)
-        .lte('date', endDate)
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching expenses by date range:', error);
-      throw new Error('Failed to fetch expenses');
-    }
+    console.warn('ExpensesService.getExpensesByDateRange is deprecated. Use DisbursementService.getDisbursementsByMatter and filter by date instead.');
+    
+    const disbursements = await DisbursementService.getDisbursementsByMatter(matterId);
+    
+    const filtered = disbursements.filter(disbursement => {
+      const date = new Date(disbursement.date_incurred);
+      const start = new Date(startDate);
+      const end = new Date(endDate);
+      return date >= start && date <= end;
+    });
+    
+    return filtered.map(disbursement => ({
+      id: disbursement.id,
+      matter_id: disbursement.matter_id,
+      description: disbursement.description,
+      amount: disbursement.amount,
+      date: disbursement.date_incurred,
+      category: undefined,
+      receipt_url: disbursement.receipt_link,
+      created_at: disbursement.created_at,
+      updated_at: disbursement.updated_at
+    }));
   }
 
+  /**
+   * @deprecated Category filtering not available in DisbursementService. Use DisbursementService.getDisbursementsByMatter() instead
+   */
   static async getExpensesByCategory(matterId: string, category: string): Promise<Expense[]> {
-    try {
-      const { data, error } = await supabase
-        .from('expenses')
-        .select('*')
-        .eq('matter_id', matterId)
-        .eq('category', category)
-        .order('date', { ascending: false });
-
-      if (error) throw error;
-
-      return data || [];
-    } catch (error) {
-      console.error('Error fetching expenses by category:', error);
-      throw new Error('Failed to fetch expenses');
-    }
+    console.warn('ExpensesService.getExpensesByCategory is deprecated. Category filtering not available in DisbursementService. Use DisbursementService.getDisbursementsByMatter() instead.');
+    
+    // Since DisbursementService doesn't have category filtering, return empty array
+    // This maintains compatibility but indicates the feature is no longer supported
+    console.warn(`Category filtering for "${category}" is no longer supported. Returning empty array.`);
+    return [];
   }
 }

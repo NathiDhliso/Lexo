@@ -1,3 +1,7 @@
+-- ARCHIVED: Second duplicate invoice numbering and disbursement VAT migration
+-- REASON: Consolidated into 20250127000010_enhanced_invoice_numbering.sql
+-- DATE ARCHIVED: 2025-01-27
+
 -- =====================================================
 -- Phase 3: Invoice Numbering & Disbursement VAT System
 -- Requirements: 5.1-5.7, 6.1-6.7
@@ -131,7 +135,7 @@ COMMENT ON TABLE disbursement_vat_audit IS 'Audit trail for VAT treatment change
 
 -- Function: Generate next invoice number with mode support (Requirements 5.1, 5.2, 5.3)
 CREATE OR REPLACE FUNCTION get_next_invoice_number(p_advocate_id UUID, p_mode TEXT DEFAULT 'strict')
-RETURNS TEXT AS $$
+RETURNS TEXT AS $
 DECLARE
     settings RECORD;
     current_year INTEGER;
@@ -184,13 +188,13 @@ BEGIN
     
     RETURN invoice_number;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 COMMENT ON FUNCTION get_next_invoice_number IS 'Generate next invoice number with strict/flexible mode support (Req 5.1)';
 
 -- Function: Log invoice number action (Requirements 5.4, 5.5, 5.6)
 CREATE OR REPLACE FUNCTION log_invoice_number_action()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 DECLARE
     action_type TEXT;
     gap_detected INTEGER;
@@ -243,7 +247,7 @@ BEGIN
     
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 CREATE TRIGGER log_invoice_number_action_trigger
     AFTER INSERT OR UPDATE ON invoices
@@ -252,7 +256,7 @@ CREATE TRIGGER log_invoice_number_action_trigger
 
 -- Function: Auto-suggest VAT for disbursements (Requirements 6.1, 6.2, 6.3)
 CREATE OR REPLACE FUNCTION suggest_disbursement_vat()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 DECLARE
     disbursement_type RECORD;
     vat_amount DECIMAL(12,2);
@@ -292,7 +296,7 @@ BEGIN
     
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 CREATE TRIGGER suggest_disbursement_vat_trigger
     BEFORE INSERT OR UPDATE OF disbursement_type_id ON expenses
@@ -301,7 +305,7 @@ CREATE TRIGGER suggest_disbursement_vat_trigger
 
 -- Function: Audit VAT changes (Requirement 6.5)
 CREATE OR REPLACE FUNCTION audit_disbursement_vat_change()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 DECLARE
     action_type TEXT;
 BEGIN
@@ -345,7 +349,7 @@ BEGIN
     
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$ LANGUAGE plpgsql;
 
 CREATE TRIGGER audit_disbursement_vat_change_trigger
     AFTER UPDATE ON expenses

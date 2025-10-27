@@ -368,8 +368,6 @@ export function usePaginatedFetch<T>(
       setCurrentPage(page);
       
       onSuccess?.(result.data, page, result.hasMore);
-    } catch (error) {
-      throw error;
     } finally {
       if (append) {
         setIsLoadingMore(false);

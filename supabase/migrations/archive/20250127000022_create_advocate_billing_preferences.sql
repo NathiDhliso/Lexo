@@ -1,3 +1,7 @@
+-- ARCHIVED: Original duplicate billing preferences migration
+-- REASON: Consolidated into 20251027153935_create_advocate_billing_preferences_fix.sql
+-- DATE ARCHIVED: 2025-01-27
+
 -- Create advocate_billing_preferences table
 -- This table stores billing preferences and workflow settings for advocates
 
@@ -43,12 +47,12 @@ CREATE POLICY "Users can delete their own billing preferences" ON public.advocat
 
 -- Update trigger for updated_at
 CREATE OR REPLACE FUNCTION update_updated_at_column()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER AS $
 BEGIN
     NEW.updated_at = NOW();
     RETURN NEW;
 END;
-$$ language 'plpgsql';
+$ language 'plpgsql';
 
 CREATE TRIGGER update_advocate_billing_preferences_updated_at
     BEFORE UPDATE ON public.advocate_billing_preferences

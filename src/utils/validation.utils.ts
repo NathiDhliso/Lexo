@@ -156,7 +156,7 @@ export function email(message = 'Invalid email address'): ValidationRule<string>
  * Phone number validation (basic)
  */
 export function phone(message = 'Invalid phone number'): ValidationRule<string> {
-  const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+  const phoneRegex = /^[+]?[1-9][\d]{0,15}$/;
   return pattern(phoneRegex, message);
 }
 
