@@ -22,14 +22,11 @@ import {
 } from 'lucide-react';
 import { Card, CardContent, Button, CardHeader } from '../components/design-system/components';
 import { SkeletonMatterCard } from '../components/design-system/components';
-import { MatterDetailModal } from '../components/matters/MatterDetailModal';
-import { EditMatterModal } from '../components/matters/EditMatterModal';
+import { MatterModal, type MatterMode } from '../components/modals/matter/MatterModal';
 import { NewRequestCard } from '../components/matters/NewRequestCard';
 import { RequestInfoModal, DeclineMatterModal } from '../components/matters/RequestActionModals';
-import { AcceptBriefModal } from '../components/matters/AcceptBriefModal';
 import { RequestScopeAmendmentModal } from '../components/matters/RequestScopeAmendmentModal';
 import { SimpleFeeEntryModal } from '../components/matters/SimpleFeeEntryModal';
-import { QuickAddMatterModal, type QuickAddMatterData } from '../components/matters/QuickAddMatterModal';
 import { QuickBriefCaptureModal } from '../components/matters/quick-brief/QuickBriefCaptureModal';
 import { MatterSearchBar } from '../components/matters/MatterSearchBar';
 import { AdvancedFiltersModal } from '../components/matters/AdvancedFiltersModal';
@@ -55,15 +52,15 @@ interface MattersPageProps {
 const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [searchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState<'active' | 'new_requests' | 'all'>('active');
-  const [searchTerm, setSearchTerm] = useState('');
   const [selectedMatter, setSelectedMatter] = useState<Matter | null>(null);
-  const [showDetailModal, setShowDetailModal] = useState(false);
-  const [showEditModal, setShowEditModal] = useState(false);
-  // New request action modals
-  const [showAcceptBriefModal, setShowAcceptBriefModal] = useState(false);
+  
+  // Consolidated modal state
+  const [matterModalMode, setMatterModalMode] = useState<MatterMode | null>(null);
+  const [showMatterModal, setShowMatterModal] = useState(false);
+  
+  // Other modals (not yet consolidated)
   const [showRequestInfoModal, setShowRequestInfoModal] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
-  const [showQuickAddModal, setShowQuickAddModal] = useState(false);
   const [showQuickBriefModal, setShowQuickBriefModal] = useState(false);
   const [firms, setFirms] = useState<any[]>([]);
   
@@ -368,15 +365,13 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
 
   const filteredMatters = useMemo(() => {
     return matters.filter(matter => {
-      const matchesSearch = matter.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           matter.client_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                           matter.instructing_attorney.toLowerCase().includes(searchTerm.toLowerCase());
+      // Search is now handled by MatterSearchBar component via searchFilters
       const matchesTab = activeTab === 'all' || 
                         (activeTab === 'active' && matter.status === MatterStatus.ACTIVE) ||
                         (activeTab === 'new_requests' && matter.status === MatterStatus.NEW_REQUEST);
-      return matchesSearch && matchesTab;
+      return matchesTab;
     });
-  }, [matters, searchTerm, activeTab]);
+  }, [matters, activeTab]);
   
   // Count new requests
   const newRequestsCount = useMemo(() => {
@@ -398,19 +393,20 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
 
   const handleNewMatterClick = () => {
     // Open quick add modal for matters accepted over phone/email
-    setShowQuickAddModal(true);
+    setMatterModalMode('quick-add');
+    setSelectedMatter(null);
+    setShowMatterModal(true);
   };
 
-  const handleQuickAddMatter = async (matterData: QuickAddMatterData) => {
-    try {
-      const newMatter = await matterApiService.createActiveMatter(matterData);
-      setShowQuickAddModal(false);
-      await fetchMatters(); // Refresh the list
-      // Navigate to the matter workbench
-      navigate(`/matter-workbench/${newMatter.id}`);
-    } catch (error) {
-      console.error('Error creating matter:', error);
-      // Error toast is shown by the service
+  const handleMatterModalSuccess = async (matter: Matter) => {
+    setShowMatterModal(false);
+    setMatterModalMode(null);
+    setSelectedMatter(null);
+    await fetchMatters(); // Refresh the list
+    
+    // Navigate to workbench for newly created matters
+    if (matterModalMode === 'quick-add' || matterModalMode === 'create') {
+      navigate(`/matter-workbench/${matter.id}`);
     }
   };
 
@@ -420,19 +416,22 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
       navigate(`/matter-workbench/${matter.id}`);
     } else {
       setSelectedMatter(matter);
-      setShowDetailModal(true);
+      setMatterModalMode('detail');
+      setShowMatterModal(true);
     }
   };
 
   const handleEditMatter = (matter: Matter) => {
     setSelectedMatter(matter);
-    setShowDetailModal(false);
-    setShowEditModal(true);
+    setMatterModalMode('edit');
+    setShowMatterModal(true);
   };
 
-  const handleSaveMatter = async () => {
-    toast.success('Matter updated successfully', { duration: 3000 });
-    await fetchMatters();
+  const handleMatterModalEdit = (matter: Matter) => {
+    // Called when user clicks edit from within the detail view
+    setSelectedMatter(matter);
+    setMatterModalMode('edit');
+    // Modal stays open, just switches mode
   };
 
   const handleReverseConversion = async (matter: Matter) => {
@@ -612,17 +611,10 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   };
 
   // Path B: Accept Brief (Quick Start) Handler
-  const handleAcceptBrief = async (matterId: string) => {
-    try {
-      await matterApiService.acceptBrief(matterId);
-      toast.success('Brief accepted! Matter is now active.');
-      await fetchMatters();
-      setShowAcceptBriefModal(false);
-      setSelectedMatter(null);
-    } catch (error) {
-      console.error('Failed to accept brief:', error);
-      toast.error('Failed to accept brief');
-    }
+  const handleAcceptBriefClick = (matter: Matter) => {
+    setSelectedMatter(matter);
+    setMatterModalMode('accept-brief');
+    setShowMatterModal(true);
   };
 
   // Calculate stats
@@ -922,8 +914,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                 }}
                 onAcceptBrief={(m) => {
                   // Path B: Accept Brief (quick start)
-                  setSelectedMatter(m);
-                  setShowAcceptBriefModal(true);
+                  handleAcceptBriefClick(m);
                 }}
                 onRequestInfo={(m) => {
                   setSelectedMatter(m);
@@ -1161,36 +1152,22 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         )}
       </div>
 
-      <MatterDetailModal
-        matter={selectedMatter}
-        isOpen={showDetailModal}
-        onClose={() => setShowDetailModal(false)}
-        onEdit={handleEditMatter}
-      />
-
-      <EditMatterModal
-        matter={selectedMatter}
-        isOpen={showEditModal}
-        onClose={() => setShowEditModal(false)}
-        onSave={handleSaveMatter}
-      />
-
-      {/* New Request Action Modals */}
-      <QuickAddMatterModal
-        isOpen={showQuickAddModal}
-        onConfirm={handleQuickAddMatter}
-        onClose={() => setShowQuickAddModal(false)}
-      />
-
-      <AcceptBriefModal
-        isOpen={showAcceptBriefModal}
-        matter={selectedMatter}
-        onConfirm={handleAcceptBrief}
-        onClose={() => {
-          setShowAcceptBriefModal(false);
-          setSelectedMatter(null);
-        }}
-      />
+      {/* Consolidated Matter Modal */}
+      {showMatterModal && matterModalMode && (
+        <MatterModal
+          mode={matterModalMode}
+          isOpen={showMatterModal}
+          onClose={() => {
+            setShowMatterModal(false);
+            setMatterModalMode(null);
+            setSelectedMatter(null);
+          }}
+          matter={selectedMatter}
+          matterId={selectedMatter?.id}
+          onSuccess={handleMatterModalSuccess}
+          onEdit={handleMatterModalEdit}
+        />
+      )}
 
       <RequestInfoModal
         isOpen={showRequestInfoModal}

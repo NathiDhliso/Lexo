@@ -3,10 +3,12 @@
  */
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, FileText, Clock, Receipt, Briefcase, AlertCircle, FolderOpen, DollarSign } from 'lucide-react';
+import { ArrowLeft, FileText, Clock, Receipt, Briefcase, AlertCircle, FolderOpen, DollarSign, CheckCircle } from 'lucide-react';
 import { Button, Card } from '../components/design-system/components';
 import { matterApiService } from '../services/api';
 import { proformaRequestService } from '../services/api/proforma-request.service';
+import { useMatterBillingStrategy } from '../hooks/useBillingStrategy';
+import { BillingModel } from '../types/billing-strategy.types';
 import { toast } from 'react-hot-toast';
 import type { Matter } from '../types';
 
@@ -20,6 +22,8 @@ import { WorkbenchInvoicingTab } from '../components/matters/workbench/Workbench
 import { PathAActions } from '../components/matters/workbench/PathAActions';
 import { PathBActions } from '../components/matters/workbench/PathBActions';
 import { DocumentsTab } from '../components/documents/DocumentsTab';
+import { FeeMilestonesWidget } from '../components/matters/workbench/FeeMilestonesWidget';
+import { AdvancedTimeTrackingSection } from '../components/matters/workbench/AdvancedTimeTrackingSection';
 
 // Modals
 import { TimeEntryModal } from '../components/time-entries/TimeEntryModal';
@@ -28,7 +32,7 @@ import { LogServiceModal } from '../components/services/LogServiceModal';
 import { SimpleFeeEntryModal } from '../components/matters/SimpleFeeEntryModal';
 import { BudgetComparisonWidget } from '../components/matters/workbench/BudgetComparisonWidget';
 
-type TabType = 'overview' | 'time' | 'expenses' | 'services' | 'amendments' | 'documents' | 'invoicing';
+type TabType = 'overview' | 'time' | 'expenses' | 'services' | 'milestones' | 'amendments' | 'documents' | 'invoicing';
 
 const MatterWorkbenchPage: React.FC = () => {
   const { matterId } = useParams<{ matterId: string }>();
@@ -42,6 +46,10 @@ const MatterWorkbenchPage: React.FC = () => {
   // TODO: Fetch and calculate these from amendments table when viewing amendments tab
   const [amendmentTotal] = useState(0);
   const [amendmentCount] = useState(0);
+
+  // Get billing strategy for adaptive UI
+  const billingStrategy = useMatterBillingStrategy(matter);
+  const billingModel = (matter as any)?.billing_model || BillingModel.BRIEF_FEE;
 
   const [showTimeModal, setShowTimeModal] = useState(false);
   const [showExpenseModal, setShowExpenseModal] = useState(false);
@@ -94,11 +102,18 @@ const MatterWorkbenchPage: React.FC = () => {
 
   if (loading || !matter) return <div>Loading...</div>;
 
+  // Determine which tabs to show based on billing model and strategy
+  const shouldShowTimeTracking = billingStrategy.shouldShowTimeTracking();
+  const shouldShowMilestones = billingModel === BillingModel.BRIEF_FEE;
+
   const tabs = [
     { id: 'overview', label: 'Overview', icon: Briefcase },
-    { id: 'time', label: 'Time', icon: Clock },
+    // Show time tab based on billing strategy
+    ...(shouldShowTimeTracking ? [{ id: 'time', label: 'Time', icon: Clock }] : []),
     { id: 'expenses', label: 'Expenses', icon: Receipt },
     { id: 'services', label: 'Services', icon: FileText },
+    // Show milestones for brief fee matters
+    ...(shouldShowMilestones ? [{ id: 'milestones', label: 'Milestones', icon: CheckCircle }] : []),
     ...(isPathA ? [{ id: 'amendments', label: 'Amendments', icon: AlertCircle }] : []),
     { id: 'documents', label: 'Documents', icon: FolderOpen },
     { id: 'invoicing', label: 'Invoicing', icon: DollarSign },
@@ -166,11 +181,35 @@ const MatterWorkbenchPage: React.FC = () => {
         <Card>
           <div className="p-6">
             {activeTab === 'overview' && (
-              <WorkbenchOverview matter={matter} isPathA={isPathA} originalBudget={originalBudget} amendmentTotal={amendmentTotal} amendmentCount={amendmentCount} />
+              <div className="space-y-6">
+                <WorkbenchOverview matter={matter} isPathA={isPathA} originalBudget={originalBudget} amendmentTotal={amendmentTotal} amendmentCount={amendmentCount} />
+                
+                {/* Show milestones for brief fee matters */}
+                {shouldShowMilestones && (
+                  <FeeMilestonesWidget 
+                    matter={matter} 
+                    onMilestoneComplete={handleModalSuccess}
+                  />
+                )}
+                
+                {/* Show collapsible time tracking for brief fee matters */}
+                {shouldShowMilestones && (
+                  <AdvancedTimeTrackingSection 
+                    matter={matter}
+                    onTimeEntryAdded={handleModalSuccess}
+                  />
+                )}
+              </div>
             )}
-            {activeTab === 'time' && <WorkbenchTimeTab matterId={matter.id} matterTitle={matter.title} />}
+            {activeTab === 'time' && shouldShowTimeTracking && <WorkbenchTimeTab matterId={matter.id} matterTitle={matter.title} />}
             {activeTab === 'expenses' && <WorkbenchExpensesTab matterId={matter.id} />}
             {activeTab === 'services' && <WorkbenchServicesTab matterId={matter.id} />}
+            {activeTab === 'milestones' && shouldShowMilestones && (
+              <FeeMilestonesWidget 
+                matter={matter} 
+                onMilestoneComplete={handleModalSuccess}
+              />
+            )}
             {activeTab === 'amendments' && isPathA && <WorkbenchAmendmentsTab matter={matter} />}
             {activeTab === 'documents' && <DocumentsTab matterId={matter.id} />}
             {activeTab === 'invoicing' && <WorkbenchInvoicingTab matter={matter} />}

@@ -108,7 +108,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
         return 'text-success-600 bg-success-100';
       case InvoiceStatus.OVERDUE:
       case 'overdue':
-        return 'text-error-600 bg-error-100';
+        return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
       case InvoiceStatus.SENT:
       case InvoiceStatus.VIEWED:
       case InvoiceStatus.DRAFT:
@@ -121,11 +121,11 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
 
   const getReminderUrgency = (dueDate: Date) => {
     if (isToday(dueDate)) {
-      return 'text-error-600 bg-error-100';
+      return 'bg-judicial-blue-100 dark:bg-judicial-blue-900/30 text-judicial-blue-700 dark:text-judicial-blue-300';
     } else if (isTomorrow(dueDate)) {
-      return 'text-warning-600 bg-warning-100';
+      return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
     }
-    return 'text-neutral-600 bg-neutral-100';
+    return 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300';
   };
 
   if (loading) {
@@ -139,11 +139,11 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
   if (error || !metrics) {
     return (
       <div className={`text-center py-12 ${className}`}>
-        <AlertTriangle className="w-12 h-12 text-error-500 mx-auto mb-4" />
-        <p className="text-error-600 mb-4">{error || 'Failed to load data'}</p>
+        <AlertTriangle className="w-12 h-12 text-amber-500 dark:text-amber-400 mx-auto mb-4" />
+        <p className="text-neutral-600 dark:text-neutral-300 mb-4">{error || 'Unable to load data'}</p>
         <button
           onClick={loadDashboardData}
-          className="px-4 py-2 bg-mpondo-gold-600 text-white rounded-lg hover:bg-mpondo-gold-700 transition-colors"
+          className="px-4 py-2 bg-judicial-blue-600 text-white rounded-lg hover:bg-judicial-blue-700 dark:bg-judicial-blue-700 dark:hover:bg-judicial-blue-800 transition-colors"
         >
           Try Again
         </button>
@@ -156,17 +156,17 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold text-neutral-900">Payment Tracking</h2>
-          <p className="text-neutral-600 mt-1">
-            Monitor payment performance and manage reminders
+          <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">Payment Tracking</h2>
+          <p className="text-neutral-600 dark:text-neutral-400 mt-1">
+            Monitor payment performance and stay on top of collections
           </p>
         </div>
         <button
           onClick={processReminders}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-mpondo-gold-600 text-white rounded-lg hover:bg-mpondo-gold-700 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-judicial-blue-600 text-white rounded-lg hover:bg-judicial-blue-700 dark:bg-judicial-blue-700 dark:hover:bg-judicial-blue-800 transition-colors"
         >
           <Bell className="w-4 h-4" />
-          Process Reminders
+          Send Reminders
         </button>
       </div>
 
@@ -174,26 +174,26 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-error-100 rounded-lg">
-              <RandIcon size={20} className="text-error-600" />
+            <div className="p-2 bg-judicial-blue-100 dark:bg-judicial-blue-900/30 rounded-lg">
+              <RandIcon size={20} className="text-judicial-blue-600 dark:text-judicial-blue-400" />
             </div>
             <div>
-              <p className="text-sm text-neutral-600">Outstanding</p>
-              <p className="text-xl font-semibold text-neutral-900">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">Outstanding</p>
+              <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                 {formatRand(metrics.totalOutstanding)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200">
+        <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-error-100 rounded-lg">
-              <AlertTriangle className="w-5 h-5 text-error-600" />
+            <div className="p-2 bg-amber-100 dark:bg-amber-900/30 rounded-lg">
+              <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             </div>
             <div>
-              <p className="text-sm text-neutral-600">Overdue</p>
-              <p className="text-xl font-semibold text-neutral-900">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">Needs Attention</p>
+              <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                 {formatRand(metrics.overdueAmount)}
               </p>
             </div>
@@ -214,20 +214,20 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
           </div>
         </div>
 
-        <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200">
+        <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${
-              metrics.paymentRate >= 80 ? 'bg-success-100' : 
-              metrics.paymentRate >= 60 ? 'bg-warning-100' : 'bg-error-100'
+              metrics.paymentRate >= 80 ? 'bg-status-success-100 dark:bg-status-success-900/30' : 
+              metrics.paymentRate >= 60 ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-judicial-blue-100 dark:bg-judicial-blue-900/30'
             }`}>
               <Target className={`w-5 h-5 ${
-                metrics.paymentRate >= 80 ? 'text-success-600' : 
-                metrics.paymentRate >= 60 ? 'text-warning-600' : 'text-error-600'
+                metrics.paymentRate >= 80 ? 'text-status-success-600 dark:text-status-success-400' : 
+                metrics.paymentRate >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-judicial-blue-600 dark:text-judicial-blue-400'
               }`} />
             </div>
             <div>
-              <p className="text-sm text-neutral-600">On-Time Rate</p>
-              <p className="text-xl font-semibold text-neutral-900">
+              <p className="text-sm text-neutral-600 dark:text-neutral-400">On-Time Rate</p>
+              <p className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
                 {metrics.paymentRate}%
               </p>
             </div>
@@ -236,20 +236,25 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Overdue Invoices */}
-        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200">
-          <div className="p-4 border-b border-neutral-200">
-            <h3 className="text-lg font-semibold text-neutral-900 flex items-center gap-2">
-              <AlertTriangle className="w-5 h-5 text-error-600" />
-              Overdue Invoices ({metrics.overdueInvoices.length})
+        {/* Invoices Needing Attention */}
+        <div className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
+          <div className="p-4 border-b border-neutral-200 dark:border-metallic-gray-700">
+            <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2">
+              <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              Needs Attention ({metrics.overdueInvoices.length})
             </h3>
+            <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+              Invoices awaiting follow-up
+            </p>
           </div>
           <div className="p-4">
             {metrics.overdueInvoices.length === 0 ? (
               <div className="text-center py-8">
-                <TrendingUp className="w-12 h-12 text-success-400 mx-auto mb-4" />
-                <p className="text-neutral-600">No overdue invoices!</p>
-                <p className="text-sm text-neutral-500 mt-1">Great job staying on top of collections</p>
+                <TrendingUp className="w-12 h-12 text-status-success-400 dark:text-status-success-500 mx-auto mb-4" />
+                <p className="text-neutral-600 dark:text-neutral-300 font-medium">All caught up!</p>
+                <p className="text-sm text-neutral-500 dark:text-neutral-400 mt-1">
+                  No invoices need follow-up. Excellent work! 🎉
+                </p>
               </div>
             ) : (
               <div className="space-y-3 max-h-64 overflow-y-auto">

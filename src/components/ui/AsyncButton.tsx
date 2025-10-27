@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Button, ButtonProps } from './Button';
-import { toastService } from '../../services/toast.service';
+import { useLoadingState } from '../../hooks/useLoadingState';
 
 export interface AsyncButtonProps extends Omit<ButtonProps, 'onClick' | 'loading' | 'onError'> {
   onAsyncClick: () => Promise<void>;
@@ -49,7 +49,24 @@ export const AsyncButton = React.forwardRef<HTMLButtonElement, AsyncButtonProps>
     },
     ref
   ) => {
-    const [isLoading, setIsLoading] = useState(false);
+    // Use the loading state hook
+    const { isLoading, execute } = useLoadingState({
+      onSuccess: () => {
+        if (successMessage) {
+          import('../../services/toast.service').then(({ toastService }) => {
+            toastService.success(successMessage);
+          });
+        }
+        onSuccess?.();
+      },
+      onError: (error) => {
+        const message = errorMessage || 'An error occurred. Please try again.';
+        import('../../services/toast.service').then(({ toastService }) => {
+          toastService.error(message);
+        });
+        onError?.(error);
+      },
+    });
 
     const handleClick = async (e: React.MouseEvent<HTMLButtonElement>) => {
       // Prevent action if already loading or disabled
@@ -58,34 +75,7 @@ export const AsyncButton = React.forwardRef<HTMLButtonElement, AsyncButtonProps>
         return;
       }
 
-      setIsLoading(true);
-
-      try {
-        await onAsyncClick();
-        
-        // Show success message if provided
-        if (successMessage) {
-          toastService.success(successMessage);
-        }
-        
-        // Call success callback if provided
-        if (onSuccess) {
-          onSuccess();
-        }
-      } catch (error) {
-        console.error('AsyncButton error:', error);
-        
-        // Show error message
-        const message = errorMessage || 'An error occurred. Please try again.';
-        toastService.error(message);
-        
-        // Call error callback if provided
-        if (onError && error instanceof Error) {
-          onError(error);
-        }
-      } finally {
-        setIsLoading(false);
-      }
+      await execute(onAsyncClick);
     };
 
     return (

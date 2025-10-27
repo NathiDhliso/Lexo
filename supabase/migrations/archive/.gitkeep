@@ -1,0 +1,12 @@
+# Archive Directory for Consolidated Migrations
+
+This directory contains archived migration files that have been consolidated or superseded by newer versions.
+
+## Purpose
+- Preserve historical migration files for audit trail
+- Maintain rollback capability
+- Document consolidation decisions
+
+## Structure
+- Original duplicate files are moved here with timestamp prefixes
+- Consolidation notes are added as comments in archived files

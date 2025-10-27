@@ -1,0 +1,96 @@
+
+> vite-react-typescript-starter@0.0.0 typecheck
+> tsc --noEmit -p tsconfig.app.json
+
+src/components/disbursements/DisbursementsTable.tsx(62,7): error TS2353: Object literal may only specify known properties, and 'confirmVariant' does not exist in type 'ConfirmationOptions'.
+src/components/disbursements/EditDisbursementModal.tsx(258,15): error TS2322: Type '{ children: string; type: "submit"; variant: "primary"; disabled: boolean; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'. Did you mean 'loading'?
+src/components/disbursements/LogDisbursementModal.tsx(268,15): error TS2322: Type '{ children: string; type: "submit"; variant: "primary"; disabled: boolean; isLoading: boolean; }' is not assignable to type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'.
+  Property 'isLoading' does not exist on type 'IntrinsicAttributes & ButtonProps & RefAttributes<HTMLButtonElement>'. Did you mean 'loading'?
+src/components/invoices/MatterTimeEntriesView.tsx(57,22): error TS2345: Argument of type 'TimeEntry[]' is not assignable to parameter of type 'SetStateAction<TimeEntry[]>'.
+  Type 'import("C:/Users/nathi/Downloads/LexoHub/src/types/index").TimeEntry[]' is not assignable to type 'TimeEntry[]'.
+    Type 'import("C:/Users/nathi/Downloads/LexoHub/src/types/index").TimeEntry' is not assignable to type 'TimeEntry'.
+      Types of property 'amount' are incompatible.
+        Type 'number | null' is not assignable to type 'number'.
+          Type 'null' is not assignable to type 'number'.
+src/components/invoices/PaymentTrackingDashboard.tsx(268,39): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/components/invoices/PaymentTrackingDashboard.tsx(384,35): error TS2345: Argument of type 'number | undefined' is not assignable to parameter of type 'number'.
+  Type 'undefined' is not assignable to type 'number'.
+src/components/invoices/UnifiedInvoiceWizard.tsx(105,22): error TS2345: Argument of type 'TimeEntry[]' is not assignable to parameter of type 'SetStateAction<TimeEntryItem[]>'.
+  Type 'TimeEntry[]' is not assignable to type 'TimeEntryItem[]'.
+    Type 'TimeEntry' is not assignable to type 'TimeEntryItem'.
+      Types of property 'amount' are incompatible.
+        Type 'number | null' is not assignable to type 'number'.
+          Type 'null' is not assignable to type 'number'.
+src/components/matters/EditMatterModal.tsx(86,63): error TS2345: Argument of type '{ title: string; matter_type: string; description: string; client_name: string; client_email: string; client_phone: string; client_address: string; instructing_attorney: string; instructing_firm: string; instructing_attorney_email: string; instructing_attorney_phone: string; estimated_fee: number; status: string; }' is not assignable to parameter of type 'Partial<Matter>'.
+  Types of property 'status' are incompatible.
+    Type 'string' is not assignable to type 'MatterStatus | undefined'.
+src/components/matters/MatterCard.tsx(232,47): error TS2769: No overload matches this call.
+  Overload 1 of 4, '(value: string | number | Date): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number | Date'.
+      Type 'undefined' is not assignable to type 'string | number | Date'.
+  Overload 2 of 4, '(value: string | number): Date', gave the following error.
+    Argument of type 'string | undefined' is not assignable to parameter of type 'string | number'.
+      Type 'undefined' is not assignable to type 'string | number'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(19,15): error TS2305: Module '"../../../types"' has no exported member 'Firm'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(130,50): error TS2345: Argument of type '{ category: "work_type"; value: string; }' is not assignable to parameter of type 'never'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(131,54): error TS2345: Argument of type '{ category: "practice_area"; value: string; }' is not assignable to parameter of type 'never'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(132,55): error TS2345: Argument of type '{ category: "issue_template"; value: string; }' is not assignable to parameter of type 'never'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(153,52): error TS2345: Argument of type '{ advocate_id: string; firm_id: string; title: string; matter_type: string; practice_area: string | undefined; description: string; deadline: string; status: "active"; creation_source: string; is_quick_create: boolean; urgency: UrgencyLevel | undefined; }' is not assignable to parameter of type 'Partial<Matter>'.
+  Types of property 'status' are incompatible.
+    Type '"active"' is not assignable to type 'MatterStatus | undefined'.
+src/components/matters/quick-brief/QuickBriefCaptureModal.tsx(170,7): error TS2322: Type 'Element' is not assignable to type 'string'.
+src/components/matters/workbench/WorkbenchServicesTab.tsx(154,11): error TS2322: Type '{ isOpen: true; onClose: () => void; matterId: string; onSuccess: () => void; }' is not assignable to type 'IntrinsicAttributes & LogServiceModalProps'.
+  Property 'onSuccess' does not exist on type 'IntrinsicAttributes & LogServiceModalProps'.
+src/components/modals/matter/forms/AcceptBriefForm.tsx(28,9): error TS2322: Type '"active"' is not assignable to type 'MatterStatus | undefined'.
+src/components/modals/matter/forms/AcceptBriefForm.tsx(37,17): error TS2345: Argument of type 'Matter | null' is not assignable to parameter of type 'Matter'.
+  Type 'null' is not assignable to type 'Matter'.
+src/components/modals/matter/forms/CreateMatterForm.tsx(96,19): error TS2345: Argument of type 'Matter | null' is not assignable to parameter of type 'Matter'.
+  Type 'null' is not assignable to type 'Matter'.
+src/components/modals/matter/forms/EditMatterForm.tsx(78,17): error TS2345: Argument of type 'Matter | null' is not assignable to parameter of type 'Matter'.
+  Type 'null' is not assignable to type 'Matter'.
+src/components/modals/matter/forms/EditMatterForm.tsx(122,42): error TS2345: Argument of type '(prev: { title: string; matter_type: string; description: string; client_name: string; client_email: string; client_phone: string; client_address: string; instructing_attorney: string; instructing_firm: string; instructing_attorney_email: string; instructing_attorney_phone: string; estimated_fee: number; status: Mat...' is not assignable to parameter of type 'SetStateAction<{ title: string; matter_type: string; description: string; client_name: string; client_email: string; client_phone: string; client_address: string; instructing_attorney: string; instructing_firm: string; instructing_attorney_email: string; instructing_attorney_phone: string; estimated_fee: number; sta...'.
+  Type '(prev: { title: string; matter_type: string; description: string; client_name: string; client_email: string; client_phone: string; client_address: string; instructing_attorney: string; instructing_firm: string; instructing_attorney_email: string; instructing_attorney_phone: string; estimated_fee: number; status: Mat...' is not assignable to type '(prevState: { title: string; matter_type: string; description: string; client_name: string; client_email: string; client_phone: string; client_address: string; instructing_attorney: string; instructing_firm: string; instructing_attorney_email: string; instructing_attorney_phone: string; estimated_fee: number; status...'.
+    Call signature return types '{ status: string; title: string; matter_type: string; description: string; client_name: string; client_email: string; client_phone: string; client_address: string; instructing_attorney: string; instructing_firm: string; instructing_attorney_email: string; instructing_attorney_phone: string; estimated_fee: number; }' and '{ title: string; matter_type: string; description: string; client_name: string; client_email: string; client_phone: string; client_address: string; instructing_attorney: string; instructing_firm: string; instructing_attorney_email: string; instructing_attorney_phone: string; estimated_fee: number; status: MatterStat...' are incompatible.
+      The types of 'status' are incompatible between these types.
+        Type 'string' is not assignable to type 'MatterStatus'.
+src/components/modals/matter/forms/EditMatterForm.tsx(225,11): error TS2322: Type '(e: React.FormEvent) => Promise<void>' is not assignable to type '() => Promise<void>'.
+  Target signature provides too few arguments. Expected 1 or more, but got 0.
+src/components/modals/matter/forms/QuickAddMatterForm.tsx(159,17): error TS2345: Argument of type 'Matter | null' is not assignable to parameter of type 'Matter'.
+  Type 'null' is not assignable to type 'Matter'.
+src/components/onboarding/OnboardingChecklist.tsx(52,43): error TS2339: Property 'onboarding_state' does not exist on type 'UserPreferences'.
+src/components/pricing/RateCardSelector.tsx(707,16): error TS2741: Property 'children' is missing in type '{}' but required in type 'CardProps'.
+src/components/retainer/RetainerDashboard.tsx(21,46): error TS2576: Property 'getByMatterId' does not exist on type 'RetainerService'. Did you mean to access the static member 'RetainerService.getByMatterId' instead?
+src/components/retainer/RetainerDashboard.tsx(23,51): error TS2576: Property 'getSummary' does not exist on type 'RetainerService'. Did you mean to access the static member 'RetainerService.getSummary' instead?
+src/hooks/useEnhancedDashboard.ts(132,17): error TS2769: No overload matches this call.
+  Overload 1 of 3, '(options: DefinedInitialDataOptions<unknown, Error, unknown, (string | undefined)[]>, queryClient?: QueryClient | undefined): DefinedUseQueryResult<unknown, Error>', gave the following error.
+    Argument of type '{ queryKey: (string | undefined)[]; queryFn: () => Promise<FinancialSnapshot> | Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>; enabled: boolean; refetchInterval: number; staleTime: number; gc...' is not assignable to parameter of type 'DefinedInitialDataOptions<unknown, Error, unknown, (string | undefined)[]>'.
+      Property 'initialData' is missing in type '{ queryKey: (string | undefined)[]; queryFn: () => Promise<FinancialSnapshot> | Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>; enabled: boolean; refetchInterval: number; staleTime: number; gc...' but required in type '{ initialData: unknown; queryFn?: QueryFunction<unknown, (string | undefined)[]> | undefined; }'.
+  Overload 2 of 3, '(options: UndefinedInitialDataOptions<FinancialSnapshot, Error, FinancialSnapshot, (string | undefined)[]>, queryClient?: QueryClient | undefined): UseQueryResult<...>', gave the following error.
+    Type '() => Promise<FinancialSnapshot> | Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'unique symbol | QueryFunction<FinancialSnapshot, (string | undefined)[], never> | undefined'.
+      Type '() => Promise<FinancialSnapshot> | Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'QueryFunction<FinancialSnapshot, (string | undefined)[], never>'.
+        Type 'Promise<FinancialSnapshot> | Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'FinancialSnapshot | Promise<FinancialSnapshot>'.
+          Type 'Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'FinancialSnapshot | Promise<FinancialSnapshot>'.
+            Type 'Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'Promise<FinancialSnapshot>'.
+              Type '{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }' is missing the following properties from type 'FinancialSnapshot': outstandingFees, wipValue, monthInvoiced
+  Overload 3 of 3, '(options: UseQueryOptions<FinancialSnapshot, Error, FinancialSnapshot, (string | undefined)[]>, queryClient?: QueryClient | undefined): UseQueryResult<...>', gave the following error.
+    Type '() => Promise<FinancialSnapshot> | Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'unique symbol | QueryFunction<FinancialSnapshot, (string | undefined)[], never> | undefined'.
+      Type '() => Promise<FinancialSnapshot> | Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'QueryFunction<FinancialSnapshot, (string | undefined)[], never>'.
+        Type 'Promise<FinancialSnapshot> | Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'FinancialSnapshot | Promise<FinancialSnapshot>'.
+          Type 'Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'FinancialSnapshot | Promise<FinancialSnapshot>'.
+            Type 'Promise<{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }>' is not assignable to type 'Promise<FinancialSnapshot>'.
+              Type '{ totalReceivables: number; overdueAmount: number; thisMonthInvoiced: number; thisMonthCollected: number; averageCollectionDays: number; collectionRate: number; }' is missing the following properties from type 'FinancialSnapshot': outstandingFees, wipValue, monthInvoiced
+src/hooks/useEnhancedDashboard.ts(298,9): error TS2322: Type '{ urgentAttention: UrgentAttentionItem[] | { deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }; thisWeekDeadlines: any; financialSnapshot: {} | { ...; }; activeMatters: { ...; }; pendingActions: PendingActions; quickStats: QuickStats | { ...; }; } | undefined' is not assignable to type 'DashboardMetrics | undefined'.
+  Type '{ urgentAttention: UrgentAttentionItem[] | { deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }; thisWeekDeadlines: any; financialSnapshot: {} | { ...; }; activeMatters: { ...; }; pendingActions: PendingActions; quickStats: QuickStats | { ...; }; }' is not assignable to type 'DashboardMetrics'.
+    Types of property 'urgentAttention' are incompatible.
+      Type 'UrgentAttentionItem[] | { deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }' is not assignable to type '{ deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }'.
+        Type 'UrgentAttentionItem[]' is missing the following properties from type '{ deadlinesToday: number; overdue45Days: number; pendingProformas5Days: number; }': deadlinesToday, overdue45Days, pendingProformas5Days
+src/hooks/useEnhancedDashboard.ts(306,48): error TS2339: Property 'count' does not exist on type 'ThisWeekDeadline[]'.
+src/services/api/invoices.service.ts(1587,5): error TS2740: Type '{ id: string; invoiceNumber: string; matterId: string; matterTitle: string; clientName: string; amount: number; vatAmount: number; totalAmount: number; dateIssued: string; dateDue: string; ... 12 more ...; paymentReference: string | null; }' is missing the following properties from type 'Invoice': matter_id, advocate_id, invoice_number, fees_amount, and 14 more.
+src/services/api/partner-approval.service.ts(213,39): error TS2339: Property 'full_name' does not exist on type '{ full_name: any; }[]'.
+src/services/api/retainer.service.ts(68,9): error TS2353: Object literal may only specify known properties, and 'notes' does not exist in type '{ advocate_id: string; auto_renew?: boolean | null | undefined; billing_period?: string | null | undefined; can_fund_multiple_matters?: boolean | null | undefined; client_id?: string | null | undefined; ... 15 more ...; updated_at?: string | undefined; }'.
+src/services/api/retainer.service.ts(111,9): error TS2353: Object literal may only specify known properties, and 'retainer_id' does not exist in type '{ advocate_id: string; amount: number; balance_after: number; balance_before: number; created_at?: string | undefined; deleted_at?: string | null | undefined; description: string; id?: string | undefined; ... 6 more ...; transaction_type: string; }'.
+src/services/api/retainer.service.ts(167,9): error TS2353: Object literal may only specify known properties, and 'retainer_id' does not exist in type '{ advocate_id: string; amount: number; balance_after: number; balance_before: number; created_at?: string | undefined; deleted_at?: string | null | undefined; description: string; id?: string | undefined; ... 6 more ...; transaction_type: string; }'.
+src/services/api/retainer.service.ts(225,9): error TS2353: Object literal may only specify known properties, and 'retainer_id' does not exist in type '{ advocate_id: string; amount: number; balance_after: number; balance_before: number; created_at?: string | undefined; deleted_at?: string | null | undefined; description: string; id?: string | undefined; ... 6 more ...; transaction_type: string; }'.
+src/services/api/scope-amendment.service.ts(46,9): error TS2353: Object literal may only specify known properties, and 'original_timeline_days' does not exist in type '{ advocate_id: string; amendment_type: string; approved_at?: string | null | undefined; client_approved_at?: string | null | undefined; client_notified_at?: string | null | undefined; ... 15 more ...; variance_percentage?: number | ... 1 more ... | undefined; }'.

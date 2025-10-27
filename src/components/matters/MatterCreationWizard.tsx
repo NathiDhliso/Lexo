@@ -9,9 +9,15 @@ import { MultiStepForm, Step } from '../common/MultiStepForm';
 import { Input, Select, Textarea, Button } from '../design-system/components';
 import { DocumentBrowser, CloudStorageEmptyState } from '../cloud-storage';
 import { CloudStorageService } from '../../services/api/cloud-storage.service';
+import { BillingModelSelector } from './BillingModelSelector';
+import { TemplateQuickSelect } from '../templates/TemplateQuickSelect';
+import { useBillingPreferences } from '../../hooks/useBillingPreferences';
+import { useBillingDefaults } from '../../hooks/useBillingDefaults';
+import { BillingModel } from '../../types/billing-strategy.types';
 import { toast } from 'react-hot-toast';
 import type { NewMatterForm } from '../../types';
 import type { CloudFile } from '../cloud-storage/DocumentBrowser';
+import type { BriefFeeTemplate } from '../../types';
 import { MatterStatus } from '../../types';
 
 interface MatterCreationWizardProps {
@@ -55,9 +61,9 @@ const WIZARD_STEPS: Step[] = [
   {
     id: 'basic-info',
     title: 'Basic Information',
-    description: 'Matter details',
+    description: 'Matter details & billing',
     icon: FileText,
-    fields: ['title', 'matter_type', 'description']
+    fields: ['title', 'matter_type', 'description', 'billing_model', 'agreed_fee', 'hourly_rate']
   },
   {
     id: 'firm-attorney',
@@ -91,8 +97,31 @@ export const MatterCreationWizard: React.FC<MatterCreationWizardProps> = ({
   onComplete,
   initialData = {}
 }) => {
-  const [formData, setFormData] = useState<Partial<NewMatterForm>>(initialData);
+  const { preferences } = useBillingPreferences();
+  const { getMatterDefaults } = useBillingDefaults();
+  
+  const [formData, setFormData] = useState<Partial<NewMatterForm>>(() => {
+    // Initialize with basic defaults first
+    return {
+      billing_model: BillingModel.BRIEF_FEE,
+      ...initialData
+    };
+  });
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
+
+  // Apply preference-based defaults when they're loaded
+  useEffect(() => {
+    if (preferences && !initialData.billing_model) {
+      const defaults = getMatterDefaults();
+      setFormData(prev => ({
+        ...prev,
+        // Only override if not already set by user or initialData
+        billing_model: prev.billing_model || defaults.billing_model || BillingModel.BRIEF_FEE,
+        hourly_rate: prev.hourly_rate || defaults.hourly_rate,
+        fee_cap: prev.fee_cap || defaults.fee_cap,
+      }));
+    }
+  }, [preferences, getMatterDefaults, initialData.billing_model]);
   const [isSaving, setIsSaving] = useState(false);
   const [linkedDocuments, setLinkedDocuments] = useState<CloudFile[]>([]);
   const [cloudConnection, setCloudConnection] = useState<{id: string; provider: string} | null>(null);
@@ -188,6 +217,33 @@ export const MatterCreationWizard: React.FC<MatterCreationWizardProps> = ({
       case 'basic-info':
         return (
           <div className="space-y-4">
+            {/* Template Selector */}
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                Use a Template (Optional)
+              </label>
+              <TemplateQuickSelect
+                caseType={data.matter_type}
+                onSelectTemplate={(template: BriefFeeTemplate) => {
+                  // Auto-fill form with template data
+                  updateData('agreed_fee', template.base_fee);
+                  updateData('hourly_rate', template.hourly_rate);
+                  updateData('estimated_hours', template.estimated_hours);
+                  updateData('template_id', template.id);
+                  
+                  // Update description if empty
+                  if (!data.description && template.description) {
+                    updateData('description', template.description);
+                  }
+                  
+                  toast.success(`Template "${template.template_name}" applied`);
+                }}
+              />
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                Select a template to auto-fill fee details and services
+              </p>
+            </div>
+
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
                 Matter Title *
@@ -228,6 +284,81 @@ export const MatterCreationWizard: React.FC<MatterCreationWizardProps> = ({
                 required
               />
             </div>
+
+            <div>
+              <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
+                Billing Model *
+              </label>
+              <BillingModelSelector
+                value={data.billing_model || BillingModel.BRIEF_FEE}
+                onChange={(model) => updateData('billing_model', model)}
+                defaultModel={getMatterDefaults().billing_model}
+              />
+              <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
+                Choose how you'll bill for this matter. This affects time tracking and invoicing options.
+              </p>
+            </div>
+
+            {/* Show additional fields based on billing model */}
+            {data.billing_model === BillingModel.BRIEF_FEE && (
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                  Agreed Brief Fee (R) *
+                </label>
+                <Input
+                  type="number"
+                  value={data.agreed_fee || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateData('agreed_fee', parseFloat(e.target.value))}
+                  placeholder="15000.00"
+                  min="0"
+                  step="100"
+                  required
+                />
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                  The fixed fee agreed with the instructing attorney
+                </p>
+              </div>
+            )}
+
+            {data.billing_model === BillingModel.TIME_BASED && (
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                  Hourly Rate (R) *
+                </label>
+                <Input
+                  type="number"
+                  value={data.hourly_rate || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateData('hourly_rate', parseFloat(e.target.value))}
+                  placeholder="2500.00"
+                  min="0"
+                  step="50"
+                  required
+                />
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                  Your hourly rate for this matter
+                </p>
+              </div>
+            )}
+
+            {data.billing_model === BillingModel.QUICK_OPINION && (
+              <div>
+                <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                  Opinion Fee (R) *
+                </label>
+                <Input
+                  type="number"
+                  value={data.agreed_fee || ''}
+                  onChange={(e: React.ChangeEvent<HTMLInputElement>) => updateData('agreed_fee', parseFloat(e.target.value))}
+                  placeholder="3500.00"
+                  min="0"
+                  step="50"
+                  required
+                />
+                <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
+                  Fixed fee for the legal opinion or consultation
+                </p>
+              </div>
+            )}
 
             <div>
               <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-1">

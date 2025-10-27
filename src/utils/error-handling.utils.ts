@@ -8,6 +8,26 @@
 import { toastService } from '../services/toast.service';
 import { AuthError } from '@supabase/supabase-js';
 
+/**
+ * Custom application error class with additional context
+ */
+export class AppError extends Error {
+  constructor(
+    message: string,
+    public code?: string,
+    public statusCode?: number,
+    public details?: any
+  ) {
+    super(message);
+    this.name = 'AppError';
+    
+    // Maintains proper stack trace for where our error was thrown (only available on V8)
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, AppError);
+    }
+  }
+}
+
 export interface ErrorHandlingOptions {
   /** Custom error message to display */
   message?: string;

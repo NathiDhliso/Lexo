@@ -278,13 +278,24 @@ export const ReportsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Page Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
-          Reports & Analytics
-        </h1>
-        <p className="mt-2 text-neutral-600 dark:text-neutral-400">
-          Generate comprehensive reports to analyze your practice performance
-        </p>
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100">
+            Reports & Analytics
+          </h1>
+          <p className="mt-2 text-neutral-600 dark:text-neutral-400">
+            Generate comprehensive reports to analyze your practice performance
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <button
+            onClick={() => window.location.hash = '/wip-report'}
+            className="px-4 py-2 bg-primary-600 hover:bg-primary-700 text-white rounded-lg font-medium transition-colors flex items-center gap-2"
+          >
+            <Clock className="w-4 h-4" />
+            Dedicated WIP Report
+          </button>
+        </div>
       </div>
 
       {/* Report Cards Grid */}

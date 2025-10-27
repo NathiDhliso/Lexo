@@ -62,7 +62,7 @@ export class PaymentService {
       // Get current invoice to check outstanding balance
       const { data: invoice, error: invoiceError } = await supabase
         .from('invoices')
-        .select('id, total_amount, amount_paid, outstanding_balance, advocate_id')
+        .select('id, total_amount, amount_paid, balance_due, advocate_id')
         .eq('id', data.invoice_id)
         .single();
 
@@ -76,7 +76,7 @@ export class PaymentService {
       }
 
       // Check if payment exceeds outstanding balance (warning, not error)
-      const currentOutstanding = invoice.outstanding_balance || (invoice.total_amount - (invoice.amount_paid || 0));
+      const currentOutstanding = invoice.balance_due || (invoice.total_amount - (invoice.amount_paid || 0));
       if (data.amount > currentOutstanding) {
         toast('Warning: Payment amount exceeds outstanding balance', {
           icon: '⚠️',
@@ -148,7 +148,7 @@ export class PaymentService {
       // Get invoice details
       const { data: invoice, error: invoiceError } = await supabase
         .from('invoices')
-        .select('id, invoice_number, total_amount, amount_paid, outstanding_balance, payment_status, advocate_id')
+        .select('id, invoice_number, total_amount, amount_paid, balance_due, payment_status, advocate_id')
         .eq('id', invoiceId)
         .single();
 
@@ -177,7 +177,7 @@ export class PaymentService {
         invoice_number: invoice.invoice_number,
         total_amount: invoice.total_amount,
         amount_paid: invoice.amount_paid || 0,
-        outstanding_balance: invoice.outstanding_balance || 0,
+        outstanding_balance: invoice.balance_due || 0,
         payment_status: invoice.payment_status as any,
         payments: (payments || []) as Payment[]
       };

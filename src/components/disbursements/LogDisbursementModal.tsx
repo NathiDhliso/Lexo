@@ -265,7 +265,7 @@ export const LogDisbursementModal: React.FC<LogDisbursementModalProps> = ({
               type="submit"
               variant="primary"
               disabled={isSubmitting}
-              isLoading={isSubmitting}
+              loading={isSubmitting}
             >
               {isSubmitting ? 'Logging...' : 'Log Disbursement'}
             </Button>

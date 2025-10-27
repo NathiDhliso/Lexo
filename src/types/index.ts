@@ -1,3 +1,7 @@
+import { ScopeAmendment } from './financial.types';
+
+import { FeeMilestone, BillingModel } from './billing-strategy.types';
+
 // Navigation Types
 export type Page =
   | 'dashboard'
@@ -17,6 +21,8 @@ export type Page =
 export * from './integrations';
 // Export unified user types
 export * from './user.types';
+// Export billing strategy types
+export * from './billing-strategy.types';
 export type ModalType =
   | 'new-brief'
   | 'edit-matter'
@@ -342,10 +348,23 @@ export interface Matter {
   creation_source?: MatterCreationSource;
   is_quick_create?: boolean;
   parent_matter_id?: string;
+  
+  // Urgent matter fields (Requirement 7.1, 7.2, 7.6)
+  is_urgent?: boolean;
+  urgency_reason?: string;
+  urgent_created_at?: string;
+  urgent_deadline?: string;
+  
+  // Billing model fields
+  billing_model: 'brief-fee' | 'time-based' | 'quick-opinion';
+  agreed_fee?: number;
+  hourly_rate?: number;
   is_archived?: boolean;
   archived_at?: string;
   archived_by?: string;
   archive_reason?: string;
+  fee_milestones?: FeeMilestone[];
+  scope_amendments?: ScopeAmendment[];
 }
 
 export interface Invoice {
@@ -696,6 +715,14 @@ export interface NewMatterForm {
   expected_completion_date?: string;
   tags?: string[];
   services?: string[]; // Array of service IDs to associate with the matter
+  
+  // Billing model fields
+  billing_model?: BillingModel;
+  billingModel?: BillingModel; // Alias for billing_model
+  agreed_fee?: number;
+  agreedFee?: number; // Alias for agreed_fee
+  hourly_rate?: number;
+  hourlyRate?: number; // Alias for hourly_rate
 }
 
 export interface NewInvoiceForm {
@@ -1242,6 +1269,11 @@ export interface PDFDocumentInfo {
   keywords?: string[];
 }
 
+export interface Firm {
+  id: string;
+  name: string;
+}
+
 export interface FirmDetails {
   name: string;
   address: string[];
@@ -1709,6 +1741,34 @@ export interface DisbursementApproval {
   approval_notes?: string;
   requested_at: string;
   approved_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+// Brief Fee Template Types (Phase 4 - Feature 17)
+export interface TemplateIncludedService {
+  name: string;
+  hours: number;
+  rate: number;
+  amount?: number; // Auto-calculated
+}
+
+export interface BriefFeeTemplate {
+  id: string;
+  advocate_id: string;
+  template_name: string;
+  case_type: string;
+  description?: string;
+  is_default: boolean;
+  base_fee: number;
+  hourly_rate?: number;
+  estimated_hours?: number;
+  included_services: TemplateIncludedService[];
+  payment_terms?: string;
+  cancellation_policy?: string;
+  additional_notes?: string;
+  times_used: number;
+  last_used_at?: string;
   created_at: string;
   updated_at: string;
 }

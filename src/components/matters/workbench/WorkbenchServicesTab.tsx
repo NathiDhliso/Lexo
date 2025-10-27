@@ -151,7 +151,7 @@ export const WorkbenchServicesTab: React.FC<WorkbenchServicesTabProps> = ({
           isOpen={showLogModal}
           onClose={() => setShowLogModal(false)}
           matterId={matterId}
-          onSuccess={handleServiceLogged}
+          onSave={handleServiceLogged}
         />
       )}
     </div>

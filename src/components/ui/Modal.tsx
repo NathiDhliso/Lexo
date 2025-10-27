@@ -23,7 +23,7 @@ export interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | 'full';
-  title?: string;
+  title?: React.ReactNode;
   showCloseButton?: boolean;
   closeOnOverlayClick?: boolean;
   closeOnEscape?: boolean;

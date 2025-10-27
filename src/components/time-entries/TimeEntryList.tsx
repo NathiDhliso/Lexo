@@ -9,12 +9,14 @@ interface TimeEntryListProps {
   matterId: string;
   matterTitle: string;
   defaultRate?: number;
+  isInternalOnly?: boolean;
 }
 
 export const TimeEntryList: React.FC<TimeEntryListProps> = ({
   matterId,
   matterTitle,
-  defaultRate = 2000
+  defaultRate = 2000,
+  isInternalOnly = false
 }) => {
   const [timeEntries, setTimeEntries] = useState<TimeEntry[]>([]);
   const [loading, setLoading] = useState(true);

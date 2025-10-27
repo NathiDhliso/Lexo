@@ -13,6 +13,7 @@ import {
   MoreVertical
 } from 'lucide-react';
 import { Card, CardContent, Button } from '../design-system/components';
+import { UrgentMatterBadge } from './urgent/UrgentMatterBadge';
 import { formatRand } from '../../lib/currency';
 import { format } from 'date-fns';
 import type { Matter } from '../../types';
@@ -108,6 +109,7 @@ export const MatterCard: React.FC<MatterCardProps> = ({
             
             <div className="flex flex-wrap items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 mb-3">
               <span className="font-mono text-xs font-medium bg-neutral-100 dark:bg-metallic-gray-800 px-2 py-1 rounded">{matter.reference_number}</span>
+              {(matter as any).is_urgent && <UrgentMatterBadge size="sm" />}
               <span className={`px-2.5 py-0.5 rounded-full text-xs font-medium ${getStatusColor(matter.status)}`}>
                 {matter.status.charAt(0).toUpperCase() + matter.status.slice(1)}
               </span>
@@ -229,7 +231,7 @@ export const MatterCard: React.FC<MatterCardProps> = ({
             {hasNextCourtDate && (
               <div className="flex items-center space-x-1 text-orange-600">
                 <Clock className="h-4 w-4" />
-                <span>Court: {format(new Date(matter.next_court_date), 'dd MMM yyyy')}</span>
+                <span>Court: {matter.next_court_date && format(new Date(matter.next_court_date), 'dd MMM yyyy')}</span>
               </div>
             )}
           </div>

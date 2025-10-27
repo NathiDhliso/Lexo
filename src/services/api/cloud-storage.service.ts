@@ -530,8 +530,75 @@ export class CloudStorageService {
     connection: CloudStorageConnection,
     fileId: string
   ): Promise<boolean> {
-    // TODO: Implement actual provider API calls
-    // For now, return true (mock implementation)
+    try {
+      switch (connection.provider) {
+        case 'google_drive':
+          return await this.checkGoogleDriveFileExists(connection, fileId);
+        case 'onedrive':
+          return await this.checkOneDriveFileExists(connection, fileId);
+        case 'dropbox':
+          return await this.checkDropboxFileExists(connection, fileId);
+        default:
+          // For unsupported providers, assume file exists
+          return true;
+      }
+    } catch (error) {
+      console.error('Error checking file existence:', error);
+      return false;
+    }
+  }
+
+  // Check Google Drive file existence
+  private static async checkGoogleDriveFileExists(
+    connection: CloudStorageConnection,
+    fileId: string
+  ): Promise<boolean> {
+    try {
+      if (!connection.accessToken) {
+        throw new Error('No access token available');
+      }
+
+      const response = await fetch(
+        `https://www.googleapis.com/drive/v3/files/${fileId}?fields=id,trashed`,
+        {
+          headers: {
+            'Authorization': `Bearer ${connection.accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.status === 404) {
+        return false; // File not found
+      }
+
+      if (!response.ok) {
+        throw new Error(`API error: ${response.status}`);
+      }
+
+      const file = await response.json();
+      return !file.trashed; // File exists and is not trashed
+    } catch (error) {
+      console.error('Error checking Google Drive file:', error);
+      return false;
+    }
+  }
+
+  // Check OneDrive file existence (placeholder)
+  private static async checkOneDriveFileExists(
+    connection: CloudStorageConnection,
+    fileId: string
+  ): Promise<boolean> {
+    // TODO: Implement OneDrive API call
+    return true;
+  }
+
+  // Check Dropbox file existence (placeholder)
+  private static async checkDropboxFileExists(
+    connection: CloudStorageConnection,
+    fileId: string
+  ): Promise<boolean> {
+    // TODO: Implement Dropbox API call
     return true;
   }
 
@@ -546,6 +613,9 @@ export class CloudStorageService {
       providerAccountName: data.provider_account_name,
       rootFolderId: data.root_folder_id,
       rootFolderPath: data.root_folder_path,
+      accessToken: data.access_token,
+      refreshToken: data.refresh_token,
+      tokenExpiresAt: data.token_expires_at,
       isActive: data.is_active,
       isPrimary: data.is_primary,
       lastSyncAt: data.last_sync_at,
@@ -612,7 +682,7 @@ export class CloudStorageService {
     }
   }
 
-  // Google Drive file listing
+  // Google Drive file listing with real API calls
   private static async listGoogleDriveFiles(
     connection: CloudStorageConnection,
     folderPath: string
@@ -627,32 +697,82 @@ export class CloudStorageService {
     webViewUrl?: string;
   }>> {
     try {
-      // Call Supabase Edge Function for Google Drive API
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session) throw new Error('No active session');
+      // Use the connection's access token for Google Drive API
+      if (!connection.accessToken) {
+        throw new Error('No access token available for Google Drive');
+      }
 
-      const folderId = folderPath === 'Root' || !folderPath ? 'root' : folderPath;
-      
-      const response = await fetch(`${supabaseUrl}/functions/v1/google-drive-files?folderId=${folderId}`, {
-        headers: {
-          'Authorization': `Bearer ${session.access_token}`,
-          'Content-Type': 'application/json'
+      // Determine folder ID - if folderPath is a Google Drive ID, use it directly
+      let folderId = 'root';
+      if (folderPath && folderPath !== 'Root' && folderPath !== '') {
+        // If folderPath looks like a Google Drive ID, use it directly
+        if (folderPath.match(/^[a-zA-Z0-9_-]{28,}$/)) {
+          folderId = folderPath;
+        } else {
+          // Otherwise, search for folder by name
+          const searchResponse = await fetch(
+            `https://www.googleapis.com/drive/v3/files?q=name='${encodeURIComponent(folderPath)}' and mimeType='application/vnd.google-apps.folder'&fields=files(id,name)`,
+            {
+              headers: {
+                'Authorization': `Bearer ${connection.accessToken}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+
+          if (searchResponse.ok) {
+            const searchResult = await searchResponse.json();
+            if (searchResult.files && searchResult.files.length > 0) {
+              folderId = searchResult.files[0].id;
+            }
+          }
         }
-      });
+      }
+
+      // List files in the folder
+      const response = await fetch(
+        `https://www.googleapis.com/drive/v3/files?q='${folderId}' in parents and trashed=false&fields=files(id,name,mimeType,size,modifiedTime,webViewLink,parents)&orderBy=folder,name`,
+        {
+          headers: {
+            'Authorization': `Bearer ${connection.accessToken}`,
+            'Content-Type': 'application/json'
+          }
+        }
+      );
 
       if (!response.ok) {
-        throw new Error('Failed to fetch files from Google Drive');
+        // Check if token is expired
+        if (response.status === 401) {
+          throw new Error('Google Drive access token expired. Please reconnect your account.');
+        }
+        throw new Error(`Google Drive API error: ${response.status}`);
       }
 
       const result = await response.json();
       
-      if (!result.success) {
-        throw new Error(result.error || 'Failed to list Google Drive files');
+      if (!result.files) {
+        return [];
       }
 
-      return result.files;
+      // Transform Google Drive files to our format
+      return result.files.map((file: any) => ({
+        id: file.id,
+        name: file.name,
+        type: file.mimeType === 'application/vnd.google-apps.folder' ? 'folder' as const : 'file' as const,
+        size: file.size ? parseInt(file.size) : undefined,
+        modifiedDate: file.modifiedTime ? new Date(file.modifiedTime) : undefined,
+        path: folderPath ? `${folderPath}/${file.name}` : file.name,
+        mimeType: file.mimeType,
+        webViewUrl: file.webViewLink
+      }));
+
     } catch (error) {
       console.error('Error listing Google Drive files:', error);
+      
+      // If it's a token error, show user-friendly message
+      if (error instanceof Error && error.message.includes('token')) {
+        toast.error('Google Drive connection expired. Please reconnect your account.');
+      }
       
       // Fallback to enhanced mock data for development
       return await this.listMockGoogleDriveFiles(folderPath);

@@ -16,7 +16,7 @@ import { matterApiService } from '../../../services/api/matter-api.service';
 import { useAuth } from '../../../hooks/useAuth';
 import { toastService } from '../../../services/toast.service';
 import type { QuickBriefMatterData, TemplateItem, UrgencyLevel } from '../../../types/quick-brief.types';
-import type { Firm } from '../../../types';
+import { type Firm, MatterStatus } from '../../../types';
 
 interface QuickBriefCaptureModalProps {
   isOpen: boolean;
@@ -126,7 +126,7 @@ export const QuickBriefCaptureModal: React.FC<QuickBriefCaptureModalProps> = ({
     }
 
     // Update template usage
-    const templateUpdates = [];
+    const templateUpdates: { category: 'work_type' | 'practice_area' | 'issue_template'; value: string }[] = [];
     if (formData.work_type) templateUpdates.push({ category: 'work_type' as const, value: formData.work_type });
     if (formData.practice_area) templateUpdates.push({ category: 'practice_area' as const, value: formData.practice_area });
     if (formData.issue_template) templateUpdates.push({ category: 'issue_template' as const, value: formData.issue_template });
@@ -144,7 +144,7 @@ export const QuickBriefCaptureModal: React.FC<QuickBriefCaptureModalProps> = ({
       practice_area: formData.practice_area,
       description: formData.brief_summary || formData.issue_template || '',
       deadline: formData.deadline_date!,
-      status: 'active' as const,
+      status: MatterStatus.ACTIVE,
       creation_source: 'quick_brief',
       is_quick_create: true,
       urgency: formData.urgency_level

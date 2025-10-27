@@ -208,6 +208,17 @@ export class MatterApiService extends BaseApiService<Matter> {
     if (formData.estimatedFee || formData.estimated_fee) {
       matterData.estimated_fee = formData.estimatedFee || formData.estimated_fee;
     }
+    
+    // Add billing model fields
+    if (formData.billing_model || formData.billingModel) {
+      matterData.billing_model = formData.billing_model || formData.billingModel;
+    }
+    if (formData.agreed_fee || formData.agreedFee) {
+      matterData.agreed_fee = formData.agreed_fee || formData.agreedFee;
+    }
+    if (formData.hourly_rate || formData.hourlyRate) {
+      matterData.hourly_rate = formData.hourly_rate || formData.hourlyRate;
+    }
 
     const result = await this.create(matterData);
     
@@ -289,6 +300,64 @@ export class MatterApiService extends BaseApiService<Matter> {
     probability: number
   ): Promise<ApiResponse<Matter>> {
     return this.update(matterId, { settlement_probability: probability });
+  }
+
+  /**
+   * Update billing model with validation
+   */
+  async updateBillingModel(
+    matterId: string,
+    billingModel: string,
+    additionalData?: {
+      agreed_fee?: number;
+      hourly_rate?: number;
+    }
+  ): Promise<ApiResponse<Matter>> {
+    // Get current matter to check for existing data
+    const currentMatter = await this.getById(matterId);
+    if (!currentMatter.data) {
+      return {
+        data: null,
+        error: {
+          type: ErrorType.NOT_FOUND,
+          code: 'MATTER_NOT_FOUND',
+          message: 'Matter not found',
+          timestamp: new Date(),
+          requestId: this.generateRequestId(),
+          details: undefined
+        }
+      };
+    }
+
+    // Validate billing model transition
+    const hasTimeEntries = currentMatter.data.time_entries && currentMatter.data.time_entries.length > 0;
+    const hasInvoices = currentMatter.data.invoices && currentMatter.data.invoices.length > 0;
+
+    if (hasInvoices) {
+      return {
+        data: null,
+        error: {
+          type: ErrorType.VALIDATION_ERROR,
+          code: 'BILLING_MODEL_CHANGE_BLOCKED',
+          message: 'Cannot change billing model after invoices have been generated',
+          timestamp: new Date(),
+          requestId: this.generateRequestId(),
+          details: { hasInvoices: true }
+        }
+      };
+    }
+
+    if (hasTimeEntries && billingModel === 'brief-fee') {
+      // Warn but allow the change
+      toast.warning('Changing to brief fee model. Existing time entries will be hidden but preserved.');
+    }
+
+    const updateData: any = {
+      billing_model: billingModel,
+      ...additionalData
+    };
+
+    return this.update(matterId, updateData);
   }
 
   /**

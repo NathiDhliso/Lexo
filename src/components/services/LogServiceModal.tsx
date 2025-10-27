@@ -7,7 +7,7 @@ import type { LoggedService } from '../../types/financial.types';
 
 interface LogServiceModalProps {
   matterId: string;
-  matterTitle: string;
+  matterTitle?: string;
   service?: LoggedService | null;
   isOpen: boolean;
   onClose: () => void;

@@ -255,7 +255,7 @@ export const EditDisbursementModal: React.FC<EditDisbursementModalProps> = ({
               type="submit"
               variant="primary"
               disabled={isSubmitting}
-              isLoading={isSubmitting}
+              loading={isSubmitting}
             >
               {isSubmitting ? 'Updating...' : 'Update Disbursement'}
             </Button>

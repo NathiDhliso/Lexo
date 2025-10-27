@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useMemo } from 'react';
 import { Edit2, Trash2, ExternalLink, FileText, Filter } from 'lucide-react';
 import { DisbursementService, Disbursement } from '../../services/api/disbursement.service';
 import { Button } from '../ui/Button';
 import { useConfirmation } from '../../hooks/useConfirmation';
+import { useDataFetch } from '../../hooks/useDataFetch';
+import { useSearch, commonFilters } from '../../hooks/useSearch';
+import { useTable } from '../../hooks/useTable';
 import { format } from 'date-fns';
 
 /**
@@ -28,44 +31,79 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
   showBulkSelect = false,
   onSelectionChange
 }) => {
-  const [disbursements, setDisbursements] = useState<Disbursement[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [filter, setFilter] = useState<FilterType>('all');
-  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const { showConfirmation } = useConfirmation();
 
-  useEffect(() => {
-    loadDisbursements();
-  }, [matterId]);
-
-  useEffect(() => {
-    onSelectionChange?.(Array.from(selectedIds));
-  }, [selectedIds, onSelectionChange]);
-
-  const loadDisbursements = async () => {
-    setIsLoading(true);
-    try {
-      const data = await DisbursementService.getDisbursementsByMatter(matterId);
-      setDisbursements(data);
-    } catch (error) {
-      console.error('Error loading disbursements:', error);
-    } finally {
-      setIsLoading(false);
+  // Use data fetching hook with caching
+  const { data: disbursements = [], isLoading, error, refetch } = useDataFetch(
+    `disbursements-${matterId}`,
+    () => DisbursementService.getDisbursementsByMatter(matterId),
+    {
+      enabled: !!matterId,
+      onError: (error) => console.error('Error loading disbursements:', error),
     }
-  };
+  );
+
+  // Use search hook for filtering
+  const {
+    filteredData: filteredDisbursements,
+    addFilter,
+    removeFilter,
+    activeFilters,
+  } = useSearch(disbursements || [], {
+    filters: {
+      billed: (item: Disbursement, value: boolean) => item.is_billed === value,
+    },
+  });
+
+  // Use table hook for selection and bulk actions
+  const {
+    selectedItems,
+    isAllSelected,
+    isIndeterminate,
+    handleSelectItem,
+    handleSelectAll,
+    handleBulkAction,
+  } = useTable(filteredDisbursements, {
+    selectable: showBulkSelect,
+    bulkActions: [
+      {
+        key: 'delete',
+        label: 'Delete Selected',
+        action: async (items: Disbursement[]) => {
+          const confirmed = await showConfirmation({
+            title: 'Delete Disbursements',
+            message: `Are you sure you want to delete ${items.length} disbursement${items.length > 1 ? 's' : ''}? This action cannot be undone.`,
+            confirmText: 'Delete',
+            variant: 'danger'
+          });
+
+          if (confirmed) {
+            await Promise.all(items.map(item => DisbursementService.deleteDisbursement(item.id)));
+            await refetch();
+            onRefresh?.();
+          }
+        },
+        variant: 'danger',
+        disabled: (items) => items.some(item => item.is_billed),
+      }
+    ],
+    onSelectionChange: (selected) => {
+      onSelectionChange?.(selected.map(item => item.id));
+    },
+  });
 
   const handleDelete = async (disbursement: Disbursement) => {
     const confirmed = await showConfirmation({
       title: 'Delete Disbursement',
       message: `Are you sure you want to delete "${disbursement.description}"? This action cannot be undone.`,
       confirmText: 'Delete',
-      confirmVariant: 'danger'
+      variant: 'danger'
     });
 
     if (confirmed) {
       try {
         await DisbursementService.deleteDisbursement(disbursement.id);
-        loadDisbursements();
+        await refetch();
         onRefresh?.();
       } catch (error) {
         console.error('Error deleting disbursement:', error);
@@ -73,32 +111,21 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
     }
   };
 
-  const handleToggleSelect = (id: string) => {
-    setSelectedIds(prev => {
-      const newSet = new Set(prev);
-      if (newSet.has(id)) {
-        newSet.delete(id);
-      } else {
-        newSet.add(id);
-      }
-      return newSet;
-    });
-  };
-
-  const handleSelectAll = () => {
-    if (selectedIds.size === filteredDisbursements.length) {
-      setSelectedIds(new Set());
-    } else {
-      setSelectedIds(new Set(filteredDisbursements.map(d => d.id)));
+  // Filter handlers
+  const handleFilterChange = (filterType: FilterType) => {
+    if (filterType === 'all') {
+      removeFilter('billed');
+    } else if (filterType === 'billed') {
+      addFilter('billed', true);
+    } else if (filterType === 'unbilled') {
+      addFilter('billed', false);
     }
   };
 
-  // Filter disbursements based on selected filter
-  const filteredDisbursements = disbursements.filter(d => {
-    if (filter === 'billed') return d.is_billed;
-    if (filter === 'unbilled') return !d.is_billed;
-    return true;
-  });
+  // Get current filter type for UI
+  const currentFilter: FilterType = 
+    activeFilters.billed === true ? 'billed' :
+    activeFilters.billed === false ? 'unbilled' : 'all';
 
   // Calculate totals
   const totals = filteredDisbursements.reduce(
@@ -118,6 +145,19 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
     );
   }
 
+  if (error) {
+    return (
+      <div className="text-center py-12 bg-red-50 rounded-lg border-2 border-dashed border-red-300">
+        <FileText className="w-12 h-12 text-red-400 mx-auto mb-3" />
+        <p className="text-red-600 font-medium">Failed to load disbursements</p>
+        <p className="text-sm text-red-500 mt-1">{error.message}</p>
+        <Button onClick={() => refetch()} className="mt-3">
+          Try Again
+        </Button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-4">
       {/* Filter Bar */}
@@ -126,44 +166,44 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
           <Filter className="w-4 h-4 text-gray-500" />
           <div className="flex space-x-1">
             <button
-              onClick={() => setFilter('all')}
+              onClick={() => handleFilterChange('all')}
               className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                filter === 'all'
+                currentFilter === 'all'
                   ? 'bg-blue-100 text-blue-700 font-medium'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              All ({disbursements.length})
+              All ({disbursements?.length || 0})
             </button>
             <button
-              onClick={() => setFilter('unbilled')}
+              onClick={() => handleFilterChange('unbilled')}
               className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                filter === 'unbilled'
+                currentFilter === 'unbilled'
                   ? 'bg-blue-100 text-blue-700 font-medium'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              Unbilled ({disbursements.filter(d => !d.is_billed).length})
+              Unbilled ({disbursements?.filter(d => !d.is_billed).length || 0})
             </button>
             <button
-              onClick={() => setFilter('billed')}
+              onClick={() => handleFilterChange('billed')}
               className={`px-3 py-1 text-sm rounded-md transition-colors ${
-                filter === 'billed'
+                currentFilter === 'billed'
                   ? 'bg-blue-100 text-blue-700 font-medium'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
-              Billed ({disbursements.filter(d => d.is_billed).length})
+              Billed ({disbursements?.filter(d => d.is_billed).length || 0})
             </button>
           </div>
         </div>
 
         {showBulkSelect && filteredDisbursements.length > 0 && (
           <button
-            onClick={handleSelectAll}
+            onClick={() => handleSelectAll()}
             className="text-sm text-blue-600 hover:text-blue-700 font-medium"
           >
-            {selectedIds.size === filteredDisbursements.length ? 'Deselect All' : 'Select All'}
+            {isAllSelected ? 'Deselect All' : 'Select All'}
           </button>
         )}
       </div>
@@ -174,9 +214,9 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
           <FileText className="w-12 h-12 text-gray-400 mx-auto mb-3" />
           <p className="text-gray-600 font-medium">No disbursements found</p>
           <p className="text-sm text-gray-500 mt-1">
-            {filter === 'all'
+            {currentFilter === 'all'
               ? 'Log your first disbursement to get started'
-              : `No ${filter} disbursements`}
+              : `No ${currentFilter} disbursements`}
           </p>
         </div>
       ) : (
@@ -188,8 +228,11 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
                   <th className="px-4 py-3 text-left">
                     <input
                       type="checkbox"
-                      checked={selectedIds.size === filteredDisbursements.length}
-                      onChange={handleSelectAll}
+                      checked={isAllSelected}
+                      ref={(el) => {
+                        if (el) el.indeterminate = isIndeterminate;
+                      }}
+                      onChange={(e) => handleSelectAll(e.target.checked)}
                       className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
                   </th>
@@ -222,15 +265,15 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
                 <tr
                   key={disbursement.id}
                   className={`hover:bg-gray-50 transition-colors ${
-                    selectedIds.has(disbursement.id) ? 'bg-blue-50' : ''
+                    selectedItems.includes(disbursement) ? 'bg-blue-50' : ''
                   }`}
                 >
                   {showBulkSelect && (
                     <td className="px-4 py-3">
                       <input
                         type="checkbox"
-                        checked={selectedIds.has(disbursement.id)}
-                        onChange={() => handleToggleSelect(disbursement.id)}
+                        checked={selectedItems.includes(disbursement)}
+                        onChange={(e) => handleSelectItem(disbursement, e.target.checked)}
                         disabled={disbursement.is_billed}
                         className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
                       />
@@ -333,11 +376,11 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
       )}
 
       {/* Selection Summary */}
-      {showBulkSelect && selectedIds.size > 0 && (
+      {showBulkSelect && selectedItems.length > 0 && (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <p className="text-sm text-blue-900">
-            <span className="font-semibold">{selectedIds.size}</span> disbursement
-            {selectedIds.size !== 1 ? 's' : ''} selected for invoicing
+            <span className="font-semibold">{selectedItems.length}</span> disbursement
+            {selectedItems.length !== 1 ? 's' : ''} selected for invoicing
           </p>
         </div>
       )}

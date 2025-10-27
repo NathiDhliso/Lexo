@@ -7,6 +7,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { NavigationBar } from './components/navigation';
+import { OnboardingProvider } from './components/onboarding/OnboardingProvider';
 import { UserTier, Page } from './types'
 
 // Lazy load all page components for better performance
@@ -27,9 +28,14 @@ const DisputesPage = lazy(() => import('./pages/DisputesPage'));
 const CreditNotesPage = lazy(() => import('./pages/CreditNotesPage'));
 const AttorneyRegisterPage = lazy(() => import('./pages/attorney/AttorneyRegisterPage').then(m => ({ default: m.AttorneyRegisterPage })));
 const SubmitMatterRequestPage = lazy(() => import('./pages/attorney/SubmitMatterRequestPage').then(m => ({ default: m.SubmitMatterRequestPage })));
+const AttorneyDashboardPage = lazy(() => import('./pages/attorney/AttorneyDashboardPage').then(m => ({ default: m.AttorneyDashboardPage })));
+const MyMattersPage = lazy(() => import('./pages/attorney/MyMattersPage').then(m => ({ default: m.MyMattersPage })));
+const AttorneyInvoicesPage = lazy(() => import('./pages/attorney/InvoicesPage').then(m => ({ default: m.InvoicesPage })));
+const AttorneyProfilePage = lazy(() => import('./pages/attorney/ProfilePage').then(m => ({ default: m.ProfilePage })));
 const ProFormaRequestPage = lazy(() => import('./pages/ProFormaRequestPage'));
 const MatterWorkbenchPage = lazy(() => import('./pages/MatterWorkbenchPage'));
 const WIPTrackerPage = lazy(() => import('./pages/WIPTrackerPage'));
+const WIPReportPage = lazy(() => import('./pages/WIPReportPage').then(m => ({ default: m.WIPReportPage })));
 const FirmsPage = lazy(() => import('./pages/FirmsPage'));
 const DocumentLinkingTest = lazy(() => import('./components/documents/DocumentLinkingTest').then(m => ({ default: m.DocumentLinkingTest })));
 
@@ -183,6 +189,14 @@ const AppContent: React.FC = () => {
         </ProtectedRoute>
       } />
       
+      <Route path="/wip-report" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <WIPReportPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
       <Route path="/invoices" element={
         <ProtectedRoute>
           <MainLayout>
@@ -272,7 +286,37 @@ const AppContent: React.FC = () => {
       } />
       
       {/* Attorney Protected Routes - Require Attorney Authentication */}
-      {/* Attorney routes removed - only registration and matter request submission remain */}
+      <Route path="/attorney/dashboard" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <AttorneyDashboardPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/attorney/matters" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <MyMattersPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/attorney/invoices" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <AttorneyInvoicesPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+      
+      <Route path="/attorney/profile" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <AttorneyProfilePage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
       
       {/* Catch-all route - redirect to dashboard for authenticated users */}
       <Route path="*" element={
@@ -289,19 +333,21 @@ export const AppRouter: React.FC = () => {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider>
         <AuthProvider>
-          <HashRouter>
-            <AppContent />
-            <Toaster
-              position="top-right"
-              toastOptions={{
-                duration: 4000,
-                style: {
-                  background: '#363636',
-                  color: '#fff',
-                },
-              }}
-            />
-          </HashRouter>
+          <OnboardingProvider>
+            <HashRouter>
+              <AppContent />
+              <Toaster
+                position="top-right"
+                toastOptions={{
+                  duration: 4000,
+                  style: {
+                    background: '#363636',
+                    color: '#fff',
+                  },
+                }}
+              />
+            </HashRouter>
+          </OnboardingProvider>
         </AuthProvider>
       </ThemeProvider>
     </QueryClientProvider>

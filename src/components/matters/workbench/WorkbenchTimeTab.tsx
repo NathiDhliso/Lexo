@@ -9,12 +9,14 @@ interface WorkbenchTimeTabProps {
   matterId: string;
   matterTitle: string;
   defaultRate?: number;
+  isInternalOnly?: boolean;
 }
 
 export const WorkbenchTimeTab: React.FC<WorkbenchTimeTabProps> = ({
   matterId,
   matterTitle,
   defaultRate = 2500,
+  isInternalOnly = false,
 }) => {
   return (
     <div>
@@ -22,6 +24,7 @@ export const WorkbenchTimeTab: React.FC<WorkbenchTimeTabProps> = ({
         matterId={matterId}
         matterTitle={matterTitle}
         defaultRate={defaultRate}
+        isInternalOnly={isInternalOnly}
       />
     </div>
   );

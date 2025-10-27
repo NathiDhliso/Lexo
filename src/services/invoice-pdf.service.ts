@@ -59,7 +59,7 @@ export class InvoicePDFService {
       try {
         pdfTemplate = await pdfTemplateService.getDefaultTemplate(advocateInfo.advocate_id);
         console.log('📄 Template loaded:', pdfTemplate);
-      } catch (error) {
+      } catch (_error) {
         console.warn('Failed to load custom template, using default');
       }
     }
@@ -525,56 +525,163 @@ export class InvoicePDFService {
       yPosition = (doc as any).lastAutoTable.finalY + 10;
     }
 
-    // Expenses Table
+    // Expenses Table - Separated by VAT Treatment
+    // Requirement 6.6, 6.7: Separate VAT-inclusive and VAT-exempt disbursements
     if (invoice.expenses && invoice.expenses.length > 0) {
       if (yPosition > pageHeight - 80) {
         doc.addPage();
         yPosition = margins.top;
       }
 
-      doc.setFont('helvetica', 'bold');
-      doc.setFontSize(12);
-      doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
-      doc.text('Disbursements & Expenses:', leftContentMargin, yPosition);
-      yPosition += 8;
-
-      const expenseTableData = invoice.expenses.map((expense: Expense) => {
-        return [
-          new Date(expense.expense_date).toLocaleDateString('en-ZA'),
-          expense.description || '',
-          expense.category || '',
-          `R ${(expense.amount || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
-        ];
-      });
+      // Separate expenses by VAT treatment
+      const vatInclusiveExpenses = invoice.expenses.filter((expense: Expense) => 
+        (expense as any).vat_applicable !== false
+      );
+      const vatExemptExpenses = invoice.expenses.filter((expense: Expense) => 
+        (expense as any).vat_applicable === false
+      );
 
       const tableHeaderBg = pdfTemplate?.table?.headerBackgroundColor ? this.hexToRgb(pdfTemplate.table.headerBackgroundColor) : primaryColor;
       const tableHeaderText = pdfTemplate?.table?.headerTextColor ? this.hexToRgb(pdfTemplate.table.headerTextColor) : [255, 255, 255];
 
-      autoTable(doc, {
-        startY: yPosition,
-        head: [['Date', 'Description', 'Category', 'Amount']],
-        body: expenseTableData,
-        theme: pdfTemplate?.table?.showBorders ? 'grid' : 'striped',
-        headStyles: {
-          fillColor: tableHeaderBg as [number, number, number],
-          textColor: tableHeaderText as [number, number, number],
-          fontStyle: 'bold',
-          fontSize: 10
-        },
-        bodyStyles: {
-          fontSize: 9,
-          textColor: [50, 50, 50]
-        },
-        columnStyles: {
-          0: { cellWidth: 25 },
-          1: { cellWidth: 85 },
-          2: { cellWidth: 30 },
-          3: { cellWidth: 30, halign: 'right' }
-        },
-        margin: { left: leftContentMargin, right: margins.right },
-      });
+      // VAT-Inclusive Disbursements Section
+      if (vatInclusiveExpenses.length > 0) {
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+        doc.text('Disbursements (VAT Inclusive):', leftContentMargin, yPosition);
+        yPosition += 8;
 
-      yPosition = (doc as any).lastAutoTable.finalY + 10;
+        const vatInclusiveData = vatInclusiveExpenses.map((expense: Expense) => {
+          const amount = expense.amount || 0;
+          const vatRate = (expense as any).vat_rate || 0.15;
+          const amountExclVat = amount / (1 + vatRate);
+          const vatAmount = amount - amountExclVat;
+
+          return [
+            new Date(expense.expense_date).toLocaleDateString('en-ZA'),
+            expense.description || '',
+            expense.category || '',
+            `R ${amountExclVat.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            `R ${vatAmount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`,
+            `R ${amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          ];
+        });
+
+        autoTable(doc, {
+          startY: yPosition,
+          head: [['Date', 'Description', 'Category', 'Excl. VAT', 'VAT', 'Incl. VAT']],
+          body: vatInclusiveData,
+          theme: pdfTemplate?.table?.showBorders ? 'grid' : 'striped',
+          headStyles: {
+            fillColor: tableHeaderBg as [number, number, number],
+            textColor: tableHeaderText as [number, number, number],
+            fontStyle: 'bold',
+            fontSize: 10
+          },
+          bodyStyles: {
+            fontSize: 9,
+            textColor: [50, 50, 50]
+          },
+          columnStyles: {
+            0: { cellWidth: 22 },
+            1: { cellWidth: 60 },
+            2: { cellWidth: 25 },
+            3: { cellWidth: 25, halign: 'right' },
+            4: { cellWidth: 20, halign: 'right' },
+            5: { cellWidth: 25, halign: 'right' }
+          },
+          margin: { left: leftContentMargin, right: margins.right },
+        });
+
+        yPosition = (doc as any).lastAutoTable.finalY + 5;
+
+        // VAT-Inclusive Subtotal
+        const vatInclusiveTotal = vatInclusiveExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+        const vatInclusiveTotalExclVat = vatInclusiveTotal / 1.15;
+        const vatInclusiveTotalVat = vatInclusiveTotal - vatInclusiveTotalExclVat;
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(9);
+        doc.setTextColor(50, 50, 50);
+        const subtotalX = pageWidth - margins.right;
+        doc.text('Subtotal (Excl. VAT):', subtotalX - 50, yPosition, { align: 'right' });
+        doc.text(`R ${vatInclusiveTotalExclVat.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, subtotalX, yPosition, { align: 'right' });
+        yPosition += 5;
+        doc.text('VAT (15%):', subtotalX - 50, yPosition, { align: 'right' });
+        doc.text(`R ${vatInclusiveTotalVat.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, subtotalX, yPosition, { align: 'right' });
+        yPosition += 5;
+        doc.setFontSize(10);
+        doc.text('Total:', subtotalX - 50, yPosition, { align: 'right' });
+        doc.text(`R ${vatInclusiveTotal.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, subtotalX, yPosition, { align: 'right' });
+        yPosition += 15;
+      }
+
+      // VAT-Exempt Disbursements Section
+      if (vatExemptExpenses.length > 0) {
+        if (yPosition > pageHeight - 80) {
+          doc.addPage();
+          yPosition = margins.top;
+        }
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(12);
+        doc.setTextColor(accentColor[0], accentColor[1], accentColor[2]);
+        doc.text('Disbursements (VAT Exempt):', leftContentMargin, yPosition);
+        
+        // Add explanation for exempt items
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(100, 100, 100);
+        doc.text('(These items are exempt from VAT per SARS regulations)', leftContentMargin, yPosition + 4);
+        yPosition += 12;
+
+        const vatExemptData = vatExemptExpenses.map((expense: Expense) => {
+          return [
+            new Date(expense.expense_date).toLocaleDateString('en-ZA'),
+            expense.description || '',
+            expense.category || '',
+            `R ${(expense.amount || 0).toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
+          ];
+        });
+
+        autoTable(doc, {
+          startY: yPosition,
+          head: [['Date', 'Description', 'Category', 'Amount']],
+          body: vatExemptData,
+          theme: pdfTemplate?.table?.showBorders ? 'grid' : 'striped',
+          headStyles: {
+            fillColor: [200, 200, 200] as [number, number, number],
+            textColor: [50, 50, 50] as [number, number, number],
+            fontStyle: 'bold',
+            fontSize: 10
+          },
+          bodyStyles: {
+            fontSize: 9,
+            textColor: [50, 50, 50]
+          },
+          columnStyles: {
+            0: { cellWidth: 25 },
+            1: { cellWidth: 85 },
+            2: { cellWidth: 30 },
+            3: { cellWidth: 30, halign: 'right' }
+          },
+          margin: { left: leftContentMargin, right: margins.right },
+        });
+
+        yPosition = (doc as any).lastAutoTable.finalY + 5;
+
+        // VAT-Exempt Subtotal
+        const vatExemptTotal = vatExemptExpenses.reduce((sum, exp) => sum + (exp.amount || 0), 0);
+
+        doc.setFont('helvetica', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(50, 50, 50);
+        const subtotalX = pageWidth - margins.right;
+        doc.text('Total (VAT Exempt):', subtotalX - 50, yPosition, { align: 'right' });
+        doc.text(`R ${vatExemptTotal.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`, subtotalX, yPosition, { align: 'right' });
+        yPosition += 10;
+      }
     }
 
     // Check page space before totals

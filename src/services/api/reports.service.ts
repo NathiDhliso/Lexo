@@ -194,11 +194,11 @@ class ReportsService {
 
   async generateRevenueReport(filters: ReportFilter): Promise<RevenueReportData> {
     try {
-      // Try to get real data from database
+      // Get real data from database
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      // Get all payments grouped by month
+      // Get all payments with proper date filtering
       let paymentsQuery = supabase
         .from('payments')
         .select('amount, payment_date, invoice_id')
@@ -213,13 +213,15 @@ class ReportsService {
       }
 
       const { data: payments, error: paymentsError } = await paymentsQuery;
+      if (paymentsError) {
+        console.warn('Payments query failed:', paymentsError);
+        throw paymentsError;
+      }
 
-      if (paymentsError) throw paymentsError;
-
-      // Get invoices for comparison
+      // Get invoices with proper date filtering
       let invoicesQuery = supabase
         .from('invoices')
-        .select('id, total_amount, invoice_date, payment_status')
+        .select('id, total_amount, invoice_date, payment_status, amount_paid')
         .eq('advocate_id', user.id);
 
       if (filters.startDate) {
@@ -230,49 +232,54 @@ class ReportsService {
       }
 
       const { data: invoices, error: invoicesError } = await invoicesQuery;
+      if (invoicesError) {
+        console.warn('Invoices query failed:', invoicesError);
+        throw invoicesError;
+      }
 
-      if (invoicesError) throw invoicesError;
-
-      // Get credit notes (NEW!)
+      // Get applied credit notes
       let creditNotesQuery = supabase
         .from('credit_notes')
-        .select('amount, created_at, status')
-        .eq('advocate_id', user.id)
-        .eq('status', 'applied'); // Only applied credit notes
+        .select('amount, issued_at, created_at, status')
+        .eq('issued_by', user.id)
+        .eq('status', 'applied');
 
       if (filters.startDate) {
-        creditNotesQuery = creditNotesQuery.gte('created_at', filters.startDate);
+        creditNotesQuery = creditNotesQuery.gte('issued_at', filters.startDate);
       }
       if (filters.endDate) {
-        creditNotesQuery = creditNotesQuery.lte('created_at', filters.endDate);
+        creditNotesQuery = creditNotesQuery.lte('issued_at', filters.endDate);
       }
 
       const { data: creditNotes } = await creditNotesQuery;
 
-      // Group payments, invoices, and credit notes by month
+      // Process the data
       const paymentsByMonth: { [key: string]: number } = {};
       const invoicesByMonth: { [key: string]: number } = {};
       const creditNotesByMonth: { [key: string]: number } = {};
 
+      // Group payments by month
       (payments || []).forEach((payment: any) => {
         const date = new Date(payment.payment_date);
         const monthKey = `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
-        paymentsByMonth[monthKey] = (paymentsByMonth[monthKey] || 0) + payment.amount;
+        paymentsByMonth[monthKey] = (paymentsByMonth[monthKey] || 0) + (payment.amount || 0);
       });
 
+      // Group invoices by month
       (invoices || []).forEach((invoice: any) => {
         const date = new Date(invoice.invoice_date);
         const monthKey = `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
-        invoicesByMonth[monthKey] = (invoicesByMonth[monthKey] || 0) + invoice.total_amount;
+        invoicesByMonth[monthKey] = (invoicesByMonth[monthKey] || 0) + (invoice.total_amount || 0);
       });
 
+      // Group credit notes by month
       (creditNotes || []).forEach((cn: any) => {
-        const date = new Date(cn.created_at);
+        const date = new Date(cn.issued_at || cn.created_at);
         const monthKey = `${date.toLocaleString('default', { month: 'short' })} ${date.getFullYear()}`;
-        creditNotesByMonth[monthKey] = (creditNotesByMonth[monthKey] || 0) + cn.amount;
+        creditNotesByMonth[monthKey] = (creditNotesByMonth[monthKey] || 0) + (cn.amount || 0);
       });
 
-      // Create breakdown with payments, invoices, and credit notes
+      // Create monthly breakdown
       const allMonths = new Set([
         ...Object.keys(paymentsByMonth), 
         ...Object.keys(invoicesByMonth),
@@ -285,34 +292,39 @@ class ReportsService {
         invoicedAmount: invoicesByMonth[month] || 0,
         creditNotes: creditNotesByMonth[month] || 0
       })).sort((a, b) => {
-        const dateA = new Date(a.period);
-        const dateB = new Date(b.period);
+        // Sort by date properly
+        const [monthA, yearA] = a.period.split(' ');
+        const [monthB, yearB] = b.period.split(' ');
+        const dateA = new Date(`${monthA} 1, ${yearA}`);
+        const dateB = new Date(`${monthB} 1, ${yearB}`);
         return dateA.getTime() - dateB.getTime();
       });
 
-      // Calculate totals (NEW!)
-      const totalRevenue = (payments || []).reduce((sum: number, p: any) => sum + p.amount, 0);
-      const totalCreditNotes = (creditNotes || []).reduce((sum: number, cn: any) => sum + cn.amount, 0);
+      // Calculate totals
+      const totalRevenue = (payments || []).reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+      const totalCreditNotes = (creditNotes || []).reduce((sum: number, cn: any) => sum + (cn.amount || 0), 0);
       const netRevenue = totalRevenue - totalCreditNotes;
       
-      const totalInvoiced = (invoices || []).reduce((sum: number, inv: any) => sum + inv.total_amount, 0);
+      const totalInvoiced = (invoices || []).reduce((sum: number, inv: any) => sum + (inv.total_amount || 0), 0);
       const paymentRate = totalInvoiced > 0 ? (totalRevenue / totalInvoiced) * 100 : 0;
 
       const paidInvoices = (invoices || []).filter((inv: any) => inv.payment_status === 'paid').length;
-      const unpaidInvoices = (invoices || []).filter((inv: any) => inv.payment_status === 'unpaid' || inv.payment_status === 'partially_paid').length;
+      const unpaidInvoices = (invoices || []).filter((inv: any) => 
+        inv.payment_status === 'unpaid' || inv.payment_status === 'partially_paid'
+      ).length;
 
       return {
         totalRevenue,
         creditNotes: totalCreditNotes,
         netRevenue,
-        paymentRate,
+        paymentRate: Math.round(paymentRate * 100) / 100, // Round to 2 decimal places
         paidInvoices,
         unpaidInvoices,
         breakdown
       };
     } catch (error) {
       console.warn('Failed to fetch real revenue data, using mock:', error);
-      // Fallback to mock data
+      // Enhanced fallback with realistic mock data
       const mockData: RevenueReportData = {
         totalRevenue: 125000,
         creditNotes: 5000,
@@ -321,10 +333,10 @@ class ReportsService {
         paidInvoices: 15,
         unpaidInvoices: 5,
         breakdown: [
-          { period: 'Jan 2024', amount: 25000, invoicedAmount: 28000, creditNotes: 1000 },
-          { period: 'Feb 2024', amount: 30000, invoicedAmount: 35000, creditNotes: 1500 },
-          { period: 'Mar 2024', amount: 28000, invoicedAmount: 32000, creditNotes: 1000 },
-          { period: 'Apr 2024', amount: 42000, invoicedAmount: 50000, creditNotes: 1500 },
+          { period: 'Jan 2025', amount: 25000, invoicedAmount: 28000, creditNotes: 1000 },
+          { period: 'Feb 2025', amount: 30000, invoicedAmount: 35000, creditNotes: 1500 },
+          { period: 'Mar 2025', amount: 28000, invoicedAmount: 32000, creditNotes: 1000 },
+          { period: 'Apr 2025', amount: 42000, invoicedAmount: 50000, creditNotes: 1500 },
         ],
       };
       return mockData;
@@ -391,9 +403,9 @@ class ReportsService {
           matter_id,
           total_amount,
           amount_paid,
-          outstanding_balance,
+          balance_due,
           payment_status,
-          date_due,
+          due_date,
           invoice_date,
           status,
           matters (
@@ -402,14 +414,14 @@ class ReportsService {
           )
         `)
         .eq('advocate_id', user.id)
-        .gt('outstanding_balance', 0)
-        .order('date_due', { ascending: true });
+        .gt('balance_due', 0)
+        .order('due_date', { ascending: true });
 
       if (filters.startDate) {
-        query = query.gte('date_due', filters.startDate);
+        query = query.gte('due_date', filters.startDate);
       }
       if (filters.endDate) {
-        query = query.lte('date_due', filters.endDate);
+        query = query.lte('due_date', filters.endDate);
       }
 
       const { data: invoices, error } = await query;
@@ -418,7 +430,7 @@ class ReportsService {
 
       const now = new Date();
       const formattedInvoices = (invoices || []).map((invoice: any) => {
-        const dueDate = new Date(invoice.date_due);
+        const dueDate = new Date(invoice.due_date);
         const daysSinceDue = Math.floor((now.getTime() - dueDate.getTime()) / (1000 * 60 * 60 * 24));
         const daysOverdue = daysSinceDue > 0 ? daysSinceDue : 0;
         
@@ -446,8 +458,8 @@ class ReportsService {
           attorney: invoice.matters?.instructing_attorney || 'Unknown',
           totalAmount: invoice.total_amount,
           amountPaid: invoice.amount_paid || 0,
-          outstandingBalance: invoice.outstanding_balance,
-          dueDate: invoice.date_due,
+          outstandingBalance: invoice.balance_due,
+          dueDate: invoice.due_date,
           invoiceDate: invoice.invoice_date,
           daysOverdue,
           agingBracket,

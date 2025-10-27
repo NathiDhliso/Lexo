@@ -106,16 +106,8 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
     }
   };
 
-  // Tab state
-  const [activeTab, setActiveTab] = useState<'overview'>('overview');
-
-  // Modal and detailed view states
-  const [showDetailedView, setShowDetailedView] = useState({
-    wipReport: false,
-    billingReport: false,
-    overdueInvoices: false,
-    analytics: false
-  });
+  // Modal states
+  // Note: Detailed view modals removed - now navigate to reports page instead
 
   useEffect(() => {
     if (!loading && isAuthenticated) {
@@ -294,19 +286,14 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
   const handleQuickAction = (action: 'new-matter' | 'new-invoice' | 'time-entry') => {
     switch (action) {
       case 'new-matter':
-        // Matters are now created when attorneys submit briefs
-        toast('Matters are created automatically when attorneys submit briefs', { 
-          icon: 'ℹ️',
-          duration: 4000 
-        });
+        // Navigate to matters page where users can view new requests or use Quick Brief
+        navigatePage('matters');
         break;
       case 'new-invoice':
         navigatePage('invoices');
-        // toast.success('Navigating to invoice generation...');
         break;
       case 'time-entry':
         setQuickActions(prev => ({ ...prev, quickTimeEntry: true }));
-        // toast.success('Opening quick time entry...');
         break;
     }
   };
@@ -337,13 +324,11 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
 
   // Enhanced button handlers for stat cards
   const handleWipReportClick = () => {
-    setShowDetailedView(prev => ({ ...prev, wipReport: true }));
-    toast('Opening WIP Report details...', { icon: 'ℹ️' });
+    navigatePage('reports');
   };
 
   const handleBillingReportClick = () => {
-    setShowDetailedView(prev => ({ ...prev, billingReport: true }));
-    toast('Opening billing report details...', { icon: 'ℹ️' });
+    navigatePage('reports');
   };
 
   const handleOverdueInvoicesClick = () => {
@@ -370,52 +355,24 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
       <div>
         <h1 className="text-2xl sm:text-3xl font-bold text-neutral-900">Dashboard</h1>
-        <p className="text-sm sm:text-base text-neutral-600 mt-1">Welcome to your practice intelligence platform</p>
+        <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-400 mt-1">
+          {user?.email?.split('@')[0] || 'Welcome'}
+        </p>
       </div>
         <div className="flex items-center gap-3">
           <Button variant="outline" onClick={handleRefreshData} disabled={dashboardData.isLoading}>
             <Icon icon={TrendingUp} className="w-4 h-4 mr-2" noGradient />
-            Refresh Data
+            Refresh
           </Button>
           <Button variant="primary" onClick={() => handleQuickAction('new-matter')}>
             <Icon icon={Plus} className="w-4 h-4 mr-2" noGradient />
-            New Matter
+            Matters
           </Button>
         </div>
       </div>
 
-      {/* Tab Navigation */}
-      <div>
-        <nav className="flex space-x-8">
-          <button
-            onClick={() => setActiveTab('overview')}
-            className={`py-2 px-1 border-b-2 font-medium text-sm transition-colors ${
-              activeTab === 'overview'
-                ? 'border-mpondo-gold-500 text-mpondo-gold-600'
-                : 'border-transparent text-neutral-500 hover:text-neutral-700 hover:border-neutral-300'
-            }`}
-          >
-            <div className="flex items-center gap-2">
-              <Icon icon={BarChart3} className="w-4 h-4" noGradient />
-              Overview
-            </div>
-          </button>
-
-        </nav>
-      </div>
-
-      {/* Tab Content */}
-      {activeTab === 'overview' && (
-        <>
-          {/* Welcome Header */}
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100">
-              Welcome Back, {user?.email?.split('@')[0] || 'User'}
-            </h2>
-            <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
-              Here's what's happening with your practice today
-            </p>
-          </div>
+      {/* Dashboard Content */}
+      <>
 
           {/* New Dashboard Cards - 4 Column Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -713,7 +670,6 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
       </Card>
     </div>
         </>
-      )}
 
 
 
@@ -825,125 +781,6 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
                   Cancel
                 </Button>
               </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* WIP Report Modal */}
-      {showDetailedView.wipReport && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Work in Progress Report</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-                  <p className="text-2xl font-bold text-neutral-900">{formatCurrency(dashboardData.outstandingWip)}</p>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">Total WIP</p>
-                </div>
-                <div className="text-center p-4 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-                  <p className="text-2xl font-bold text-neutral-900">{formatCurrency(850000)}</p>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">Billable WIP</p>
-                </div>
-                <div className="text-center p-4 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-                  <p className="text-2xl font-bold text-neutral-900">{formatCurrency(350000)}</p>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">Unbilled WIP</p>
-                </div>
-              </div>
-              <div className="space-y-3">
-                <h4 className="font-medium text-neutral-900 dark:text-neutral-100">Top WIP Matters</h4>
-                {recentMatters.map(matter => (
-                  <div key={matter.id} className="flex justify-between items-center p-3 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-                    <div>
-                      <p className="font-medium text-neutral-900 dark:text-neutral-100">{matter.title}</p>
-                      <p className="text-sm text-neutral-600 dark:text-neutral-400">{matter.client_name}</p>
-                    </div>
-                    <p className="font-medium text-neutral-900 dark:text-neutral-100">{formatCurrency(matter.wip_value)}</p>
-                  </div>
-                ))}
-              </div>
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => setShowDetailedView(prev => ({ ...prev, wipReport: false }))}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Billing Report Modal */}
-      {showDetailedView.billingReport && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-6 max-w-2xl w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Monthly Billing Report</h3>
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-status-success-50 rounded-lg">
-                  <p className="text-2xl font-bold text-status-success-900">{formatCurrency(dashboardData.monthlyBilling)}</p>
-                  <p className="text-sm text-status-success-700">This Month</p>
-                </div>
-                <div className="text-center p-4 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-                  <p className="text-2xl font-bold text-neutral-900">{formatCurrency(1150000)}</p>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-400">Last Month</p>
-                </div>
-              </div>
-              <div className="p-4 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-                <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">Monthly Trend</h4>
-                <div className="flex items-center gap-2">
-                  <Icon icon={TrendingUp} className="w-4 h-4 text-status-success-500" noGradient />
-                  <span className="text-status-success-600 font-medium">+22.3%</span>
-                  <span className="text-neutral-600">compared to last month</span>
-                </div>
-              </div>
-              <Button 
-                variant="outline" 
-                className="w-full"
-                onClick={() => setShowDetailedView(prev => ({ ...prev, billingReport: false }))}
-              >
-                Close
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Overdue Invoices Modal */}
-      {showDetailedView.overdueInvoices && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-6 max-w-lg w-full mx-4">
-            <h3 className="text-lg font-semibold mb-4">Overdue Invoices</h3>
-            <div className="space-y-3">
-              <div className="p-3 bg-status-warning-50 border-l-4 border-status-warning-500 rounded">
-                <p className="font-medium text-neutral-900 dark:text-neutral-100">Invoice #INV-2024-001</p>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">ABC Corporation - {formatCurrency(75000)}</p>
-                <p className="text-xs text-status-warning-700">45 days overdue</p>
-              </div>
-              <div className="p-3 bg-status-warning-50 border-l-4 border-status-warning-500 rounded">
-                <p className="font-medium text-neutral-900 dark:text-neutral-100">Invoice #INV-2024-003</p>
-                <p className="text-sm text-neutral-600 dark:text-neutral-400">XYZ Ltd - {formatCurrency(125000)}</p>
-                <p className="text-xs text-status-warning-700">32 days overdue</p>
-              </div>
-            </div>
-            <div className="flex gap-3 pt-4">
-              <Button 
-                variant="primary" 
-                className="flex-1"
-                onClick={() => {
-                  setShowDetailedView(prev => ({ ...prev, overdueInvoices: false }));
-                  navigatePage('invoices');
-                }}
-              >
-                Manage Invoices
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => setShowDetailedView(prev => ({ ...prev, overdueInvoices: false }))}
-              >
-                Close
-              </Button>
             </div>
           </div>
         </div>

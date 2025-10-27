@@ -102,6 +102,26 @@ export {
 } from './retainer.service';
 
 export {
+  TrustAccountService,
+  trustAccountService,
+  type UpdateTrustAccountRequest,
+  type RecordTrustReceiptRequest,
+  type TransferToBusinessRequest,
+  type ReconciliationReport
+} from './trust-account.service';
+
+export {
+  DisbursementVATService,
+  disbursementVATService,
+  type DisbursementType,
+  type VATSuggestion,
+  type CreateDisbursementTypeRequest,
+  type UpdateDisbursementTypeRequest,
+  type CorrectVATRequest,
+  type DisbursementVATAudit
+} from './disbursement-vat.service';
+
+export {
   subscriptionService
 } from './subscription.service';
 
@@ -115,6 +135,27 @@ export {
   type PendingActions,
   type QuickStats
 } from './dashboard.service';
+
+// Phase 4: Workflow Streamlining Services
+export {
+  AttorneyService,
+  attorneyService,
+  type AttorneyUsageStats,
+  type CreateAttorneyRequest
+} from './attorney-connection.service';
+
+export {
+  InvoiceEmailDeliveryService,
+  invoiceEmailDeliveryService,
+  type InvoiceEmailDeliveryRequest
+} from './invoice-email-delivery.service';
+
+export {
+  BriefFeeTemplateService,
+  type BriefFeeTemplate,
+  type TemplateIncludedService,
+  type CreateTemplateRequest
+} from './brief-fee-template.service';
 
 // Re-export commonly used types from the main types file
 export type {

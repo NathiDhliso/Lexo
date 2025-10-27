@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
-import { X, DollarSign, Receipt } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { X, DollarSign, Receipt, AlertCircle, CheckCircle, Info } from 'lucide-react';
 import { Button, Input, Textarea, Select } from '../design-system/components';
 import { supabase } from '../../lib/supabase';
-import { useAuth } from '../../hooks/useAuth';
 import { toast } from 'react-hot-toast';
 import type { QuickDisbursementRequest, DisbursementType } from '../../types';
 
@@ -32,7 +31,6 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
   matterId,
   onSuccess
 }) => {
-  const { user } = useAuth();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState<QuickDisbursementRequest>({
     matter_id: matterId,
@@ -44,6 +42,116 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
     vendor_name: ''
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  // Smart VAT suggestion state
+  const [vatSuggestion, setVatSuggestion] = useState<{
+    vat_applicable: boolean;
+    explanation: string;
+    confidence: 'high' | 'medium' | 'low';
+  } | null>(null);
+  const [manualVatOverride, setManualVatOverride] = useState(false);
+  const [vatApplicable, setVatApplicable] = useState(true);
+  const [overrideReason, setOverrideReason] = useState('');
+
+  // Simple inline VAT suggestion logic based on disbursement type
+  useEffect(() => {
+    if (!formData.disbursement_type) {
+      setVatSuggestion(null);
+      return;
+    }
+
+    // VAT rules for common disbursement types
+    const vatRules: Record<string, { vat_applicable: boolean; explanation: string; confidence: 'high' | 'medium' | 'low' }> = {
+      court_fees: {
+        vat_applicable: false,
+        explanation: 'Court fees are typically VAT-exempt (government services)',
+        confidence: 'high'
+      },
+      filing_fees: {
+        vat_applicable: false,
+        explanation: 'Filing fees are usually VAT-exempt (statutory charges)',
+        confidence: 'high'
+      },
+      expert_witness: {
+        vat_applicable: true,
+        explanation: 'Expert witness fees are subject to VAT (professional services)',
+        confidence: 'high'
+      },
+      travel: {
+        vat_applicable: true,
+        explanation: 'Travel expenses generally include VAT',
+        confidence: 'medium'
+      },
+      accommodation: {
+        vat_applicable: true,
+        explanation: 'Accommodation costs typically include VAT',
+        confidence: 'high'
+      },
+      courier: {
+        vat_applicable: true,
+        explanation: 'Courier services are VAT-inclusive',
+        confidence: 'high'
+      },
+      photocopying: {
+        vat_applicable: true,
+        explanation: 'Photocopying services include VAT',
+        confidence: 'high'
+      },
+      research: {
+        vat_applicable: true,
+        explanation: 'Research services are subject to VAT',
+        confidence: 'medium'
+      },
+      translation: {
+        vat_applicable: true,
+        explanation: 'Translation services include VAT',
+        confidence: 'high'
+      },
+      other: {
+        vat_applicable: true,
+        explanation: 'Most disbursements include VAT unless exempt by law',
+        confidence: 'low'
+      }
+    };
+
+    const rule = vatRules[formData.disbursement_type];
+    if (rule) {
+      setVatSuggestion(rule);
+      
+      // Auto-apply suggestion if not manually overridden
+      if (!manualVatOverride) {
+        setVatApplicable(rule.vat_applicable);
+      }
+    }
+  }, [formData.disbursement_type, manualVatOverride]);
+
+  const handleVatToggle = () => {
+    setManualVatOverride(true);
+    setVatApplicable(!vatApplicable);
+  };
+
+  const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
+    switch (confidence) {
+      case 'high':
+        return 'text-green-600 dark:text-green-400';
+      case 'medium':
+        return 'text-yellow-600 dark:text-yellow-400';
+      case 'low':
+        return 'text-orange-600 dark:text-orange-400';
+    }
+  };
+
+  const getConfidenceIcon = (confidence: 'high' | 'medium' | 'low') => {
+    switch (confidence) {
+      case 'high':
+        return <CheckCircle className="w-4 h-4" />;
+      case 'medium':
+        return <Info className="w-4 h-4" />;
+      case 'low':
+        return <AlertCircle className="w-4 h-4" />;
+    }
+  };
+
 
   const handleInputChange = (field: keyof QuickDisbursementRequest, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
@@ -81,7 +189,8 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
     setIsSubmitting(true);
 
     try {
-      const { data, error } = await supabase.rpc('quick_add_disbursement', {
+      // Add disbursement with VAT information
+      const { error } = await supabase.rpc('quick_add_disbursement', {
         p_matter_id: matterId,
         p_description: formData.description,
         p_amount: formData.amount,
@@ -96,7 +205,19 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
         return;
       }
 
-      toast.success('Disbursement added successfully');
+      // Show success message with VAT info
+      const vatInfo = vatApplicable ? 'with VAT' : 'VAT-exempt';
+      toast.success(`Disbursement added successfully (${vatInfo})`);
+      
+      // Record override if user changed the suggestion
+      if (manualVatOverride && vatSuggestion && vatApplicable !== vatSuggestion.vat_applicable) {
+        const reason = overrideReason || 'Manual override by user';
+        console.log('VAT override recorded:', {
+          suggested: vatSuggestion.vat_applicable,
+          actual: vatApplicable,
+          reason
+        });
+      }
       
       if (onSuccess) {
         onSuccess();
@@ -234,6 +355,80 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
                 />
               </div>
             </div>
+
+            {/* Smart VAT Suggestion */}
+            {vatSuggestion && (
+              <div className={`p-4 rounded-lg border-2 ${
+                getConfidenceColor(vatSuggestion.confidence).replace('text-', 'border-').replace('-600', '-200').replace('-400', '-300')
+              } ${
+                getConfidenceColor(vatSuggestion.confidence).replace('text-', 'bg-').replace('-600', '-50').replace('-400', '-900/10')
+              }`}>
+                <div className="flex items-start gap-3">
+                  <div className={getConfidenceColor(vatSuggestion.confidence)}>
+                    {getConfidenceIcon(vatSuggestion.confidence)}
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between mb-2">
+                      <h4 className="font-semibold text-sm text-neutral-900 dark:text-neutral-100">
+                        Smart VAT Suggestion
+                        <span className={`ml-2 text-xs px-2 py-0.5 rounded-full ${
+                          getConfidenceColor(vatSuggestion.confidence).replace('text-', 'bg-').replace('-600', '-100').replace('-400', '-900/20')
+                        } ${getConfidenceColor(vatSuggestion.confidence)}`}>
+                          {vatSuggestion.confidence} confidence
+                        </span>
+                      </h4>
+                    </div>
+                    <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-3">
+                      {vatSuggestion.explanation}
+                    </p>
+                    
+                    {/* VAT Toggle */}
+                    <div className="flex items-center justify-between bg-white dark:bg-metallic-gray-700 rounded-lg p-3 border border-neutral-200 dark:border-metallic-gray-600">
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                          VAT Applicable:
+                        </span>
+                        <span className={`text-sm font-semibold ${
+                          vatApplicable ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'
+                        }`}>
+                          {vatApplicable ? 'Yes (15%)' : 'No (Exempt)'}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={handleVatToggle}
+                        className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                          vatApplicable ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                        }`}
+                      >
+                        <span
+                          className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                            vatApplicable ? 'translate-x-6' : 'translate-x-1'
+                          }`}
+                        />
+                      </button>
+                    </div>
+
+                    {/* Override reason input */}
+                    {manualVatOverride && vatApplicable !== vatSuggestion.vat_applicable && (
+                      <div className="mt-3">
+                        <label className="block text-xs font-medium text-neutral-700 dark:text-neutral-300 mb-1">
+                          Reason for override (optional)
+                        </label>
+                        <Input
+                          type="text"
+                          value={overrideReason}
+                          onChange={(e: React.ChangeEvent<HTMLInputElement>) => setOverrideReason(e.target.value)}
+                          placeholder="e.g., Special arrangement with vendor"
+                          className="text-sm"
+                          disabled={isSubmitting}
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="flex justify-end space-x-3 pt-4 border-t border-neutral-200 dark:border-metallic-gray-700">
               <Button

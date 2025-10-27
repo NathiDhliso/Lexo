@@ -3,12 +3,13 @@
  * Quick fee entry for Path B (Accept & Work) matters
  * For simple brief fees without detailed time tracking
  */
-import React, { useState } from 'react';
+import React, { useMemo } from 'react';
 import { Button, Input } from '../design-system/components';
 import { X, DollarSign, Plus, Trash2 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
-import { toast } from 'react-hot-toast';
 import { formatRand } from '../../lib/currency';
+import { useModalForm } from '../../hooks/useModalForm';
+import { createValidator, required, numeric, positive, minLength } from '../../utils/validation.utils';
 import type { Matter } from '../../types';
 
 interface SimpleFeeEntryModalProps {
@@ -23,130 +24,163 @@ interface Disbursement {
   amount: number;
 }
 
+interface FeeEntryFormData {
+  briefFee: number;
+  feeDescription: string;
+  disbursements: Disbursement[];
+}
+
 export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
   isOpen,
   matter,
   onClose,
   onSuccess
 }) => {
-  const [briefFee, setBriefFee] = useState('');
-  const [feeDescription, setFeeDescription] = useState('');
-  const [disbursements, setDisbursements] = useState<Disbursement[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  // Create validator for fee entry form
+  const validator = useMemo(() => createValidator<FeeEntryFormData>({
+    briefFee: [required(), numeric(), positive()],
+    feeDescription: [required(), minLength(10)],
+    disbursements: [], // Optional array
+  }), []);
+
+  // Use the modal form hook
+  const {
+    formData,
+    isLoading,
+    error,
+    validationErrors,
+    handleChange,
+    handleSubmit,
+    reset,
+  } = useModalForm<FeeEntryFormData>({
+    initialData: {
+      briefFee: 0,
+      feeDescription: '',
+      disbursements: [],
+    },
+    onSubmit: async (data) => {
+      if (!matter) throw new Error('No matter selected');
+      await submitFeeEntry(data, matter);
+    },
+    onSuccess: () => {
+      onSuccess?.();
+      onClose();
+    },
+    validate: (data) => {
+      const result = validator.validate(data);
+      return result.isValid ? null : result.errors;
+    },
+    successMessage: 'Fee note created successfully!',
+    resetOnSuccess: true,
+  });
+
+  // Extract fee submission logic
+  const submitFeeEntry = async (data: FeeEntryFormData, matter: Matter) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) throw new Error('Not authenticated');
+
+    const disbursementsTotal = data.disbursements.reduce((sum, d) => sum + d.amount, 0);
+    const subtotal = data.briefFee + disbursementsTotal;
+    const vatAmount = subtotal * 0.15;
+    const totalAmount = subtotal + vatAmount;
+
+    // Generate invoice number
+    const year = new Date().getFullYear();
+    const { count } = await supabase
+      .from('invoices')
+      .select('*', { count: 'exact', head: true })
+      .gte('created_at', `${year}-01-01`);
+
+    const sequence = (count || 0) + 1;
+    const invoiceNumber = `INV-${year}-${sequence.toString().padStart(4, '0')}`;
+
+    // Create invoice (fee note)
+    const { data: invoice, error: invoiceError } = await supabase
+      .from('invoices')
+      .insert({
+        invoice_number: invoiceNumber,
+        matter_id: matter.id,
+        advocate_id: user.id,
+        fees_amount: data.briefFee,
+        disbursements_amount: disbursementsTotal,
+        vat_rate: 0.15,
+        amount_paid: 0,
+        fee_narrative: data.feeDescription,
+        status: 'draft',
+        invoice_date: new Date().toISOString().split('T')[0],
+        due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+      })
+      .select()
+      .single();
+
+    if (invoiceError) throw invoiceError;
+
+    // Log disbursements as expenses
+    if (data.disbursements.length > 0) {
+      const expenseRecords = data.disbursements
+        .filter(d => d.description && d.amount > 0)
+        .map(d => ({
+          matter_id: matter.id,
+          advocate_id: user.id,
+          invoice_id: invoice.id,
+          expense_date: new Date().toISOString(),
+          description: d.description,
+          amount: d.amount,
+          category: 'disbursement',
+          is_billable: true
+        }));
+
+      if (expenseRecords.length > 0) {
+        await supabase.from('expenses').insert(expenseRecords);
+      }
+    }
+
+    // Update matter WIP
+    await supabase
+      .from('matters')
+      .update({ wip_value: (matter.wip_value || 0) + totalAmount })
+      .eq('id', matter.id);
+  };
+
+  // Calculate totals for display
+  const calculations = useMemo(() => {
+    const briefFeeAmount = formData.briefFee || 0;
+    const disbursementsTotal = formData.disbursements.reduce((sum, d) => sum + d.amount, 0);
+    const subtotal = briefFeeAmount + disbursementsTotal;
+    const vatAmount = subtotal * 0.15;
+    const totalAmount = subtotal + vatAmount;
+
+    return {
+      briefFeeAmount,
+      disbursementsTotal,
+      subtotal,
+      vatAmount,
+      totalAmount,
+    };
+  }, [formData.briefFee, formData.disbursements]);
 
   if (!isOpen || !matter) return null;
 
-  const briefFeeAmount = parseFloat(briefFee) || 0;
-  const disbursementsTotal = disbursements.reduce((sum, d) => sum + d.amount, 0);
-  const subtotal = briefFeeAmount + disbursementsTotal;
-  const vatAmount = subtotal * 0.15;
-  const totalAmount = subtotal + vatAmount;
-
   const handleAddDisbursement = () => {
-    setDisbursements([...disbursements, { description: '', amount: 0 }]);
+    const newDisbursements = [...formData.disbursements, { description: '', amount: 0 }];
+    handleChange('disbursements', newDisbursements);
   };
 
   const handleRemoveDisbursement = (index: number) => {
-    setDisbursements(disbursements.filter((_, i) => i !== index));
+    const newDisbursements = formData.disbursements.filter((_, i) => i !== index);
+    handleChange('disbursements', newDisbursements);
   };
 
   const handleDisbursementChange = (index: number, field: keyof Disbursement, value: string | number) => {
-    const updated = [...disbursements];
+    const updated = [...formData.disbursements];
     updated[index] = { ...updated[index], [field]: value };
-    setDisbursements(updated);
+    handleChange('disbursements', updated);
   };
 
-  const handleSubmit = async () => {
-    if (!briefFeeAmount || briefFeeAmount <= 0) {
-      toast.error('Please enter a valid brief fee amount');
-      return;
-    }
-
-    if (!feeDescription.trim()) {
-      toast.error('Please provide a description of the work done');
-      return;
-    }
-
-    const loadingToast = toast.loading('Creating fee note...');
-    
-    try {
-      setIsLoading(true);
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      // Generate invoice number
-      const year = new Date().getFullYear();
-      const { count } = await supabase
-        .from('invoices')
-        .select('*', { count: 'exact', head: true })
-        .gte('created_at', `${year}-01-01`);
-
-      const sequence = (count || 0) + 1;
-      const invoiceNumber = `INV-${year}-${sequence.toString().padStart(4, '0')}`;
-
-      // Create invoice (fee note)
-      const { data: invoice, error: invoiceError } = await supabase
-        .from('invoices')
-        .insert({
-          invoice_number: invoiceNumber,
-          matter_id: matter.id,
-          advocate_id: user.id,
-          fees_amount: briefFeeAmount,
-          disbursements_amount: disbursementsTotal,
-          vat_rate: 0.15,
-          amount_paid: 0,
-          fee_narrative: feeDescription,
-          status: 'draft',
-          invoice_date: new Date().toISOString().split('T')[0],
-          due_date: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
-        })
-        .select()
-        .single();
-
-      if (invoiceError) throw invoiceError;
-
-      // Log disbursements as expenses
-      if (disbursements.length > 0) {
-        const expenseRecords = disbursements
-          .filter(d => d.description && d.amount > 0)
-          .map(d => ({
-            matter_id: matter.id,
-            advocate_id: user.id,
-            invoice_id: invoice.id,
-            expense_date: new Date().toISOString(),
-            description: d.description,
-            amount: d.amount,
-            category: 'disbursement',
-            is_billable: true
-          }));
-
-        if (expenseRecords.length > 0) {
-          await supabase.from('expenses').insert(expenseRecords);
-        }
-      }
-
-      // Update matter WIP
-      await supabase
-        .from('matters')
-        .update({ wip_value: (matter.wip_value || 0) + totalAmount })
-        .eq('id', matter.id);
-
-      toast.success(`Fee note ${invoiceNumber} created successfully`, { 
-        id: loadingToast,
-        duration: 4000 
-      });
-      
-      onSuccess?.();
+  const handleClose = () => {
+    if (!isLoading) {
+      reset();
       onClose();
-    } catch (error) {
-      console.error('Error creating fee note:', error);
-      toast.error('Failed to create fee note', { 
-        id: loadingToast,
-        duration: 5000 
-      });
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -170,9 +204,10 @@ export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
               </div>
             </div>
             <button
-              onClick={onClose}
+              onClick={handleClose}
               className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300"
               aria-label="Close modal"
+              disabled={isLoading}
             >
               <X className="w-5 h-5" />
             </button>
@@ -195,12 +230,18 @@ export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
             </label>
             <Input
               type="number"
-              value={briefFee}
-              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setBriefFee(e.target.value)}
+              value={formData.briefFee || ''}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleChange('briefFee', parseFloat(e.target.value) || 0)}
               placeholder="15000.00"
               min="0"
               step="100"
+              disabled={isLoading}
             />
+            {validationErrors.briefFee && (
+              <p className="text-xs text-status-error-500 mt-1">
+                {validationErrors.briefFee}
+              </p>
+            )}
             <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
               Enter the agreed brief fee amount
             </p>
@@ -212,11 +253,17 @@ export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
               Work Description <span className="text-status-error-500">*</span>
             </label>
             <textarea
-              value={feeDescription}
-              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setFeeDescription(e.target.value)}
+              value={formData.feeDescription}
+              onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleChange('feeDescription', e.target.value)}
               placeholder="e.g., Court appearance in Johannesburg High Court for bail application..."
               className="w-full h-24 px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 resize-none focus:ring-2 focus:ring-mpondo-gold-500"
+              disabled={isLoading}
             />
+            {validationErrors.feeDescription && (
+              <p className="text-xs text-status-error-500 mt-1">
+                {validationErrors.feeDescription}
+              </p>
+            )}
           </div>
 
           {/* Disbursements */}
@@ -229,15 +276,16 @@ export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
                 variant="outline"
                 size="sm"
                 onClick={handleAddDisbursement}
+                disabled={isLoading}
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Add Disbursement
               </Button>
             </div>
 
-            {disbursements.length > 0 && (
+            {formData.disbursements.length > 0 && (
               <div className="space-y-3">
-                {disbursements.map((disbursement, index) => (
+                {formData.disbursements.map((disbursement, index) => (
                   <div key={index} className="bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg p-3">
                     <div className="flex items-center gap-3">
                       <div className="flex-1 grid grid-cols-2 gap-3">
@@ -246,6 +294,7 @@ export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
                           value={disbursement.description}
                           onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleDisbursementChange(index, 'description', e.target.value)}
                           placeholder="e.g., Travel to Pretoria"
+                          disabled={isLoading}
                         />
                         <Input
                           type="number"
@@ -254,11 +303,13 @@ export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
                           placeholder="0.00"
                           min="0"
                           step="10"
+                          disabled={isLoading}
                         />
                       </div>
                       <button
                         onClick={() => handleRemoveDisbursement(index)}
                         className="p-2 text-status-error-500 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 rounded-lg transition-colors"
+                        disabled={isLoading}
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -275,43 +326,52 @@ export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
               <div className="flex justify-between">
                 <span className="text-neutral-700 dark:text-neutral-300">Brief Fee:</span>
                 <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                  {formatRand(briefFeeAmount)}
+                  {formatRand(calculations.briefFeeAmount)}
                 </span>
               </div>
-              {disbursementsTotal > 0 && (
+              {calculations.disbursementsTotal > 0 && (
                 <div className="flex justify-between">
                   <span className="text-neutral-700 dark:text-neutral-300">Disbursements:</span>
                   <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                    {formatRand(disbursementsTotal)}
+                    {formatRand(calculations.disbursementsTotal)}
                   </span>
                 </div>
               )}
               <div className="flex justify-between">
                 <span className="text-neutral-700 dark:text-neutral-300">Subtotal:</span>
                 <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                  {formatRand(subtotal)}
+                  {formatRand(calculations.subtotal)}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-neutral-700 dark:text-neutral-300">VAT (15%):</span>
                 <span className="font-medium text-neutral-900 dark:text-neutral-100">
-                  {formatRand(vatAmount)}
+                  {formatRand(calculations.vatAmount)}
                 </span>
               </div>
               <div className="border-t border-mpondo-gold-200 dark:border-mpondo-gold-700 pt-2 flex justify-between">
                 <span className="font-semibold text-neutral-900 dark:text-neutral-100">Total:</span>
                 <span className="font-bold text-lg text-neutral-900 dark:text-neutral-100">
-                  {formatRand(totalAmount)}
+                  {formatRand(calculations.totalAmount)}
                 </span>
               </div>
             </div>
           </div>
 
+          {/* Error Display */}
+          {error && (
+            <div className="mb-4 p-3 bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-lg">
+              <p className="text-sm text-status-error-600 dark:text-status-error-400">
+                {error.message || 'An error occurred while creating the fee note.'}
+              </p>
+            </div>
+          )}
+
           {/* Actions */}
           <div className="flex gap-3">
             <Button
               variant="secondary"
-              onClick={onClose}
+              onClick={handleClose}
               className="flex-1"
               disabled={isLoading}
             >
@@ -323,7 +383,7 @@ export const SimpleFeeEntryModal: React.FC<SimpleFeeEntryModalProps> = ({
               className="flex-1 bg-mpondo-gold-600 hover:bg-mpondo-gold-700"
               disabled={isLoading}
             >
-              Create Fee Note
+              {isLoading ? 'Creating...' : 'Create Fee Note'}
             </Button>
           </div>
         </div>

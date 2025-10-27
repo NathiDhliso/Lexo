@@ -12,6 +12,7 @@ interface TimeEntryModalProps {
   onClose: () => void;
   onSave: () => void;
   defaultRate?: number;
+  isInternalOnly?: boolean;
 }
 
 export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
@@ -21,7 +22,8 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
   isOpen,
   onClose,
   onSave,
-  defaultRate = 2000
+  defaultRate = 2000,
+  isInternalOnly = false
 }) => {
   const [formData, setFormData] = useState({
     date: new Date().toISOString().split('T')[0],

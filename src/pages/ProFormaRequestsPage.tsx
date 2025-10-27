@@ -232,17 +232,13 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
           <Button 
             variant="primary" 
             onClick={() => {
-              toast('Pro forma requests are created from matters. Navigate to Matters to create one.', {
-                duration: 5000,
-                icon: '💡'
-              });
               if (onNavigate) {
-                setTimeout(() => onNavigate('matters'), 2000);
+                onNavigate('matters');
               }
             }}
           >
             <Plus className="w-5 h-5 mr-2" />
-            New Pro Forma
+            View Matters
           </Button>
           <Button 
             variant="secondary" 
@@ -307,17 +303,13 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
             <Button 
               variant="primary" 
               onClick={() => {
-                toast('Pro forma requests are created from matters. Navigate to Matters page first.', {
-                  duration: 5000,
-                  icon: '💡'
-                });
                 if (onNavigate) {
-                  setTimeout(() => onNavigate('matters'), 2000);
+                  onNavigate('matters');
                 }
               }}
             >
               <Plus className="w-4 h-4 mr-2" />
-              Create Pro Forma
+              Go to Matters
             </Button>
           }
         />

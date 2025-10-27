@@ -15,6 +15,9 @@ export interface CloudStorageConnection {
   providerAccountName?: string;
   rootFolderId?: string;
   rootFolderPath: string;
+  accessToken?: string;
+  refreshToken?: string;
+  tokenExpiresAt?: string;
   isActive: boolean;
   isPrimary: boolean;
   lastSyncAt?: string;
