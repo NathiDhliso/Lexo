@@ -64,7 +64,6 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
   const [showRequestInfoModal, setShowRequestInfoModal] = useState(false);
   const [showDeclineModal, setShowDeclineModal] = useState(false);
   const [showQuickBriefModal, setShowQuickBriefModal] = useState(false);
-  const [firms, setFirms] = useState<any[]>([]);
   
   // TIER 1 & TIER 2 Feature modals
   const [showScopeAmendmentModal, setShowScopeAmendmentModal] = useState(false);
@@ -253,29 +252,9 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
     }
   }, [loading, isAuthenticated, user?.id, searchFilters]);
 
-  // Load firms for Quick Brief Capture
-  const loadFirms = React.useCallback(async () => {
-    if (!user?.id) return;
-    
-    try {
-      const { data, error } = await supabase
-        .from('firms')
-        .select('*')
-        .eq('advocate_id', user.id)
-        .order('name');
-      
-      if (!error && data) {
-        setFirms(data);
-      }
-    } catch (error) {
-      console.error('Error loading firms:', error);
-    }
-  }, [user?.id]);
-
   React.useEffect(() => {
     loadFilterOptions();
-    loadFirms();
-  }, [loadFilterOptions, loadFirms]);
+  }, [loadFilterOptions]);
 
   React.useEffect(() => {
     fetchMatters();
@@ -1355,7 +1334,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         filterOptions={filterOptions}
       />
 
-      {/* Quick Brief Capture Modal (Path B) */}
+      {/* Quick Brief Capture Modal - Overhauled with Voice Recording */}
       <QuickBriefCaptureModal
         isOpen={showQuickBriefModal}
         onClose={() => setShowQuickBriefModal(false)}
@@ -1363,7 +1342,6 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           fetchMatters();
           navigate(`/matter-workbench/${matterId}`);
         }}
-        firms={firms}
       />
     </div>
   );
