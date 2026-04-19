@@ -90,13 +90,13 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
       case 'draft':
         return <FileText className="w-5 h-5 text-gray-400 dark:text-neutral-500" />;
       case 'sent':
-        return <Clock className="w-5 h-5 text-blue-500" />;
+        return <Clock className="w-5 h-5 text-neutral-500" />;
       case 'accepted':
-        return <CheckCircle className="w-5 h-5 text-green-500" />;
+        return <CheckCircle className="w-5 h-5 text-status-success-500" />;
       case 'declined':
-        return <XCircle className="w-5 h-5 text-red-500" />;
+        return <XCircle className="w-5 h-5 text-status-error-500" />;
       case 'converted':
-        return <ArrowRight className="w-5 h-5 text-purple-500" />;
+        return <ArrowRight className="w-5 h-5 text-neutral-500" />;
       default:
         return <FileText className="w-5 h-5 text-gray-400 dark:text-neutral-500" />;
     }
@@ -105,11 +105,11 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
   const getStatusBadge = (status: ProFormaRequestStatus) => {
     const styles: Record<ProFormaRequestStatus, string> = {
       draft: 'bg-gray-100 dark:bg-metallic-gray-800 text-gray-700 dark:text-neutral-300',
-      sent: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300',
-      accepted: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300',
-      declined: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
+      sent: 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-700 dark:text-neutral-300',
+      accepted: 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-700 dark:text-status-success-300',
+      declined: 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-700 dark:text-status-error-300',
       expired: 'bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300',
-      converted: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300',
+      converted: 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-700 dark:text-neutral-300',
     };
 
     return (
@@ -124,8 +124,8 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
 
     const styles: Record<string, string> = {
       low: 'bg-gray-100 dark:bg-metallic-gray-800 text-gray-700 dark:text-neutral-300',
-      medium: 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300',
-      high: 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300',
+      medium: 'bg-status-warning-100 dark:bg-status-warning-900/30 text-status-warning-700 dark:text-status-warning-300',
+      high: 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-700 dark:text-status-error-300',
     };
 
     return (
@@ -279,7 +279,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
             }}
             className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
               filter.includes(status)
-                ? 'bg-blue-600 dark:bg-mpondo-gold-600 text-white'
+                ? 'bg-neutral-600 dark:bg-mpondo-gold-600 text-white'
                 : 'bg-gray-100 dark:bg-metallic-gray-800 text-gray-700 dark:text-neutral-300 hover:bg-gray-200 dark:hover:bg-metallic-gray-700'
             }`}
           >
@@ -490,7 +490,7 @@ export const ProFormaRequestsPage: React.FC<ProFormaRequestsPageProps> = ({ onNa
                   setShowSendModal(false);
                   setSelectedProForma(null);
                 }}
-                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                className="flex-1 px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700"
               >
                 Send
               </button>

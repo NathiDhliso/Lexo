@@ -49,7 +49,7 @@ export const ActiveMattersCard: React.FC<ActiveMattersCardProps> = ({
 
   const getCompletionColor = (percentage: number) => {
     if (percentage >= 80) return 'bg-status-success-500';
-    if (percentage >= 50) return 'bg-judicial-blue-500';
+    if (percentage >= 50) return 'bg-neutral-500';
     if (percentage >= 25) return 'bg-status-warning-500';
     return 'bg-neutral-300';
   };

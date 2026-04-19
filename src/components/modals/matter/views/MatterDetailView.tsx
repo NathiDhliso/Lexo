@@ -39,7 +39,7 @@ export const MatterDetailView: React.FC<MatterDetailViewProps> = ({
             onClick={() => setActiveTab('details')}
             className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'details'
-                ? 'border-blue-600 dark:border-mpondo-gold-400 text-blue-600 dark:text-mpondo-gold-400'
+                ? 'border-neutral-600 dark:border-mpondo-gold-400 text-neutral-600 dark:text-mpondo-gold-400'
                 : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
             }`}
           >
@@ -50,7 +50,7 @@ export const MatterDetailView: React.FC<MatterDetailViewProps> = ({
             onClick={() => setActiveTab('time')}
             className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'time'
-                ? 'border-blue-600 dark:border-mpondo-gold-400 text-blue-600 dark:text-mpondo-gold-400'
+                ? 'border-neutral-600 dark:border-mpondo-gold-400 text-neutral-600 dark:text-mpondo-gold-400'
                 : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
             }`}
           >
@@ -61,7 +61,7 @@ export const MatterDetailView: React.FC<MatterDetailViewProps> = ({
             onClick={() => setActiveTab('scope')}
             className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'scope'
-                ? 'border-blue-600 dark:border-mpondo-gold-400 text-blue-600 dark:text-mpondo-gold-400'
+                ? 'border-neutral-600 dark:border-mpondo-gold-400 text-neutral-600 dark:text-mpondo-gold-400'
                 : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
             }`}
           >
@@ -72,7 +72,7 @@ export const MatterDetailView: React.FC<MatterDetailViewProps> = ({
             onClick={() => setActiveTab('documents')}
             className={`px-4 py-3 font-medium text-sm border-b-2 transition-colors ${
               activeTab === 'documents'
-                ? 'border-blue-600 dark:border-mpondo-gold-400 text-blue-600 dark:text-mpondo-gold-400'
+                ? 'border-neutral-600 dark:border-mpondo-gold-400 text-neutral-600 dark:text-mpondo-gold-400'
                 : 'border-transparent text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
             }`}
           >
@@ -86,7 +86,7 @@ export const MatterDetailView: React.FC<MatterDetailViewProps> = ({
       <div className="flex-1 overflow-y-auto p-6">
         <React.Suspense fallback={
           <div className="flex items-center justify-center py-12">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-judicial-blue-600 dark:border-mpondo-gold-400" />
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600 dark:border-mpondo-gold-400" />
           </div>
         }>
           {activeTab === 'details' && (

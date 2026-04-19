@@ -56,7 +56,7 @@ export const QuickStatsCard: React.FC<QuickStatsCardProps> = ({
       label: 'Invoiced Amount',
       value: stats.invoiced30d,
       icon: FileText,
-      color: 'text-judicial-blue-600 bg-judicial-blue-50',
+      color: 'text-neutral-600 bg-neutral-50',
       trend: previousStats ? calculateTrend(stats.invoiced30d, previousStats.invoiced30d) : null,
       format: formatCurrency
     },

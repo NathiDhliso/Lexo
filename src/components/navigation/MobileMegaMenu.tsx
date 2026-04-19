@@ -100,7 +100,7 @@ const MobileMenuItem: React.FC<{
                 </span>
               )}
               {item.badge && (
-                <span className="px-1.5 py-0.5 text-xs bg-judicial-blue-100 text-judicial-blue-800 rounded-full">
+                <span className="px-1.5 py-0.5 text-xs bg-neutral-100 text-neutral-800 rounded-full">
                   {item.badge}
                 </span>
               )}
@@ -148,7 +148,7 @@ const MobileSection: React.FC<MobileSectionProps> = ({
 
   return (
     <div className="space-y-2">
-      <h3 className="text-xs font-bold text-judicial-blue-600 dark:text-judicial-blue-400 uppercase tracking-wider mb-3 px-3">
+      <h3 className="text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider mb-3 px-3">
         {section.title}
       </h3>
       <div className="space-y-1">
@@ -245,7 +245,7 @@ const MobileCategory: React.FC<MobileCategoryProps> = ({
 
             {/* Featured Items */}
             {category.featured && category.featured.length > 0 && (
-              <div className="bg-gradient-to-br from-mpondo-gold-50 to-judicial-blue-50 dark:from-mpondo-gold-950/20 dark:to-judicial-blue-950/20 rounded-lg p-4">
+              <div className="bg-gradient-to-br from-mpondo-gold-50 to-neutral-50 dark:from-mpondo-gold-950/20 dark:to-neutral-950/20 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-3">
                   <Star className="w-5 h-5 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
                   <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100">Featured</h3>

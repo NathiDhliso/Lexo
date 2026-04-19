@@ -31,11 +31,11 @@ interface MatterCardProps {
 const getStatusColor = (status: MatterStatus): string => {
   switch (status) {
     case MatterStatus.ACTIVE:
-      return 'bg-green-100 text-green-800';
+      return 'bg-status-success-100 text-status-success-800';
     case MatterStatus.PENDING:
-      return 'bg-yellow-100 text-yellow-800';
+      return 'bg-status-warning-100 text-status-warning-800';
     case MatterStatus.SETTLED:
-      return 'bg-blue-100 text-blue-800';
+      return 'bg-neutral-100 text-neutral-800';
     case MatterStatus.CLOSED:
       return 'bg-gray-100 text-gray-800';
     case MatterStatus.ON_HOLD:
@@ -48,13 +48,13 @@ const getStatusColor = (status: MatterStatus): string => {
 const getRiskColor = (riskLevel: RiskLevel): string => {
   switch (riskLevel) {
     case RiskLevel.LOW:
-      return 'text-green-600';
+      return 'text-status-success-600';
     case RiskLevel.MEDIUM:
-      return 'text-yellow-600';
+      return 'text-status-warning-600';
     case RiskLevel.HIGH:
       return 'text-orange-600';
     case RiskLevel.CRITICAL:
-      return 'text-red-600';
+      return 'text-status-error-600';
     default:
       return 'text-gray-600';
   }

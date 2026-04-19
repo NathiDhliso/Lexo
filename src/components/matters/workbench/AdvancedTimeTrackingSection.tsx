@@ -43,18 +43,18 @@ export const AdvancedTimeTrackingSection: React.FC<AdvancedTimeTrackingSectionPr
         title="Track time for internal analysis"
         subtitle="Optional time tracking that won't affect your invoices"
         defaultExpanded={defaultExpanded}
-        icon={<Clock className="w-5 h-5 text-judicial-blue-500" />}
+        icon={<Clock className="w-5 h-5 text-neutral-500" />}
         className="bg-neutral-50 dark:bg-neutral-800/50 border-dashed"
       >
         {/* Info Banner */}
-        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+        <div className="mb-4 p-3 bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg">
           <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+            <Info className="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0 mt-0.5" />
             <div className="text-sm">
-              <p className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+              <p className="font-medium text-neutral-900 dark:text-neutral-100 mb-1">
                 Internal Use Only
               </p>
-              <p className="text-blue-700 dark:text-blue-300">
+              <p className="text-neutral-700 dark:text-neutral-300">
                 Time entries in this section are for your internal analysis and productivity tracking. 
                 They will not be included in invoices or client billing by default.
               </p>

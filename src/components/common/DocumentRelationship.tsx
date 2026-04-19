@@ -32,7 +32,7 @@ const getDocumentIcon = (type: 'matter' | 'proforma' | 'invoice') => {
 const getDocumentColor = (type: 'matter' | 'proforma' | 'invoice') => {
   switch (type) {
     case 'matter':
-      return 'bg-judicial-blue-100 text-judicial-blue-700 border-judicial-blue-200';
+      return 'bg-neutral-100 text-neutral-700 border-neutral-200';
     case 'proforma':
       return 'bg-mpondo-gold-100 text-mpondo-gold-700 border-mpondo-gold-200';
     case 'invoice':

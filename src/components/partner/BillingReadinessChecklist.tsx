@@ -83,26 +83,26 @@ export const BillingReadinessChecklist: React.FC<BillingReadinessChecklistProps>
   const getStatusIcon = (status: ChecklistItem['status']) => {
     switch (status) {
       case 'complete':
-        return <CheckCircle className="w-5 h-5 text-green-600" />;
+        return <CheckCircle className="w-5 h-5 text-status-success-600" />;
       case 'incomplete':
-        return <XCircle className="w-5 h-5 text-red-600" />;
+        return <XCircle className="w-5 h-5 text-status-error-600" />;
       case 'warning':
         return <AlertCircle className="w-5 h-5 text-amber-600" />;
       case 'pending':
-        return <Clock className="w-5 h-5 text-blue-600" />;
+        return <Clock className="w-5 h-5 text-neutral-600" />;
     }
   };
 
   const getStatusColor = (status: ChecklistItem['status']) => {
     switch (status) {
       case 'complete':
-        return 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-700';
+        return 'bg-status-success-50 dark:bg-status-success-900/20 border-status-success-200 dark:border-status-success-700';
       case 'incomplete':
-        return 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-700';
+        return 'bg-status-error-50 dark:bg-status-error-900/20 border-status-error-200 dark:border-status-error-700';
       case 'warning':
         return 'bg-amber-50 dark:bg-amber-900/20 border-amber-200 dark:border-amber-700';
       case 'pending':
-        return 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-700';
+        return 'bg-neutral-50 dark:bg-neutral-900/20 border-neutral-200 dark:border-neutral-700';
     }
   };
 
@@ -143,12 +143,12 @@ export const BillingReadinessChecklist: React.FC<BillingReadinessChecklistProps>
       </div>
 
       {isReady ? (
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
-          <div className="flex items-center gap-2 text-green-800 dark:text-green-200">
+        <div className="bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-700 rounded-lg p-4">
+          <div className="flex items-center gap-2 text-status-success-800 dark:text-status-success-200">
             <CheckCircle className="w-5 h-5" />
             <span className="font-medium">Ready for Partner Approval</span>
           </div>
-          <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+          <p className="text-sm text-status-success-700 dark:text-status-success-300 mt-1">
             All billing readiness criteria have been met.
           </p>
         </div>

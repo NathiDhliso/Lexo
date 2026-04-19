@@ -170,8 +170,8 @@ export const LinkDocumentModal: React.FC<LinkDocumentModalProps> = ({
       <div className="space-y-4">
         {step === 'provider' && (
           <>
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 mb-4">
-              <p className="text-sm text-blue-800 dark:text-blue-200">
+            <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3 mb-4">
+              <p className="text-sm text-neutral-800 dark:text-neutral-200">
                 <strong>Link existing files</strong> from your storage to this matter. 
                 Your files stay in your storage - we only create a reference.
               </p>
@@ -189,7 +189,7 @@ export const LinkDocumentModal: React.FC<LinkDocumentModalProps> = ({
                       <button
                         key={connection.id}
                         onClick={() => handleProviderSelect(connection.provider)}
-                        className="w-full flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-left"
+                        className="w-full flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-neutral-500 dark:hover:border-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/20 transition-colors text-left"
                       >
                         <div className="text-2xl mr-3">{provider.icon}</div>
                         <div className="flex-1">
@@ -200,7 +200,7 @@ export const LinkDocumentModal: React.FC<LinkDocumentModalProps> = ({
                             {connection.providerAccountEmail || connection.providerAccountName}
                           </div>
                         </div>
-                        <div className="text-blue-600 dark:text-blue-400">→</div>
+                        <div className="text-neutral-600 dark:text-neutral-400">→</div>
                       </button>
                     );
                   })}
@@ -216,7 +216,7 @@ export const LinkDocumentModal: React.FC<LinkDocumentModalProps> = ({
               <div className="border-t border-gray-200 dark:border-gray-700 pt-3">
                 <button
                   onClick={handleLocalFileSelect}
-                  className="w-full flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-blue-500 dark:hover:border-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/20 transition-colors text-left"
+                  className="w-full flex items-center p-3 border border-gray-200 dark:border-gray-700 rounded-lg hover:border-neutral-500 dark:hover:border-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-900/20 transition-colors text-left"
                 >
                   <div className="text-2xl mr-3">💻</div>
                   <div className="flex-1">
@@ -227,7 +227,7 @@ export const LinkDocumentModal: React.FC<LinkDocumentModalProps> = ({
                       Link a file from your computer (desktop app only)
                     </div>
                   </div>
-                  <div className="text-blue-600 dark:text-blue-400">→</div>
+                  <div className="text-neutral-600 dark:text-neutral-400">→</div>
                 </button>
               </div>
             </div>
@@ -252,7 +252,7 @@ export const LinkDocumentModal: React.FC<LinkDocumentModalProps> = ({
 
             {loading ? (
               <div className="flex items-center justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
               </div>
             ) : (
               <div className="max-h-96 overflow-y-auto border border-gray-200 dark:border-gray-700 rounded-lg">
@@ -321,7 +321,7 @@ export const LinkDocumentModal: React.FC<LinkDocumentModalProps> = ({
                   value={localFilePath}
                   onChange={(e) => setLocalFilePath(e.target.value)}
                   placeholder="C:\Documents\Briefs\Smith-Brief.pdf"
-                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
                 />
               </div>
 

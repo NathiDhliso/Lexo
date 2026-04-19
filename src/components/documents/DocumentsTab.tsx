@@ -109,11 +109,11 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'available':
-        return <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />;
+        return <CheckCircle className="w-4 h-4 text-status-success-600 dark:text-status-success-400" />;
       case 'missing':
-        return <XCircle className="w-4 h-4 text-red-600 dark:text-red-400" />;
+        return <XCircle className="w-4 h-4 text-status-error-600 dark:text-status-error-400" />;
       case 'access_denied':
-        return <AlertTriangle className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />;
+        return <AlertTriangle className="w-4 h-4 text-status-warning-600 dark:text-status-warning-400" />;
       default:
         return <FileText className="w-4 h-4 text-gray-600 dark:text-gray-400" />;
     }
@@ -165,7 +165,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -201,12 +201,12 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
       </div>
 
       {/* Privacy Notice */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+      <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <div className="text-blue-600 dark:text-blue-400 text-xl">🔒</div>
+          <div className="text-neutral-600 dark:text-neutral-400 text-xl">🔒</div>
           <div>
-            <h4 className="font-semibold text-blue-900 dark:text-blue-100 mb-1">Privacy Protected</h4>
-            <p className="text-sm text-blue-800 dark:text-blue-200">
+            <h4 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-1">Privacy Protected</h4>
+            <p className="text-sm text-neutral-800 dark:text-neutral-200">
               Your documents stay in your storage (Google Drive, OneDrive, etc.). 
               We only store references to help you organize them by matter.
             </p>
@@ -254,12 +254,12 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
                         {doc.file_name}
                       </h4>
                       {doc.document_type && (
-                        <span className="px-2 py-1 text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300 rounded">
+                        <span className="px-2 py-1 text-xs font-medium bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300 rounded">
                           {doc.document_type}
                         </span>
                       )}
                       {doc.is_primary && (
-                        <span className="px-2 py-1 text-xs font-medium bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300 rounded">
+                        <span className="px-2 py-1 text-xs font-medium bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300 rounded">
                           Primary
                         </span>
                       )}
@@ -282,13 +282,13 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
                     </div>
 
                     {doc.verification_status === 'missing' && (
-                      <div className="mt-2 p-2 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-400">
+                      <div className="mt-2 p-2 bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded text-sm text-status-error-700 dark:text-status-error-400">
                         File not found at the linked location. It may have been moved or deleted.
                       </div>
                     )}
 
                     {doc.verification_status === 'access_denied' && (
-                      <div className="mt-2 p-2 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded text-sm text-yellow-700 dark:text-yellow-400">
+                      <div className="mt-2 p-2 bg-status-warning-50 dark:bg-status-warning-900/20 border border-status-warning-200 dark:border-status-warning-800 rounded text-sm text-status-warning-700 dark:text-status-warning-400">
                         Access denied. You may need to reconnect your storage account.
                       </div>
                     )}
@@ -311,7 +311,7 @@ export const DocumentsTab: React.FC<DocumentsTabProps> = ({ matterId }) => {
                     variant="ghost"
                     size="sm"
                     onAsyncClick={() => handleDeleteDocument(doc)}
-                    className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300"
+                    className="text-status-error-600 hover:text-status-error-700 dark:text-status-error-400 dark:hover:text-status-error-300"
                   >
                     <Trash2 className="w-4 h-4" />
                   </AsyncButton>

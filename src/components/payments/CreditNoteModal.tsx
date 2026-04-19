@@ -117,7 +117,7 @@ export const CreditNoteModal: React.FC<CreditNoteModalProps> = ({
       <div className="bg-white dark:bg-metallic-gray-900 rounded-lg max-w-lg w-full">
         <div className="border-b border-gray-200 dark:border-metallic-gray-700 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <FileText className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+            <FileText className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
             <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-100">
               Create Credit Note
             </h2>
@@ -131,7 +131,7 @@ export const CreditNoteModal: React.FC<CreditNoteModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
             <p className="text-sm text-gray-600 dark:text-neutral-400">Invoice Number</p>
             <p className="text-lg font-semibold text-gray-900 dark:text-neutral-100">{invoiceNumber}</p>
             <p className="text-sm text-gray-600 dark:text-neutral-400 mt-2">Invoice Amount</p>
@@ -202,10 +202,10 @@ export const CreditNoteModal: React.FC<CreditNoteModalProps> = ({
           </div>
 
           {formData.amount && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+            <div className="bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg p-4">
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">New Invoice Total</span>
-                <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                <span className="text-xl font-bold text-status-success-600 dark:text-status-success-400">
                   R {(invoiceAmount - parseFloat(formData.amount)).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                 </span>
               </div>
@@ -223,7 +223,7 @@ export const CreditNoteModal: React.FC<CreditNoteModalProps> = ({
             <button
               type="submit"
               disabled={loading || !formData.amount}
-              className="flex-1 px-4 py-2 bg-blue-600 dark:bg-mpondo-gold-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-mpondo-gold-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-neutral-600 dark:bg-mpondo-gold-600 text-white rounded-lg hover:bg-neutral-700 dark:hover:bg-mpondo-gold-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Creating...' : 'Create Credit Note'}
             </button>

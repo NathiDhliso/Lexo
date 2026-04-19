@@ -88,10 +88,10 @@ export const AnswerButtonGrid: React.FC<AnswerButtonGridProps> = ({
                 'relative min-h-[44px] px-4 py-3 rounded-lg border-2 transition-all duration-200',
                 'flex items-center justify-between gap-2',
                 'text-left font-medium text-sm',
-                'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-judicial-blue-500',
+                'focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500',
                 isSelected
-                  ? 'border-judicial-blue-600 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 text-judicial-blue-900 dark:text-judicial-blue-100'
-                  : 'border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 hover:border-judicial-blue-400 hover:bg-neutral-50 dark:hover:bg-metallic-gray-700'
+                  ? 'border-neutral-600 bg-neutral-50 dark:bg-neutral-900/20 text-neutral-900 dark:text-neutral-100'
+                  : 'border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 hover:border-neutral-400 hover:bg-neutral-50 dark:hover:bg-metallic-gray-700'
               )}
               aria-pressed={isSelected}
             >
@@ -108,7 +108,7 @@ export const AnswerButtonGrid: React.FC<AnswerButtonGridProps> = ({
                 
                 {/* Selection checkmark */}
                 {isSelected && (
-                  <div className="w-5 h-5 rounded-full bg-judicial-blue-600 flex items-center justify-center">
+                  <div className="w-5 h-5 rounded-full bg-neutral-600 flex items-center justify-center">
                     <Check className="w-3 h-3 text-white" />
                   </div>
                 )}

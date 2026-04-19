@@ -109,10 +109,10 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
     switch (urgency) {
       case 'urgent':
         return {
-          bg: 'bg-red-50 border-red-200',
-          text: 'text-red-800',
-          icon: 'text-red-600',
-          indicator: 'bg-red-500'
+          bg: 'bg-status-error-50 border-status-error-200',
+          text: 'text-status-error-800',
+          icon: 'text-status-error-600',
+          indicator: 'bg-status-error-500'
         };
       case 'attention':
         return {
@@ -123,10 +123,10 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
         };
       case 'normal':
         return {
-          bg: 'bg-green-50 border-green-200',
-          text: 'text-green-800',
-          icon: 'text-green-600',
-          indicator: 'bg-green-500'
+          bg: 'bg-status-success-50 border-status-success-200',
+          text: 'text-status-success-800',
+          icon: 'text-status-success-600',
+          indicator: 'bg-status-success-500'
         };
     }
   };
@@ -242,7 +242,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
                 </span>
                 
                 {currentItem.urgency === 'urgent' && (
-                  <AlertTriangle className="w-4 h-4 text-red-500 flex-shrink-0" />
+                  <AlertTriangle className="w-4 h-4 text-status-error-500 flex-shrink-0" />
                 )}
               </div>
               
@@ -307,7 +307,7 @@ export const RealTimeTicker: React.FC<RealTimeTickerProps> = ({
                           {item.title}
                         </span>
                         {item.urgency === 'urgent' && (
-                          <AlertTriangle className="w-4 h-4 text-red-500" />
+                          <AlertTriangle className="w-4 h-4 text-status-error-500" />
                         )}
                       </div>
                       <p className="text-sm text-neutral-600 dark:text-neutral-400 truncate">

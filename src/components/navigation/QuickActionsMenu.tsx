@@ -296,7 +296,7 @@ const QuickActionsMenu: React.FC<QuickActionsMenuProps> = ({
                 >
                   <div className={`p-2 rounded-lg ${
                     isAccessible 
-                      ? 'bg-judicial-blue-50 dark:bg-judicial-blue-900/30 group-hover:bg-judicial-blue-100 dark:group-hover:bg-judicial-blue-900/50' 
+                      ? 'bg-neutral-50 dark:bg-neutral-900/30 group-hover:bg-neutral-100 dark:group-hover:bg-neutral-900/50' 
                       : 'bg-neutral-100 dark:bg-metallic-gray-700'
                   }`}>
                     <IconComponent className="h-4 w-4" />

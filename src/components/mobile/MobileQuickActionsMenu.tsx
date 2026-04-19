@@ -129,10 +129,10 @@ export const MobileQuickActionsMenu: React.FC<MobileQuickActionsMenuProps> = ({
     switch (variant) {
       case 'primary':
         return cn(
-          'bg-judicial-blue-900 text-white',
-          'hover:bg-judicial-blue-800 active:bg-judicial-blue-700',
-          'shadow-lg shadow-judicial-blue-900/25',
-          'dark:bg-judicial-blue-700 dark:hover:bg-judicial-blue-600'
+          'bg-neutral-900 text-white',
+          'hover:bg-neutral-800 active:bg-neutral-700',
+          'shadow-lg shadow-neutral-900/25',
+          'dark:bg-neutral-700 dark:hover:bg-neutral-600'
         );
       case 'accent':
         return cn(

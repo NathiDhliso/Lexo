@@ -77,7 +77,7 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+          <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
             <p className="text-sm text-gray-600 dark:text-neutral-400">Current Total</p>
             <p className="text-2xl font-bold text-gray-900 dark:text-neutral-100">
               R {currentTotal.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
@@ -149,16 +149,16 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
           </div>
 
           {discountValue && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+            <div className="bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg p-4">
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm text-gray-600 dark:text-neutral-400">Discount Amount</span>
-                <span className="font-semibold text-red-600 dark:text-red-400">
+                <span className="font-semibold text-status-error-600 dark:text-status-error-400">
                   - R {calculateDiscountAmount().toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                 </span>
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-sm font-medium text-gray-700 dark:text-neutral-300">New Total</span>
-                <span className="text-xl font-bold text-green-600 dark:text-green-400">
+                <span className="text-xl font-bold text-status-success-600 dark:text-status-success-400">
                   R {newTotal.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
                 </span>
               </div>
@@ -176,7 +176,7 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
             <button
               type="submit"
               disabled={loading || !discountValue}
-              className="flex-1 px-4 py-2 bg-blue-600 dark:bg-mpondo-gold-600 text-white rounded-lg hover:bg-blue-700 dark:hover:bg-mpondo-gold-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-neutral-600 dark:bg-mpondo-gold-600 text-white rounded-lg hover:bg-neutral-700 dark:hover:bg-mpondo-gold-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Applying...' : 'Apply Discount'}
             </button>

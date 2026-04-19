@@ -113,22 +113,22 @@ export const MobileMatterCard: React.FC<MobileMatterCardProps> = ({
     switch (status) {
       case 'urgent':
         return {
-          badge: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
+          badge: 'bg-status-error-100 text-status-error-800 dark:bg-status-error-900/20 dark:text-status-error-400',
           border: 'border-l-red-500',
         };
       case 'active':
         return {
-          badge: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
+          badge: 'bg-status-success-100 text-status-success-800 dark:bg-status-success-900/20 dark:text-status-success-400',
           border: 'border-l-green-500',
         };
       case 'pending':
         return {
-          badge: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400',
+          badge: 'bg-status-warning-100 text-status-warning-800 dark:bg-status-warning-900/20 dark:text-status-warning-400',
           border: 'border-l-yellow-500',
         };
       case 'completed':
         return {
-          badge: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
+          badge: 'bg-neutral-100 text-neutral-800 dark:bg-neutral-900/20 dark:text-neutral-400',
           border: 'border-l-blue-500',
         };
       default:
@@ -174,8 +174,8 @@ export const MobileMatterCard: React.FC<MobileMatterCardProps> = ({
             <button
               onClick={() => handleAction(() => onView(matter.id))}
               className={cn(
-                "h-full px-4 bg-blue-500 text-white flex items-center justify-center",
-                "hover:bg-blue-600 active:bg-blue-700 transition-colors",
+                "h-full px-4 bg-neutral-500 text-white flex items-center justify-center",
+                "hover:bg-neutral-600 active:bg-neutral-700 transition-colors",
                 "mobile-touch-target"
               )}
               aria-label="View matter"
@@ -202,8 +202,8 @@ export const MobileMatterCard: React.FC<MobileMatterCardProps> = ({
             <button
               onClick={() => handleAction(() => onInvoice(matter.id))}
               className={cn(
-                "h-full px-4 bg-green-500 text-white flex items-center justify-center",
-                "hover:bg-green-600 active:bg-green-700 transition-colors",
+                "h-full px-4 bg-status-success-500 text-white flex items-center justify-center",
+                "hover:bg-status-success-600 active:bg-status-success-700 transition-colors",
                 "mobile-touch-target"
               )}
               aria-label="Create invoice"

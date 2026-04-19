@@ -36,14 +36,14 @@ const NOTIFICATION_ICONS: Record<NotificationType, React.ElementType> = {
 };
 
 const NOTIFICATION_COLORS: Record<string, string> = {
-  payment_received: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
-  invoice_overdue: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400',
-  quote_approved: 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400',
-  quote_declined: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400',
+  payment_received: 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-600 dark:text-status-success-400',
+  invoice_overdue: 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-600 dark:text-status-error-400',
+  quote_approved: 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-600 dark:text-status-success-400',
+  quote_declined: 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-600 dark:text-status-error-400',
   trust_balance_low: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
   conflict_check_result: 'bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400',
-  impersonation_alert: 'bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400',
-  system_announcement: 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400',
+  impersonation_alert: 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-600 dark:text-status-error-400',
+  system_announcement: 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-600 dark:text-neutral-400',
 };
 
 const DEFAULT_COLOR = 'bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400';
@@ -136,7 +136,7 @@ export const NotificationCentre: React.FC<NotificationCentreProps> = ({ isOpen, 
               <Bell className="w-5 h-5 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
               <h2 className="text-lg font-bold text-neutral-900 dark:text-neutral-100">Notifications</h2>
               {unreadCount > 0 && (
-                <span className="px-2 py-0.5 text-xs font-medium bg-red-500 text-white rounded-full">{unreadCount}</span>
+                <span className="px-2 py-0.5 text-xs font-medium bg-status-error-500 text-white rounded-full">{unreadCount}</span>
               )}
             </div>
             <div className="flex items-center gap-2">
@@ -199,7 +199,7 @@ export const NotificationCentre: React.FC<NotificationCentreProps> = ({ isOpen, 
                   <button
                     key={notification.id}
                     onClick={() => handleClick(notification)}
-                    className={`w-full text-left px-5 py-3 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800/50 transition-colors group ${!notification.is_read ? 'bg-blue-50/50 dark:bg-blue-900/5' : ''}`}
+                    className={`w-full text-left px-5 py-3 hover:bg-neutral-50 dark:hover:bg-metallic-gray-800/50 transition-colors group ${!notification.is_read ? 'bg-neutral-50/50 dark:bg-neutral-900/5' : ''}`}
                   >
                     <div className="flex gap-3">
                       <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${colorClass}`}>
@@ -216,7 +216,7 @@ export const NotificationCentre: React.FC<NotificationCentreProps> = ({ isOpen, 
                                 <Check className="w-3 h-3" />
                               </button>
                             )}
-                            <button onClick={(e) => handleArchive(notification.id, e)} className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded text-neutral-400 hover:text-red-500" title="Delete">
+                            <button onClick={(e) => handleArchive(notification.id, e)} className="p-1 hover:bg-status-error-100 dark:hover:bg-status-error-900/20 rounded text-neutral-400 hover:text-status-error-500" title="Delete">
                               <Trash2 className="w-3 h-3" />
                             </button>
                           </div>
@@ -232,7 +232,7 @@ export const NotificationCentre: React.FC<NotificationCentreProps> = ({ isOpen, 
                               {notification.matter_title}
                             </span>
                           )}
-                          {!notification.is_read && <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />}
+                          {!notification.is_read && <span className="w-2 h-2 rounded-full bg-neutral-500 flex-shrink-0" />}
                         </div>
                       </div>
                     </div>

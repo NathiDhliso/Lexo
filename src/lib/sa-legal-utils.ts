@@ -62,7 +62,7 @@ export function getBarAssociationColor(bar: string): string {
     case BarAssociation.JOHANNESBURG:
       return 'text-mpondo-gold-600 dark:text-mpondo-gold-400';
     case BarAssociation.CAPE_TOWN:
-      return 'text-judicial-blue-600 dark:text-judicial-blue-400';
+      return 'text-neutral-600 dark:text-neutral-400';
     default:
       return 'text-neutral-600 dark:text-neutral-400';
   }

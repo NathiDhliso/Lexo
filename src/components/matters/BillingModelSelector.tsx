@@ -81,10 +81,10 @@ export const BillingModelSelector: React.FC<BillingModelSelectorProps> = ({
               'flex items-start p-4 rounded-lg border-2 cursor-pointer transition-all duration-200',
               'hover:shadow-md',
               isSelected
-                ? 'border-judicial-blue-600 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 dark:border-judicial-blue-400'
+                ? 'border-neutral-600 bg-neutral-50 dark:bg-neutral-900/20 dark:border-neutral-400'
                 : 'border-neutral-300 bg-white dark:bg-neutral-800 dark:border-neutral-600',
               disabled && 'opacity-50 cursor-not-allowed',
-              !disabled && !isSelected && 'hover:border-judicial-blue-400'
+              !disabled && !isSelected && 'hover:border-neutral-400'
             )}
           >
             <input
@@ -108,7 +108,7 @@ export const BillingModelSelector: React.FC<BillingModelSelectorProps> = ({
                   className={cn(
                     'font-semibold text-base',
                     isSelected
-                      ? 'text-judicial-blue-900 dark:text-judicial-blue-100'
+                      ? 'text-neutral-900 dark:text-neutral-100'
                       : 'text-neutral-900 dark:text-neutral-100'
                   )}
                 >
@@ -123,7 +123,7 @@ export const BillingModelSelector: React.FC<BillingModelSelectorProps> = ({
                 
                 {isSelected && (
                   <svg
-                    className="w-5 h-5 text-judicial-blue-600 dark:text-judicial-blue-400 flex-shrink-0"
+                    className="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0"
                     fill="currentColor"
                     viewBox="0 0 20 20"
                     aria-label="Selected"
@@ -142,7 +142,7 @@ export const BillingModelSelector: React.FC<BillingModelSelectorProps> = ({
                 className={cn(
                   'text-sm',
                   isSelected
-                    ? 'text-judicial-blue-700 dark:text-judicial-blue-300'
+                    ? 'text-neutral-700 dark:text-neutral-300'
                     : 'text-neutral-600 dark:text-neutral-400'
                 )}
               >

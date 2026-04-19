@@ -50,7 +50,7 @@ export const SubscriptionTierCard: React.FC<SubscriptionTierCardProps> = ({
 
       <ul className="mb-6 space-y-3">
         <li className="flex items-start">
-          <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
+          <Check className="mr-2 h-5 w-5 flex-shrink-0 text-status-success-500" />
           <span className="text-sm text-gray-700 dark:text-neutral-300">
             {tier.features.maxActiveMatters 
               ? `Up to ${tier.features.maxActiveMatters} active matters`
@@ -58,43 +58,43 @@ export const SubscriptionTierCard: React.FC<SubscriptionTierCardProps> = ({
           </span>
         </li>
         <li className="flex items-start">
-          <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
+          <Check className="mr-2 h-5 w-5 flex-shrink-0 text-status-success-500" />
           <span className="text-sm text-gray-700 dark:text-neutral-300">
             {tier.features.maxUsers} user{tier.features.maxUsers > 1 ? 's' : ''} included
           </span>
         </li>
         {tier.features.timeTracking && (
           <li className="flex items-start">
-            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
+            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-status-success-500" />
             <span className="text-sm text-gray-700 dark:text-neutral-300">Time tracking</span>
           </li>
         )}
         {tier.features.invoicing && (
           <li className="flex items-start">
-            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
+            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-status-success-500" />
             <span className="text-sm text-gray-700 dark:text-neutral-300">Invoicing & billing</span>
           </li>
         )}
         {tier.features.matterPipeline && (
           <li className="flex items-start">
-            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
+            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-status-success-500" />
             <span className="text-sm text-gray-700 dark:text-neutral-300">Matter pipeline</span>
           </li>
         )}
         {tier.features.matterProfitability && (
           <li className="flex items-start">
-            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
+            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-status-success-500" />
             <span className="text-sm text-gray-700 dark:text-neutral-300">Matter profitability analysis</span>
           </li>
         )}
         {tier.features.teamCollaboration && (
           <li className="flex items-start">
-            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
+            <Check className="mr-2 h-5 w-5 flex-shrink-0 text-status-success-500" />
             <span className="text-sm text-gray-700 dark:text-neutral-300">Team collaboration</span>
           </li>
         )}
         <li className="flex items-start">
-          <Check className="mr-2 h-5 w-5 flex-shrink-0 text-green-500" />
+          <Check className="mr-2 h-5 w-5 flex-shrink-0 text-status-success-500" />
           <span className="text-sm text-gray-700 dark:text-neutral-300">
             {tier.features.prioritySupport === 'phone_email' 
               ? 'Priority phone & email support'

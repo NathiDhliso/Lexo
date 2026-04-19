@@ -180,8 +180,8 @@ export const MatterSelectionModal: React.FC<MatterSelectionModalProps> = ({
                   <div className="grid grid-cols-3 gap-3">
                     {matter.hasProForma && (
                       <div className="flex items-center gap-2 text-sm">
-                        <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded">
-                          <FileText className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                        <div className="p-1.5 bg-neutral-100 dark:bg-neutral-900/30 rounded">
+                          <FileText className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
                         </div>
                         <div>
                           <div className="font-medium text-neutral-900 dark:text-neutral-100">
@@ -194,8 +194,8 @@ export const MatterSelectionModal: React.FC<MatterSelectionModalProps> = ({
 
                     {matter.timeEntriesCount > 0 && (
                       <div className="flex items-center gap-2 text-sm">
-                        <div className="p-1.5 bg-green-100 dark:bg-green-900/30 rounded">
-                          <Clock className="w-4 h-4 text-green-600 dark:text-green-400" />
+                        <div className="p-1.5 bg-status-success-100 dark:bg-status-success-900/30 rounded">
+                          <Clock className="w-4 h-4 text-status-success-600 dark:text-status-success-400" />
                         </div>
                         <div>
                           <div className="font-medium text-neutral-900 dark:text-neutral-100">
@@ -224,7 +224,7 @@ export const MatterSelectionModal: React.FC<MatterSelectionModalProps> = ({
                   </div>
 
                   {matter.hasProForma && (
-                    <div className="mt-3 flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400">
+                    <div className="mt-3 flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-400">
                       <CheckCircle className="w-3 h-3" />
                       <span>Linked to Pro Forma Request</span>
                     </div>

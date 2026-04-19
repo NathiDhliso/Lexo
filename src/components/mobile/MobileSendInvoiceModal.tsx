@@ -255,7 +255,7 @@ export const MobileSendInvoiceModal: React.FC<MobileSendInvoiceModalProps> = ({
                     "p-3 rounded-lg text-sm font-medium transition-colors",
                     "mobile-touch-target border flex flex-col items-center gap-1",
                     formData.sendMethod === 'email'
-                      ? "bg-judicial-blue-900 text-white border-judicial-blue-900"
+                      ? "bg-neutral-900 text-white border-neutral-900"
                       : "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50 dark:bg-metallic-gray-800 dark:text-neutral-300 dark:border-metallic-gray-600"
                   )}
                 >
@@ -270,7 +270,7 @@ export const MobileSendInvoiceModal: React.FC<MobileSendInvoiceModalProps> = ({
                     "p-3 rounded-lg text-sm font-medium transition-colors",
                     "mobile-touch-target border flex flex-col items-center gap-1",
                     formData.sendMethod === 'whatsapp'
-                      ? "bg-green-600 text-white border-green-600"
+                      ? "bg-status-success-600 text-white border-status-success-600"
                       : "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50 dark:bg-metallic-gray-800 dark:text-neutral-300 dark:border-metallic-gray-600"
                   )}
                 >
@@ -319,7 +319,7 @@ export const MobileSendInvoiceModal: React.FC<MobileSendInvoiceModalProps> = ({
                 />
                 
                 {validationErrors.recipientEmail && (
-                  <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                  <p className="mt-2 text-sm text-status-error-600 dark:text-status-error-400">
                     {validationErrors.recipientEmail}
                   </p>
                 )}
@@ -398,8 +398,8 @@ export const MobileSendInvoiceModal: React.FC<MobileSendInvoiceModalProps> = ({
 
             {/* Error Display */}
             {error && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-                <p className="text-sm text-red-600 dark:text-red-400">
+              <div className="p-4 bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-xl">
+                <p className="text-sm text-status-error-600 dark:text-status-error-400">
                   {error.message || 'An error occurred while sending the invoice.'}
                 </p>
               </div>

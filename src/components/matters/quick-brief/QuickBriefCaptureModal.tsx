@@ -137,8 +137,8 @@ export const QuickBriefCaptureModal: React.FC<QuickBriefCaptureModalProps> = ({
         onClose={handleClose} 
         title={
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-judicial-blue-100 dark:bg-judicial-blue-900/30 flex items-center justify-center">
-              <Phone className="w-5 h-5 text-judicial-blue-600 dark:text-judicial-blue-400" />
+            <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-900/30 flex items-center justify-center">
+              <Phone className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             </div>
             <div>
               <div className="text-xl font-bold">Quick Brief Capture</div>
@@ -159,7 +159,7 @@ export const QuickBriefCaptureModal: React.FC<QuickBriefCaptureModalProps> = ({
                   step < currentStep
                     ? 'bg-status-success-600 text-white'
                     : step === currentStep
-                    ? 'bg-judicial-blue-600 text-white'
+                    ? 'bg-neutral-600 text-white'
                     : 'bg-neutral-200 dark:bg-metallic-gray-700 text-neutral-600 dark:text-neutral-400'
                 }`}
               >
@@ -213,7 +213,7 @@ export const QuickBriefCaptureModal: React.FC<QuickBriefCaptureModalProps> = ({
                 placeholder="e.g., Contract Dispute - ABC Corp v. XYZ Ltd"
               />
               {selectedAttorney && (
-                <div className="p-4 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 rounded-lg">
+                <div className="p-4 bg-neutral-50 dark:bg-neutral-900/20 rounded-lg">
                   <p className="text-sm"><strong>Attorney:</strong> {selectedAttorney.attorney_name}</p>
                   <p className="text-sm mt-1"><strong>Firm:</strong> {selectedAttorney.firm_name}</p>
                   <p className="text-sm mt-1 text-neutral-600 dark:text-neutral-400">{selectedAttorney.email}</p>
@@ -254,7 +254,7 @@ export const QuickBriefCaptureModal: React.FC<QuickBriefCaptureModalProps> = ({
                     onChange={(e) => setMatterDescription(e.target.value)}
                     placeholder="Type matter description here..."
                     rows={6}
-                    className="w-full px-3 py-2.5 border rounded-lg bg-white dark:bg-metallic-gray-900 focus:outline-none focus:ring-2 focus:ring-judicial-blue-500"
+                    className="w-full px-3 py-2.5 border rounded-lg bg-white dark:bg-metallic-gray-900 focus:outline-none focus:ring-2 focus:ring-neutral-500"
                   />
                   <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
                     {matterDescription.length} characters

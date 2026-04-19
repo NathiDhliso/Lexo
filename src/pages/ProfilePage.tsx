@@ -136,8 +136,8 @@ const ProfilePage: React.FC = () => {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-start space-x-6">
-            <div className="w-24 h-24 bg-judicial-blue-100 dark:bg-judicial-blue-900/30 rounded-full flex items-center justify-center">
-              <UserIcon className="w-12 h-12 text-judicial-blue-600 dark:text-judicial-blue-400" />
+            <div className="w-24 h-24 bg-neutral-100 dark:bg-neutral-900/30 rounded-full flex items-center justify-center">
+              <UserIcon className="w-12 h-12 text-neutral-600 dark:text-neutral-400" />
             </div>
             <div className="flex-1">
               <div className="flex items-center space-x-4 mb-2">
@@ -146,7 +146,7 @@ const ProfilePage: React.FC = () => {
                     type="text"
                     value={userProfile.name}
                     onChange={handleNameChange}
-                    className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none"
+                    className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-neutral-500 outline-none"
                   />
                 ) : (
                   <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">{userProfile.name}</h2>
@@ -160,7 +160,7 @@ const ProfilePage: React.FC = () => {
                       type="email"
                       value={userProfile.email}
                       onChange={handleEmailChange}
-                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
+                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-neutral-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.email}</p>
                   <p><strong>Phone:</strong> {isEditing ? (
@@ -168,7 +168,7 @@ const ProfilePage: React.FC = () => {
                       type="tel"
                       value={userProfile.phone}
                       onChange={handlePhoneChange}
-                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
+                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-neutral-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.phone}</p>
                   <p><strong>Practice Number:</strong> {isEditing ? (
@@ -176,7 +176,7 @@ const ProfilePage: React.FC = () => {
                       type="text"
                       value={userProfile.practiceNumber}
                       onChange={handlePracticeNumberChange}
-                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
+                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-neutral-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.practiceNumber}</p>
                 </div>
@@ -186,7 +186,7 @@ const ProfilePage: React.FC = () => {
                       type="text"
                       value={userProfile.chambers}
                       onChange={handleChambersChange}
-                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
+                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-neutral-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.chambers}</p>
                   <p><strong>Admitted:</strong> {new Date(userProfile.admissionDate).toLocaleDateString()}</p>
@@ -195,7 +195,7 @@ const ProfilePage: React.FC = () => {
                       type="text"
                       value={userProfile.experience}
                       onChange={handleExperienceChange}
-                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-judicial-blue-500 outline-none text-neutral-900 dark:text-neutral-100"
+                      className="ml-2 bg-transparent border-b border-neutral-300 dark:border-metallic-gray-600 focus:border-neutral-500 outline-none text-neutral-900 dark:text-neutral-100"
                     />
                   ) : userProfile.experience}</p>
                 </div>
@@ -204,7 +204,7 @@ const ProfilePage: React.FC = () => {
             <div className="text-right">
               <div className="grid grid-cols-3 gap-4 text-center">
                 <div>
-                  <div className="text-2xl font-bold text-judicial-blue-600 dark:text-judicial-blue-400">{userProfile.successRate}</div>
+                  <div className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">{userProfile.successRate}</div>
                   <div className="text-xs text-neutral-600 dark:text-neutral-400">Success Rate</div>
                 </div>
                 <div>
@@ -232,7 +232,7 @@ const ProfilePage: React.FC = () => {
                 onClick={() => setActiveTab(tab.id as any)}
                 className={`flex items-center space-x-2 py-2 px-1 border-b-2 font-medium text-sm ${
                   activeTab === tab.id
-                    ? 'border-judicial-blue-500 text-judicial-blue-600 dark:text-judicial-blue-400'
+                    ? 'border-neutral-500 text-neutral-600 dark:text-neutral-400'
                     : 'border-transparent text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-300 hover:border-neutral-300 dark:hover:border-metallic-gray-600'
                 }`}
               >
@@ -283,7 +283,7 @@ const ProfilePage: React.FC = () => {
                 </div>
               </div>
               <div className="flex items-center space-x-3 p-3 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg">
-                <div className="w-2 h-2 bg-judicial-blue-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-neutral-500 rounded-full"></div>
                 <div className="flex-1">
                   <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">Won major commercial dispute case</p>
                   <p className="text-xs text-neutral-600 dark:text-neutral-400">1 week ago</p>

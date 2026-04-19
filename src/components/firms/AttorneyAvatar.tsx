@@ -36,11 +36,11 @@ export const AttorneyAvatar: React.FC<AttorneyAvatarProps> = ({
         className={`
           ${sizeClasses[size]}
           rounded-full
-          bg-firm-primary-100 dark:bg-firm-primary-900/30
-          text-firm-primary-700 dark:text-firm-primary-300
+          bg-neutral-100 dark:bg-neutral-900/30
+          text-neutral-700 dark:text-neutral-300
           flex items-center justify-center
           font-semibold
-          border-2 border-firm-primary-200 dark:border-firm-primary-800
+          border-2 border-neutral-200 dark:border-neutral-800
           transition-transform group-hover:scale-110
         `}
       >
@@ -54,7 +54,7 @@ export const AttorneyAvatar: React.FC<AttorneyAvatarProps> = ({
           ${statusDotSizes[size]}
           rounded-full
           border-2 border-white dark:border-metallic-gray-900
-          ${isActive ? 'bg-green-500' : 'bg-neutral-400 dark:bg-neutral-600'}
+          ${isActive ? 'bg-status-success-500' : 'bg-neutral-400 dark:bg-neutral-600'}
         `}
         aria-label={isActive ? 'Active' : 'Inactive'}
       />

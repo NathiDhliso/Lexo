@@ -66,7 +66,7 @@ export const ArchivedMattersView: React.FC<ArchivedMattersViewProps> = ({ onUnar
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -96,7 +96,7 @@ export const ArchivedMattersView: React.FC<ArchivedMattersViewProps> = ({ onUnar
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder="Search archived matters..."
           className="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-lg
-                   focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                   focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
         />
       </div>
 
@@ -149,9 +149,9 @@ export const ArchivedMattersView: React.FC<ArchivedMattersViewProps> = ({ onUnar
 
               <button
                 onClick={() => handleUnarchive(matter)}
-                className="ml-4 inline-flex items-center px-3 py-2 border border-green-300 rounded-md
-                         text-sm font-medium text-green-700 bg-white hover:bg-green-50
-                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                className="ml-4 inline-flex items-center px-3 py-2 border border-status-success-300 rounded-md
+                         text-sm font-medium text-status-success-700 bg-white hover:bg-status-success-50
+                         focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-status-success-500"
               >
                 <RotateCcw className="w-4 h-4 mr-2" />
                 Unarchive

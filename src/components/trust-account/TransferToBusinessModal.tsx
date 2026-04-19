@@ -97,8 +97,8 @@ export const TransferToBusinessModal: React.FC<TransferToBusinessModalProps> = (
       <div className="bg-white dark:bg-metallic-gray-900 rounded-lg max-w-2xl w-full">
         <div className="border-b border-gray-200 dark:border-metallic-gray-700 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-              <ArrowRightLeft className="h-5 w-5 text-blue-600" />
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-900/20 rounded-lg">
+              <ArrowRightLeft className="h-5 w-5 text-neutral-600" />
             </div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-100">
               Transfer to Business Account
@@ -110,8 +110,8 @@ export const TransferToBusinessModal: React.FC<TransferToBusinessModalProps> = (
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <p className="text-sm text-blue-800 dark:text-blue-300">
+          <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
+            <p className="text-sm text-neutral-800 dark:text-neutral-300">
               <strong>Available Balance:</strong> {formatRand(currentBalance)}
             </p>
           </div>
@@ -123,7 +123,7 @@ export const TransferToBusinessModal: React.FC<TransferToBusinessModalProps> = (
             <select
               value={formData.matterId}
               onChange={(e) => setFormData({ ...formData, matterId: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               required
             >
               <option value="">Select matter...</option>
@@ -146,7 +146,7 @@ export const TransferToBusinessModal: React.FC<TransferToBusinessModalProps> = (
               max={currentBalance}
               value={formData.amount}
               onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               placeholder="0.00"
               required
             />
@@ -159,7 +159,7 @@ export const TransferToBusinessModal: React.FC<TransferToBusinessModalProps> = (
             <select
               value={formData.authorizationType}
               onChange={(e) => setFormData({ ...formData, authorizationType: e.target.value as any })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               required
             >
               <option value="fee_earned">Fee Earned</option>
@@ -178,7 +178,7 @@ export const TransferToBusinessModal: React.FC<TransferToBusinessModalProps> = (
               value={formData.reason}
               onChange={(e) => setFormData({ ...formData, reason: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               placeholder="e.g., Transfer for invoice #INV-2025-001"
               required
             />
@@ -192,7 +192,7 @@ export const TransferToBusinessModal: React.FC<TransferToBusinessModalProps> = (
               type="date"
               value={formData.transferDate}
               onChange={(e) => setFormData({ ...formData, transferDate: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               required
             />
           </div>
@@ -209,7 +209,7 @@ export const TransferToBusinessModal: React.FC<TransferToBusinessModalProps> = (
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 flex items-center gap-2"
+              className="px-6 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50 flex items-center gap-2"
             >
               {loading ? (
                 <>

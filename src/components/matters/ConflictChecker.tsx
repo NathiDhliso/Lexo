@@ -66,9 +66,9 @@ export const ConflictChecker: React.FC<ConflictCheckerProps> = ({
   };
 
   const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 0.9) return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20';
+    if (confidence >= 0.9) return 'text-status-error-600 dark:text-status-error-400 bg-status-error-50 dark:bg-status-error-900/20';
     if (confidence >= 0.7) return 'text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20';
-    return 'text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/20';
+    return 'text-status-warning-600 dark:text-status-warning-400 bg-status-warning-50 dark:bg-status-warning-900/20';
   };
 
   const getConfidenceLabel = (confidence: number) => {
@@ -115,8 +115,8 @@ export const ConflictChecker: React.FC<ConflictCheckerProps> = ({
             </div>
           ) : result && !result.has_conflicts ? (
             <div className="flex flex-col items-center justify-center py-8">
-              <div className="w-16 h-16 rounded-full bg-green-50 dark:bg-green-900/20 flex items-center justify-center mb-4">
-                <CheckCircle className="w-8 h-8 text-green-500" />
+              <div className="w-16 h-16 rounded-full bg-status-success-50 dark:bg-status-success-900/20 flex items-center justify-center mb-4">
+                <CheckCircle className="w-8 h-8 text-status-success-500" />
               </div>
               <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-1">No Conflicts Found</h3>
               <p className="text-sm text-neutral-500 dark:text-neutral-400 text-center max-w-sm">
@@ -168,24 +168,24 @@ export const ConflictChecker: React.FC<ConflictCheckerProps> = ({
 
               {/* Override section */}
               {showOverride ? (
-                <div className="mt-4 p-4 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-800 rounded-lg">
-                  <p className="text-sm font-medium text-red-700 dark:text-red-300 mb-2">
+                <div className="mt-4 p-4 bg-status-error-50 dark:bg-status-error-900/10 border border-status-error-200 dark:border-status-error-800 rounded-lg">
+                  <p className="text-sm font-medium text-status-error-700 dark:text-status-error-300 mb-2">
                     Override Conflict — Mandatory Reason Required
                   </p>
-                  <p className="text-xs text-red-600 dark:text-red-400 mb-3">
+                  <p className="text-xs text-status-error-600 dark:text-status-error-400 mb-3">
                     This override will be permanently recorded in the matter audit trail and visible in compliance reports.
                   </p>
                   <textarea
                     value={overrideReason}
                     onChange={(e) => setOverrideReason(e.target.value)}
                     placeholder="Explain why this conflict can be disregarded..."
-                    className="w-full px-3 py-2 border border-red-300 dark:border-red-700 rounded-lg bg-white dark:bg-metallic-gray-800 text-sm resize-none h-20 focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-3 py-2 border border-status-error-300 dark:border-status-error-700 rounded-lg bg-white dark:bg-metallic-gray-800 text-sm resize-none h-20 focus:ring-2 focus:ring-status-error-500 focus:border-transparent"
                   />
                 </div>
               ) : (
                 <button
                   onClick={() => setShowOverride(true)}
-                  className="mt-4 text-sm text-neutral-500 dark:text-neutral-400 hover:text-red-600 dark:hover:text-red-400 underline"
+                  className="mt-4 text-sm text-neutral-500 dark:text-neutral-400 hover:text-status-error-600 dark:hover:text-status-error-400 underline"
                 >
                   I understand the risks — override this conflict check
                 </button>
@@ -205,7 +205,7 @@ export const ConflictChecker: React.FC<ConflictCheckerProps> = ({
           {result && !result.has_conflicts && (
             <button
               onClick={handleClear}
-              className="px-4 py-2 text-sm font-medium text-white bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-status-success-600 hover:bg-status-success-700 rounded-lg transition-colors"
             >
               Confirm — No Conflicts
             </button>
@@ -214,7 +214,7 @@ export const ConflictChecker: React.FC<ConflictCheckerProps> = ({
             <button
               onClick={handleOverride}
               disabled={!overrideReason.trim()}
-              className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
+              className="px-4 py-2 text-sm font-medium text-white bg-status-error-600 hover:bg-status-error-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
               Override & Proceed
             </button>

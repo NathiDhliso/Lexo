@@ -66,7 +66,7 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
           htmlFor="invite-email"
           className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2"
         >
-          Email Address <span className="text-red-500">*</span>
+          Email Address <span className="text-status-error-500">*</span>
         </label>
         <div className="relative">
           <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-gray-400 dark:text-neutral-500 pointer-events-none" />
@@ -97,7 +97,7 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
             htmlFor="invite-first-name"
             className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2"
           >
-            First Name <span className="text-red-500">*</span>
+            First Name <span className="text-status-error-500">*</span>
           </label>
           <input
             id="invite-first-name"
@@ -121,7 +121,7 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
             htmlFor="invite-last-name"
             className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2"
           >
-            Last Name <span className="text-red-500">*</span>
+            Last Name <span className="text-status-error-500">*</span>
           </label>
           <input
             id="invite-last-name"
@@ -148,7 +148,7 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
           htmlFor="invite-role"
           className="block text-sm font-medium text-gray-700 dark:text-neutral-300 dark:text-neutral-600 mb-2"
         >
-          Role <span className="text-red-500">*</span>
+          Role <span className="text-status-error-500">*</span>
         </label>
         <select
           id="invite-role"
@@ -170,8 +170,8 @@ const InviteForm: React.FC<InviteFormProps> = React.memo(({
         {/* Role Description */}
         <div className="mt-2.5 p-3 rounded-lg bg-gray-50 dark:bg-metallic-gray-800 dark:bg-metallic-gray-200/50 border border-gray-200 dark:border-metallic-gray-700">
           <div className="flex items-start gap-2">
-            {role === 'admin' && <Shield className="h-4 w-4 text-purple-600 dark:text-purple-400 mt-0.5 flex-shrink-0" />}
-            {role === 'advocate' && <UserIcon className="h-4 w-4 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />}
+            {role === 'admin' && <Shield className="h-4 w-4 text-neutral-600 dark:text-neutral-400 mt-0.5 flex-shrink-0" />}
+            {role === 'advocate' && <UserIcon className="h-4 w-4 text-neutral-600 dark:text-neutral-400 mt-0.5 flex-shrink-0" />}
             {role === 'secretary' && <UserIcon className="h-4 w-4 text-gray-600 dark:text-neutral-400 dark:text-neutral-500 mt-0.5 flex-shrink-0" />}
             <p className="text-xs text-gray-600 dark:text-neutral-400 dark:text-neutral-500 leading-relaxed">
               {role === 'admin' && 'Full access to all features, settings, billing, and team management'}
@@ -402,8 +402,8 @@ export const TeamManagement: React.FC = () => {
       </div>
 
       {hasReachedLimit && (
-        <div className="rounded-lg border border-yellow-200 bg-yellow-50 dark:bg-yellow-900/20 p-4">
-          <p className="text-sm text-yellow-800 dark:text-yellow-200">
+        <div className="rounded-lg border border-status-warning-200 bg-status-warning-50 dark:bg-status-warning-900/20 p-4">
+          <p className="text-sm text-status-warning-800 dark:text-status-warning-200">
             You've reached your team member limit.
             <button
               onClick={() => window.location.href = '/settings?tab=subscription'}
@@ -450,8 +450,8 @@ export const TeamManagement: React.FC = () => {
               <div className="flex items-center gap-3">
                 <span className={`
                   px-3 py-1 rounded-full text-xs font-medium
-                  ${member.role === 'admin' ? 'bg-purple-100 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400' :
-                    member.role === 'advocate' ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400' :
+                  ${member.role === 'admin' ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/20 dark:text-neutral-400' :
+                    member.role === 'advocate' ? 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/20 dark:text-neutral-400' :
                       'bg-gray-100 text-gray-700 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 dark:text-neutral-300 dark:text-neutral-600'}
                 `}>
                   {member.role === 'admin' && <Shield className="inline h-3 w-3 mr-1" />}
@@ -460,8 +460,8 @@ export const TeamManagement: React.FC = () => {
 
                 <span className={`
                   px-3 py-1 rounded-full text-xs font-medium
-                  ${member.status === 'active' ? 'bg-green-100 text-green-700 dark:bg-green-900/20 dark:text-green-400' :
-                    member.status === 'pending' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400' :
+                  ${member.status === 'active' ? 'bg-status-success-100 text-status-success-700 dark:bg-status-success-900/20 dark:text-status-success-400' :
+                    member.status === 'pending' ? 'bg-status-warning-100 text-status-warning-700 dark:bg-status-warning-900/20 dark:text-status-warning-400' :
                       'bg-gray-100 text-gray-700 dark:bg-metallic-gray-300 dark:bg-metallic-gray-300 dark:text-neutral-300 dark:text-neutral-600'}
                 `}>
                   {member.status.charAt(0).toUpperCase() + member.status.slice(1)}
@@ -481,7 +481,7 @@ export const TeamManagement: React.FC = () => {
                   variant="ghost"
                   size="sm"
                   onClick={() => handleRemoveMember(member.id)}
-                  className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                  className="text-status-error-600 hover:text-status-error-700 hover:bg-status-error-50 dark:hover:bg-status-error-900/20"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

@@ -34,7 +34,7 @@ export const PendingActionsCard: React.FC<PendingActionsCardProps> = ({
       label: 'New Requests',
       count: actions.newRequests,
       icon: FileText,
-      color: 'text-judicial-blue-600 bg-judicial-blue-50',
+      color: 'text-neutral-600 bg-neutral-50',
       onClick: onNewRequestsClick
     },
     {

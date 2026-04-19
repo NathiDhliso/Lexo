@@ -49,13 +49,13 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
         };
       case InvoiceStatus.PRO_FORMA:
         return {
-          color: 'bg-purple-100 text-purple-700',
+          color: 'bg-neutral-100 text-neutral-700',
           icon: FileText,
           label: 'Pro Forma'
         };
       case InvoiceStatus.SENT:
         return {
-          color: 'bg-blue-100 text-blue-700',
+          color: 'bg-neutral-100 text-neutral-700',
           icon: Send,
           label: 'Sent'
         };
@@ -85,7 +85,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
         };
       case InvoiceStatus.CONVERTED:
         return {
-          color: 'bg-green-100 text-green-700',
+          color: 'bg-status-success-100 text-status-success-700',
           icon: CheckCircle,
           label: 'Converted'
         };
@@ -326,7 +326,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
         <div className="flex flex-wrap items-center gap-3 p-3 bg-neutral-50 dark:bg-metallic-gray-900 rounded-lg">
           {(invoice as any).practice_number && (
             <div className="flex items-center gap-2">
-              <Shield className="w-4 h-4 text-judicial-blue-600 dark:text-judicial-blue-400" />
+              <Shield className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
               <span className="text-xs text-neutral-600 dark:text-neutral-400">Practice No:</span>
               <Badge variant="info" className="font-mono text-xs">
                 {(invoice as any).practice_number}
@@ -415,7 +415,7 @@ export const InvoiceCard: React.FC<InvoiceCardProps> = ({
           {onDownload && (
             <button
               onClick={() => onDownload(invoice)}
-              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-judicial-blue-700 dark:text-judicial-blue-400 bg-judicial-blue/10 dark:bg-judicial-blue-900/30 rounded-lg hover:bg-judicial-blue/20 dark:hover:bg-judicial-blue-900/50 transition-colors"
+              className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-neutral-700 dark:text-neutral-400 bg-judicial-blue/10 dark:bg-neutral-900/30 rounded-lg hover:bg-judicial-blue/20 dark:hover:bg-neutral-900/50 transition-colors"
             >
               <Download className="w-3 h-3" />
               PDF

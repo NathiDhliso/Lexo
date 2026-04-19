@@ -120,11 +120,11 @@ export const PartnerApprovalModal: React.FC<PartnerApprovalModalProps> = ({
             <div className={`rounded-lg p-4 ${
               Math.abs(variance) > 15 
                 ? 'bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-700'
-                : 'bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700'
+                : 'bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-700'
             }`}>
               <div className="flex items-center gap-2 mb-2">
                 <TrendingUp className={`w-5 h-5 ${
-                  Math.abs(variance) > 15 ? 'text-amber-600' : 'text-blue-600'
+                  Math.abs(variance) > 15 ? 'text-amber-600' : 'text-neutral-600'
                 }`} />
                 <span className="font-medium text-neutral-900 dark:text-neutral-100">
                   Budget Variance: {variance > 0 ? '+' : ''}{variance.toFixed(1)}%
@@ -133,7 +133,7 @@ export const PartnerApprovalModal: React.FC<PartnerApprovalModalProps> = ({
               <p className={`text-sm ${
                 Math.abs(variance) > 15 
                   ? 'text-amber-700 dark:text-amber-300'
-                  : 'text-blue-700 dark:text-blue-300'
+                  : 'text-neutral-700 dark:text-neutral-300'
               }`}>
                 {Math.abs(variance) > 15 
                   ? 'Significant variance detected. Scope amendment may be required.'
@@ -164,13 +164,13 @@ export const PartnerApprovalModal: React.FC<PartnerApprovalModalProps> = ({
                 disabled={!isReady}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   action === 'approve'
-                    ? 'border-green-600 bg-green-50 dark:bg-green-900/20'
-                    : 'border-neutral-200 dark:border-metallic-gray-700 hover:border-green-300'
+                    ? 'border-status-success-600 bg-status-success-50 dark:bg-status-success-900/20'
+                    : 'border-neutral-200 dark:border-metallic-gray-700 hover:border-status-success-300'
                 } ${!isReady ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <div className="flex items-center gap-3">
                   <CheckCircle className={`w-6 h-6 ${
-                    action === 'approve' ? 'text-green-600' : 'text-neutral-400'
+                    action === 'approve' ? 'text-status-success-600' : 'text-neutral-400'
                   }`} />
                   <div className="text-left">
                     <div className="font-medium text-neutral-900 dark:text-neutral-100">
@@ -187,13 +187,13 @@ export const PartnerApprovalModal: React.FC<PartnerApprovalModalProps> = ({
                 onClick={() => setAction('reject')}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   action === 'reject'
-                    ? 'border-red-600 bg-red-50 dark:bg-red-900/20'
-                    : 'border-neutral-200 dark:border-metallic-gray-700 hover:border-red-300'
+                    ? 'border-status-error-600 bg-status-error-50 dark:bg-status-error-900/20'
+                    : 'border-neutral-200 dark:border-metallic-gray-700 hover:border-status-error-300'
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <XCircle className={`w-6 h-6 ${
-                    action === 'reject' ? 'text-red-600' : 'text-neutral-400'
+                    action === 'reject' ? 'text-status-error-600' : 'text-neutral-400'
                   }`} />
                   <div className="text-left">
                     <div className="font-medium text-neutral-900 dark:text-neutral-100">
@@ -212,7 +212,7 @@ export const PartnerApprovalModal: React.FC<PartnerApprovalModalProps> = ({
                 <div>
                   <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
                     <MessageSquare className="w-4 h-4 inline mr-2" />
-                    Comments {action === 'reject' && <span className="text-red-600">*</span>}
+                    Comments {action === 'reject' && <span className="text-status-error-600">*</span>}
                   </label>
                   <textarea
                     value={comments}
@@ -221,7 +221,7 @@ export const PartnerApprovalModal: React.FC<PartnerApprovalModalProps> = ({
                       ? 'Optional: Add any notes or instructions...'
                       : 'Required: Explain what changes are needed...'}
                     rows={4}
-                    className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                   />
                 </div>
 
@@ -231,8 +231,8 @@ export const PartnerApprovalModal: React.FC<PartnerApprovalModalProps> = ({
                     disabled={loading || (action === 'reject' && !comments.trim())}
                     className={`flex-1 px-6 py-3 rounded-lg font-medium transition-colors ${
                       action === 'approve'
-                        ? 'bg-green-600 hover:bg-green-700 text-white'
-                        : 'bg-red-600 hover:bg-red-700 text-white'
+                        ? 'bg-status-success-600 hover:bg-status-success-700 text-white'
+                        : 'bg-status-error-600 hover:bg-status-error-700 text-white'
                     } disabled:opacity-50 disabled:cursor-not-allowed`}
                   >
                     {loading ? 'Submitting...' : action === 'approve' ? 'Approve for Billing' : 'Request Changes'}

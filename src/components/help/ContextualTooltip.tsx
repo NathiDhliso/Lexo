@@ -162,7 +162,7 @@ export const ContextualTooltip: React.FC<ContextualTooltipProps> = ({
         {...triggerProps}
       >
         {children}
-        <HelpCircle className="w-4 h-4 text-judicial-blue-500 hover:text-judicial-blue-600 cursor-help flex-shrink-0" />
+        <HelpCircle className="w-4 h-4 text-neutral-500 hover:text-neutral-600 cursor-help flex-shrink-0" />
       </div>
       {tooltip && createPortal(tooltip, document.body)}
     </>
@@ -285,7 +285,7 @@ export const FeatureSpotlight: React.FC<FeatureSpotlightProps> = ({
 
         <button
           onClick={handleDismiss}
-          className="w-full px-4 py-2 bg-judicial-blue-600 hover:bg-judicial-blue-700 text-white rounded-lg font-medium transition-colors"
+          className="w-full px-4 py-2 bg-neutral-600 hover:bg-neutral-700 text-white rounded-lg font-medium transition-colors"
         >
           Got it!
         </button>

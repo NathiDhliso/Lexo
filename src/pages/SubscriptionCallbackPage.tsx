@@ -78,7 +78,7 @@ export const SubscriptionCallbackPage: React.FC = () => {
 
           {status === 'success' && (
             <>
-              <CheckCircle className="mx-auto mb-4 h-16 w-16 text-green-500 dark:text-green-400" />
+              <CheckCircle className="mx-auto mb-4 h-16 w-16 text-status-success-500 dark:text-status-success-400" />
               <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100">Payment Successful!</h2>
               <p className="mb-6 text-gray-600 dark:text-neutral-400">{message}</p>
               <Button onClick={() => navigate('/dashboard')} className="w-full">
@@ -89,7 +89,7 @@ export const SubscriptionCallbackPage: React.FC = () => {
 
           {status === 'failed' && (
             <>
-              <XCircle className="mx-auto mb-4 h-16 w-16 text-red-500 dark:text-red-400" />
+              <XCircle className="mx-auto mb-4 h-16 w-16 text-status-error-500 dark:text-status-error-400" />
               <h2 className="mb-2 text-2xl font-bold text-gray-900 dark:text-neutral-100">Payment Failed</h2>
               <p className="mb-6 text-gray-600 dark:text-neutral-400">{message}</p>
               <div className="space-y-3">

@@ -12,7 +12,7 @@
   /* Root Variables for Dynamic Theming */
   :root {
     --color-primary: theme('colors.mpondo-gold.500');
-    --color-secondary: theme('colors.judicial-blue.900');
+    --color-secondary: theme('colors.neutral.900');
     --focus-ring-color: theme('colors.mpondo-gold.400');
     --focus-ring-offset: 2px;
     --animation-duration: 200ms;
@@ -21,7 +21,7 @@
 
   [data-theme='dark'] {
     --color-primary: theme('colors.mpondo-gold.400');
-    --color-secondary: theme('colors.judicial-blue.400');
+    --color-secondary: theme('colors.neutral.400');
     --bg-gradient-start: #1a1d20;
     --bg-gradient-mid: #2d3236;
     --bg-gradient-end: #1a1d20;
@@ -178,11 +178,11 @@
   }
 
   .btn-secondary {
-    @apply px-4 py-2 bg-judicial-blue-900 text-white rounded-lg font-medium
-           hover:bg-judicial-blue-800 active:bg-judicial-blue-700
+    @apply px-4 py-2 bg-neutral-900 text-white rounded-lg font-medium
+           hover:bg-neutral-800 active:bg-neutral-700
            disabled:opacity-50 disabled:cursor-not-allowed
            transition-colors duration-200
-           focus-visible:ring-2 focus-visible:ring-judicial-blue-400 focus-visible:ring-offset-2;
+           focus-visible:ring-2 focus-visible:ring-neutral-400 focus-visible:ring-offset-2;
   }
 
   .btn-outline {
@@ -386,7 +386,7 @@
   }
 
   .text-gradient-icon {
-    background: linear-gradient(135deg, #D4AF37 0%, #1E3A8A 50%, #059669 100%);
+    background: linear-gradient(135deg, #D4AF37 0%, #404040 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

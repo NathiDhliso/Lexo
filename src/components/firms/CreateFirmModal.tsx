@@ -206,8 +206,8 @@ export const CreateFirmModal: React.FC<CreateFirmModalProps> = ({
     >
       <form onSubmit={handleSubmit} className="space-y-4">
         {/* Info Banner */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-          <p className="text-sm text-blue-900 dark:text-blue-100">
+        <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
+          <p className="text-sm text-neutral-900 dark:text-neutral-100">
             Create a new law firm profile. You can invite attorneys to this firm after creation.
           </p>
         </div>
@@ -289,12 +289,12 @@ export const CreateFirmModal: React.FC<CreateFirmModalProps> = ({
                      bg-white dark:bg-metallic-gray-800 
                      text-neutral-900 dark:text-neutral-100
                      placeholder-neutral-400 dark:placeholder-neutral-500
-                     focus:outline-none focus:ring-2 focus:ring-firm-primary-500 dark:focus:ring-firm-primary-400
+                     focus:outline-none focus:ring-2 focus:ring-neutral-500 dark:focus:ring-neutral-400
                      disabled:bg-neutral-100 dark:disabled:bg-metallic-gray-900 disabled:cursor-not-allowed
                      transition-colors duration-200"
           />
           {touched.address && errors.address && (
-            <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.address}</p>
+            <p className="mt-1 text-sm text-status-error-600 dark:text-status-error-400">{errors.address}</p>
           )}
         </div>
 

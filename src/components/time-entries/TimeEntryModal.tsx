@@ -172,7 +172,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
       <div className="bg-white dark:bg-metallic-gray-800 rounded-xl shadow-2xl max-w-2xl w-full">
         <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
-            <Clock className="w-6 h-6 text-blue-600 dark:text-mpondo-gold-400" />
+            <Clock className="w-6 h-6 text-neutral-600 dark:text-mpondo-gold-400" />
             <div>
               <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
                 {timeEntry ? 'Edit Time Entry' : 'Add Time Entry'}
@@ -234,7 +234,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
                   </div>
                 </div>
                 {errors.duration && (
-                  <p className="text-sm text-red-600 dark:text-red-400 mt-1">{errors.duration}</p>
+                  <p className="text-sm text-status-error-600 dark:text-status-error-400 mt-1">{errors.duration}</p>
                 )}
               </div>
             </div>
@@ -286,7 +286,7 @@ export const TimeEntryModal: React.FC<TimeEntryModalProps> = ({
                 id="billable"
                 checked={formData.billable}
                 onChange={handleBillableChange}
-                className="w-4 h-4 text-blue-600 rounded focus:ring-2 focus:ring-blue-500"
+                className="w-4 h-4 text-neutral-600 rounded focus:ring-2 focus:ring-neutral-500"
               />
               <label htmlFor="billable" className="text-sm text-neutral-700 dark:text-neutral-300">
                 Billable (include in invoices)

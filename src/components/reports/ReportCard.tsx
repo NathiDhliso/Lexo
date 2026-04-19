@@ -59,13 +59,13 @@ export const ReportCard: React.FC<ReportCardProps> = ({
           'p-3 rounded-full',
           locked
             ? 'bg-neutral-100 dark:bg-metallic-gray-700'
-            : 'bg-judicial-blue-50 dark:bg-judicial-blue-900/20'
+            : 'bg-neutral-50 dark:bg-neutral-900/20'
         )}>
           <Icon className={cn(
             'w-8 h-8',
             locked
               ? 'text-neutral-400'
-              : 'text-judicial-blue-600 dark:text-judicial-blue-400'
+              : 'text-neutral-600 dark:text-neutral-400'
           )} />
         </div>
         
@@ -83,7 +83,7 @@ export const ReportCard: React.FC<ReportCardProps> = ({
             'px-2 py-1 text-xs font-medium rounded-full',
             tier === 'free' && 'bg-neutral-100 text-neutral-700 dark:bg-metallic-gray-700 dark:text-neutral-300',
             tier === 'pro' && 'bg-mpondo-gold-100 text-mpondo-gold-700 dark:bg-mpondo-gold-900/20 dark:text-mpondo-gold-400',
-            tier === 'enterprise' && 'bg-judicial-blue-100 text-judicial-blue-700 dark:bg-judicial-blue-900/20 dark:text-judicial-blue-400'
+            tier === 'enterprise' && 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/20 dark:text-neutral-400'
           )}>
             {tier.toUpperCase()}
           </span>

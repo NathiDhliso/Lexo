@@ -93,11 +93,11 @@ export const AdminUsersPage: React.FC = () => {
   });
 
   const ROLE_BADGES: Record<string, string> = {
-    super_admin: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+    super_admin: 'bg-status-error-100 text-status-error-700 dark:bg-status-error-900/30 dark:text-status-error-400',
     support_agent: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
-    counsel: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400',
-    practice_admin: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
-    finance: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+    counsel: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/30 dark:text-neutral-400',
+    practice_admin: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/30 dark:text-neutral-400',
+    finance: 'bg-status-success-100 text-status-success-700 dark:bg-status-success-900/30 dark:text-status-success-400',
     auditor: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300',
     guest: 'bg-neutral-100 text-neutral-500 dark:bg-neutral-800 dark:text-neutral-500',
   };
@@ -166,12 +166,12 @@ export const AdminUsersPage: React.FC = () => {
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`text-xs font-medium ${user.is_active ? 'text-green-400' : 'text-red-400'}`}>
+                  <span className={`text-xs font-medium ${user.is_active ? 'text-status-success-400' : 'text-status-error-400'}`}>
                     {user.is_active ? '● Active' : '● Inactive'}
                   </span>
                 </td>
                 <td className="px-4 py-3">
-                  <span className={`text-xs ${user.onboarding_completed ? 'text-green-400' : 'text-amber-400'}`}>
+                  <span className={`text-xs ${user.onboarding_completed ? 'text-status-success-400' : 'text-amber-400'}`}>
                     {user.onboarding_completed ? '✓ Complete' : '◐ Incomplete'}
                   </span>
                 </td>
@@ -185,11 +185,11 @@ export const AdminUsersPage: React.FC = () => {
                       <Eye className="w-4 h-4" />
                     </button>
                     {user.is_active ? (
-                      <button onClick={() => handleDeactivate(user.id)} className="p-1.5 hover:bg-red-900/30 rounded-lg text-neutral-400 hover:text-red-400" title="Deactivate">
+                      <button onClick={() => handleDeactivate(user.id)} className="p-1.5 hover:bg-status-error-900/30 rounded-lg text-neutral-400 hover:text-status-error-400" title="Deactivate">
                         <Ban className="w-4 h-4" />
                       </button>
                     ) : (
-                      <button onClick={() => handleReactivate(user.id)} className="p-1.5 hover:bg-green-900/30 rounded-lg text-neutral-400 hover:text-green-400" title="Reactivate">
+                      <button onClick={() => handleReactivate(user.id)} className="p-1.5 hover:bg-status-success-900/30 rounded-lg text-neutral-400 hover:text-status-success-400" title="Reactivate">
                         <RefreshCw className="w-4 h-4" />
                       </button>
                     )}

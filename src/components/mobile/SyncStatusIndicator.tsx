@@ -107,22 +107,22 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
   // Get status icon and color
   const getStatusIcon = () => {
     if (!isOnline) {
-      return { icon: WifiOff, color: 'text-red-500' };
+      return { icon: WifiOff, color: 'text-status-error-500' };
     }
     
     if (isActive) {
-      return { icon: RefreshCw, color: 'text-blue-500' };
+      return { icon: RefreshCw, color: 'text-neutral-500' };
     }
     
     if (failedCount > 0) {
-      return { icon: AlertCircle, color: 'text-red-500' };
+      return { icon: AlertCircle, color: 'text-status-error-500' };
     }
     
     if (pendingCount > 0) {
       return { icon: Clock, color: 'text-orange-500' };
     }
     
-    return { icon: CheckCircle, color: 'text-green-500' };
+    return { icon: CheckCircle, color: 'text-status-success-500' };
   };
 
   const { icon: StatusIcon, color } = getStatusIcon();
@@ -164,7 +164,7 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
         <StatusIcon className={cn('w-4 h-4', color, isActive && 'animate-spin')} />
         
         {(pendingCount > 0 || failedCount > 0) && (
-          <span className="text-xs bg-red-500 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+          <span className="text-xs bg-status-error-500 text-white rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
             {pendingCount + failedCount}
           </span>
         )}
@@ -200,7 +200,7 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
                   <div className="space-y-2">
                     <div className="w-full bg-neutral-200 dark:bg-metallic-gray-700 rounded-full h-2">
                       <div
-                        className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+                        className="bg-neutral-500 h-2 rounded-full transition-all duration-300"
                         style={{ width: `${progress}%` }}
                       />
                     </div>
@@ -275,9 +275,9 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
       {/* Connection Status */}
       <div className="flex items-center gap-2 mb-3">
         {isOnline ? (
-          <Wifi className="w-4 h-4 text-green-500" />
+          <Wifi className="w-4 h-4 text-status-success-500" />
         ) : (
-          <WifiOff className="w-4 h-4 text-red-500" />
+          <WifiOff className="w-4 h-4 text-status-error-500" />
         )}
         <span className="text-sm text-neutral-600 dark:text-neutral-400">
           {isOnline ? 'Connected' : 'Working offline'}
@@ -297,7 +297,7 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
           </div>
           <div className="w-full bg-neutral-200 dark:bg-metallic-gray-700 rounded-full h-2">
             <div
-              className="bg-blue-500 h-2 rounded-full transition-all duration-300"
+              className="bg-neutral-500 h-2 rounded-full transition-all duration-300"
               style={{ width: `${progress}%` }}
             />
           </div>
@@ -320,7 +320,7 @@ export const SyncStatusIndicator: React.FC<SyncStatusIndicatorProps> = ({
           </div>
         </div>
         <div className="text-center">
-          <div className="text-lg font-semibold text-red-600 dark:text-red-400">
+          <div className="text-lg font-semibold text-status-error-600 dark:text-status-error-400">
             {failedCount}
           </div>
           <div className="text-xs text-neutral-600 dark:text-neutral-400">

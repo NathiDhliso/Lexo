@@ -24,29 +24,29 @@ export const BudgetComparisonWidget: React.FC<BudgetComparisonWidgetProps> = ({
   const percentageUsed = currentBudget > 0 ? (wipValue / currentBudget) * 100 : 0;
   
   const getStatusColor = () => {
-    if (percentageUsed >= 100) return 'text-red-600 dark:text-red-400';
+    if (percentageUsed >= 100) return 'text-status-error-600 dark:text-status-error-400';
     if (percentageUsed >= 80) return 'text-amber-600 dark:text-amber-400';
-    return 'text-green-600 dark:text-green-400';
+    return 'text-status-success-600 dark:text-status-success-400';
   };
 
   const getProgressColor = () => {
-    if (percentageUsed >= 100) return 'bg-red-600';
+    if (percentageUsed >= 100) return 'bg-status-error-600';
     if (percentageUsed >= 80) return 'bg-amber-600';
-    return 'bg-green-600';
+    return 'bg-status-success-600';
   };
 
   const getStatusIcon = () => {
-    if (percentageUsed >= 100) return <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400" />;
+    if (percentageUsed >= 100) return <AlertCircle className="w-5 h-5 text-status-error-600 dark:text-status-error-400" />;
     if (percentageUsed >= 80) return <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />;
-    return <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />;
+    return <CheckCircle className="w-5 h-5 text-status-success-600 dark:text-status-success-400" />;
   };
 
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-6">
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-neutral-200 dark:border-neutral-800 p-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-2">
-          <TrendingUp className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+          <TrendingUp className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
             Budget Tracking
           </h3>
@@ -102,7 +102,7 @@ export const BudgetComparisonWidget: React.FC<BudgetComparisonWidgetProps> = ({
       <div className="grid grid-cols-2 gap-3">
         <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
-            <DollarSign className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+            <DollarSign className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
             <span className="text-xs text-neutral-600 dark:text-neutral-400">Logged</span>
           </div>
           <span className="text-lg font-bold text-neutral-900 dark:text-neutral-100">
@@ -112,10 +112,10 @@ export const BudgetComparisonWidget: React.FC<BudgetComparisonWidgetProps> = ({
 
         <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
-            <TrendingUp className="w-4 h-4 text-green-600 dark:text-green-400" />
+            <TrendingUp className="w-4 h-4 text-status-success-600 dark:text-status-success-400" />
             <span className="text-xs text-neutral-600 dark:text-neutral-400">Remaining</span>
           </div>
-          <span className={`text-lg font-bold ${remaining >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}`}>
+          <span className={`text-lg font-bold ${remaining >= 0 ? 'text-status-success-600 dark:text-status-success-400' : 'text-status-error-600 dark:text-status-error-400'}`}>
             {formatRand(Math.max(remaining, 0))}
           </span>
         </div>
@@ -123,8 +123,8 @@ export const BudgetComparisonWidget: React.FC<BudgetComparisonWidgetProps> = ({
 
       {/* Status Messages */}
       {percentageUsed >= 100 && (
-        <div className="mt-4 p-3 bg-red-100 dark:bg-red-900/30 rounded-lg">
-          <p className="text-xs text-red-800 dark:text-red-300 font-medium">
+        <div className="mt-4 p-3 bg-status-error-100 dark:bg-status-error-900/30 rounded-lg">
+          <p className="text-xs text-status-error-800 dark:text-status-error-300 font-medium">
             ⚠️ Budget exceeded! Consider requesting a scope amendment.
           </p>
         </div>

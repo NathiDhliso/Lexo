@@ -109,14 +109,14 @@ const NewMatterWizardPage: React.FC<NewMatterWizardPageProps> = ({ onNavigate })
       title: 'Basic Information',
       description: 'Matter type, title, and description',
       icon: FileText,
-      color: 'bg-green-500 dark:bg-green-600'
+      color: 'bg-status-success-500 dark:bg-status-success-600'
     },
     {
       id: 2,
       title: 'Client Details',
       description: 'Client information and contact details',
       icon: Users,
-      color: 'bg-purple-500 dark:bg-purple-600'
+      color: 'bg-neutral-500 dark:bg-neutral-600'
     },
     {
       id: 3,
@@ -130,7 +130,7 @@ const NewMatterWizardPage: React.FC<NewMatterWizardPageProps> = ({ onNavigate })
       title: 'Financial Terms',
       description: 'Fee structure and financial arrangements',
       icon: DollarSign,
-      color: 'bg-yellow-500 dark:bg-yellow-600'
+      color: 'bg-status-warning-500 dark:bg-status-warning-600'
     },
     {
       id: 5,
@@ -350,7 +350,7 @@ const NewMatterWizardPage: React.FC<NewMatterWizardPageProps> = ({ onNavigate })
         return (
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center mb-8">
-              <FileText className="w-16 h-16 text-green-500 dark:text-green-400 mx-auto mb-4" />
+              <FileText className="w-16 h-16 text-status-success-500 dark:text-status-success-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Basic Information</h3>
               <p className="text-neutral-600 dark:text-neutral-400">Provide the fundamental details about this matter</p>
             </div>
@@ -419,7 +419,7 @@ const NewMatterWizardPage: React.FC<NewMatterWizardPageProps> = ({ onNavigate })
         return (
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center mb-8">
-              <Users className="w-16 h-16 text-purple-500 dark:text-purple-400 mx-auto mb-4" />
+              <Users className="w-16 h-16 text-neutral-500 dark:text-neutral-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Client Details</h3>
               <p className="text-neutral-600 dark:text-neutral-400">Information about the client for this matter</p>
             </div>
@@ -606,7 +606,7 @@ const NewMatterWizardPage: React.FC<NewMatterWizardPageProps> = ({ onNavigate })
         return (
           <div className="space-y-6 max-w-2xl mx-auto">
             <div className="text-center mb-8">
-              <DollarSign className="w-16 h-16 text-yellow-500 dark:text-yellow-400 mx-auto mb-4" />
+              <DollarSign className="w-16 h-16 text-status-warning-500 dark:text-status-warning-400 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">Financial Terms</h3>
               <p className="text-neutral-600 dark:text-neutral-400">Fee structure and financial arrangements</p>
             </div>
@@ -758,7 +758,7 @@ const NewMatterWizardPage: React.FC<NewMatterWizardPageProps> = ({ onNavigate })
               </span>
               <div className="w-32 bg-neutral-200 dark:bg-metallic-gray-700 rounded-full h-2">
                 <div 
-                  className="bg-blue-600 dark:bg-judicial-blue-500 h-2 rounded-full transition-all duration-300"
+                  className="bg-neutral-600 dark:bg-neutral-500 h-2 rounded-full transition-all duration-300"
                   style={{ width: `${(currentStep / steps.length) * 100}%` }}
                 />
               </div>
@@ -781,8 +781,8 @@ const NewMatterWizardPage: React.FC<NewMatterWizardPageProps> = ({ onNavigate })
                   <div className="flex items-center">
                     <div className={`
                       w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-200
-                      ${isActive ? 'border-blue-600 bg-blue-600 text-white' : 
-                        isCompleted ? 'border-green-600 bg-green-600 text-white' : 
+                      ${isActive ? 'border-neutral-600 bg-neutral-600 text-white' : 
+                        isCompleted ? 'border-status-success-600 bg-status-success-600 text-white' : 
                         'border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-400 dark:text-neutral-500'}
                     `}>
                       {isCompleted ? (
@@ -792,7 +792,7 @@ const NewMatterWizardPage: React.FC<NewMatterWizardPageProps> = ({ onNavigate })
                       )}
                     </div>
                     <div className="ml-3 hidden sm:block">
-                      <p className={`text-sm font-medium ${isActive ? 'text-blue-600 dark:text-judicial-blue-400' : isCompleted ? 'text-green-600 dark:text-green-400' : 'text-neutral-500 dark:text-neutral-400'}`}>
+                      <p className={`text-sm font-medium ${isActive ? 'text-neutral-600 dark:text-neutral-400' : isCompleted ? 'text-status-success-600 dark:text-status-success-400' : 'text-neutral-500 dark:text-neutral-400'}`}>
                         {step.title}
                       </p>
                       <p className="text-xs text-neutral-500 dark:text-neutral-400">{step.description}</p>
@@ -802,7 +802,7 @@ const NewMatterWizardPage: React.FC<NewMatterWizardPageProps> = ({ onNavigate })
                   {index < steps.length - 1 && (
                     <div className={`
                       hidden sm:block w-16 h-0.5 mx-4 transition-all duration-200
-                      ${isCompleted ? 'bg-green-600 dark:bg-green-500' : 'bg-neutral-300 dark:bg-metallic-gray-600'}
+                      ${isCompleted ? 'bg-status-success-600 dark:bg-status-success-500' : 'bg-neutral-300 dark:bg-metallic-gray-600'}
                     `} />
                   )}
                 </div>

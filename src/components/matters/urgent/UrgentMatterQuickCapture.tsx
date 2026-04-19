@@ -418,8 +418,8 @@ export const UrgentMatterQuickCapture: React.FC<UrgentMatterQuickCaptureProps> =
             Optional Documents & Notes
           </h3>
 
-          <div className="p-4 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg">
-            <p className="text-sm text-judicial-blue-900 dark:text-judicial-blue-100">
+          <div className="p-4 bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+            <p className="text-sm text-neutral-900 dark:text-neutral-100">
               <strong>Note:</strong> You can skip this step and attach documents later from the Matter Workbench.
             </p>
           </div>
@@ -440,9 +440,9 @@ export const UrgentMatterQuickCapture: React.FC<UrgentMatterQuickCaptureProps> =
                        file:mr-4 file:py-2 file:px-4
                        file:rounded-lg file:border-0
                        file:text-sm file:font-semibold
-                       file:bg-judicial-blue-50 file:text-judicial-blue-700
-                       hover:file:bg-judicial-blue-100
-                       dark:file:bg-judicial-blue-900/30 dark:file:text-judicial-blue-300"
+                       file:bg-neutral-50 file:text-neutral-700
+                       hover:file:bg-neutral-100
+                       dark:file:bg-neutral-900/30 dark:file:text-neutral-300"
             />
             {formData.documents && formData.documents.length > 0 && (
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2">
@@ -460,7 +460,7 @@ export const UrgentMatterQuickCapture: React.FC<UrgentMatterQuickCaptureProps> =
               value={formData.additional_notes || ''}
               onChange={(e) => setFormData({ ...formData, additional_notes: e.target.value })}
               placeholder="Any additional context or special instructions..."
-              className="w-full h-32 px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 resize-none focus:ring-2 focus:ring-judicial-blue-500"
+              className="w-full h-32 px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 resize-none focus:ring-2 focus:ring-neutral-500"
             />
           </div>
         </div>

@@ -313,14 +313,14 @@ export function UnifiedInvoiceWizard({
       case 1:
         return (
           <div className="space-y-6">
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5" />
+                <AlertCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400 mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                  <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-1">
                     Data Imported from Matter
                   </h4>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <p className="text-sm text-neutral-700 dark:text-neutral-300">
                     {timeEntries.length > 0 && `${timeEntries.length} time ${timeEntries.length === 1 ? 'entry' : 'entries'}`}
                     {timeEntries.length > 0 && proFormaServices.length > 0 && ' and '}
                     {proFormaServices.length > 0 && `${proFormaServices.length} pro forma ${proFormaServices.length === 1 ? 'service' : 'services'}`}
@@ -333,7 +333,7 @@ export function UnifiedInvoiceWizard({
             {proFormaServices.length > 0 && (
               <div>
                 <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-3">
-                  <FileText className="w-5 h-5 text-blue-600" />
+                  <FileText className="w-5 h-5 text-neutral-600" />
                   Pro Forma Services
                   <span className="text-sm font-normal text-neutral-500">
                     (from linked pro forma request)
@@ -346,7 +346,7 @@ export function UnifiedInvoiceWizard({
                       onClick={() => handleServiceToggle(service.id)}
                       className={`p-4 border-2 rounded-lg cursor-pointer transition-all ${
                         selectedServices.includes(service.id)
-                          ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                          ? 'border-neutral-500 bg-neutral-50 dark:bg-neutral-900/20'
                           : 'border-neutral-200 dark:border-metallic-gray-700 hover:border-neutral-300'
                       }`}
                     >
@@ -355,7 +355,7 @@ export function UnifiedInvoiceWizard({
                           type="checkbox"
                           checked={selectedServices.includes(service.id)}
                           onChange={() => handleServiceToggle(service.id)}
-                          className="mt-1 rounded text-blue-600 focus:ring-blue-500"
+                          className="mt-1 rounded text-neutral-600 focus:ring-neutral-500"
                         />
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
@@ -378,7 +378,7 @@ export function UnifiedInvoiceWizard({
             {timeEntries.length > 0 && (
               <div>
                 <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 flex items-center gap-2 mb-3">
-                  <Timer className="w-5 h-5 text-green-600" />
+                  <Timer className="w-5 h-5 text-status-success-600" />
                   Unbilled Time Entries
                 </h3>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
@@ -388,7 +388,7 @@ export function UnifiedInvoiceWizard({
                       onClick={() => handleEntryToggle(entry.id)}
                       className={`p-3 border rounded-lg cursor-pointer transition-all ${
                         selectedEntries.includes(entry.id)
-                          ? 'border-green-500 bg-green-50 dark:bg-green-900/20'
+                          ? 'border-status-success-500 bg-status-success-50 dark:bg-status-success-900/20'
                           : 'border-neutral-200 dark:border-metallic-gray-700 hover:border-neutral-300'
                       }`}
                     >
@@ -397,7 +397,7 @@ export function UnifiedInvoiceWizard({
                           type="checkbox"
                           checked={selectedEntries.includes(entry.id)}
                           onChange={() => handleEntryToggle(entry.id)}
-                          className="mt-1 rounded text-green-600 focus:ring-green-500"
+                          className="mt-1 rounded text-status-success-600 focus:ring-status-success-500"
                         />
                         <div className="flex-1">
                           <div className="flex items-center justify-between mb-1">
@@ -523,7 +523,7 @@ export function UnifiedInvoiceWizard({
                         {expense.id.startsWith('temp_') && (
                           <button
                             onClick={() => handleRemoveExpense(expense.id)}
-                            className="p-1 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
+                            className="p-1 text-status-error-500 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 rounded"
                           >
                             <Trash2 className="w-4 h-4" />
                           </button>
@@ -665,10 +665,10 @@ export function UnifiedInvoiceWizard({
       case 3:
         return (
           <div className="space-y-6">
-            <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-green-200 dark:border-green-800 rounded-lg p-6 text-center">
-              <CheckCircle2 className="w-16 h-16 text-green-600 dark:text-green-400 mx-auto mb-4" />
-              <h3 className="text-xl font-semibold text-green-900 dark:text-green-100 mb-2">Ready to Generate</h3>
-              <p className="text-green-700 dark:text-green-300">Review the summary below and generate your {isProForma ? 'pro forma' : 'invoice'}</p>
+            <div className="bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg p-6 text-center">
+              <CheckCircle2 className="w-16 h-16 text-status-success-600 dark:text-status-success-400 mx-auto mb-4" />
+              <h3 className="text-xl font-semibold text-status-success-900 dark:text-status-success-100 mb-2">Ready to Generate</h3>
+              <p className="text-status-success-700 dark:text-status-success-300">Review the summary below and generate your {isProForma ? 'pro forma' : 'invoice'}</p>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -732,7 +732,7 @@ export function UnifiedInvoiceWizard({
                     </div>
                   )}
                   {totals.discountValue > 0 && (
-                    <div className="flex justify-between text-green-600 dark:text-green-400">
+                    <div className="flex justify-between text-status-success-600 dark:text-status-success-400">
                       <dt>Discount:</dt>
                       <dd className="font-medium">-{formatRand(totals.discountValue)}</dd>
                     </div>
@@ -804,7 +804,7 @@ export function UnifiedInvoiceWizard({
                   <div className="flex items-center gap-3">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-colors ${
                       isCompleted
-                        ? 'bg-green-500 text-white'
+                        ? 'bg-status-success-500 text-white'
                         : isActive
                           ? 'bg-amber-500 text-white'
                           : 'bg-neutral-200 dark:bg-metallic-gray-700 text-neutral-500 dark:text-neutral-400'
@@ -819,7 +819,7 @@ export function UnifiedInvoiceWizard({
                     </div>
                   </div>
                   {index < WIZARD_STEPS.length - 1 && (
-                    <div className={`flex-1 h-0.5 mx-4 ${isCompleted ? 'bg-green-500' : 'bg-neutral-200 dark:bg-metallic-gray-700'}`} />
+                    <div className={`flex-1 h-0.5 mx-4 ${isCompleted ? 'bg-status-success-500' : 'bg-neutral-200 dark:bg-metallic-gray-700'}`} />
                   )}
                 </React.Fragment>
               );
@@ -858,7 +858,7 @@ export function UnifiedInvoiceWizard({
               ) : (
                 <button
                   onClick={handleGenerate}
-                  className="flex items-center gap-2 px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors font-medium"
+                  className="flex items-center gap-2 px-6 py-2 bg-status-success-600 text-white rounded-lg hover:bg-status-success-700 transition-colors font-medium"
                 >
                   <Calculator className="w-5 h-5" />
                   Generate {isProForma ? 'Pro Forma' : 'Invoice'}

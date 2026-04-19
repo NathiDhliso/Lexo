@@ -400,7 +400,7 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
             <Card hoverable onClick={() => navigate('/proforma-requests')} className="cursor-pointer">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <Icon icon={Clock} className="w-6 h-6 text-blue-600 dark:text-blue-400" noGradient />
+                  <Icon icon={Clock} className="w-6 h-6 text-neutral-600 dark:text-neutral-400" noGradient />
                   <span className="text-2xl font-bold text-neutral-900 dark:text-neutral-100">
                     {dashboardData.awaitingApproval}
                   </span>
@@ -442,7 +442,7 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
             {invoiceMetrics.isLoading ? '...' : invoiceMetrics.totalProFormas}
           </h3>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">Pro Forma Invoices</p>
-          <div className="mt-2 text-xs text-judicial-blue-600 flex items-center justify-center">
+          <div className="mt-2 text-xs text-neutral-600 flex items-center justify-center">
             View Pro Forma <Icon icon={ArrowRight} className="w-3 h-3 ml-1" noGradient />
           </div>
         </CardContent>
@@ -502,7 +502,7 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
           </div>
             <h3 className="text-lg font-bold text-neutral-900">{formatCurrency(dashboardData.outstandingWip)}</h3>
           <p className="text-sm text-neutral-600 dark:text-neutral-400">Outstanding WIP</p>
-            <div className="mt-2 text-xs text-judicial-blue-600 flex items-center justify-center">
+            <div className="mt-2 text-xs text-neutral-600 flex items-center justify-center">
             View WIP Report <Icon icon={ArrowRight} className="w-3 h-3 ml-1" noGradient />
             </div>
         </CardContent>
@@ -563,8 +563,8 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
             </div>
                   <div className="flex items-center gap-2">
                     <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                      matter.status === MatterStatus.ACTIVE ? 'bg-green-100 text-green-800' : 
-                      matter.status === MatterStatus.PENDING ? 'bg-yellow-100 text-yellow-800' :
+                      matter.status === MatterStatus.ACTIVE ? 'bg-status-success-100 text-status-success-800' : 
+                      matter.status === MatterStatus.PENDING ? 'bg-status-warning-100 text-status-warning-800' :
                       'bg-gray-100 text-gray-800'
                     }`}>
                       {matter.status}
@@ -616,7 +616,7 @@ const DashboardPage: React.FC<DashboardPageProps> = () => {
                   <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
                     invoice.status === InvoiceStatus.PAID ? 'bg-status-success-100 text-status-success-800' : 
                     invoice.status === InvoiceStatus.OVERDUE ? 'bg-status-error-100 text-status-error-800' :
-                    invoice.status === InvoiceStatus.SENT ? 'bg-judicial-blue-100 text-judicial-blue-800' :
+                    invoice.status === InvoiceStatus.SENT ? 'bg-neutral-100 text-neutral-800' :
                     'bg-neutral-100 text-neutral-800'
                   }`}>
                     {invoice.status}

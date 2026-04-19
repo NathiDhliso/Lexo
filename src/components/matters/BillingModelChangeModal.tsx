@@ -195,8 +195,8 @@ export const BillingModelChangeModal: React.FC<BillingModelChangeModalProps> = (
         {/* Header */}
         <div className="p-6 border-b border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-full bg-judicial-blue-100 dark:bg-judicial-blue-900/30 flex items-center justify-center">
-              <DollarSign className="w-6 h-6 text-judicial-blue-600 dark:text-judicial-blue-400" />
+            <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-900/30 flex items-center justify-center">
+              <DollarSign className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
@@ -234,7 +234,7 @@ export const BillingModelChangeModal: React.FC<BillingModelChangeModalProps> = (
               disabled={isLoading}
             />
             {validationErrors.billing_model && (
-              <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+              <p className="text-sm text-status-error-600 dark:text-status-error-400 mt-1">
                 {validationErrors.billing_model}
               </p>
             )}
@@ -254,10 +254,10 @@ export const BillingModelChangeModal: React.FC<BillingModelChangeModalProps> = (
                 min="0"
                 step="100"
                 disabled={isLoading}
-                className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-judicial-blue-500 focus:border-transparent bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 disabled:opacity-50"
+                className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 disabled:opacity-50"
               />
               {validationErrors.agreed_fee && (
-                <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                <p className="text-sm text-status-error-600 dark:text-status-error-400 mt-1">
                   {validationErrors.agreed_fee}
                 </p>
               )}
@@ -277,10 +277,10 @@ export const BillingModelChangeModal: React.FC<BillingModelChangeModalProps> = (
                 min="0"
                 step="50"
                 disabled={isLoading}
-                className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-judicial-blue-500 focus:border-transparent bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 disabled:opacity-50"
+                className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 disabled:opacity-50"
               />
               {validationErrors.hourly_rate && (
-                <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                <p className="text-sm text-status-error-600 dark:text-status-error-400 mt-1">
                   {validationErrors.hourly_rate}
                 </p>
               )}
@@ -300,10 +300,10 @@ export const BillingModelChangeModal: React.FC<BillingModelChangeModalProps> = (
                 min="0"
                 step="50"
                 disabled={isLoading}
-                className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-judicial-blue-500 focus:border-transparent bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 disabled:opacity-50"
+                className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 disabled:opacity-50"
               />
               {validationErrors.agreed_fee && (
-                <p className="text-sm text-red-600 dark:text-red-400 mt-1">
+                <p className="text-sm text-status-error-600 dark:text-status-error-400 mt-1">
                   {validationErrors.agreed_fee}
                 </p>
               )}
@@ -312,14 +312,14 @@ export const BillingModelChangeModal: React.FC<BillingModelChangeModalProps> = (
 
           {/* Impact Description */}
           {hasChanges && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
               <div className="flex items-start gap-3">
-                <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+                <FileText className="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0 mt-0.5" />
                 <div>
-                  <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-1">
+                  <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-1">
                     Impact of Change
                   </h4>
-                  <p className="text-sm text-blue-700 dark:text-blue-300">
+                  <p className="text-sm text-neutral-700 dark:text-neutral-300">
                     {impactDescription}
                   </p>
                 </div>
@@ -351,8 +351,8 @@ export const BillingModelChangeModal: React.FC<BillingModelChangeModalProps> = (
 
           {/* Error Display */}
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <p className="text-sm text-red-600 dark:text-red-400">
+            <div className="bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-lg p-4">
+              <p className="text-sm text-status-error-600 dark:text-status-error-400">
                 {error.message}
               </p>
             </div>
@@ -372,7 +372,7 @@ export const BillingModelChangeModal: React.FC<BillingModelChangeModalProps> = (
               type="submit"
               variant="primary"
               disabled={isLoading || !hasChanges}
-              className="bg-judicial-blue-600 hover:bg-judicial-blue-700"
+              className="bg-neutral-600 hover:bg-neutral-700"
             >
               {isLoading ? 'Updating...' : 'Update Billing Model'}
             </Button>

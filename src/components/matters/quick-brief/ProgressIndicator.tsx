@@ -35,7 +35,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                 step < currentStep
                   ? 'bg-mpondo-gold-600 text-white'
                   : step === currentStep
-                  ? 'bg-judicial-blue-600 text-white ring-4 ring-judicial-blue-100 dark:ring-judicial-blue-900/30'
+                  ? 'bg-neutral-600 text-white ring-4 ring-neutral-100 dark:ring-neutral-900/30'
                   : 'bg-neutral-200 dark:bg-metallic-gray-700 text-neutral-600 dark:text-neutral-400'
               )}
               aria-current={step === currentStep ? 'step' : undefined}
@@ -73,7 +73,7 @@ export const ProgressIndicator: React.FC<ProgressIndicatorProps> = ({
                 'text-xs text-center transition-colors duration-200',
                 'flex-1 px-1',
                 index + 1 === currentStep
-                  ? 'text-judicial-blue-600 dark:text-judicial-blue-400 font-medium'
+                  ? 'text-neutral-600 dark:text-neutral-400 font-medium'
                   : index + 1 < currentStep
                   ? 'text-mpondo-gold-600 dark:text-mpondo-gold-400'
                   : 'text-neutral-500 dark:text-neutral-400'

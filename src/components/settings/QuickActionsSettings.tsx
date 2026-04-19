@@ -177,31 +177,31 @@ export const QuickActionsSettings: React.FC<QuickActionsSettingsProps> = () => {
             </div>
 
             {/* Info Banner */}
-            <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-xl p-6 shadow-sm">
+            <div className="bg-gradient-to-r from-blue-50 via-indigo-50 to-purple-50 dark:from-blue-900/20 dark:via-indigo-900/20 dark:to-purple-900/20 border-2 border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-sm">
                 <div className="flex gap-4">
                     <div className="flex-shrink-0">
                         <div className="p-3 bg-gradient-to-br from-blue-100 to-indigo-100 dark:from-blue-900/50 dark:to-indigo-900/50 rounded-xl shadow-sm">
-                            <Sparkles className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                            <Sparkles className="h-6 w-6 text-neutral-600 dark:text-neutral-400" />
                         </div>
                     </div>
                     <div className="flex-1">
-                        <h3 className="text-base font-bold text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
+                        <h3 className="text-base font-bold text-neutral-900 dark:text-neutral-100 mb-3 flex items-center gap-2">
                             Productivity Tips
-                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/50 text-blue-700 dark:text-blue-300">
+                            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-900/50 text-neutral-700 dark:text-neutral-300">
                                 Pro Tips
                             </span>
                         </h3>
-                        <ul className="space-y-2.5 text-sm text-blue-800 dark:text-blue-200">
+                        <ul className="space-y-2.5 text-sm text-neutral-800 dark:text-neutral-200">
                             <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-blue-700 dark:text-blue-300 text-xs font-bold mt-0.5">1</span>
-                                <span>Press <kbd className="px-2 py-1 bg-white dark:bg-blue-950 border border-blue-300 dark:border-blue-700 rounded text-xs font-mono mx-1 shadow-sm">Ctrl+Shift+N</kbd> to open quick actions menu</span>
+                                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center text-neutral-700 dark:text-neutral-300 text-xs font-bold mt-0.5">1</span>
+                                <span>Press <kbd className="px-2 py-1 bg-white dark:bg-neutral-950 border border-neutral-300 dark:border-neutral-700 rounded text-xs font-mono mx-1 shadow-sm">Ctrl+Shift+N</kbd> to open quick actions menu</span>
                             </li>
                             <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-blue-700 dark:text-blue-300 text-xs font-bold mt-0.5">2</span>
+                                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center text-neutral-700 dark:text-neutral-300 text-xs font-bold mt-0.5">2</span>
                                 <span>Reorder actions by dragging or using arrow buttons - place frequently used actions at the top</span>
                             </li>
                             <li className="flex items-start gap-3">
-                                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-blue-200 dark:bg-blue-800 flex items-center justify-center text-blue-700 dark:text-blue-300 text-xs font-bold mt-0.5">3</span>
+                                <span className="flex-shrink-0 w-5 h-5 rounded-full bg-neutral-200 dark:bg-neutral-800 flex items-center justify-center text-neutral-700 dark:text-neutral-300 text-xs font-bold mt-0.5">3</span>
                                 <span>Disable unused actions to maintain a clean, focused interface</span>
                             </li>
                         </ul>
@@ -256,7 +256,7 @@ export const QuickActionsSettings: React.FC<QuickActionsSettingsProps> = () => {
                                         {action.label}
                                     </h4>
                                     {action.usageCount && action.usageCount > 0 && (
-                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 text-xs font-bold rounded-full shadow-sm">
+                                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-neutral-100 dark:bg-neutral-900/30 text-neutral-700 dark:text-neutral-400 text-xs font-bold rounded-full shadow-sm">
                                             <TrendingUp className="h-3.5 w-3.5" />
                                             {action.usageCount} uses
                                         </span>
@@ -306,7 +306,7 @@ export const QuickActionsSettings: React.FC<QuickActionsSettingsProps> = () => {
                                     className={`
                     p-3 rounded-xl transition-all font-medium shadow-sm border-2
                     ${action.isEnabled
-                                            ? 'bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-900/50 text-green-700 dark:text-green-400 hover:from-green-200 hover:to-green-300 dark:hover:from-green-900/50 dark:hover:to-green-900/70 border-green-300 dark:border-green-700'
+                                            ? 'bg-gradient-to-br from-green-100 to-green-200 dark:from-green-900/30 dark:to-green-900/50 text-status-success-700 dark:text-status-success-400 hover:from-green-200 hover:to-green-300 dark:hover:from-green-900/50 dark:hover:to-green-900/70 border-status-success-300 dark:border-status-success-700'
                                             : 'bg-gray-100 dark:bg-metallic-gray-700 text-gray-500 dark:text-neutral-400 hover:bg-gray-200 dark:hover:bg-metallic-gray-600 border-gray-300 dark:border-metallic-gray-600'
                                         }
                     disabled:opacity-50 disabled:cursor-not-allowed
@@ -340,44 +340,44 @@ export const QuickActionsSettings: React.FC<QuickActionsSettingsProps> = () => {
 
                 <div className="p-6">
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
-                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/30 rounded-xl p-6 border-2 border-blue-200 dark:border-blue-800 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-gradient-to-br from-blue-50 to-blue-100 dark:from-blue-900/20 dark:to-blue-900/30 rounded-xl p-6 border-2 border-neutral-200 dark:border-neutral-800 shadow-sm hover:shadow-md transition-shadow">
                             <div className="flex items-center justify-between mb-4">
-                                <p className="text-sm font-bold text-blue-900 dark:text-blue-100">
+                                <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
                                     Total Actions
                                 </p>
-                                <div className="p-2.5 bg-blue-200 dark:bg-blue-800 rounded-lg shadow-sm">
-                                    <Zap className="h-5 w-5 text-blue-700 dark:text-blue-300" />
+                                <div className="p-2.5 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow-sm">
+                                    <Zap className="h-5 w-5 text-neutral-700 dark:text-neutral-300" />
                                 </div>
                             </div>
-                            <p className="text-4xl font-black text-blue-900 dark:text-blue-100">
+                            <p className="text-4xl font-black text-neutral-900 dark:text-neutral-100">
                                 {actions.length}
                             </p>
                         </div>
 
-                        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30 rounded-xl p-6 border-2 border-green-200 dark:border-green-800 shadow-sm hover:shadow-md transition-shadow">
+                        <div className="bg-gradient-to-br from-green-50 to-green-100 dark:from-green-900/20 dark:to-green-900/30 rounded-xl p-6 border-2 border-status-success-200 dark:border-status-success-800 shadow-sm hover:shadow-md transition-shadow">
                             <div className="flex items-center justify-between mb-4">
-                                <p className="text-sm font-bold text-green-900 dark:text-green-100">
+                                <p className="text-sm font-bold text-status-success-900 dark:text-status-success-100">
                                     Enabled
                                 </p>
-                                <div className="p-2.5 bg-green-200 dark:bg-green-800 rounded-lg shadow-sm">
-                                    <Eye className="h-5 w-5 text-green-700 dark:text-green-300" />
+                                <div className="p-2.5 bg-status-success-200 dark:bg-status-success-800 rounded-lg shadow-sm">
+                                    <Eye className="h-5 w-5 text-status-success-700 dark:text-status-success-300" />
                                 </div>
                             </div>
-                            <p className="text-4xl font-black text-green-900 dark:text-green-100">
+                            <p className="text-4xl font-black text-status-success-900 dark:text-status-success-100">
                                 {actions.filter(a => a.isEnabled).length}
                             </p>
                         </div>
 
                         <div className="bg-gradient-to-br from-purple-50 to-purple-100 dark:from-purple-900/20 dark:to-purple-900/30 rounded-xl p-6 border-2 border-purple-200 dark:border-purple-800 shadow-sm hover:shadow-md transition-shadow">
                             <div className="flex items-center justify-between mb-4">
-                                <p className="text-sm font-bold text-purple-900 dark:text-purple-100">
+                                <p className="text-sm font-bold text-neutral-900 dark:text-neutral-100">
                                     Total Uses
                                 </p>
-                                <div className="p-2.5 bg-purple-200 dark:bg-purple-800 rounded-lg shadow-sm">
-                                    <TrendingUp className="h-5 w-5 text-purple-700 dark:text-purple-300" />
+                                <div className="p-2.5 bg-neutral-200 dark:bg-neutral-800 rounded-lg shadow-sm">
+                                    <TrendingUp className="h-5 w-5 text-neutral-700 dark:text-neutral-300" />
                                 </div>
                             </div>
-                            <p className="text-4xl font-black text-purple-900 dark:text-purple-100">
+                            <p className="text-4xl font-black text-neutral-900 dark:text-neutral-100">
                                 {actions.reduce((sum, a) => sum + (a.usageCount || 0), 0)}
                             </p>
                         </div>

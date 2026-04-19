@@ -83,8 +83,8 @@ export const DepositFundsModal: React.FC<DepositFundsModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <p className="text-sm text-blue-800 dark:text-blue-300">
+          <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
+            <p className="text-sm text-neutral-800 dark:text-neutral-300">
               Current Balance: <span className="font-semibold">R {currentBalance.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </p>
           </div>
@@ -150,8 +150,8 @@ export const DepositFundsModal: React.FC<DepositFundsModalProps> = ({
           </div>
 
           {formData.amount && (
-            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-              <p className="text-sm text-green-800 dark:text-green-300">
+            <div className="bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg p-4">
+              <p className="text-sm text-status-success-800 dark:text-status-success-300">
                 New Balance: <span className="font-semibold">R {(currentBalance + parseFloat(formData.amount || '0')).toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
               </p>
             </div>
@@ -168,7 +168,7 @@ export const DepositFundsModal: React.FC<DepositFundsModalProps> = ({
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-status-success-600 text-white rounded-lg hover:bg-status-success-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Processing...' : 'Deposit Funds'}
             </button>

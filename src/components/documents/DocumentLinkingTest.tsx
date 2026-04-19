@@ -26,11 +26,11 @@ export const DocumentLinkingTest: React.FC<DocumentLinkingTestProps> = ({
           Document Linking Test
         </h2>
         
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-          <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">
+        <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 mb-6">
+          <h3 className="font-semibold text-neutral-800 dark:text-neutral-200 mb-2">
             🧪 Testing the New Document Linking System
           </h3>
-          <p className="text-sm text-blue-700 dark:text-blue-300">
+          <p className="text-sm text-neutral-700 dark:text-neutral-300">
             This component tests the privacy-first document linking approach. 
             Your files stay in your storage - we only create references.
           </p>

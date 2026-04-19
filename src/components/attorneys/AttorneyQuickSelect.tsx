@@ -182,7 +182,7 @@ export const AttorneyQuickSelect: React.FC<AttorneyQuickSelectProps> = ({
           className={cn(
             'flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors',
             mode === 'quick'
-              ? 'bg-white dark:bg-metallic-gray-700 text-judicial-blue-600 dark:text-judicial-blue-400 shadow-sm'
+              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-600 dark:text-neutral-400 shadow-sm'
               : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
           )}
         >
@@ -194,7 +194,7 @@ export const AttorneyQuickSelect: React.FC<AttorneyQuickSelectProps> = ({
           className={cn(
             'flex-1 px-4 py-2 rounded-md text-sm font-medium transition-colors',
             mode === 'manual'
-              ? 'bg-white dark:bg-metallic-gray-700 text-judicial-blue-600 dark:text-judicial-blue-400 shadow-sm'
+              ? 'bg-white dark:bg-metallic-gray-700 text-neutral-600 dark:text-neutral-400 shadow-sm'
               : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
           )}
         >
@@ -219,7 +219,7 @@ export const AttorneyQuickSelect: React.FC<AttorneyQuickSelectProps> = ({
 
           {loading ? (
             <div className="text-center py-8">
-              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-judicial-blue-600 mx-auto"></div>
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600 mx-auto"></div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-2">Loading attorneys...</p>
             </div>
           ) : recurringAttorneys.length === 0 ? (
@@ -241,8 +241,8 @@ export const AttorneyQuickSelect: React.FC<AttorneyQuickSelectProps> = ({
                   className={cn(
                     'w-full p-4 rounded-lg border-2 transition-all text-left',
                     value.attorney_id === attorney.attorney_id
-                      ? 'border-judicial-blue-500 bg-judicial-blue-50 dark:bg-judicial-blue-900/20'
-                      : 'border-neutral-200 dark:border-metallic-gray-700 bg-white dark:bg-metallic-gray-800 hover:border-judicial-blue-300'
+                      ? 'border-neutral-500 bg-neutral-50 dark:bg-neutral-900/20'
+                      : 'border-neutral-200 dark:border-metallic-gray-700 bg-white dark:bg-metallic-gray-800 hover:border-neutral-300'
                   )}
                 >
                   <div className="flex items-start justify-between">
@@ -252,7 +252,7 @@ export const AttorneyQuickSelect: React.FC<AttorneyQuickSelectProps> = ({
                           {attorney.attorney_name}
                         </p>
                         {attorney.is_registered && (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-status-success-100 text-status-success-800 dark:bg-status-success-900/30 dark:text-status-success-300">
                             Registered
                           </span>
                         )}
@@ -362,7 +362,7 @@ export const AttorneyQuickSelect: React.FC<AttorneyQuickSelectProps> = ({
               />
 
               {/* Portal Invitation Checkbox */}
-              <div className="p-3 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg">
+              <div className="p-3 bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg">
                 <label className="flex items-start gap-3 cursor-pointer">
                   <input
                     type="checkbox"
@@ -371,11 +371,11 @@ export const AttorneyQuickSelect: React.FC<AttorneyQuickSelectProps> = ({
                       setSendInvitation(e.target.checked);
                       onChange({ ...value, send_portal_invitation: e.target.checked });
                     }}
-                    className="mt-1 h-4 w-4 text-judicial-blue-600 focus:ring-judicial-blue-500 border-neutral-300 rounded"
+                    className="mt-1 h-4 w-4 text-neutral-600 focus:ring-neutral-500 border-neutral-300 rounded"
                   />
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <Mail className="w-4 h-4 text-judicial-blue-600 dark:text-judicial-blue-400" />
+                      <Mail className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
                       <span className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                         Send Portal Invitation
                       </span>

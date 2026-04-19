@@ -109,7 +109,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
       </div>
 
       {services.length > 0 && (
-        <div className="bg-purple-50 dark:bg-purple-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
+        <div className="bg-neutral-50 dark:bg-neutral-900/20 rounded-lg p-4 border border-purple-200 dark:border-purple-800">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <div className="text-sm text-neutral-600 dark:text-neutral-400">Total Quantity</div>
@@ -119,7 +119,7 @@ export const ServiceList: React.FC<ServiceListProps> = ({
             </div>
             <div>
               <div className="text-sm text-neutral-600 dark:text-neutral-400">Total Amount</div>
-              <div className="text-2xl font-bold text-purple-600 dark:text-purple-400">
+              <div className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
                 R{calculateTotal().toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
@@ -184,10 +184,10 @@ export const ServiceList: React.FC<ServiceListProps> = ({
                     </button>
                     <button
                       onClick={() => handleDelete(service)}
-                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      className="p-2 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 rounded-lg transition-colors"
                       title="Delete"
                     >
-                      <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                      <Trash2 className="w-4 h-4 text-status-error-600 dark:text-status-error-400" />
                     </button>
                   </div>
                 </div>

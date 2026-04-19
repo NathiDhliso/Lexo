@@ -49,7 +49,7 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
       case InvoiceStatus.DRAFT:
         return { color: 'bg-neutral-100 text-neutral-700', icon: FileText, label: 'Draft' };
       case InvoiceStatus.SENT:
-        return { color: 'bg-judicial-blue-100 text-judicial-blue-700', icon: Send, label: 'Sent' };
+        return { color: 'bg-neutral-100 text-neutral-700', icon: Send, label: 'Sent' };
       case InvoiceStatus.PAID:
         return { color: 'bg-status-success-100 text-status-success-700', icon: CheckCircle, label: 'Paid' };
       case InvoiceStatus.OVERDUE:
@@ -588,8 +588,8 @@ export const InvoiceDetailsModal: React.FC<InvoiceDetailsModalProps> = ({
               </div>
 
               <div className="space-y-4">
-                <div className="bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg p-3">
-                  <p className="text-sm text-judicial-blue-900 dark:text-judicial-blue-100">
+                <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3">
+                  <p className="text-sm text-neutral-900 dark:text-neutral-100">
                     <strong>Invoice Balance:</strong> {formatRand(invoice.balance_due)}
                   </p>
                 </div>

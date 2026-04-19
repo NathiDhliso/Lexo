@@ -79,7 +79,7 @@ export const KeyboardShortcutsHelp: React.FC<KeyboardShortcutsHelpProps> = ({ sh
         {/* Header */}
         <div className="sticky top-0 flex items-center justify-between p-6 border-b border-neutral-200 dark:border-metallic-gray-700 bg-white dark:bg-metallic-gray-800 z-10">
           <div className="flex items-center gap-3">
-            <Keyboard className="w-6 h-6 text-judicial-blue-600 dark:text-judicial-blue-400" />
+            <Keyboard className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
             <h2
               id="shortcuts-title"
               className="text-xl font-semibold text-neutral-900 dark:text-neutral-100"

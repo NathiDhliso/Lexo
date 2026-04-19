@@ -133,8 +133,8 @@ export const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
   return (
     <div className="space-y-4">
       {matterTitle && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-          <p className="text-sm text-blue-900 dark:text-blue-100">
+        <div className="bg-neutral-50 dark:bg-neutral-900/20 rounded-lg p-3">
+          <p className="text-sm text-neutral-900 dark:text-neutral-100">
             <strong>Matter:</strong> {matterTitle}
           </p>
         </div>
@@ -175,7 +175,7 @@ export const TimeEntryForm: React.FC<TimeEntryFormProps> = ({
           <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
             Total Amount:
           </span>
-          <span className="text-lg font-bold text-judicial-blue-600 dark:text-mpondo-gold-400">
+          <span className="text-lg font-bold text-neutral-600 dark:text-mpondo-gold-400">
             R{amount.toLocaleString('en-ZA', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
           </span>
         </div>

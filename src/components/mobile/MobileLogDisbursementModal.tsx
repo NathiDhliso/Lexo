@@ -248,7 +248,7 @@ export const MobileLogDisbursementModal: React.FC<MobileLogDisbursementModalProp
                       "p-3 rounded-lg text-sm font-medium transition-colors text-left",
                       "mobile-touch-target border",
                       formData.type === type.value
-                        ? "bg-judicial-blue-900 text-white border-judicial-blue-900"
+                        ? "bg-neutral-900 text-white border-neutral-900"
                         : "bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50 dark:bg-metallic-gray-800 dark:text-neutral-300 dark:border-metallic-gray-600 dark:hover:bg-metallic-gray-700"
                     )}
                   >
@@ -279,7 +279,7 @@ export const MobileLogDisbursementModal: React.FC<MobileLogDisbursementModalProp
               </select>
               
               {validationErrors.type && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                <p className="mt-2 text-sm text-status-error-600 dark:text-status-error-400">
                   {validationErrors.type}
                 </p>
               )}
@@ -315,7 +315,7 @@ export const MobileLogDisbursementModal: React.FC<MobileLogDisbursementModalProp
               </div>
               
               {validationErrors.amount && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                <p className="mt-2 text-sm text-status-error-600 dark:text-status-error-400">
                   {validationErrors.amount}
                 </p>
               )}
@@ -335,7 +335,7 @@ export const MobileLogDisbursementModal: React.FC<MobileLogDisbursementModalProp
                     checked={formData.vatApplicable === true}
                     onChange={() => handleChange('vatApplicable', true)}
                     disabled={isLoading}
-                    className="w-5 h-5 text-judicial-blue-900 focus:ring-mpondo-gold-500"
+                    className="w-5 h-5 text-neutral-900 focus:ring-mpondo-gold-500"
                   />
                   <span className="text-base">Yes</span>
                 </label>
@@ -346,7 +346,7 @@ export const MobileLogDisbursementModal: React.FC<MobileLogDisbursementModalProp
                     checked={formData.vatApplicable === false}
                     onChange={() => handleChange('vatApplicable', false)}
                     disabled={isLoading}
-                    className="w-5 h-5 text-judicial-blue-900 focus:ring-mpondo-gold-500"
+                    className="w-5 h-5 text-neutral-900 focus:ring-mpondo-gold-500"
                   />
                   <span className="text-base">No</span>
                 </label>
@@ -354,10 +354,10 @@ export const MobileLogDisbursementModal: React.FC<MobileLogDisbursementModalProp
 
               {/* VAT Suggestion */}
               {selectedType && (
-                <div className="mt-3 p-3 rounded-lg bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+                <div className="mt-3 p-3 rounded-lg bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800">
                   <div className="flex items-start gap-2">
-                    <Info className="w-4 h-4 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
-                    <p className="text-sm text-blue-700 dark:text-blue-300">
+                    <Info className="w-4 h-4 text-neutral-600 dark:text-neutral-400 flex-shrink-0 mt-0.5" />
+                    <p className="text-sm text-neutral-700 dark:text-neutral-300">
                       {selectedType.vatSuggested 
                         ? `${selectedType.label} typically includes VAT`
                         : `${selectedType.label} is typically VAT-exempt`
@@ -391,7 +391,7 @@ export const MobileLogDisbursementModal: React.FC<MobileLogDisbursementModalProp
               />
               
               {validationErrors.description && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                <p className="mt-2 text-sm text-status-error-600 dark:text-status-error-400">
                   {validationErrors.description}
                 </p>
               )}
@@ -427,18 +427,18 @@ export const MobileLogDisbursementModal: React.FC<MobileLogDisbursementModalProp
               </label>
               
               {formData.receiptImage ? (
-                <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl">
+                <div className="p-4 bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-xl">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Check className="w-5 h-5 text-green-600 dark:text-green-400" />
-                      <span className="text-sm text-green-700 dark:text-green-300">
+                      <Check className="w-5 h-5 text-status-success-600 dark:text-status-success-400" />
+                      <span className="text-sm text-status-success-700 dark:text-status-success-300">
                         Receipt captured ({(formData.receiptImage.size / 1024).toFixed(1)} KB)
                       </span>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleChange('receiptImage', undefined)}
-                      className="text-green-600 hover:text-green-800 dark:text-green-400 dark:hover:text-green-200"
+                      className="text-status-success-600 hover:text-status-success-800 dark:text-status-success-400 dark:hover:text-status-success-200"
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -485,10 +485,10 @@ export const MobileLogDisbursementModal: React.FC<MobileLogDisbursementModalProp
 
             {/* Error Display */}
             {error && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
+              <div className="p-4 bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-xl">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-600 dark:text-red-400">
+                  <AlertCircle className="w-5 h-5 text-status-error-600 dark:text-status-error-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm text-status-error-600 dark:text-status-error-400">
                     {error.message || 'An error occurred while logging the disbursement.'}
                   </p>
                 </div>

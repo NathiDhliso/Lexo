@@ -15,14 +15,14 @@ interface InvoiceFiltersProps {
 
 const STATUS_OPTIONS: { value: InvoiceStatus; label: string; color: string }[] = [
   { value: InvoiceStatus.DRAFT, label: 'Draft', color: 'bg-neutral-100 text-neutral-700' },
-  { value: InvoiceStatus.SENT, label: 'Sent', color: 'bg-blue-100 text-blue-700' },
+  { value: InvoiceStatus.SENT, label: 'Sent', color: 'bg-neutral-100 text-neutral-700' },
   { value: InvoiceStatus.OVERDUE, label: 'Overdue', color: 'bg-error-100 text-error-700' },
   { value: InvoiceStatus.PAID, label: 'Paid', color: 'bg-success-100 text-success-700' },
 ];
 
 const BAR_OPTIONS: { value: BarAssociation; label: string; color: string }[] = [
   { value: BarAssociation.JOHANNESBURG, label: 'Johannesburg', color: 'bg-mpondo-gold-100 text-mpondo-gold-700' },
-  { value: BarAssociation.CAPE_TOWN, label: 'Cape Town', color: 'bg-judicial-blue-100 text-judicial-blue-700' }
+  { value: BarAssociation.CAPE_TOWN, label: 'Cape Town', color: 'bg-neutral-100 text-neutral-700' }
 ];
 
 export const InvoiceFilters: React.FC<InvoiceFiltersProps> = ({

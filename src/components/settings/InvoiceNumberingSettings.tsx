@@ -69,15 +69,15 @@ export const InvoiceNumberingSettings: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
 
   if (!settings) {
     return (
-      <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-        <div className="flex items-center gap-2 text-red-800 dark:text-red-300">
+      <div className="bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-lg p-4">
+        <div className="flex items-center gap-2 text-status-error-800 dark:text-status-error-300">
           <AlertCircle className="h-5 w-5" />
           <p>Failed to load invoice numbering settings</p>
         </div>
@@ -89,8 +89,8 @@ export const InvoiceNumberingSettings: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <div className="p-2 bg-blue-100 dark:bg-blue-900/20 rounded-lg">
-          <Hash className="h-6 w-6 text-blue-600" />
+        <div className="p-2 bg-neutral-100 dark:bg-neutral-900/20 rounded-lg">
+          <Hash className="h-6 w-6 text-neutral-600" />
         </div>
         <div>
           <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-100">
@@ -103,14 +103,14 @@ export const InvoiceNumberingSettings: React.FC = () => {
       </div>
 
       {/* Current Sequence Info */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+      <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <Info className="h-5 w-5 text-blue-600 mt-0.5" />
+          <Info className="h-5 w-5 text-neutral-600 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
+            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">
               Current Sequence Information
             </p>
-            <div className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+            <div className="text-sm text-neutral-800 dark:text-neutral-200 space-y-1">
               <p>
                 <span className="font-medium">Next Invoice Number:</span>{' '}
                 {settings.invoice_number_format.replace('YYYY', settings.invoice_sequence_year.toString())
@@ -154,7 +154,7 @@ export const InvoiceNumberingSettings: React.FC = () => {
                 <span className="font-medium text-gray-900 dark:text-neutral-100">
                   Strict Sequential (Recommended)
                 </span>
-                <span className="px-2 py-0.5 bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-400 text-xs rounded">
+                <span className="px-2 py-0.5 bg-status-success-100 dark:bg-status-success-900/20 text-status-success-800 dark:text-status-success-400 text-xs rounded">
                   SARS Compliant
                 </span>
               </div>
@@ -208,7 +208,7 @@ export const InvoiceNumberingSettings: React.FC = () => {
               max="365"
               value={gapToleranceDays}
               onChange={(e) => setGapToleranceDays(parseInt(e.target.value) || 0)}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
             />
             <p className="mt-1 text-sm text-gray-500 dark:text-neutral-400">
               Number of days to wait before alerting about gaps in sequence. Set to 0 for immediate alerts.
@@ -242,8 +242,8 @@ export const InvoiceNumberingSettings: React.FC = () => {
         </label>
 
         {yearResetEnabled && (
-          <div className="mt-3 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-            <div className="flex items-center gap-2 text-sm text-green-800 dark:text-green-300">
+          <div className="mt-3 p-3 bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg">
+            <div className="flex items-center gap-2 text-sm text-status-success-800 dark:text-status-success-300">
               <CheckCircle className="h-4 w-4" />
               <p>
                 Next reset will occur on January 1, {new Date().getFullYear() + 1}. 
@@ -302,7 +302,7 @@ export const InvoiceNumberingSettings: React.FC = () => {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          className="px-6 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           {saving ? (
             <>

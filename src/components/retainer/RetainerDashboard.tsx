@@ -33,7 +33,7 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -58,8 +58,8 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
           <div className="flex items-center justify-between">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">Trust Account Balance</h2>
             <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${
-              retainer.status === 'active' ? 'bg-green-100 text-green-800' :
-              retainer.status === 'depleted' ? 'bg-red-100 text-red-800' :
+              retainer.status === 'active' ? 'bg-status-success-100 text-status-success-800' :
+              retainer.status === 'depleted' ? 'bg-status-error-100 text-status-error-800' :
               'bg-gray-100 text-gray-800'
             }`}>
               {retainer.status.toUpperCase()}
@@ -79,7 +79,7 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
             <div className="text-center">
               <p className="text-sm text-gray-600 dark:text-neutral-400 mb-2">Current Balance</p>
               <p className={`text-3xl font-bold ${
-                isLowBalance ? 'text-red-600' : 'text-green-600'
+                isLowBalance ? 'text-status-error-600' : 'text-status-success-600'
               }`}>
                 {formatRand(currentBalance)}
               </p>
@@ -149,14 +149,14 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className={`p-2 rounded-lg ${
-                      transaction.transaction_type === 'deposit' ? 'bg-green-100' :
-                      transaction.transaction_type === 'drawdown' ? 'bg-blue-100' :
+                      transaction.transaction_type === 'deposit' ? 'bg-status-success-100' :
+                      transaction.transaction_type === 'drawdown' ? 'bg-neutral-100' :
                       'bg-gray-100'
                     }`}>
                       {transaction.transaction_type === 'deposit' ? (
-                        <TrendingUp className="h-5 w-5 text-green-600" />
+                        <TrendingUp className="h-5 w-5 text-status-success-600" />
                       ) : transaction.transaction_type === 'drawdown' ? (
-                        <TrendingDown className="h-5 w-5 text-blue-600" />
+                        <TrendingDown className="h-5 w-5 text-neutral-600" />
                       ) : (
                         <DollarSign className="h-5 w-5 text-gray-600 dark:text-neutral-400" />
                       )}
@@ -173,8 +173,8 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
                   </div>
                   <div className="text-right">
                     <p className={`font-semibold ${
-                      transaction.transaction_type === 'deposit' ? 'text-green-600' :
-                      transaction.transaction_type === 'drawdown' ? 'text-blue-600' :
+                      transaction.transaction_type === 'deposit' ? 'text-status-success-600' :
+                      transaction.transaction_type === 'drawdown' ? 'text-neutral-600' :
                       'text-gray-900'
                     }`}>
                       {transaction.transaction_type === 'deposit' ? '+' : '-'}
@@ -194,21 +194,21 @@ export const RetainerDashboard: React.FC<RetainerDashboardProps> = ({ matterId }
       <div className="bg-white dark:bg-metallic-gray-800 rounded-lg shadow p-6">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100 mb-4">Summary</h3>
         <div className="grid grid-cols-2 gap-4">
-          <div className="bg-green-50 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-green-700 mb-2">
+          <div className="bg-status-success-50 rounded-lg p-4">
+            <div className="flex items-center gap-2 text-status-success-700 mb-2">
               <TrendingUp className="h-5 w-5" />
               <span className="font-medium">Total Deposits</span>
             </div>
-            <p className="text-2xl font-bold text-green-900">
+            <p className="text-2xl font-bold text-status-success-900">
               {formatRand(totalDeposits)}
             </p>
           </div>
-          <div className="bg-blue-50 rounded-lg p-4">
-            <div className="flex items-center gap-2 text-blue-700 mb-2">
+          <div className="bg-neutral-50 rounded-lg p-4">
+            <div className="flex items-center gap-2 text-neutral-700 mb-2">
               <TrendingDown className="h-5 w-5" />
               <span className="font-medium">Total Drawdowns</span>
             </div>
-            <p className="text-2xl font-bold text-blue-900">
+            <p className="text-2xl font-bold text-neutral-900">
               {formatRand(totalDrawdowns)}
             </p>
           </div>

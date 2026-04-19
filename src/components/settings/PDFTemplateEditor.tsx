@@ -232,7 +232,7 @@ export const PDFTemplateEditor: React.FC = () => {
         <button
           onClick={handleSave}
           disabled={saving}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50"
         >
           <Save className="w-4 h-4" />
           {saving ? 'Saving...' : 'Save Template'}
@@ -256,7 +256,7 @@ export const PDFTemplateEditor: React.FC = () => {
                 onClick={() => setActiveTab(id as any)}
                 className={`flex items-center gap-2 px-6 py-4 font-medium transition-colors ${
                   activeTab === id
-                    ? 'text-blue-600 dark:text-mpondo-gold-500 border-b-2 border-blue-600 dark:border-mpondo-gold-500'
+                    ? 'text-neutral-600 dark:text-mpondo-gold-500 border-b-2 border-neutral-600 dark:border-mpondo-gold-500'
                     : 'text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100'
                 }`}
               >

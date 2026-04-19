@@ -271,10 +271,10 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
       </div>
 
       {/* Info Banner */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+      <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 mt-0.5 flex-shrink-0" />
-          <div className="text-sm text-blue-900 dark:text-blue-100">
+          <AlertCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400 mt-0.5 flex-shrink-0" />
+          <div className="text-sm text-neutral-900 dark:text-neutral-100">
             <p className="font-medium mb-1">About Templates</p>
             <p>
               Templates marked with <Star className="w-3 h-3 inline text-mpondo-gold-500 fill-mpondo-gold-500" /> are
@@ -287,7 +287,7 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
       {/* Loading State */}
       {loading ? (
         <div className="flex items-center justify-center py-12">
-          <Loader className="w-8 h-8 animate-spin text-judicial-blue-600" />
+          <Loader className="w-8 h-8 animate-spin text-neutral-600" />
         </div>
       ) : (
         /* Template Categories */
@@ -419,7 +419,7 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
                                       variant="ghost"
                                       size="sm"
                                       onClick={() => handleDelete(template.id)}
-                                      className="text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-900/20"
+                                      className="text-status-error-600 hover:text-status-error-700 hover:bg-status-error-50 dark:hover:bg-status-error-900/20"
                                     >
                                       <Trash2 className="w-4 h-4" />
                                     </Button>
@@ -472,8 +472,8 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 p-4">
           <div className="bg-white dark:bg-metallic-gray-900 rounded-lg shadow-xl max-w-md w-full p-6">
             <div className="flex items-start gap-4">
-              <div className="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
-                <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+              <div className="w-12 h-12 rounded-full bg-status-error-100 dark:bg-status-error-900/30 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-6 h-6 text-status-error-600 dark:text-status-error-400" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
@@ -493,7 +493,7 @@ export const QuickBriefTemplatesSettings: React.FC<QuickBriefTemplatesSettingsPr
                   <Button
                     variant="primary"
                     onClick={handleConfirmDelete}
-                    className="flex-1 bg-red-600 hover:bg-red-700"
+                    className="flex-1 bg-status-error-600 hover:bg-status-error-700"
                   >
                     Delete
                   </Button>

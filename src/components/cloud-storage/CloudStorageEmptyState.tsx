@@ -15,8 +15,8 @@ export const CloudStorageEmptyState: React.FC<CloudStorageEmptyStateProps> = ({ 
   return (
     <Card className="max-w-2xl mx-auto">
       <CardContent className="text-center py-12 px-6">
-        <div className="w-20 h-20 rounded-full bg-judicial-blue-100 dark:bg-judicial-blue-900/20 flex items-center justify-center mx-auto mb-6">
-          <Cloud className="w-10 h-10 text-judicial-blue-600 dark:text-judicial-blue-400" />
+        <div className="w-20 h-20 rounded-full bg-neutral-100 dark:bg-neutral-900/20 flex items-center justify-center mx-auto mb-6">
+          <Cloud className="w-10 h-10 text-neutral-600 dark:text-neutral-400" />
         </div>
 
         <h3 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">

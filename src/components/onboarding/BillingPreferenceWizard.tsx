@@ -176,10 +176,10 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
                       'flex items-start p-4 rounded-lg border-2 cursor-pointer transition-all duration-200',
                       'hover:shadow-md',
                       isSelected
-                        ? 'border-judicial-blue-600 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 dark:border-judicial-blue-400'
+                        ? 'border-neutral-600 bg-neutral-50 dark:bg-neutral-900/20 dark:border-neutral-400'
                         : 'border-neutral-300 bg-white dark:bg-neutral-800 dark:border-neutral-600',
                       isLoading && 'opacity-50 cursor-not-allowed',
-                      !isLoading && !isSelected && 'hover:border-judicial-blue-400'
+                      !isLoading && !isSelected && 'hover:border-neutral-400'
                     )}
                   >
                     <input
@@ -197,7 +197,7 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
                       <div className={cn(
                         'w-12 h-12 rounded-full flex items-center justify-center',
                         isSelected
-                          ? 'bg-judicial-blue-600 text-white'
+                          ? 'bg-neutral-600 text-white'
                           : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
                       )}>
                         <Icon className="w-6 h-6" />
@@ -209,14 +209,14 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
                         <span className={cn(
                           'font-semibold text-lg',
                           isSelected
-                            ? 'text-judicial-blue-900 dark:text-judicial-blue-100'
+                            ? 'text-neutral-900 dark:text-neutral-100'
                             : 'text-neutral-900 dark:text-neutral-100'
                         )}>
                           {option.label}
                         </span>
                         
                         {isSelected && (
-                          <CheckCircle className="w-5 h-5 text-judicial-blue-600 dark:text-judicial-blue-400 flex-shrink-0" />
+                          <CheckCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
                         )}
                       </div>
                       
@@ -225,7 +225,7 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
                         className={cn(
                           'text-sm',
                           isSelected
-                            ? 'text-judicial-blue-700 dark:text-judicial-blue-300'
+                            ? 'text-neutral-700 dark:text-neutral-300'
                             : 'text-neutral-600 dark:text-neutral-400'
                         )}
                       >
@@ -237,7 +237,7 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
               })}
             </div>
             {validationErrors.primary_workflow && (
-              <p className="text-sm text-red-600 dark:text-red-400 mt-2">
+              <p className="text-sm text-status-error-600 dark:text-status-error-400 mt-2">
                 {validationErrors.primary_workflow}
               </p>
             )}
@@ -257,7 +257,7 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
                   checked={formData.show_time_tracking_by_default}
                   onChange={(e) => handleChange('show_time_tracking_by_default', e.target.checked)}
                   disabled={isLoading}
-                  className="mt-1 w-4 h-4 text-judicial-blue-600 border-neutral-300 rounded focus:ring-judicial-blue-500"
+                  className="mt-1 w-4 h-4 text-neutral-600 border-neutral-300 rounded focus:ring-neutral-500"
                 />
                 <div>
                   <span className="font-medium text-neutral-900 dark:text-neutral-100">
@@ -276,7 +276,7 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
                   checked={formData.auto_create_milestones}
                   onChange={(e) => handleChange('auto_create_milestones', e.target.checked)}
                   disabled={isLoading}
-                  className="mt-1 w-4 h-4 text-judicial-blue-600 border-neutral-300 rounded focus:ring-judicial-blue-500"
+                  className="mt-1 w-4 h-4 text-neutral-600 border-neutral-300 rounded focus:ring-neutral-500"
                 />
                 <div>
                   <span className="font-medium text-neutral-900 dark:text-neutral-100">
@@ -292,11 +292,11 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
 
           {/* Preview */}
           {formData.primary_workflow && (
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-              <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">
+            <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
+              <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">
                 Your Dashboard Will Include:
               </h4>
-              <div className="grid grid-cols-2 gap-2 text-sm text-blue-700 dark:text-blue-300">
+              <div className="grid grid-cols-2 gap-2 text-sm text-neutral-700 dark:text-neutral-300">
                 {workflowOptions
                   .find(opt => opt.value === formData.primary_workflow)
                   ?.dashboardWidgets.map((widget, index) => (
@@ -311,8 +311,8 @@ export const BillingPreferenceWizard: React.FC<BillingPreferenceWizardProps> = (
 
           {/* Error Display */}
           {error && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4">
-              <p className="text-sm text-red-600 dark:text-red-400">
+            <div className="bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-lg p-4">
+              <p className="text-sm text-status-error-600 dark:text-status-error-400">
                 {error.message}
               </p>
             </div>

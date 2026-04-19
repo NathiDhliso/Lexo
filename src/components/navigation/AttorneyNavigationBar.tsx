@@ -57,7 +57,7 @@ export const AttorneyNavigationBar: React.FC = () => {
               className="h-8 w-8 object-contain transition-transform group-hover:rotate-3" 
             />
             <div className="flex flex-col items-start">
-              <span className="text-lg font-bold bg-gradient-to-r from-mpondo-gold-600 to-judicial-blue-600 bg-clip-text text-transparent">
+              <span className="text-lg font-bold bg-gradient-to-r from-mpondo-gold-600 to-neutral-600 bg-clip-text text-transparent">
                 LexoHub
               </span>
               <span className="text-xs text-neutral-500 dark:text-neutral-400">Client Portal</span>

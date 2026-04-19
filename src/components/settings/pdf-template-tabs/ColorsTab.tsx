@@ -29,14 +29,14 @@ export const ColorsTab: React.FC<ColorsTabProps> = ({ template, setTemplate, log
                       onClick={() => handleColorSchemeSelect(scheme)}
                       className={`p-4 rounded-lg border-2 transition-all ${
                         template.colorScheme.id === scheme.id
-                          ? 'border-blue-600 dark:border-mpondo-gold-500 bg-blue-50 dark:bg-mpondo-gold-900/20'
+                          ? 'border-neutral-600 dark:border-mpondo-gold-500 bg-neutral-50 dark:bg-mpondo-gold-900/20'
                           : 'border-neutral-200 dark:border-metallic-gray-700 hover:border-neutral-300 dark:hover:border-metallic-gray-600'
                       }`}
                     >
                       <div className="flex items-center justify-between mb-3">
                         <span className="font-medium text-neutral-900 dark:text-neutral-100">{scheme.name}</span>
                         {template.colorScheme.id === scheme.id && (
-                          <div className="w-5 h-5 bg-blue-600 dark:bg-mpondo-gold-500 rounded-full flex items-center justify-center">
+                          <div className="w-5 h-5 bg-neutral-600 dark:bg-mpondo-gold-500 rounded-full flex items-center justify-center">
                             <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                             </svg>
@@ -79,7 +79,7 @@ export const ColorsTab: React.FC<ColorsTabProps> = ({ template, setTemplate, log
                                 [key]: e.target.value,
                               },
                             })}
-                            className="w-full h-12 rounded-lg border-2 border-neutral-300 dark:border-metallic-gray-600 cursor-pointer hover:border-blue-500 transition-colors"
+                            className="w-full h-12 rounded-lg border-2 border-neutral-300 dark:border-metallic-gray-600 cursor-pointer hover:border-neutral-500 transition-colors"
                             style={{ backgroundColor: value }}
                           />
                           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">

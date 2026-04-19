@@ -89,7 +89,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ matterId }) => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-green-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-status-success-600"></div>
       </div>
     );
   }
@@ -115,7 +115,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ matterId }) => {
       </div>
 
       {expenses.length > 0 && (
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4 border border-green-200 dark:border-green-800">
+        <div className="bg-status-success-50 dark:bg-status-success-900/20 rounded-lg p-4 border border-status-success-200 dark:border-status-success-800">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <div className="text-sm text-neutral-600 dark:text-neutral-400">Total Expenses</div>
@@ -125,7 +125,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ matterId }) => {
             </div>
             <div>
               <div className="text-sm text-neutral-600 dark:text-neutral-400">Total Amount</div>
-              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
+              <div className="text-2xl font-bold text-status-success-600 dark:text-status-success-400">
                 R{calculateTotal().toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
@@ -147,7 +147,7 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ matterId }) => {
           {expenses.map((expense) => (
             <div
               key={expense.id}
-              className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 hover:border-green-300 dark:hover:border-green-700 p-4 transition-colors"
+              className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 hover:border-status-success-300 dark:hover:border-status-success-700 p-4 transition-colors"
             >
               <div className="flex items-start justify-between">
                 <div className="flex-1">
@@ -182,10 +182,10 @@ export const ExpenseList: React.FC<ExpenseListProps> = ({ matterId }) => {
                 <div className="flex items-center gap-2 ml-4">
                   <button
                     onClick={() => handleDelete(expense)}
-                    className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                    className="p-2 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 rounded-lg transition-colors"
                     title="Delete"
                   >
-                    <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                    <Trash2 className="w-4 h-4 text-status-error-600 dark:text-status-error-400" />
                   </button>
                 </div>
               </div>

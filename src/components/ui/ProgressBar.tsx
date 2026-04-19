@@ -34,7 +34,7 @@ export const ProgressBar: React.FC<ProgressBarProps> = ({
   };
 
   const variantClasses = {
-    primary: 'bg-judicial-blue-600',
+    primary: 'bg-neutral-600',
     success: 'bg-status-success-600',
     warning: 'bg-status-warning-600',
     error: 'bg-status-error-600',

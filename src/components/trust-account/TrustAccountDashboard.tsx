@@ -77,7 +77,7 @@ export const TrustAccountDashboard: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -100,27 +100,27 @@ export const TrustAccountDashboard: React.FC = () => {
     <div className="space-y-6">
       {/* Critical Negative Balance Alert (Requirement 4.7) */}
       {hasNegativeBalance && (
-        <div className="bg-red-50 dark:bg-red-900/20 border-2 border-red-500 rounded-lg p-6">
+        <div className="bg-status-error-50 dark:bg-status-error-900/20 border-2 border-status-error-500 rounded-lg p-6">
           <div className="flex items-start gap-4">
-            <XCircle className="h-8 w-8 text-red-600 flex-shrink-0 mt-1" />
+            <XCircle className="h-8 w-8 text-status-error-600 flex-shrink-0 mt-1" />
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-red-900 dark:text-red-100 mb-2">
+              <h3 className="text-lg font-bold text-status-error-900 dark:text-status-error-100 mb-2">
                 CRITICAL: Trust Account Violation
               </h3>
-              <p className="text-red-800 dark:text-red-200 mb-4">
+              <p className="text-status-error-800 dark:text-status-error-200 mb-4">
                 Your trust account has a negative balance of <span className="font-bold">{formatRand(Math.abs(trustAccount.current_balance))}</span>.
                 This violates Legal Practice Council (LPC) regulations. Immediate action is required.
               </p>
               <div className="flex gap-3">
                 <button
                   onClick={() => setShowReceiptModal(true)}
-                  className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-medium"
+                  className="px-4 py-2 bg-status-error-600 text-white rounded-lg hover:bg-status-error-700 font-medium"
                 >
                   Deposit Funds Now
                 </button>
                 <a
                   href="tel:your-compliance-hotline"
-                  className="px-4 py-2 bg-white dark:bg-metallic-gray-800 text-red-600 border border-red-600 rounded-lg hover:bg-red-50 font-medium"
+                  className="px-4 py-2 bg-white dark:bg-metallic-gray-800 text-status-error-600 border border-status-error-600 rounded-lg hover:bg-status-error-50 font-medium"
                 >
                   Contact Compliance
                 </a>
@@ -151,22 +151,22 @@ export const TrustAccountDashboard: React.FC = () => {
       <div className="bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg shadow-lg text-white p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
-            <p className="text-blue-100 text-sm mb-1">Trust Account Balance</p>
+            <p className="text-neutral-100 text-sm mb-1">Trust Account Balance</p>
             <h2 className="text-4xl font-bold">
               {formatRand(trustAccount.current_balance)}
             </h2>
           </div>
           <div className={`p-3 rounded-full ${
-            hasNegativeBalance ? 'bg-red-500' :
+            hasNegativeBalance ? 'bg-status-error-500' :
             isLowBalance ? 'bg-orange-500' : 
-            'bg-green-500'
+            'bg-status-success-500'
           }`}>
             <DollarSign className="h-8 w-8" />
           </div>
         </div>
 
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2 text-sm text-blue-100">
+          <div className="flex items-center gap-2 text-sm text-neutral-100">
             {trustAccount.lpc_compliant ? (
               <>
                 <CheckCircle2 className="h-4 w-4" />
@@ -179,7 +179,7 @@ export const TrustAccountDashboard: React.FC = () => {
               </>
             )}
           </div>
-          <div className="text-sm text-blue-100">
+          <div className="text-sm text-neutral-100">
             Last Reconciled: {
               trustAccount.last_reconciliation_date 
                 ? new Date(trustAccount.last_reconciliation_date).toLocaleDateString()
@@ -194,7 +194,7 @@ export const TrustAccountDashboard: React.FC = () => {
         <button
           onClick={() => setShowReceiptModal(true)}
           disabled={hasNegativeBalance}
-          className="flex items-center justify-center gap-2 px-6 py-4 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center justify-center gap-2 px-6 py-4 bg-status-success-600 text-white rounded-lg hover:bg-status-success-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Plus className="h-5 w-5" />
           <span className="font-medium">Record Receipt</span>
@@ -203,7 +203,7 @@ export const TrustAccountDashboard: React.FC = () => {
         <button
           onClick={() => setShowTransferModal(true)}
           disabled={hasNegativeBalance || trustAccount.current_balance === 0}
-          className="flex items-center justify-center gap-2 px-6 py-4 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="flex items-center justify-center gap-2 px-6 py-4 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ArrowRightLeft className="h-5 w-5" />
           <span className="font-medium">Transfer Funds</span>
@@ -211,7 +211,7 @@ export const TrustAccountDashboard: React.FC = () => {
 
         <button
           onClick={() => setShowReconciliationReport(true)}
-          className="flex items-center justify-center gap-2 px-6 py-4 bg-purple-600 text-white rounded-lg hover:bg-purple-700"
+          className="flex items-center justify-center gap-2 px-6 py-4 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700"
         >
           <FileText className="h-5 w-5" />
           <span className="font-medium">Reconcile</span>
@@ -244,8 +244,8 @@ export const TrustAccountDashboard: React.FC = () => {
                     <div className="flex items-center gap-3 mb-1">
                       <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
                         transaction.transaction_type === 'deposit' 
-                          ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                          : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                          ? 'bg-status-success-100 text-status-success-800 dark:bg-status-success-900/20 dark:text-status-success-400'
+                          : 'bg-status-error-100 text-status-error-800 dark:bg-status-error-900/20 dark:text-status-error-400'
                       }`}>
                         {transaction.transaction_type}
                       </span>
@@ -265,8 +265,8 @@ export const TrustAccountDashboard: React.FC = () => {
                   <div className="text-right">
                     <p className={`text-lg font-semibold ${
                       transaction.transaction_type === 'deposit'
-                        ? 'text-green-600'
-                        : 'text-red-600'
+                        ? 'text-status-success-600'
+                        : 'text-status-error-600'
                     }`}>
                       {transaction.transaction_type === 'deposit' ? '+' : '-'}{formatRand(transaction.amount)}
                     </p>

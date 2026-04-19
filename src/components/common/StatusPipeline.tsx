@@ -21,10 +21,10 @@ const getVariantColors = (variant: 'matter' | 'proforma' | 'invoice') => {
   switch (variant) {
     case 'matter':
       return {
-        active: 'bg-judicial-blue-500 border-judicial-blue-500 text-white',
-        completed: 'bg-judicial-blue-500 border-judicial-blue-500 text-white',
+        active: 'bg-neutral-500 border-neutral-500 text-white',
+        completed: 'bg-neutral-500 border-neutral-500 text-white',
         pending: 'bg-white border-neutral-300 text-neutral-400',
-        line: 'bg-judicial-blue-500',
+        line: 'bg-neutral-500',
         lineInactive: 'bg-neutral-300'
       };
     case 'proforma':

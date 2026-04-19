@@ -158,7 +158,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
             </div>
             <div>
               <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-1">Amount Paid</p>
-              <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+              <p className="text-lg font-semibold text-status-success-600 dark:text-status-success-400">
                 {formatRand(invoice.amount_paid || 0)}
               </p>
             </div>
@@ -176,7 +176,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
           {/* Payment Amount */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Payment Amount <span className="text-red-500">*</span>
+              Payment Amount <span className="text-status-error-500">*</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -195,7 +195,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
               />
             </div>
             {validationErrors.amount && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-sm text-status-error-600 dark:text-status-error-400">
                 {validationErrors.amount}
               </p>
             )}
@@ -207,9 +207,9 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
                   {paymentCalculations.isOverpayment ? (
                     <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                   ) : paymentCalculations.isFullPayment ? (
-                    <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                    <CheckCircle className="w-5 h-5 text-status-success-500 flex-shrink-0 mt-0.5" />
                   ) : (
-                    <DollarSign className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <DollarSign className="w-5 h-5 text-neutral-500 flex-shrink-0 mt-0.5" />
                   )}
                   <div className="flex-1">
                     <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
@@ -218,7 +218,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
                     <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
                       Remaining balance after payment: <span className={`font-semibold ${
                         paymentCalculations.isOverpayment ? 'text-orange-600 dark:text-orange-400' : 
-                        paymentCalculations.isFullPayment ? 'text-green-600 dark:text-green-400' : 
+                        paymentCalculations.isFullPayment ? 'text-status-success-600 dark:text-status-success-400' : 
                         'text-neutral-900 dark:text-neutral-100'
                       }`}>
                         {formatRand(Math.abs(paymentCalculations.remainingBalance))}
@@ -239,7 +239,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
           {/* Payment Date */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Payment Date <span className="text-red-500">*</span>
+              Payment Date <span className="text-status-error-500">*</span>
             </label>
             <input
               type="date"
@@ -251,7 +251,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
               className="block w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 disabled:opacity-50"
             />
             {validationErrors.payment_date && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-sm text-status-error-600 dark:text-status-error-400">
                 {validationErrors.payment_date}
               </p>
             )}
@@ -260,7 +260,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
           {/* Payment Method */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Payment Method <span className="text-red-500">*</span>
+              Payment Method <span className="text-status-error-500">*</span>
             </label>
             <select
               value={formData.payment_method}
@@ -274,7 +274,7 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
               ))}
             </select>
             {validationErrors.payment_method && (
-              <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+              <p className="mt-1 text-sm text-status-error-600 dark:text-status-error-400">
                 {validationErrors.payment_method}
               </p>
             )}
@@ -312,8 +312,8 @@ export const RecordPaymentModal: React.FC<RecordPaymentModalProps> = ({
 
           {/* Error Display */}
           {error && (
-            <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-              <p className="text-sm text-red-600 dark:text-red-400">
+            <div className="p-3 bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-lg">
+              <p className="text-sm text-status-error-600 dark:text-status-error-400">
                 {error.message || 'An error occurred while recording the payment.'}
               </p>
             </div>

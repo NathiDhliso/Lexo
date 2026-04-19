@@ -148,8 +148,8 @@ export const UrgencyDeadlineSelector: React.FC<UrgencyDeadlineSelectorProps> = (
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-full bg-judicial-blue-100 dark:bg-judicial-blue-900/30 flex items-center justify-center">
-          <Clock className="w-6 h-6 text-judicial-blue-600 dark:text-judicial-blue-400" />
+        <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-900/30 flex items-center justify-center">
+          <Clock className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
         </div>
         <div>
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
@@ -197,14 +197,14 @@ export const UrgencyDeadlineSelector: React.FC<UrgencyDeadlineSelectorProps> = (
 
       {/* Display calculated deadline */}
       {formData.deadline_date && (
-        <div className="p-4 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg">
+        <div className="p-4 bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg">
           <div className="flex items-center gap-3">
-            <Calendar className="w-5 h-5 text-judicial-blue-600 dark:text-judicial-blue-400" />
+            <Calendar className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             <div>
-              <p className="text-sm font-medium text-judicial-blue-900 dark:text-judicial-blue-100">
+              <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                 Deadline Date
               </p>
-              <p className="text-lg font-semibold text-judicial-blue-600 dark:text-judicial-blue-400">
+              <p className="text-lg font-semibold text-neutral-600 dark:text-neutral-400">
                 {format(new Date(formData.deadline_date), 'EEEE, dd MMMM yyyy')}
               </p>
             </div>

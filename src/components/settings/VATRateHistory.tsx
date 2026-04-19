@@ -117,7 +117,7 @@ export const VATRateHistory: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -133,7 +133,7 @@ export const VATRateHistory: React.FC = () => {
         <h3 className="text-lg font-semibold mb-4">Current VAT Rate</h3>
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-3xl font-bold text-blue-600">{currentRate.toFixed(2)}%</p>
+            <p className="text-3xl font-bold text-neutral-600">{currentRate.toFixed(2)}%</p>
             <p className="text-sm text-gray-600 mt-1">
               Effective for all new invoices
             </p>
@@ -163,7 +163,7 @@ export const VATRateHistory: React.FC = () => {
                 min="0"
                 max="100"
                 step="0.01"
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
               />
             </div>
 
@@ -183,7 +183,7 @@ export const VATRateHistory: React.FC = () => {
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 rows={3}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
                 placeholder="e.g., Government announced VAT increase"
               />
             </div>
@@ -214,20 +214,20 @@ export const VATRateHistory: React.FC = () => {
             {futureRates.map((entry, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between p-4 bg-blue-50 rounded-lg border border-blue-200"
+                className="flex items-center justify-between p-4 bg-neutral-50 rounded-lg border border-neutral-200"
               >
                 <div>
-                  <p className="font-semibold text-blue-900">
+                  <p className="font-semibold text-neutral-900">
                     {(entry.rate * 100).toFixed(2)}%
                   </p>
-                  <p className="text-sm text-blue-700">
+                  <p className="text-sm text-neutral-700">
                     Effective: {format(new Date(entry.effective_date), 'MMMM d, yyyy')}
                   </p>
                   {entry.notes && (
                     <p className="text-sm text-gray-600 mt-1">{entry.notes}</p>
                   )}
                 </div>
-                <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+                <span className="px-3 py-1 text-xs font-semibold rounded-full bg-neutral-100 text-neutral-800">
                   Scheduled
                 </span>
               </div>
@@ -267,9 +267,9 @@ export const VATRateHistory: React.FC = () => {
       )}
 
       {/* Help Text */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <h4 className="text-sm font-semibold text-yellow-900 mb-2">How VAT Rate History Works</h4>
-        <ul className="text-sm text-yellow-800 space-y-1 list-disc list-inside">
+      <div className="bg-status-warning-50 border border-status-warning-200 rounded-lg p-4">
+        <h4 className="text-sm font-semibold text-status-warning-900 mb-2">How VAT Rate History Works</h4>
+        <ul className="text-sm text-status-warning-800 space-y-1 list-disc list-inside">
           <li>Schedule future VAT rate changes in advance</li>
           <li>The system automatically applies the correct rate based on invoice date</li>
           <li>Historical rates are preserved for audit purposes</li>

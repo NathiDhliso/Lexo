@@ -24,7 +24,7 @@ export const FirmOverviewCard: React.FC<FirmOverviewCardProps> = ({
     >
       <CardHeader>
         <div className="flex items-center gap-2">
-          <Building2 className="w-5 h-5 text-firm-primary-500" />
+          <Building2 className="w-5 h-5 text-neutral-500" />
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
             {firmName}
           </h3>

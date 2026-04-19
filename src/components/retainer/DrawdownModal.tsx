@@ -89,8 +89,8 @@ export const DrawdownModal: React.FC<DrawdownModalProps> = ({
         </div>
 
         <form onSubmit={handleSubmit} className="p-6 space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <p className="text-sm text-blue-800 dark:text-blue-300">
+          <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
+            <p className="text-sm text-neutral-800 dark:text-neutral-300">
               Available Balance: <span className="font-semibold">R {currentBalance.toLocaleString('en-ZA', { minimumFractionDigits: 2 })}</span>
             </p>
           </div>
@@ -143,11 +143,11 @@ export const DrawdownModal: React.FC<DrawdownModalProps> = ({
           </div>
 
           {insufficientFunds && formData.amount && (
-            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg p-4 flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+            <div className="bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-lg p-4 flex items-start gap-3">
+              <AlertTriangle className="w-5 h-5 text-status-error-600 dark:text-status-error-400 flex-shrink-0 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-red-800 dark:text-red-300">Insufficient Funds</p>
-                <p className="text-sm text-red-700 dark:text-red-400 mt-1">
+                <p className="text-sm font-medium text-status-error-800 dark:text-status-error-300">Insufficient Funds</p>
+                <p className="text-sm text-status-error-700 dark:text-status-error-400 mt-1">
                   The drawdown amount exceeds the available balance.
                 </p>
               </div>

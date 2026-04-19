@@ -598,7 +598,7 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
               className="w-8 h-8 sm:w-12 sm:h-12 md:w-16 md:h-16 object-contain transition-all duration-500 group-hover:rotate-12 group-hover:scale-110 drop-shadow-2xl float-animation"
               style={{ background: 'transparent' }}
             />
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-wider drop-shadow-2xl transition-all duration-300 group-hover:text-blue-100">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-wider drop-shadow-2xl transition-all duration-300 group-hover:text-neutral-100">
               lexo
             </h1>
           </div>
@@ -613,15 +613,15 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
               {authMode === 'signin' ? (
                 <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-4 md:space-y-5 relative z-10">
                   {error && (
-                    <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-red-300" />
-                      <p className="text-xs text-red-200">{error}</p>
+                    <div className="bg-status-error-500/30 border border-status-error-500/50 rounded-lg p-2 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-status-error-300" />
+                      <p className="text-xs text-status-error-200">{error}</p>
                     </div>
                   )}
                   {success && (
-                    <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-300" />
-                      <p className="text-xs text-green-200">{success}</p>
+                    <div className="bg-status-success-500/30 border border-status-success-500/50 rounded-lg p-2 flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-status-success-300" />
+                      <p className="text-xs text-status-success-200">{success}</p>
                     </div>
                   )}
 
@@ -724,15 +724,15 @@ const LoginPage: React.FC<LoginPageProps> = ({ supabase }) => {
               ) : (
                 <form ref={formRef} onSubmit={handleSubmit} className="space-y-3 sm:space-y-3.5 md:space-y-4 relative z-10">
                   {error && (
-                    <div className="bg-red-500/30 border border-red-500/50 rounded-lg p-2 flex items-center gap-2">
-                      <AlertCircle className="h-4 w-4 text-red-300" />
-                      <p className="text-xs text-red-200">{error}</p>
+                    <div className="bg-status-error-500/30 border border-status-error-500/50 rounded-lg p-2 flex items-center gap-2">
+                      <AlertCircle className="h-4 w-4 text-status-error-300" />
+                      <p className="text-xs text-status-error-200">{error}</p>
                     </div>
                   )}
                   {success && (
-                    <div className="bg-green-500/30 border border-green-500/50 rounded-lg p-2 flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-300" />
-                      <p className="text-xs text-green-200">{success}</p>
+                    <div className="bg-status-success-500/30 border border-status-success-500/50 rounded-lg p-2 flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-status-success-300" />
+                      <p className="text-xs text-status-success-200">{success}</p>
                     </div>
                   )}
 

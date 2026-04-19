@@ -136,8 +136,8 @@ export const MatterTimeEntriesView: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div className="bg-white dark:bg-metallic-gray-900 p-4 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <Clock className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-900/30 rounded-lg">
+              <Clock className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             </div>
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Unbilled Hours</p>
@@ -164,8 +164,8 @@ export const MatterTimeEntriesView: React.FC = () => {
 
         <div className="bg-white dark:bg-metallic-gray-900 p-4 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-              <FileText className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <div className="p-2 bg-status-success-100 dark:bg-status-success-900/30 rounded-lg">
+              <FileText className="w-5 h-5 text-status-success-600 dark:text-status-success-400" />
             </div>
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Matters with Time</p>
@@ -276,7 +276,7 @@ export const MatterTimeEntriesView: React.FC = () => {
                             {entry.hours.toFixed(1)} hours
                           </div>
                           {entry.is_billed && (
-                            <span className="px-2 py-1 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300 text-xs font-medium rounded">
+                            <span className="px-2 py-1 bg-status-success-100 dark:bg-status-success-900/30 text-status-success-700 dark:text-status-success-300 text-xs font-medium rounded">
                               Billed
                             </span>
                           )}

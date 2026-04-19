@@ -60,7 +60,7 @@ export function VirtualizedList<T>({
       
       {loading && (
         <div className="flex justify-center py-4">
-          <Loader2 className="w-6 h-6 animate-spin text-blue-600" />
+          <Loader2 className="w-6 h-6 animate-spin text-neutral-600" />
         </div>
       )}
     </div>

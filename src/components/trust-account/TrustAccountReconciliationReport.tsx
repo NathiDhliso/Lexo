@@ -83,7 +83,7 @@ export const TrustAccountReconciliationReport: React.FC<TrustAccountReconciliati
                 type="date"
                 value={startDate}
                 onChange={(e) => setStartDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               />
             </div>
 
@@ -95,7 +95,7 @@ export const TrustAccountReconciliationReport: React.FC<TrustAccountReconciliati
                 type="date"
                 value={endDate}
                 onChange={(e) => setEndDate(e.target.value)}
-                className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+                className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               />
             </div>
 
@@ -103,7 +103,7 @@ export const TrustAccountReconciliationReport: React.FC<TrustAccountReconciliati
               <button
                 onClick={handleGenerateReport}
                 disabled={loading}
-                className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
+                className="w-full px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50"
               >
                 {loading ? 'Generating...' : 'Generate Report'}
               </button>
@@ -122,23 +122,23 @@ export const TrustAccountReconciliationReport: React.FC<TrustAccountReconciliati
                   </p>
                 </div>
 
-                <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+                <div className="bg-status-success-50 dark:bg-status-success-900/20 rounded-lg p-4">
                   <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Total Deposits</p>
-                  <p className="text-2xl font-bold text-green-600">
+                  <p className="text-2xl font-bold text-status-success-600">
                     +{formatRand(report.totalDeposits)}
                   </p>
                 </div>
 
-                <div className="bg-red-50 dark:bg-red-900/20 rounded-lg p-4">
+                <div className="bg-status-error-50 dark:bg-status-error-900/20 rounded-lg p-4">
                   <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Total Drawdowns</p>
-                  <p className="text-2xl font-bold text-red-600">
+                  <p className="text-2xl font-bold text-status-error-600">
                     -{formatRand(report.totalDrawdowns + report.totalTransfers)}
                   </p>
                 </div>
 
-                <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4">
+                <div className="bg-neutral-50 dark:bg-neutral-900/20 rounded-lg p-4">
                   <p className="text-sm text-gray-600 dark:text-neutral-400 mb-1">Closing Balance</p>
-                  <p className="text-2xl font-bold text-blue-600">
+                  <p className="text-2xl font-bold text-neutral-600">
                     {formatRand(report.closingBalance)}
                   </p>
                 </div>
@@ -171,8 +171,8 @@ export const TrustAccountReconciliationReport: React.FC<TrustAccountReconciliati
                           <td className="px-6 py-4 whitespace-nowrap">
                             <span className={`inline-flex items-center px-2 py-1 rounded text-xs font-medium ${
                               transaction.transaction_type === 'deposit'
-                                ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                                : 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400'
+                                ? 'bg-status-success-100 text-status-success-800 dark:bg-status-success-900/20 dark:text-status-success-400'
+                                : 'bg-status-error-100 text-status-error-800 dark:bg-status-error-900/20 dark:text-status-error-400'
                             }`}>
                               {transaction.transaction_type}
                             </span>
@@ -181,7 +181,7 @@ export const TrustAccountReconciliationReport: React.FC<TrustAccountReconciliati
                             {transaction.description}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-medium">
-                            <span className={transaction.transaction_type === 'deposit' ? 'text-green-600' : 'text-red-600'}>
+                            <span className={transaction.transaction_type === 'deposit' ? 'text-status-success-600' : 'text-status-error-600'}>
                               {transaction.transaction_type === 'deposit' ? '+' : '-'}{formatRand(transaction.amount)}
                             </span>
                           </td>
@@ -208,7 +208,7 @@ export const TrustAccountReconciliationReport: React.FC<TrustAccountReconciliati
                 {!report.isReconciled && (
                   <button
                     onClick={handleMarkReconciled}
-                    className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 flex items-center gap-2"
+                    className="px-6 py-2 bg-status-success-600 text-white rounded-lg hover:bg-status-success-700 flex items-center gap-2"
                   >
                     <Check className="h-4 w-4" />
                     Mark as Reconciled

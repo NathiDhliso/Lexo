@@ -73,8 +73,8 @@ export const ResponsiveTestHelper: React.FC = () => {
     if (width < 768) return { name: 'sm', color: 'text-orange-600', range: '640-767px' };
     if (width < 1024) return { name: 'md', color: 'text-amber-600', range: '768-1023px' };
     if (width < 1280) return { name: 'lg', color: 'text-lime-600', range: '1024-1279px' };
-    if (width < 1536) return { name: 'xl', color: 'text-green-600', range: '1280-1535px' };
-    return { name: '2xl', color: 'text-blue-600', range: '≥ 1536px' };
+    if (width < 1536) return { name: 'xl', color: 'text-status-success-600', range: '1280-1535px' };
+    return { name: '2xl', color: 'text-neutral-600', range: '≥ 1536px' };
   };
 
   const breakpoint = getBreakpoint();
@@ -83,7 +83,7 @@ export const ResponsiveTestHelper: React.FC = () => {
     const width = viewportSize.width;
     if (width < 768) return { name: 'Mobile', color: 'bg-rose-500', icon: <Smartphone className="w-3 h-3" /> };
     if (width < 1024) return { name: 'Tablet', color: 'bg-amber-500', icon: <Tablet className="w-3 h-3" /> };
-    return { name: 'Desktop', color: 'bg-green-500', icon: <Monitor className="w-3 h-3" /> };
+    return { name: 'Desktop', color: 'bg-status-success-500', icon: <Monitor className="w-3 h-3" /> };
   };
 
   const category = getCategory();
@@ -217,11 +217,11 @@ export const ResponsiveTestHelper: React.FC = () => {
                 <span className="font-mono text-neutral-600 dark:text-neutral-400">lg: ≥ 1024px</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                <span className="w-2 h-2 rounded-full bg-status-success-500"></span>
                 <span className="font-mono text-neutral-600 dark:text-neutral-400">xl: ≥ 1280px</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-blue-500"></span>
+                <span className="w-2 h-2 rounded-full bg-neutral-500"></span>
                 <span className="font-mono text-neutral-600 dark:text-neutral-400">2xl: ≥ 1536px</span>
               </div>
             </div>

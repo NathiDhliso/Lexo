@@ -156,7 +156,7 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
       <div className="max-w-4xl mx-auto p-6">
         <button
           onClick={() => setSelectedAmendment(null)}
-          className="flex items-center gap-2 text-blue-600 dark:text-mpondo-gold-400 hover:underline mb-6"
+          className="flex items-center gap-2 text-neutral-600 dark:text-mpondo-gold-400 hover:underline mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to List
@@ -168,7 +168,7 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
           </h1>
 
           <div className="space-y-6">
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
+            <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
               <h3 className="font-semibold text-gray-900 dark:text-neutral-100 mb-2">
                 {selectedAmendment.matters?.title}
               </h3>
@@ -225,9 +225,9 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
                   {formatCurrency(selectedAmendment.current_wip)}
                 </p>
               </div>
-              <div className="bg-green-50 dark:bg-green-900/20 rounded-lg p-4">
+              <div className="bg-status-success-50 dark:bg-status-success-900/20 rounded-lg p-4">
                 <p className="text-xs text-gray-600 dark:text-neutral-400 mb-1">New Estimate</p>
-                <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                <p className="text-lg font-semibold text-status-success-600 dark:text-status-success-400">
                   {formatCurrency(selectedAmendment.new_estimated_cost)}
                 </p>
               </div>
@@ -268,7 +268,7 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
               <button
                 onClick={() => handleReject(selectedAmendment.id)}
                 disabled={processing}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-status-error-600 text-white rounded-lg hover:bg-status-error-700 transition-colors disabled:opacity-50"
               >
                 <XCircle className="w-5 h-5" />
                 {processing ? 'Rejecting...' : 'Reject Amendment'}
@@ -276,7 +276,7 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
               <button
                 onClick={() => handleApprove(selectedAmendment.id)}
                 disabled={processing}
-                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-status-success-600 text-white rounded-lg hover:bg-status-success-700 transition-colors disabled:opacity-50"
               >
                 <CheckCircle className="w-5 h-5" />
                 {processing ? 'Approving...' : 'Approve Amendment'}
@@ -296,7 +296,7 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
 
       {amendments.length === 0 ? (
         <div className="text-center py-12 bg-white dark:bg-metallic-gray-900 rounded-lg border border-gray-200 dark:border-metallic-gray-700">
-          <CheckCircle className="w-16 h-16 text-green-600 dark:text-green-400 mx-auto mb-4" />
+          <CheckCircle className="w-16 h-16 text-status-success-600 dark:text-status-success-400 mx-auto mb-4" />
           <p className="text-gray-600 dark:text-neutral-400">No pending scope amendments</p>
         </div>
       ) : (
@@ -304,7 +304,7 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
           {amendments.map((amendment) => (
             <div
               key={amendment.id}
-              className="bg-white dark:bg-metallic-gray-900 rounded-lg border border-gray-200 dark:border-metallic-gray-700 p-6 hover:border-blue-300 dark:hover:border-mpondo-gold-600 transition-colors cursor-pointer"
+              className="bg-white dark:bg-metallic-gray-900 rounded-lg border border-gray-200 dark:border-metallic-gray-700 p-6 hover:border-neutral-300 dark:hover:border-mpondo-gold-600 transition-colors cursor-pointer"
               onClick={() => setSelectedAmendment(amendment)}
             >
               <div className="flex items-start justify-between mb-4">
@@ -338,7 +338,7 @@ export const ScopeAmendmentApprovalPage: React.FC = () => {
                 </div>
                 <div>
                   <p className="text-xs text-gray-600 dark:text-neutral-400">New Estimate</p>
-                  <p className="font-semibold text-green-600 dark:text-green-400">
+                  <p className="font-semibold text-status-success-600 dark:text-status-success-400">
                     {formatCurrency(amendment.new_estimated_cost)}
                   </p>
                 </div>

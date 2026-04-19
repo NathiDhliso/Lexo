@@ -173,8 +173,8 @@ export const MatterSelectionModalEnhanced: React.FC<MatterSelectionModalEnhanced
                     <span className={cn(
                       'px-2 py-1 text-xs font-medium rounded-full',
                       matter.status === 'active'
-                        ? 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400'
-                        : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+                        ? 'bg-status-success-100 text-status-success-800 dark:bg-status-success-900/20 dark:text-status-success-400'
+                        : 'bg-status-warning-100 text-status-warning-800 dark:bg-status-warning-900/20 dark:text-status-warning-400'
                     )}>
                       {matter.status}
                     </span>

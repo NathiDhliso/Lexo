@@ -16,9 +16,9 @@ const MATTER_STATES = [
     description: 'Work in progress',
     icon: Activity,
     color: 'green',
-    bgColor: 'bg-green-100',
-    textColor: 'text-green-800',
-    iconColor: 'text-green-600'
+    bgColor: 'bg-status-success-100',
+    textColor: 'text-status-success-800',
+    iconColor: 'text-status-success-600'
   },
   {
     value: 'paused' as MatterState,
@@ -26,9 +26,9 @@ const MATTER_STATES = [
     description: 'Temporarily suspended',
     icon: Pause,
     color: 'yellow',
-    bgColor: 'bg-yellow-100',
-    textColor: 'text-yellow-800',
-    iconColor: 'text-yellow-600'
+    bgColor: 'bg-status-warning-100',
+    textColor: 'text-status-warning-800',
+    iconColor: 'text-status-warning-600'
   },
   {
     value: 'on_hold' as MatterState,
@@ -46,9 +46,9 @@ const MATTER_STATES = [
     description: 'Scheduled hearing',
     icon: Gavel,
     color: 'blue',
-    bgColor: 'bg-blue-100',
-    textColor: 'text-blue-800',
-    iconColor: 'text-blue-600'
+    bgColor: 'bg-neutral-100',
+    textColor: 'text-neutral-800',
+    iconColor: 'text-neutral-600'
   },
   {
     value: 'completed' as MatterState,
@@ -56,9 +56,9 @@ const MATTER_STATES = [
     description: 'Work finished',
     icon: CheckCircle,
     color: 'purple',
-    bgColor: 'bg-purple-100',
-    textColor: 'text-purple-800',
-    iconColor: 'text-purple-600'
+    bgColor: 'bg-neutral-100',
+    textColor: 'text-neutral-800',
+    iconColor: 'text-neutral-600'
   },
   {
     value: 'archived' as MatterState,
@@ -89,7 +89,7 @@ export const MatterStateSelector: React.FC<MatterStateSelectorProps> = ({
           value={value}
           onChange={(e) => onChange(e.target.value as MatterState)}
           disabled={disabled}
-          className={`block w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+          className={`block w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent ${
             disabled ? 'bg-gray-100 cursor-not-allowed' : 'bg-white cursor-pointer'
           }`}
         >

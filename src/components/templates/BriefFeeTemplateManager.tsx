@@ -174,7 +174,7 @@ export const BriefFeeTemplateManager: React.FC<BriefFeeTemplateManagerProps> = (
   if (loading) {
     return (
       <div className="flex items-center justify-center h-64">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-judicial-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -216,7 +216,7 @@ export const BriefFeeTemplateManager: React.FC<BriefFeeTemplateManagerProps> = (
           onChange={(e) => setSelectedCaseType(e.target.value)}
           className="px-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 
                    bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 
-                   rounded-lg focus:ring-2 focus:ring-judicial-blue-500 focus:border-judicial-blue-500"
+                   rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
         >
           <option value="all">All Case Types</option>
           {caseTypes.map(type => (
@@ -230,7 +230,7 @@ export const BriefFeeTemplateManager: React.FC<BriefFeeTemplateManagerProps> = (
           onChange={(e) => setSortBy(e.target.value as 'name' | 'usage' | 'recent')}
           className="px-4 py-2 border border-neutral-300 dark:border-metallic-gray-600 
                    bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 
-                   rounded-lg focus:ring-2 focus:ring-judicial-blue-500 focus:border-judicial-blue-500"
+                   rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
         >
           <option value="usage">Most Used</option>
           <option value="recent">Recently Updated</option>
@@ -364,7 +364,7 @@ export const BriefFeeTemplateManager: React.FC<BriefFeeTemplateManagerProps> = (
                     <span className="text-sm text-neutral-600 dark:text-neutral-400">
                       Total Fee
                     </span>
-                    <span className="text-xl font-bold text-judicial-blue-600 dark:text-judicial-blue-400">
+                    <span className="text-xl font-bold text-neutral-600 dark:text-neutral-400">
                       {formatRand(calculateTotalAmount(template))}
                     </span>
                   </div>

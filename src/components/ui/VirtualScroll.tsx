@@ -229,7 +229,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               id="page-size"
               value={pageSize}
               onChange={(e) => onPageSizeChange(Number(e.target.value))}
-              className="px-2 py-1 text-sm border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 rounded focus:ring-2 focus:ring-judicial-blue-500 focus:border-transparent"
+              className="px-2 py-1 text-sm border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 rounded focus:ring-2 focus:ring-neutral-500 focus:border-transparent"
             >
               {pageSizeOptions.map((size) => (
                 <option key={size} value={size}>
@@ -261,7 +261,7 @@ export const Pagination: React.FC<PaginationProps> = ({
                   onClick={() => onPageChange(page as number)}
                   className={`px-3 py-1 text-sm font-medium rounded-lg transition-colors ${
                     currentPage === page
-                      ? 'bg-judicial-blue-600 text-white'
+                      ? 'bg-neutral-600 text-white'
                       : 'text-neutral-700 dark:text-neutral-300 bg-white dark:bg-metallic-gray-800 border border-neutral-300 dark:border-metallic-gray-600 hover:bg-neutral-50 dark:hover:bg-metallic-gray-700'
                   }`}
                   aria-label={`Page ${page}`}

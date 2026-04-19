@@ -71,9 +71,9 @@ export const OfflineModeIndicator: React.FC<OfflineModeIndicatorProps> = ({
       return {
         icon: WifiOff,
         text: 'Offline',
-        color: 'text-red-500',
-        bgColor: 'bg-red-50 dark:bg-red-900/20',
-        borderColor: 'border-red-200 dark:border-red-800',
+        color: 'text-status-error-500',
+        bgColor: 'bg-status-error-50 dark:bg-status-error-900/20',
+        borderColor: 'border-status-error-200 dark:border-status-error-800',
       };
     }
 
@@ -81,9 +81,9 @@ export const OfflineModeIndicator: React.FC<OfflineModeIndicatorProps> = ({
       return {
         icon: RefreshCw,
         text: 'Syncing',
-        color: 'text-blue-500',
-        bgColor: 'bg-blue-50 dark:bg-blue-900/20',
-        borderColor: 'border-blue-200 dark:border-blue-800',
+        color: 'text-neutral-500',
+        bgColor: 'bg-neutral-50 dark:bg-neutral-900/20',
+        borderColor: 'border-neutral-200 dark:border-neutral-800',
       };
     }
 
@@ -91,9 +91,9 @@ export const OfflineModeIndicator: React.FC<OfflineModeIndicatorProps> = ({
       return {
         icon: AlertTriangle,
         text: `${failedCount} failed`,
-        color: 'text-red-500',
-        bgColor: 'bg-red-50 dark:bg-red-900/20',
-        borderColor: 'border-red-200 dark:border-red-800',
+        color: 'text-status-error-500',
+        bgColor: 'bg-status-error-50 dark:bg-status-error-900/20',
+        borderColor: 'border-status-error-200 dark:border-status-error-800',
       };
     }
 
@@ -110,9 +110,9 @@ export const OfflineModeIndicator: React.FC<OfflineModeIndicatorProps> = ({
     return {
       icon: CheckCircle,
       text: 'Up to date',
-      color: 'text-green-500',
-      bgColor: 'bg-green-50 dark:bg-green-900/20',
-      borderColor: 'border-green-200 dark:border-green-800',
+      color: 'text-status-success-500',
+      bgColor: 'bg-status-success-50 dark:bg-status-success-900/20',
+      borderColor: 'border-status-success-200 dark:border-status-success-800',
     };
   };
 
@@ -206,9 +206,9 @@ export const OfflineModeIndicator: React.FC<OfflineModeIndicatorProps> = ({
                 {/* Connection Status */}
                 <div className="flex items-center gap-3">
                   {isOnline ? (
-                    <Wifi className="w-5 h-5 text-green-500" />
+                    <Wifi className="w-5 h-5 text-status-success-500" />
                   ) : (
-                    <WifiOff className="w-5 h-5 text-red-500" />
+                    <WifiOff className="w-5 h-5 text-status-error-500" />
                   )}
                   <div>
                     <p className="font-medium text-neutral-900 dark:text-neutral-100">
@@ -234,7 +234,7 @@ export const OfflineModeIndicator: React.FC<OfflineModeIndicatorProps> = ({
                     </div>
                   </div>
                   <div className="text-center">
-                    <div className="text-lg font-semibold text-red-600 dark:text-red-400">
+                    <div className="text-lg font-semibold text-status-error-600 dark:text-status-error-400">
                       {failedCount}
                     </div>
                     <div className="text-xs text-neutral-600 dark:text-neutral-400">
@@ -255,9 +255,9 @@ export const OfflineModeIndicator: React.FC<OfflineModeIndicatorProps> = ({
 
                 {/* Sync Status */}
                 {isSync && (
-                  <div className="flex items-center gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-                    <RefreshCw className="w-4 h-4 text-blue-500 animate-spin" />
-                    <span className="text-sm text-blue-700 dark:text-blue-300">
+                  <div className="flex items-center gap-2 p-3 bg-neutral-50 dark:bg-neutral-900/20 rounded-lg">
+                    <RefreshCw className="w-4 h-4 text-neutral-500 animate-spin" />
+                    <span className="text-sm text-neutral-700 dark:text-neutral-300">
                       Syncing changes...
                     </span>
                   </div>

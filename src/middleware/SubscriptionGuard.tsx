@@ -61,16 +61,16 @@ export const SubscriptionGuard: React.FC<SubscriptionGuardProps> = ({
     }
 
     return (
-      <div className="rounded-lg border border-yellow-200 bg-yellow-50 p-6">
-        <h3 className="mb-2 text-lg font-semibold text-yellow-900">
+      <div className="rounded-lg border border-status-warning-200 bg-status-warning-50 p-6">
+        <h3 className="mb-2 text-lg font-semibold text-status-warning-900">
           Upgrade Required
         </h3>
-        <p className="mb-4 text-yellow-800">
+        <p className="mb-4 text-status-warning-800">
           This feature requires the {SUBSCRIPTION_TIERS[requiredTier].name} plan or higher.
         </p>
         <a
           href="/subscription"
-          className="inline-flex items-center rounded-md bg-yellow-600 px-4 py-2 text-white hover:bg-yellow-700"
+          className="inline-flex items-center rounded-md bg-status-warning-600 px-4 py-2 text-white hover:bg-status-warning-700"
         >
           View Plans
         </a>

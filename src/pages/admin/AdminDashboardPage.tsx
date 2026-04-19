@@ -49,12 +49,12 @@ export const AdminDashboardPage: React.FC = () => {
   };
 
   const statCards = [
-    { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-blue-500', bg: 'bg-blue-50 dark:bg-blue-900/20' },
-    { label: 'Active Users', value: stats.activeUsers, icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-50 dark:bg-green-900/20' },
-    { label: 'Total Matters', value: stats.totalMatters, icon: Building2, color: 'text-purple-500', bg: 'bg-purple-50 dark:bg-purple-900/20' },
+    { label: 'Total Users', value: stats.totalUsers, icon: Users, color: 'text-neutral-500', bg: 'bg-neutral-50 dark:bg-neutral-900/20' },
+    { label: 'Active Users', value: stats.activeUsers, icon: TrendingUp, color: 'text-status-success-500', bg: 'bg-status-success-50 dark:bg-status-success-900/20' },
+    { label: 'Total Matters', value: stats.totalMatters, icon: Building2, color: 'text-neutral-500', bg: 'bg-neutral-50 dark:bg-neutral-900/20' },
     { label: 'Open Tickets', value: stats.openTickets, icon: Ticket, color: 'text-amber-500', bg: 'bg-amber-50 dark:bg-amber-900/20' },
-    { label: 'P1 Tickets', value: stats.p1Tickets, icon: AlertTriangle, color: 'text-red-500', bg: 'bg-red-50 dark:bg-red-900/20' },
-    { label: 'Avg Response', value: stats.avgResponseTime, icon: Clock, color: 'text-cyan-500', bg: 'bg-cyan-50 dark:bg-cyan-900/20' },
+    { label: 'P1 Tickets', value: stats.p1Tickets, icon: AlertTriangle, color: 'text-status-error-500', bg: 'bg-status-error-50 dark:bg-status-error-900/20' },
+    { label: 'Avg Response', value: stats.avgResponseTime, icon: Clock, color: 'text-neutral-500', bg: 'bg-neutral-50 dark:bg-neutral-900/20' },
   ];
 
   return (
@@ -94,14 +94,14 @@ export const AdminDashboardPage: React.FC = () => {
             </div>
             <div className="bg-neutral-800/50 border border-neutral-700 rounded-xl p-6">
               <h3 className="text-sm font-semibold text-white mb-4 flex items-center gap-2">
-                <CheckCircle className="w-4 h-4 text-green-400" /> System Status
+                <CheckCircle className="w-4 h-4 text-status-success-400" /> System Status
               </h3>
               <div className="space-y-2">
                 {['Database', 'Auth Service', 'Storage', 'Realtime'].map(svc => (
                   <div key={svc} className="flex items-center justify-between py-1.5">
                     <span className="text-sm text-neutral-300">{svc}</span>
-                    <span className="flex items-center gap-1.5 text-xs text-green-400">
-                      <span className="w-2 h-2 bg-green-400 rounded-full" /> Operational
+                    <span className="flex items-center gap-1.5 text-xs text-status-success-400">
+                      <span className="w-2 h-2 bg-status-success-400 rounded-full" /> Operational
                     </span>
                   </div>
                 ))}

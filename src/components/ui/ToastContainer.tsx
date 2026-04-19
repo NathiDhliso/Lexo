@@ -71,7 +71,7 @@ export const ToastContainer: React.FC<ToastContainerProps> = ({
       loading: {
         duration: Infinity,
         iconTheme: {
-          primary: '#2563eb', // judicial-blue-600
+          primary: '#2563eb', // neutral-600
           secondary: '#fff',
         },
       },

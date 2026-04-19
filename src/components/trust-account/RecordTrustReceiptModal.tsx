@@ -126,8 +126,8 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
       <div className="bg-white dark:bg-metallic-gray-900 rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="border-b border-gray-200 dark:border-metallic-gray-700 px-6 py-4 flex items-center justify-between sticky top-0 bg-white dark:bg-metallic-gray-900 z-10">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 dark:bg-green-900/20 rounded-lg">
-              <Receipt className="h-5 w-5 text-green-600" />
+            <div className="p-2 bg-status-success-100 dark:bg-status-success-900/20 rounded-lg">
+              <Receipt className="h-5 w-5 text-status-success-600" />
             </div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-neutral-100">
               Record Trust Receipt
@@ -143,8 +143,8 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
 
         <form onSubmit={handleSubmit} className="p-6 space-y-6">
           {/* Info Banner */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4">
-            <p className="text-sm text-blue-800 dark:text-blue-300">
+          <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
+            <p className="text-sm text-neutral-800 dark:text-neutral-300">
               <strong>Receipt Number:</strong> Will be auto-generated in format TR-YYYY-NNNN for LPC compliance
             </p>
           </div>
@@ -157,7 +157,7 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
             <select
               value={formData.matterId}
               onChange={(e) => setFormData({ ...formData, matterId: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               required
             >
               <option value="">Select matter...</option>
@@ -178,7 +178,7 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
             <select
               value={formData.clientId}
               onChange={(e) => setFormData({ ...formData, clientId: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
             >
               <option value="">Select client...</option>
               {clients.map((client) => (
@@ -200,7 +200,7 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
               min="0"
               value={formData.amount}
               onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               placeholder="0.00"
               required
             />
@@ -214,7 +214,7 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
             <select
               value={formData.paymentMethod}
               onChange={(e) => setFormData({ ...formData, paymentMethod: e.target.value as any })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               required
             >
               <option value="eft">EFT / Electronic Transfer</option>
@@ -234,7 +234,7 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
               type="text"
               value={formData.reference}
               onChange={(e) => setFormData({ ...formData, reference: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               placeholder="Bank reference or transaction ID"
             />
           </div>
@@ -248,7 +248,7 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
               value={formData.description}
               onChange={(e) => setFormData({ ...formData, description: e.target.value })}
               rows={3}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               placeholder="e.g., Initial retainer deposit from client"
               required
             />
@@ -263,7 +263,7 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
               type="date"
               value={formData.transactionDate}
               onChange={(e) => setFormData({ ...formData, transactionDate: e.target.value })}
-              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
+              className="w-full px-4 py-2 border border-gray-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:bg-metallic-gray-800 dark:text-neutral-100"
               required
             />
           </div>
@@ -281,7 +281,7 @@ export const RecordTrustReceiptModal: React.FC<RecordTrustReceiptModalProps> = (
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+              className="px-6 py-2 bg-status-success-600 text-white rounded-lg hover:bg-status-success-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
             >
               {loading ? (
                 <>

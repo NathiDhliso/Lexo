@@ -128,20 +128,20 @@ export const LogDisbursementModal: React.FC<LogDisbursementModalProps> = ({
           {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Description <span className="text-red-500">*</span>
+              Description <span className="text-status-error-500">*</span>
             </label>
             <textarea
               value={formData.description}
               onChange={(e) => handleChange('description', e.target.value)}
               placeholder="e.g., Court filing fees, Travel expenses, Expert witness fees"
-              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                errors.description ? 'border-red-500' : 'border-gray-300'
+              className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent ${
+                errors.description ? 'border-status-error-500' : 'border-gray-300'
               }`}
               rows={3}
               disabled={isSubmitting}
             />
             {errors.description && (
-              <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+              <p className="mt-1 text-sm text-status-error-600">{errors.description}</p>
             )}
           </div>
 
@@ -150,7 +150,7 @@ export const LogDisbursementModal: React.FC<LogDisbursementModalProps> = ({
             {/* Amount */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Amount (excl. VAT) <span className="text-red-500">*</span>
+                Amount (excl. VAT) <span className="text-status-error-500">*</span>
               </label>
               <div className="relative">
                 <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
@@ -162,34 +162,34 @@ export const LogDisbursementModal: React.FC<LogDisbursementModalProps> = ({
                   min="0"
                   value={formData.amount || ''}
                   onChange={(e) => handleChange('amount', parseFloat(e.target.value) || 0)}
-                  className={`w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors.amount ? 'border-red-500' : 'border-gray-300'
+                  className={`w-full pl-8 pr-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent ${
+                    errors.amount ? 'border-status-error-500' : 'border-gray-300'
                   }`}
                   disabled={isSubmitting}
                 />
               </div>
               {errors.amount && (
-                <p className="mt-1 text-sm text-red-600">{errors.amount}</p>
+                <p className="mt-1 text-sm text-status-error-600">{errors.amount}</p>
               )}
             </div>
 
             {/* Date Incurred */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Date Incurred <span className="text-red-500">*</span>
+                Date Incurred <span className="text-status-error-500">*</span>
               </label>
               <input
                 type="date"
                 value={formData.date_incurred}
                 onChange={(e) => handleChange('date_incurred', e.target.value)}
                 max={new Date().toISOString().split('T')[0]}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                  errors.date_incurred ? 'border-red-500' : 'border-gray-300'
+                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent ${
+                  errors.date_incurred ? 'border-status-error-500' : 'border-gray-300'
                 }`}
                 disabled={isSubmitting}
               />
               {errors.date_incurred && (
-                <p className="mt-1 text-sm text-red-600">{errors.date_incurred}</p>
+                <p className="mt-1 text-sm text-status-error-600">{errors.date_incurred}</p>
               )}
             </div>
           </div>
@@ -201,7 +201,7 @@ export const LogDisbursementModal: React.FC<LogDisbursementModalProps> = ({
               id="vat-applicable"
               checked={formData.vat_applicable}
               onChange={(e) => handleChange('vat_applicable', e.target.checked)}
-              className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+              className="w-4 h-4 text-neutral-600 border-gray-300 rounded focus:ring-neutral-500"
               disabled={isSubmitting}
             />
             <label htmlFor="vat-applicable" className="text-sm font-medium text-gray-700">
@@ -210,7 +210,7 @@ export const LogDisbursementModal: React.FC<LogDisbursementModalProps> = ({
           </div>
 
           {/* Real-time Calculation Display */}
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
+          <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-4 space-y-2">
             <div className="flex justify-between text-sm">
               <span className="text-gray-700">Amount (excl. VAT):</span>
               <span className="font-medium text-gray-900">
@@ -225,9 +225,9 @@ export const LogDisbursementModal: React.FC<LogDisbursementModalProps> = ({
                 </span>
               </div>
             )}
-            <div className="flex justify-between text-base font-semibold pt-2 border-t border-blue-300">
+            <div className="flex justify-between text-base font-semibold pt-2 border-t border-neutral-300">
               <span className="text-gray-900">Total Amount:</span>
-              <span className="text-blue-600">
+              <span className="text-neutral-600">
                 R {totalAmount.toFixed(2)}
               </span>
             </div>
@@ -243,7 +243,7 @@ export const LogDisbursementModal: React.FC<LogDisbursementModalProps> = ({
               value={formData.receipt_link}
               onChange={(e) => handleChange('receipt_link', e.target.value)}
               placeholder="https://drive.google.com/..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-transparent"
               disabled={isSubmitting}
             />
             <p className="mt-1 text-xs text-gray-500">

@@ -75,13 +75,13 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
   const getStatusBadge = (status: string) => {
     if (status === 'used') {
       return (
-        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">
+        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-status-success-100 text-status-success-800">
           Used
         </span>
       );
     } else if (status === 'voided') {
       return (
-        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-red-100 text-red-800">
+        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-status-error-100 text-status-error-800">
           Voided
         </span>
       );
@@ -92,13 +92,13 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
   const getTypeBadge = (type: string) => {
     if (type === 'invoice') {
       return (
-        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 text-blue-800">
+        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-neutral-100 text-neutral-800">
           Invoice
         </span>
       );
     } else if (type === 'credit_note') {
       return (
-        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 text-purple-800">
+        <span className="px-2 py-1 text-xs font-semibold rounded-full bg-neutral-100 text-neutral-800">
           Credit Note
         </span>
       );
@@ -121,7 +121,7 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
               type="date"
               value={startDate}
               onChange={(e) => setStartDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
             />
           </div>
 
@@ -133,7 +133,7 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
               type="date"
               value={endDate}
               onChange={(e) => setEndDate(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
             />
           </div>
 
@@ -144,7 +144,7 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
             <select
               value={numberType}
               onChange={(e) => setNumberType(e.target.value as any)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
             >
               <option value="">All Types</option>
               <option value="invoice">Invoice</option>
@@ -159,7 +159,7 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
             <select
               value={status}
               onChange={(e) => setStatus(e.target.value as any)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
             >
               <option value="">All Statuses</option>
               <option value="used">Used</option>
@@ -190,7 +190,7 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
 
         {loading ? (
           <div className="flex items-center justify-center p-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
           </div>
         ) : auditRecords.length === 0 ? (
           <div className="text-center py-12">
@@ -225,7 +225,7 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
                 {auditRecords.map((record) => (
                   <tr
                     key={record.id}
-                    className={record.status === 'voided' ? 'bg-red-50' : ''}
+                    className={record.status === 'voided' ? 'bg-status-error-50' : ''}
                   >
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className="text-sm font-medium text-gray-900">
@@ -270,19 +270,19 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
             </div>
             <div>
               <span className="text-gray-600">Used:</span>
-              <span className="ml-2 font-semibold text-green-600">
+              <span className="ml-2 font-semibold text-status-success-600">
                 {auditRecords.filter(r => r.status === 'used').length}
               </span>
             </div>
             <div>
               <span className="text-gray-600">Voided:</span>
-              <span className="ml-2 font-semibold text-red-600">
+              <span className="ml-2 font-semibold text-status-error-600">
                 {auditRecords.filter(r => r.status === 'voided').length}
               </span>
             </div>
             <div>
               <span className="text-gray-600">Invoices:</span>
-              <span className="ml-2 font-semibold text-blue-600">
+              <span className="ml-2 font-semibold text-neutral-600">
                 {auditRecords.filter(r => r.number_type === 'invoice').length}
               </span>
             </div>
@@ -291,9 +291,9 @@ export const InvoiceNumberingAuditLog: React.FC = () => {
       )}
 
       {/* SARS Compliance Note */}
-      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-        <h4 className="text-sm font-semibold text-yellow-900 mb-2">SARS Compliance</h4>
-        <p className="text-sm text-yellow-800">
+      <div className="bg-status-warning-50 border border-status-warning-200 rounded-lg p-4">
+        <h4 className="text-sm font-semibold text-status-warning-900 mb-2">SARS Compliance</h4>
+        <p className="text-sm text-status-warning-800">
           This audit log maintains a complete record of all invoice numbers as required by SARS.
           Export this log regularly for your tax records. Voided numbers are highlighted and include
           the reason for voiding.

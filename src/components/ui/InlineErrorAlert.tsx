@@ -42,11 +42,11 @@ export const InlineErrorAlert: React.FC<InlineErrorAlertProps> = ({
       iconColor: 'text-status-warning-600 dark:text-status-warning-400'
     },
     info: {
-      bg: 'bg-judicial-blue-50 dark:bg-judicial-blue-950/20',
-      border: 'border-judicial-blue-200 dark:border-judicial-blue-800',
-      text: 'text-judicial-blue-700 dark:text-judicial-blue-300',
+      bg: 'bg-neutral-50 dark:bg-neutral-950/20',
+      border: 'border-neutral-200 dark:border-neutral-800',
+      text: 'text-neutral-700 dark:text-neutral-300',
       icon: AlertCircle,
-      iconColor: 'text-judicial-blue-600 dark:text-judicial-blue-400'
+      iconColor: 'text-neutral-600 dark:text-neutral-400'
     }
   };
 

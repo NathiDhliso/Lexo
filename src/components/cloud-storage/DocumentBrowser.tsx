@@ -136,7 +136,7 @@ export const DocumentBrowser: React.FC<DocumentBrowserProps> = ({
       <div className="flex-1 overflow-y-auto">
         {loading ? (
           <div className="flex flex-col items-center justify-center h-full">
-            <Loader className="w-8 h-8 text-judicial-blue-500 animate-spin mb-2" />
+            <Loader className="w-8 h-8 text-neutral-500 animate-spin mb-2" />
             <p className="text-sm text-neutral-600 dark:text-neutral-400">Loading files...</p>
           </div>
         ) : error ? (

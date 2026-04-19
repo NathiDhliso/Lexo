@@ -87,7 +87,7 @@ export const Collapsible: React.FC<CollapsibleProps> = ({
         className={cn(
           'w-full flex items-center justify-between p-4 text-left transition-colors',
           'hover:bg-neutral-50 dark:hover:bg-neutral-800',
-          'focus:outline-none focus:ring-2 focus:ring-judicial-blue-500 focus:ring-inset',
+          'focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:ring-inset',
           disabled && 'opacity-50 cursor-not-allowed',
           headerClassName
         )}

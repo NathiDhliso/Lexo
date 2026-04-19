@@ -83,9 +83,9 @@ export const PendingApprovalQueue: React.FC = () => {
   const getStatusBadge = (status: string) => {
     const styles = {
       pending: 'bg-amber-100 dark:bg-amber-900/20 text-amber-800 dark:text-amber-200',
-      approved: 'bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-200',
-      rejected: 'bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-200',
-      invoiced: 'bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-200'
+      approved: 'bg-status-success-100 dark:bg-status-success-900/20 text-status-success-800 dark:text-status-success-200',
+      rejected: 'bg-status-error-100 dark:bg-status-error-900/20 text-status-error-800 dark:text-status-error-200',
+      invoiced: 'bg-neutral-100 dark:bg-neutral-900/20 text-neutral-800 dark:text-neutral-200'
     };
 
     const icons = {
@@ -113,7 +113,7 @@ export const PendingApprovalQueue: React.FC = () => {
 
     return (
       <div className={`flex items-center gap-1 text-xs ${
-        isOverBudget ? 'text-amber-600 dark:text-amber-400' : 'text-blue-600 dark:text-blue-400'
+        isOverBudget ? 'text-amber-600 dark:text-amber-400' : 'text-neutral-600 dark:text-neutral-400'
       }`}>
         {isOverBudget && <AlertCircle className="w-3 h-3" />}
         <TrendingUp className="w-3 h-3" />
@@ -125,7 +125,7 @@ export const PendingApprovalQueue: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -143,7 +143,7 @@ export const PendingApprovalQueue: React.FC = () => {
               onClick={() => setFilter(status)}
               className={`px-3 py-1 rounded-lg text-sm font-medium transition-colors ${
                 filter === status
-                  ? 'bg-blue-600 text-white'
+                  ? 'bg-neutral-600 text-white'
                   : 'bg-neutral-100 dark:bg-metallic-gray-700 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 dark:hover:bg-metallic-gray-600'
               }`}
             >
@@ -209,17 +209,17 @@ export const PendingApprovalQueue: React.FC = () => {
               <div className="flex items-center justify-between pt-3 border-t border-neutral-200 dark:border-metallic-gray-700">
                 <div className="flex gap-2 text-xs">
                   {matter.has_retainer && (
-                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-300 rounded">
+                    <span className="px-2 py-1 bg-status-success-100 dark:bg-status-success-900/20 text-status-success-700 dark:text-status-success-300 rounded">
                       Retainer
                     </span>
                   )}
                   {matter.has_time_entries && (
-                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 rounded">
+                    <span className="px-2 py-1 bg-neutral-100 dark:bg-neutral-900/20 text-neutral-700 dark:text-neutral-300 rounded">
                       Time Entries
                     </span>
                   )}
                   {matter.has_invoice && (
-                    <span className="px-2 py-1 bg-purple-100 dark:bg-purple-900/20 text-purple-700 dark:text-purple-300 rounded">
+                    <span className="px-2 py-1 bg-neutral-100 dark:bg-neutral-900/20 text-neutral-700 dark:text-neutral-300 rounded">
                       Invoiced
                     </span>
                   )}
@@ -228,7 +228,7 @@ export const PendingApprovalQueue: React.FC = () => {
                 {matter.billing_status === 'pending' && (
                   <button
                     onClick={() => setSelectedMatter(matter)}
-                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-sm font-medium"
+                    className="px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 text-sm font-medium"
                   >
                     Review
                   </button>

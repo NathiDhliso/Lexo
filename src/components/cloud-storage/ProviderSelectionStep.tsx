@@ -44,8 +44,8 @@ export const ProviderSelectionStep: React.FC<ProviderSelectionStepProps> = ({
               key={provider.id}
               className={`cursor-pointer transition-all ${
                 isSelected
-                  ? 'border-2 border-judicial-blue-500 dark:border-judicial-blue-400 bg-judicial-blue-50 dark:bg-judicial-blue-950/20'
-                  : 'border border-neutral-200 dark:border-metallic-gray-700 hover:border-judicial-blue-300 dark:hover:border-judicial-blue-700'
+                  ? 'border-2 border-neutral-500 dark:border-neutral-400 bg-neutral-50 dark:bg-neutral-950/20'
+                  : 'border border-neutral-200 dark:border-metallic-gray-700 hover:border-neutral-300 dark:hover:border-neutral-700'
               }`}
               onClick={() => onSelectProvider(provider.id)}
             >
@@ -63,7 +63,7 @@ export const ProviderSelectionStep: React.FC<ProviderSelectionStepProps> = ({
                     </div>
                   </div>
                   {isSelected && (
-                    <div className="w-6 h-6 rounded-full bg-judicial-blue-500 flex items-center justify-center">
+                    <div className="w-6 h-6 rounded-full bg-neutral-500 flex items-center justify-center">
                       <Check className="w-4 h-4 text-white" />
                     </div>
                   )}
@@ -74,7 +74,7 @@ export const ProviderSelectionStep: React.FC<ProviderSelectionStepProps> = ({
                   <ul className="space-y-1">
                     {provider.features.slice(0, 4).map((feature, index) => (
                       <li key={index} className="flex items-center gap-2 text-xs text-neutral-600 dark:text-neutral-400">
-                        <span className="w-1 h-1 rounded-full bg-judicial-blue-500"></span>
+                        <span className="w-1 h-1 rounded-full bg-neutral-500"></span>
                         {feature}
                       </li>
                     ))}

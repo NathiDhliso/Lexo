@@ -346,7 +346,7 @@ export const LivePreviewPanel: React.FC<LivePreviewPanelProps> = ({
       </div>
 
       {/* Info */}
-      <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg text-sm text-blue-800 dark:text-blue-200">
+      <div className="flex items-start gap-2 p-3 bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg text-sm text-neutral-800 dark:text-neutral-200">
         <svg
           className="w-5 h-5 flex-shrink-0 mt-0.5"
           fill="currentColor"

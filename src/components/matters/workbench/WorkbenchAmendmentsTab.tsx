@@ -41,14 +41,14 @@ export const WorkbenchAmendmentsTab: React.FC<WorkbenchAmendmentsTabProps> = ({
       </div>
 
       {/* Info Box */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-4">
+      <div className="bg-neutral-50 dark:bg-neutral-900/20 rounded-lg border border-neutral-200 dark:border-neutral-800 p-4">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-blue-900 dark:text-blue-100 mb-1">
+            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">
               When to request a scope amendment
             </p>
-            <ul className="text-sm text-blue-800 dark:text-blue-300 space-y-1 list-disc list-inside">
+            <ul className="text-sm text-neutral-800 dark:text-neutral-300 space-y-1 list-disc list-inside">
               <li>Attorney requests work outside the original pro forma</li>
               <li>Unexpected complexity requires additional time</li>
               <li>New services needed (e.g., replying affidavit, heads of argument)</li>

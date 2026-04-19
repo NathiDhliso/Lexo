@@ -79,7 +79,7 @@ export const MatterCloseChecklist: React.FC<Props> = ({
         <div className="flex-1 overflow-y-auto px-6 py-4 space-y-2">
           <div className="flex items-center gap-3 mb-3">
             <div className="flex-1 h-2 bg-neutral-100 dark:bg-metallic-gray-700 rounded-full overflow-hidden">
-              <div className="h-full bg-green-500 rounded-full transition-all" style={{ width: `${(done / items.length) * 100}%` }} />
+              <div className="h-full bg-status-success-500 rounded-full transition-all" style={{ width: `${(done / items.length) * 100}%` }} />
             </div>
             <span className="text-xs font-medium text-neutral-500">{done}/{items.length}</span>
           </div>
@@ -87,11 +87,11 @@ export const MatterCloseChecklist: React.FC<Props> = ({
           {items.map(item => (
             <button key={item.id} onClick={() => toggle(item.id)}
               className={`w-full flex items-center gap-3 p-3 rounded-lg text-left transition-colors border ${
-                item.checked ? 'bg-green-50 dark:bg-green-900/10 border-green-200 dark:border-green-800' : 'bg-neutral-50 dark:bg-metallic-gray-900 border-neutral-200 dark:border-metallic-gray-700'
+                item.checked ? 'bg-status-success-50 dark:bg-status-success-900/10 border-status-success-200 dark:border-status-success-800' : 'bg-neutral-50 dark:bg-metallic-gray-900 border-neutral-200 dark:border-metallic-gray-700'
               }`}>
-              {item.checked ? <CheckCircle className="w-5 h-5 text-green-500" /> : <Circle className="w-5 h-5 text-neutral-400" />}
-              <span className={`text-sm ${item.checked ? 'line-through text-green-700 dark:text-green-400' : 'text-neutral-900 dark:text-neutral-100'}`}>
-                {item.label} {item.required && <span className="text-red-500 text-xs">*</span>}
+              {item.checked ? <CheckCircle className="w-5 h-5 text-status-success-500" /> : <Circle className="w-5 h-5 text-neutral-400" />}
+              <span className={`text-sm ${item.checked ? 'line-through text-status-success-700 dark:text-status-success-400' : 'text-neutral-900 dark:text-neutral-100'}`}>
+                {item.label} {item.required && <span className="text-status-error-500 text-xs">*</span>}
               </span>
             </button>
           ))}
@@ -120,7 +120,7 @@ export const MatterCloseChecklist: React.FC<Props> = ({
         <div className="px-6 py-4 border-t border-neutral-200 dark:border-metallic-gray-700 flex justify-end gap-2">
           <button onClick={onClose} className="px-4 py-2 text-sm bg-neutral-100 dark:bg-metallic-gray-700 rounded-lg">Cancel</button>
           <button onClick={handleComplete} disabled={!allRequiredDone || !outcome || saving}
-            className="px-4 py-2 text-sm font-medium text-white bg-red-600 hover:bg-red-700 disabled:opacity-50 rounded-lg">
+            className="px-4 py-2 text-sm font-medium text-white bg-status-error-600 hover:bg-status-error-700 disabled:opacity-50 rounded-lg">
             {saving ? 'Closing...' : 'Close Matter'}
           </button>
         </div>

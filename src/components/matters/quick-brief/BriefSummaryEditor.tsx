@@ -138,8 +138,8 @@ export const BriefSummaryEditor: React.FC<BriefSummaryEditorProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-full bg-judicial-blue-100 dark:bg-judicial-blue-900/30 flex items-center justify-center">
-          <FileText className="w-6 h-6 text-judicial-blue-600 dark:text-judicial-blue-400" />
+        <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-900/30 flex items-center justify-center">
+          <FileText className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
         </div>
         <div>
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
@@ -252,16 +252,16 @@ export const BriefSummaryEditor: React.FC<BriefSummaryEditorProps> = ({
                   href={link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex-1 text-sm text-judicial-blue-600 dark:text-judicial-blue-400 hover:underline truncate"
+                  className="flex-1 text-sm text-neutral-600 dark:text-neutral-400 hover:underline truncate"
                 >
                   {link}
                 </a>
                 <button
                   onClick={() => handleRemoveLink(index)}
-                  className="p-1 hover:bg-red-100 dark:hover:bg-red-900/20 rounded transition-colors"
+                  className="p-1 hover:bg-status-error-100 dark:hover:bg-status-error-900/20 rounded transition-colors"
                   aria-label="Remove link"
                 >
-                  <X className="w-4 h-4 text-red-600 dark:text-red-400" />
+                  <X className="w-4 h-4 text-status-error-600 dark:text-status-error-400" />
                 </button>
               </div>
             ))}

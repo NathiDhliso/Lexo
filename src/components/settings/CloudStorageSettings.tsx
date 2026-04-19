@@ -81,7 +81,7 @@ export const CloudStorageSettings: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -89,21 +89,21 @@ export const CloudStorageSettings: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Privacy Notice */}
-      <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg p-4 mb-6">
+      <div className="bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg p-4 mb-6">
         <div className="flex items-start gap-3">
-          <div className="text-green-600 dark:text-green-400 text-xl">🔒</div>
+          <div className="text-status-success-600 dark:text-status-success-400 text-xl">🔒</div>
           <div>
-            <h3 className="font-semibold text-green-800 dark:text-green-200 mb-2">Your Privacy is Protected</h3>
-            <p className="text-sm text-green-700 dark:text-green-300 mb-2">
+            <h3 className="font-semibold text-status-success-800 dark:text-status-success-200 mb-2">Your Privacy is Protected</h3>
+            <p className="text-sm text-status-success-700 dark:text-status-success-300 mb-2">
               This app <strong>NEVER uploads</strong> your client documents to our servers. 
               When you link files from Google Drive or your computer, we only store:
             </p>
-            <ul className="text-sm text-green-700 dark:text-green-300 list-disc list-inside space-y-1">
+            <ul className="text-sm text-status-success-700 dark:text-status-success-300 list-disc list-inside space-y-1">
               <li>The file name and location reference</li>
               <li>A link to YOUR storage (Google Drive, OneDrive, etc.)</li>
               <li>When you linked it to a matter</li>
             </ul>
-            <p className="text-sm text-green-700 dark:text-green-300 mt-2">
+            <p className="text-sm text-status-success-700 dark:text-status-success-300 mt-2">
               <strong>Your actual documents stay in YOUR storage, under YOUR control.</strong>
             </p>
           </div>
@@ -143,12 +143,12 @@ export const CloudStorageSettings: React.FC = () => {
                           {provider.name}
                         </h3>
                         {connection.isPrimary && (
-                          <span className="px-2 py-1 text-xs font-medium text-blue-700 dark:text-blue-400 bg-blue-100 dark:bg-blue-900/20 rounded">
+                          <span className="px-2 py-1 text-xs font-medium text-neutral-700 dark:text-neutral-400 bg-neutral-100 dark:bg-neutral-900/20 rounded">
                             Primary
                           </span>
                         )}
                         {!connection.isActive && (
-                          <span className="px-2 py-1 text-xs font-medium text-red-700 dark:text-red-400 bg-red-100 dark:bg-red-900/20 rounded">
+                          <span className="px-2 py-1 text-xs font-medium text-status-error-700 dark:text-status-error-400 bg-status-error-100 dark:bg-status-error-900/20 rounded">
                             Disconnected
                           </span>
                         )}
@@ -214,7 +214,7 @@ export const CloudStorageSettings: React.FC = () => {
                 </div>
 
                 {connection.syncError && (
-                  <div className="mt-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded text-sm text-red-700 dark:text-red-400">
+                  <div className="mt-4 p-3 bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded text-sm text-status-error-700 dark:text-status-error-400">
                     {connection.syncError}
                   </div>
                 )}
@@ -244,8 +244,8 @@ export const CloudStorageSettings: React.FC = () => {
         title="Connect Cloud Storage"
       >
         <div className="space-y-4">
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-            <p className="text-sm text-blue-800 dark:text-blue-200">
+          <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-3">
+            <p className="text-sm text-neutral-800 dark:text-neutral-200">
               <strong>How it works:</strong> We'll connect to your cloud storage with read-only access. 
               You can then link existing files from your storage to matters in this app. 
               Your files stay in your storage - we never download or store them.

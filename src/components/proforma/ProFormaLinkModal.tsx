@@ -187,7 +187,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
           {!generatedLink ? (
             <div>
               <div className="text-center mb-6">
-                <ExternalLink className="w-12 h-12 text-blue-600 mx-auto mb-3" />
+                <ExternalLink className="w-12 h-12 text-neutral-600 mx-auto mb-3" />
                 <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
                   Generate Attorney Link
                 </h3>
@@ -203,7 +203,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
                     id="includeRateCards"
                     checked={includeRateCards}
                     onChange={(e) => setIncludeRateCards(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
+                    className="w-4 h-4 text-neutral-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-neutral-500"
                   />
                   <label htmlFor="includeRateCards" className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
                     <Calculator className="w-4 h-4" />
@@ -220,7 +220,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
                       <select
                         value={matterType}
                         onChange={(e) => setMatterType(e.target.value)}
-                        className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                       >
                         <option value="">Select type...</option>
                         <option value="civil_litigation">Civil Litigation</option>
@@ -243,14 +243,14 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
                     )}
 
                     {estimatedAmount > 0 && (
-                      <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg">
-                        <p className="text-sm font-medium text-green-800 dark:text-green-300">
+                      <div className="mt-4 p-3 bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-700 rounded-lg">
+                        <p className="text-sm font-medium text-status-success-800 dark:text-status-success-300">
                           Estimated Amount: R {estimatedAmount.toLocaleString('en-ZA', {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           })}
                         </p>
-                        <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                        <p className="text-xs text-status-success-600 dark:text-status-success-400 mt-1">
                           This estimate will be shown to the attorney when they access the link.
                         </p>
                       </div>
@@ -262,7 +262,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
               <button
                 onClick={generateLink}
                 disabled={loading || (includeRateCards && (!matterType || selectedServices.length === 0))}
-                className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+                className="w-full px-6 py-3 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium"
               >
                 {loading ? 'Generating...' : 'Generate Link'}
               </button>
@@ -271,7 +271,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
             <div>
               <div className="mb-6">
                 <div className="flex items-center gap-2 mb-3">
-                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <CheckCircle className="w-5 h-5 text-status-success-600" />
                   <h3 className="font-medium text-neutral-900 dark:text-neutral-100">Link Generated Successfully</h3>
                 </div>
                 
@@ -282,7 +282,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
                     </div>
                     <button
                       onClick={copyToClipboard}
-                      className="flex items-center gap-2 px-3 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 whitespace-nowrap"
+                      className="flex items-center gap-2 px-3 py-2 bg-neutral-600 text-white rounded hover:bg-neutral-700 whitespace-nowrap"
                     >
                       {copied ? <CheckCircle className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
                       {copied ? 'Copied!' : 'Copy'}
@@ -318,7 +318,7 @@ export const ProFormaLinkModal: React.FC<ProFormaLinkModalProps> = ({
               <div className="flex gap-3 mt-6">
                 <button
                   onClick={handleClose}
-                  className="w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                  className="w-full px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700"
                 >
                   Done
                 </button>

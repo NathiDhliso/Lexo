@@ -100,7 +100,7 @@ export const RecordPaymentForm: React.FC<RecordPaymentFormProps> = ({
           </div>
           <div>
             <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-1">Amount Paid</p>
-            <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+            <p className="text-lg font-semibold text-status-success-600 dark:text-status-success-400">
               {formatRand(invoice.amount_paid || 0)}
             </p>
           </div>
@@ -118,7 +118,7 @@ export const RecordPaymentForm: React.FC<RecordPaymentFormProps> = ({
         {/* Payment Amount */}
         <div>
           <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-            Payment Amount <span className="text-red-500">*</span>
+            Payment Amount <span className="text-status-error-500">*</span>
           </label>
           <div className="relative">
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -144,9 +144,9 @@ export const RecordPaymentForm: React.FC<RecordPaymentFormProps> = ({
                 {isOverpayment ? (
                   <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0 mt-0.5" />
                 ) : isFullPayment ? (
-                  <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-status-success-500 flex-shrink-0 mt-0.5" />
                 ) : (
-                  <DollarSign className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                  <DollarSign className="w-5 h-5 text-neutral-500 flex-shrink-0 mt-0.5" />
                 )}
                 <div className="flex-1">
                   <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
@@ -155,7 +155,7 @@ export const RecordPaymentForm: React.FC<RecordPaymentFormProps> = ({
                   <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
                     Remaining balance after payment: <span className={`font-semibold ${
                       isOverpayment ? 'text-orange-600 dark:text-orange-400' : 
-                      isFullPayment ? 'text-green-600 dark:text-green-400' : 
+                      isFullPayment ? 'text-status-success-600 dark:text-status-success-400' : 
                       'text-neutral-900 dark:text-neutral-100'
                     }`}>
                       {formatRand(Math.abs(remainingBalance))}
@@ -176,7 +176,7 @@ export const RecordPaymentForm: React.FC<RecordPaymentFormProps> = ({
         {/* Payment Date */}
         <div>
           <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-            Payment Date <span className="text-red-500">*</span>
+            Payment Date <span className="text-status-error-500">*</span>
           </label>
           <input
             type="date"
@@ -192,7 +192,7 @@ export const RecordPaymentForm: React.FC<RecordPaymentFormProps> = ({
         {/* Payment Method */}
         <div>
           <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-            Payment Method <span className="text-red-500">*</span>
+            Payment Method <span className="text-status-error-500">*</span>
           </label>
           <select
             value={paymentMethod}

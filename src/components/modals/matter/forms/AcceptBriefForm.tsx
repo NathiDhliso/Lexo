@@ -73,13 +73,13 @@ export const AcceptBriefForm: React.FC<AcceptBriefFormProps> = ({
           </div>
         </div>
 
-        <div className="flex items-start gap-3 p-4 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 rounded-lg border border-judicial-blue-200 dark:border-judicial-blue-800">
-          <AlertCircle className="w-5 h-5 text-judicial-blue-600 dark:text-judicial-blue-400 flex-shrink-0 mt-0.5" />
+        <div className="flex items-start gap-3 p-4 bg-neutral-50 dark:bg-neutral-900/20 rounded-lg border border-neutral-200 dark:border-neutral-800">
+          <AlertCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-judicial-blue-900 dark:text-judicial-blue-100 mb-1">
+            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100 mb-1">
               Best for:
             </p>
-            <ul className="text-sm text-judicial-blue-800 dark:text-judicial-blue-200 space-y-1">
+            <ul className="text-sm text-neutral-800 dark:text-neutral-200 space-y-1">
               <li>• Court appearances</li>
               <li>• Consultations</li>
               <li>• Legal opinions</li>

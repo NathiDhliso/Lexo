@@ -101,7 +101,7 @@ export const TimeEntryList: React.FC<TimeEntryListProps> = ({
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -127,7 +127,7 @@ export const TimeEntryList: React.FC<TimeEntryListProps> = ({
       </div>
 
       {timeEntries.length > 0 && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-4 border border-blue-200 dark:border-blue-800">
+        <div className="bg-neutral-50 dark:bg-neutral-900/20 rounded-lg p-4 border border-neutral-200 dark:border-neutral-800">
           <div className="grid grid-cols-2 gap-4">
             <div>
               <div className="text-sm text-neutral-600 dark:text-neutral-400">Total Hours</div>
@@ -137,7 +137,7 @@ export const TimeEntryList: React.FC<TimeEntryListProps> = ({
             </div>
             <div>
               <div className="text-sm text-neutral-600 dark:text-neutral-400">Total Amount</div>
-              <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">
+              <div className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
                 R{calculateTotal().toLocaleString('en-ZA', { minimumFractionDigits: 2 })}
               </div>
             </div>
@@ -164,7 +164,7 @@ export const TimeEntryList: React.FC<TimeEntryListProps> = ({
             return (
               <div
                 key={entry.id}
-                className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 hover:border-blue-300 dark:hover:border-blue-700 p-4 transition-colors"
+                className="bg-white dark:bg-metallic-gray-800 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 hover:border-neutral-300 dark:hover:border-neutral-700 p-4 transition-colors"
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">
@@ -202,10 +202,10 @@ export const TimeEntryList: React.FC<TimeEntryListProps> = ({
                     </button>
                     <button
                       onClick={() => handleDelete(entry)}
-                      className="p-2 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                      className="p-2 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 rounded-lg transition-colors"
                       title="Delete"
                     >
-                      <Trash2 className="w-4 h-4 text-red-600 dark:text-red-400" />
+                      <Trash2 className="w-4 h-4 text-status-error-600 dark:text-status-error-400" />
                     </button>
                   </div>
                 </div>

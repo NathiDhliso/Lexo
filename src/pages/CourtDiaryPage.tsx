@@ -32,10 +32,10 @@ export interface DiaryEntry {
 }
 
 const ENTRY_TYPE_CONFIG: Record<DiaryEntryType, { label: string; color: string; icon: React.ElementType }> = {
-  appearance: { label: 'Court Appearance', color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 border-red-200 dark:border-red-800', icon: CalendarIcon },
-  consultation: { label: 'Consultation', color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border-blue-200 dark:border-blue-800', icon: Clock },
+  appearance: { label: 'Court Appearance', color: 'bg-status-error-100 text-status-error-700 dark:bg-status-error-900/30 dark:text-status-error-400 border-status-error-200 dark:border-status-error-800', icon: CalendarIcon },
+  consultation: { label: 'Consultation', color: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/30 dark:text-neutral-400 border-neutral-200 dark:border-neutral-800', icon: Clock },
   filing_deadline: { label: 'Filing Deadline', color: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border-amber-200 dark:border-amber-800', icon: AlertTriangle },
-  prescription_date: { label: 'Prescription Date', color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400 border-purple-200 dark:border-purple-800', icon: AlertTriangle },
+  prescription_date: { label: 'Prescription Date', color: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/30 dark:text-neutral-400 border-purple-200 dark:border-purple-800', icon: AlertTriangle },
   general_task: { label: 'General Task', color: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300 border-neutral-200 dark:border-neutral-700', icon: CheckCircle },
 };
 
@@ -149,16 +149,16 @@ export const CourtDiaryPage: React.FC<CourtDiaryPageProps> = ({ matterId }) => {
 
       {/* Prescription Warning Banner */}
       {upcomingPrescriptions.length > 0 && (
-        <div className="p-4 bg-purple-50 dark:bg-purple-900/10 border border-purple-200 dark:border-purple-800 rounded-xl">
+        <div className="p-4 bg-neutral-50 dark:bg-neutral-900/10 border border-purple-200 dark:border-purple-800 rounded-xl">
           <div className="flex items-center gap-2 mb-2">
-            <AlertTriangle className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            <h3 className="text-sm font-semibold text-purple-700 dark:text-purple-300">Prescription Dates Warning</h3>
+            <AlertTriangle className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
+            <h3 className="text-sm font-semibold text-neutral-700 dark:text-neutral-300">Prescription Dates Warning</h3>
           </div>
           <div className="space-y-1">
             {upcomingPrescriptions.slice(0, 3).map(p => (
-              <p key={p.id} className="text-sm text-purple-600 dark:text-purple-400">
+              <p key={p.id} className="text-sm text-neutral-600 dark:text-neutral-400">
                 <strong>{p.title}</strong> — {format(new Date(p.entry_date), 'dd MMM yyyy')}
-                {isBefore(new Date(p.entry_date), addDays(new Date(), 30)) && <span className="ml-2 text-xs font-medium bg-purple-200 dark:bg-purple-800 px-1.5 py-0.5 rounded">Within 30 days</span>}
+                {isBefore(new Date(p.entry_date), addDays(new Date(), 30)) && <span className="ml-2 text-xs font-medium bg-neutral-200 dark:bg-neutral-800 px-1.5 py-0.5 rounded">Within 30 days</span>}
               </p>
             ))}
           </div>
@@ -201,11 +201,11 @@ export const CourtDiaryPage: React.FC<CourtDiaryPageProps> = ({ matterId }) => {
                   onClick={() => setSelectedDate(day)}
                   className={`h-20 p-1 rounded-lg text-left transition-colors border ${
                     isSelected ? 'border-mpondo-gold-500 bg-mpondo-gold-50 dark:bg-mpondo-gold-900/10' :
-                    isToday(day) ? 'border-blue-300 dark:border-blue-700 bg-blue-50 dark:bg-blue-900/10' :
+                    isToday(day) ? 'border-neutral-300 dark:border-neutral-700 bg-neutral-50 dark:bg-neutral-900/10' :
                     'border-transparent hover:bg-neutral-50 dark:hover:bg-metallic-gray-700/50'
                   }`}
                 >
-                  <span className={`text-xs font-medium ${isToday(day) ? 'text-blue-600 dark:text-blue-400' : 'text-neutral-700 dark:text-neutral-300'}`}>
+                  <span className={`text-xs font-medium ${isToday(day) ? 'text-neutral-600 dark:text-neutral-400' : 'text-neutral-700 dark:text-neutral-300'}`}>
                     {format(day, 'd')}
                   </span>
                   <div className="mt-0.5 space-y-0.5">

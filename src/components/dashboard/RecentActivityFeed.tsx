@@ -22,8 +22,8 @@ const activityIcons = {
 
 const activityColors = {
   attorney_accepted: 'text-status-success-600',
-  matter_request: 'text-judicial-blue-600',
-  invoice_sent: 'text-firm-primary-600',
+  matter_request: 'text-neutral-600',
+  invoice_sent: 'text-neutral-600',
   proforma_approved: 'text-status-success-600',
 };
 

@@ -42,7 +42,7 @@ export const UrgentAttentionCard: React.FC<UrgentAttentionCardProps> = ({
       case 'overdue_invoice':
         return 'text-status-warning-600 bg-status-warning-50';
       case 'pending_proforma':
-        return 'text-judicial-blue-600 bg-judicial-blue-50';
+        return 'text-neutral-600 bg-neutral-50';
       default:
         return 'text-neutral-600 bg-neutral-50';
     }
@@ -111,7 +111,7 @@ export const UrgentAttentionCard: React.FC<UrgentAttentionCardProps> = ({
                       ? 'border-status-error-500 bg-status-error-50/50'
                       : item.type === 'overdue_invoice'
                       ? 'border-status-warning-500 bg-status-warning-50/50'
-                      : 'border-judicial-blue-500 bg-judicial-blue-50/50'
+                      : 'border-neutral-500 bg-neutral-50/50'
                   }`}
                   onClick={() => onItemClick?.(item)}
                 >

@@ -96,13 +96,13 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
     switch (normalized) {
       case 'pro_forma':
       case 'pro forma':
-        return 'bg-purple-100 text-purple-700';
+        return 'bg-neutral-100 text-neutral-700';
       case 'disputed':
         return 'bg-orange-100 text-orange-700';
       case 'written_off':
         return 'bg-gray-100 text-gray-700';
       case 'converted':
-        return 'bg-green-100 text-green-700';
+        return 'bg-status-success-100 text-status-success-700';
       case InvoiceStatus.PAID:
       case 'paid':
         return 'text-success-600 bg-success-100';
@@ -121,7 +121,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
 
   const getReminderUrgency = (dueDate: Date) => {
     if (isToday(dueDate)) {
-      return 'bg-judicial-blue-100 dark:bg-judicial-blue-900/30 text-judicial-blue-700 dark:text-judicial-blue-300';
+      return 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-700 dark:text-neutral-300';
     } else if (isTomorrow(dueDate)) {
       return 'bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300';
     }
@@ -143,7 +143,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
         <p className="text-neutral-600 dark:text-neutral-300 mb-4">{error || 'Unable to load data'}</p>
         <button
           onClick={loadDashboardData}
-          className="px-4 py-2 bg-judicial-blue-600 text-white rounded-lg hover:bg-judicial-blue-700 dark:bg-judicial-blue-700 dark:hover:bg-judicial-blue-800 transition-colors"
+          className="px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-800 transition-colors"
         >
           Try Again
         </button>
@@ -163,7 +163,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
         </div>
         <button
           onClick={processReminders}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-judicial-blue-600 text-white rounded-lg hover:bg-judicial-blue-700 dark:bg-judicial-blue-700 dark:hover:bg-judicial-blue-800 transition-colors"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 dark:bg-neutral-700 dark:hover:bg-neutral-800 transition-colors"
         >
           <Bell className="w-4 h-4" />
           Send Reminders
@@ -174,8 +174,8 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-metallic-gray-800 p-6 rounded-lg border border-neutral-200">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-judicial-blue-100 dark:bg-judicial-blue-900/30 rounded-lg">
-              <RandIcon size={20} className="text-judicial-blue-600 dark:text-judicial-blue-400" />
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-900/30 rounded-lg">
+              <RandIcon size={20} className="text-neutral-600 dark:text-neutral-400" />
             </div>
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Outstanding</p>
@@ -218,11 +218,11 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
           <div className="flex items-center gap-3">
             <div className={`p-2 rounded-lg ${
               metrics.paymentRate >= 80 ? 'bg-status-success-100 dark:bg-status-success-900/30' : 
-              metrics.paymentRate >= 60 ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-judicial-blue-100 dark:bg-judicial-blue-900/30'
+              metrics.paymentRate >= 60 ? 'bg-amber-100 dark:bg-amber-900/30' : 'bg-neutral-100 dark:bg-neutral-900/30'
             }`}>
               <Target className={`w-5 h-5 ${
                 metrics.paymentRate >= 80 ? 'text-status-success-600 dark:text-status-success-400' : 
-                metrics.paymentRate >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-judicial-blue-600 dark:text-judicial-blue-400'
+                metrics.paymentRate >= 60 ? 'text-amber-600 dark:text-amber-400' : 'text-neutral-600 dark:text-neutral-400'
               }`} />
             </div>
             <div>
@@ -342,7 +342,7 @@ export const PaymentTrackingDashboard: React.FC<PaymentTrackingDashboardProps> =
                       <div className="flex flex-col gap-1">
                         <button
                           onClick={() => sendIndividualReminder(invoice.id)}
-                          className="px-2 py-1 text-xs bg-judicial-blue-100 text-judicial-blue-700 rounded hover:bg-judicial-blue-200 transition-colors"
+                          className="px-2 py-1 text-xs bg-neutral-100 text-neutral-700 rounded hover:bg-neutral-200 transition-colors"
                           title="Send Early Reminder"
                         >
                           <Bell className="w-3 h-3" />

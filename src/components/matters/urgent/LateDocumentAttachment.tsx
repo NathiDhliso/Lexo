@@ -126,11 +126,11 @@ export const LateDocumentAttachment: React.FC<LateDocumentAttachmentProps> = ({
     >
       <div className="space-y-4">
         {/* Info Box */}
-        <div className="p-3 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg">
-          <p className="text-sm text-judicial-blue-900 dark:text-judicial-blue-100">
+        <div className="p-3 bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+          <p className="text-sm text-neutral-900 dark:text-neutral-100">
             <strong>Matter:</strong> {matter.title}
           </p>
-          <p className="text-xs text-judicial-blue-700 dark:text-judicial-blue-300 mt-1">
+          <p className="text-xs text-neutral-700 dark:text-neutral-300 mt-1">
             Original creation: {new Date(matter.created_at).toLocaleString()}
           </p>
         </div>
@@ -149,9 +149,9 @@ export const LateDocumentAttachment: React.FC<LateDocumentAttachmentProps> = ({
                        file:mr-4 file:py-2 file:px-4
                        file:rounded-lg file:border-0
                        file:text-sm file:font-semibold
-                       file:bg-judicial-blue-50 file:text-judicial-blue-700
-                       hover:file:bg-judicial-blue-100
-                       dark:file:bg-judicial-blue-900/30 dark:file:text-judicial-blue-300
+                       file:bg-neutral-50 file:text-neutral-700
+                       hover:file:bg-neutral-100
+                       dark:file:bg-neutral-900/30 dark:file:text-neutral-300
                        cursor-pointer"
             />
           </div>
@@ -205,7 +205,7 @@ export const LateDocumentAttachment: React.FC<LateDocumentAttachmentProps> = ({
             value={additionalNotes}
             onChange={(e) => setAdditionalNotes(e.target.value)}
             placeholder="e.g., Formal brief received via email..."
-            className="w-full h-24 px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 resize-none focus:ring-2 focus:ring-judicial-blue-500"
+            className="w-full h-24 px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 resize-none focus:ring-2 focus:ring-neutral-500"
           />
           <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
             This will be appended to the matter description with a timestamp

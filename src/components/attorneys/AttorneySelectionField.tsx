@@ -215,7 +215,7 @@ export const AttorneySelectionField: React.FC<AttorneySelectionFieldProps> = ({
       <div className="flex items-center justify-between">
         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-status-error-500 ml-1">*</span>}
         </label>
         <Button
           type="button"
@@ -268,15 +268,15 @@ export const AttorneySelectionField: React.FC<AttorneySelectionFieldProps> = ({
                   className={`
                     w-full px-4 py-3 text-left rounded-lg border-2 transition-all
                     ${value?.id === attorney.id
-                      ? 'border-judicial-blue-500 bg-judicial-blue-50 dark:bg-judicial-blue-900/20'
-                      : 'border-neutral-200 dark:border-metallic-gray-600 hover:border-judicial-blue-300 dark:hover:border-judicial-blue-700 bg-white dark:bg-metallic-gray-800'
+                      ? 'border-neutral-500 bg-neutral-50 dark:bg-neutral-900/20'
+                      : 'border-neutral-200 dark:border-metallic-gray-600 hover:border-neutral-300 dark:hover:border-neutral-700 bg-white dark:bg-metallic-gray-800'
                     }
                     ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}
                   `}
                 >
                   <div className="flex items-start gap-3">
                     <div className="mt-0.5">
-                      <User className="w-5 h-5 text-judicial-blue-600 dark:text-judicial-blue-400" />
+                      <User className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-neutral-900 dark:text-neutral-100 truncate">
@@ -291,7 +291,7 @@ export const AttorneySelectionField: React.FC<AttorneySelectionFieldProps> = ({
                     </div>
                     {value?.id === attorney.id && (
                       <div className="mt-1">
-                        <div className="w-5 h-5 rounded-full bg-judicial-blue-500 flex items-center justify-center">
+                        <div className="w-5 h-5 rounded-full bg-neutral-500 flex items-center justify-center">
                           <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
@@ -327,11 +327,11 @@ export const AttorneySelectionField: React.FC<AttorneySelectionFieldProps> = ({
 
       {/* Selected Attorney Details (when in manual mode) */}
       {mode === 'manual' && value && (
-        <div className="p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-          <p className="text-sm font-medium text-green-900 dark:text-green-100 mb-1">
+        <div className="p-3 bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg">
+          <p className="text-sm font-medium text-status-success-900 dark:text-status-success-100 mb-1">
             Selected Attorney
           </p>
-          <div className="space-y-1 text-sm text-green-800 dark:text-green-200">
+          <div className="space-y-1 text-sm text-status-success-800 dark:text-status-success-200">
             <p><strong>Name:</strong> {value.attorney_name}</p>
             <p><strong>Firm:</strong> {value.firm_name}</p>
             <p><strong>Email:</strong> {value.email}</p>

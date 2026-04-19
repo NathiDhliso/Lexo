@@ -133,9 +133,9 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
   const getConfidenceColor = (confidence: 'high' | 'medium' | 'low') => {
     switch (confidence) {
       case 'high':
-        return 'text-green-600 dark:text-green-400';
+        return 'text-status-success-600 dark:text-status-success-400';
       case 'medium':
-        return 'text-yellow-600 dark:text-yellow-400';
+        return 'text-status-warning-600 dark:text-status-warning-400';
       case 'low':
         return 'text-orange-600 dark:text-orange-400';
     }
@@ -249,8 +249,8 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
       <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="sticky top-0 bg-white dark:bg-metallic-gray-800 border-b border-neutral-200 dark:border-metallic-gray-700 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-              <Receipt className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <div className="w-10 h-10 rounded-full bg-status-success-100 dark:bg-status-success-900/30 flex items-center justify-center">
+              <Receipt className="w-5 h-5 text-status-success-600 dark:text-status-success-400" />
             </div>
             <div>
               <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">Quick Add Disbursement</h2>
@@ -389,7 +389,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
                           VAT Applicable:
                         </span>
                         <span className={`text-sm font-semibold ${
-                          vatApplicable ? 'text-green-600 dark:text-green-400' : 'text-gray-600 dark:text-gray-400'
+                          vatApplicable ? 'text-status-success-600 dark:text-status-success-400' : 'text-gray-600 dark:text-gray-400'
                         }`}>
                           {vatApplicable ? 'Yes (15%)' : 'No (Exempt)'}
                         </span>
@@ -398,7 +398,7 @@ export const QuickDisbursementModal: React.FC<QuickDisbursementModalProps> = ({
                         type="button"
                         onClick={handleVatToggle}
                         className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-                          vatApplicable ? 'bg-green-600' : 'bg-gray-300 dark:bg-gray-600'
+                          vatApplicable ? 'bg-status-success-600' : 'bg-gray-300 dark:bg-gray-600'
                         }`}
                       >
                         <span

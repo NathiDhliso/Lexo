@@ -191,7 +191,7 @@ export const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-neutral-900 dark:text-neutral-100">
                     {format(new Date(payment.payment_date), 'dd MMM yyyy')}
                   </td>
-                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-green-600 dark:text-green-400">
+                  <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-status-success-600 dark:text-status-success-400">
                     {formatRand(payment.amount)}
                   </td>
                   <td className="px-4 py-3 whitespace-nowrap text-sm text-neutral-600 dark:text-neutral-400">
@@ -209,7 +209,7 @@ export const PaymentHistoryTable: React.FC<PaymentHistoryTableProps> = ({
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleDelete(payment)}
-                        className="text-red-600 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 transition-colors"
+                        className="text-status-error-600 hover:text-status-error-700 dark:text-status-error-400 dark:hover:text-status-error-300 transition-colors"
                         title="Delete payment"
                       >
                         <Trash2 className="w-4 h-4" />

@@ -34,7 +34,7 @@ export const ThisWeekDeadlinesCard: React.FC<ThisWeekDeadlinesCardProps> = ({
   const getDaysRemainingColor = (days: number) => {
     if (days === 0) return 'text-status-error-600 bg-status-error-100';
     if (days <= 2) return 'text-status-warning-600 bg-status-warning-100';
-    return 'text-judicial-blue-600 bg-judicial-blue-100';
+    return 'text-neutral-600 bg-neutral-100';
   };
 
   const getDaysRemainingText = (days: number) => {
@@ -48,7 +48,7 @@ export const ThisWeekDeadlinesCard: React.FC<ThisWeekDeadlinesCardProps> = ({
       <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
-            <Icon icon={Calendar} className="w-5 h-5 text-judicial-blue-600" noGradient />
+            <Icon icon={Calendar} className="w-5 h-5 text-neutral-600" noGradient />
             <h3 className="text-lg font-semibold text-neutral-900">This Week's Deadlines</h3>
           </div>
         </CardHeader>
@@ -66,7 +66,7 @@ export const ThisWeekDeadlinesCard: React.FC<ThisWeekDeadlinesCardProps> = ({
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Icon icon={Calendar} className="w-5 h-5 text-judicial-blue-600" noGradient />
+            <Icon icon={Calendar} className="w-5 h-5 text-neutral-600" noGradient />
             <h3 className="text-lg font-semibold text-neutral-900">This Week's Deadlines</h3>
           </div>
           {deadlines.length > 0 && onViewAll && (

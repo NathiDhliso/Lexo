@@ -87,12 +87,12 @@ export const ContrastChecker: React.FC = () => {
       {/* Toggle Button */}
       <button
         onClick={() => setIsMinimized(!isMinimized)}
-        className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-white dark:bg-metallic-gray-800 border-2 border-judicial-blue-500 dark:border-judicial-blue-600 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-white dark:bg-metallic-gray-800 border-2 border-neutral-500 dark:border-neutral-600 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
         aria-expanded={!isMinimized}
         aria-controls="contrast-checker-panel"
       >
         <div className="flex items-center gap-3">
-          <Eye className="w-5 h-5 text-judicial-blue-600 dark:text-judicial-blue-400" />
+          <Eye className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
           <div className="flex items-center gap-2">
             {aaaCount > 0 && (
               <span className="px-2 py-1 bg-status-success-100 dark:bg-status-success-900/30 text-status-success-700 dark:text-status-success-400 text-xs font-bold rounded">
@@ -136,7 +136,7 @@ export const ContrastChecker: React.FC = () => {
                   onClick={() => setFilter(filterOption)}
                   className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
                     filter === filterOption
-                      ? 'bg-judicial-blue-100 dark:bg-judicial-blue-900/30 text-judicial-blue-700 dark:text-judicial-blue-300'
+                      ? 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-700 dark:text-neutral-300'
                       : 'bg-neutral-100 dark:bg-metallic-gray-700 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-200 dark:hover:bg-metallic-gray-600'
                   }`}
                 >

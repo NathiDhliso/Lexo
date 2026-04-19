@@ -66,7 +66,7 @@ export const AdminFeatureFlagsPage: React.FC = () => {
           <p className="text-sm text-neutral-400 mt-1">Control feature rollouts without deployments</p>
         </div>
         <div className="flex gap-2">
-          <button onClick={killAll} className="flex items-center gap-2 px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg transition-colors">
+          <button onClick={killAll} className="flex items-center gap-2 px-3 py-2 bg-status-error-600 hover:bg-status-error-700 text-white text-sm font-medium rounded-lg transition-colors">
             <AlertTriangle className="w-4 h-4" /> Emergency Kill All
           </button>
         </div>
@@ -105,7 +105,7 @@ export const AdminFeatureFlagsPage: React.FC = () => {
               </div>
               <button onClick={() => toggleFlag(flag)} className="flex-shrink-0 ml-4">
                 {flag.is_enabled ? (
-                  <ToggleRight className="w-10 h-10 text-green-400" />
+                  <ToggleRight className="w-10 h-10 text-status-success-400" />
                 ) : (
                   <ToggleLeft className="w-10 h-10 text-neutral-600" />
                 )}

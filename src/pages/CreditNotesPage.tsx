@@ -134,11 +134,11 @@ export const CreditNotesPage: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'issued':
-        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
+        return 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300';
       case 'applied':
-        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
+        return 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300';
       case 'cancelled':
-        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+        return 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-800 dark:text-status-error-300';
       default:
         return 'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300';
     }
@@ -208,9 +208,9 @@ export const CreditNotesPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">Issued</p>
-                <p className="text-2xl font-bold text-blue-600 dark:text-blue-400">{stats.issued}</p>
+                <p className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">{stats.issued}</p>
               </div>
-              <Calendar className="w-8 h-8 text-blue-400" />
+              <Calendar className="w-8 h-8 text-neutral-400" />
             </div>
           </CardContent>
         </Card>
@@ -220,9 +220,9 @@ export const CreditNotesPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">Applied</p>
-                <p className="text-2xl font-bold text-green-600 dark:text-green-400">{stats.applied}</p>
+                <p className="text-2xl font-bold text-status-success-600 dark:text-status-success-400">{stats.applied}</p>
               </div>
-              <FileText className="w-8 h-8 text-green-400" />
+              <FileText className="w-8 h-8 text-status-success-400" />
             </div>
           </CardContent>
         </Card>

@@ -36,13 +36,13 @@ export const ViewMatterDetails: React.FC<ViewMatterDetailsProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-blue-200 dark:border-blue-800">
+      <div className="bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg p-6 border border-neutral-200 dark:border-neutral-800">
         <h3 className="text-xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">{matter.title}</h3>
         <div className="flex items-center gap-3">
           <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-            matter.status === 'active' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
-            matter.status === 'pending' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
-            matter.status === 'settled' ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
+            matter.status === 'active' ? 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300' :
+            matter.status === 'pending' ? 'bg-status-warning-100 dark:bg-status-warning-900/30 text-status-warning-800 dark:text-status-warning-300' :
+            matter.status === 'settled' ? 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300' :
             'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300'
           }`}>
             {matter.status}
@@ -58,7 +58,7 @@ export const ViewMatterDetails: React.FC<ViewMatterDetailsProps> = ({
         {/* Client Info */}
         <div className="bg-neutral-50 dark:bg-metallic-gray-900 rounded-lg p-4 border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-2 mb-3">
-            <User className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <User className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Client Information</h4>
           </div>
           <dl className="space-y-2 text-sm">
@@ -90,7 +90,7 @@ export const ViewMatterDetails: React.FC<ViewMatterDetailsProps> = ({
         {/* Attorney Info */}
         <div className="bg-neutral-50 dark:bg-metallic-gray-900 rounded-lg p-4 border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-2 mb-3">
-            <Building2 className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <Building2 className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Instructing Attorney</h4>
           </div>
           <dl className="space-y-2 text-sm">
@@ -124,7 +124,7 @@ export const ViewMatterDetails: React.FC<ViewMatterDetailsProps> = ({
       {matter.description && (
         <div className="bg-neutral-50 dark:bg-metallic-gray-900 rounded-lg p-4 border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-2 mb-3">
-            <FileText className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <FileText className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             <h4 className="font-semibold text-neutral-900 dark:text-neutral-100">Description</h4>
           </div>
           <p className="text-sm text-neutral-700 dark:text-neutral-300">{matter.description}</p>

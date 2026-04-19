@@ -71,13 +71,13 @@ export const NewRequestCard: React.FC<NewRequestCardProps> = ({
         {/* Attorney & Firm Context */}
         <div className="space-y-2">
           <div className="flex items-center gap-2 text-sm">
-            <Building2 className="w-4 h-4 text-judicial-blue-600 dark:text-judicial-blue-400" />
+            <Building2 className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
             <span className="font-medium text-neutral-700 dark:text-neutral-300">From:</span>
             <span className="text-neutral-900 dark:text-neutral-100">{matter.instructing_firm}</span>
           </div>
           
           <div className="flex items-center gap-2 text-sm">
-            <User className="w-4 h-4 text-judicial-blue-600 dark:text-judicial-blue-400" />
+            <User className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
             <span className="font-medium text-neutral-700 dark:text-neutral-300">Attorney:</span>
             <span className="text-neutral-900 dark:text-neutral-100">{matter.instructing_attorney}</span>
           </div>

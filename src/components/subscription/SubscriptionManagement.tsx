@@ -128,7 +128,7 @@ export const SubscriptionManagement: React.FC = () => {
           </div>
 
           {subscription.cancel_at_period_end && (
-            <div className="mt-4 flex items-center gap-2 rounded-md bg-yellow-50 dark:bg-yellow-900/30 p-3 text-yellow-800 dark:text-yellow-300">
+            <div className="mt-4 flex items-center gap-2 rounded-md bg-status-warning-50 dark:bg-status-warning-900/30 p-3 text-status-warning-800 dark:text-status-warning-300">
               <AlertCircle className="h-5 w-5" />
               <span className="text-sm">
                 Your subscription will be cancelled on {new Date(subscription.current_period_end).toLocaleDateString()}

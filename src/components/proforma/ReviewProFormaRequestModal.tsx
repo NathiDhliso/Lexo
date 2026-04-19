@@ -130,29 +130,29 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
           <div className="flex-1 overflow-y-auto p-6">
             <div className="space-y-6">
               {/* Attorney Information */}
-              <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4">
-                <h3 className="font-medium text-blue-900 dark:text-blue-100 mb-3 flex items-center gap-2">
+              <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4">
+                <h3 className="font-medium text-neutral-900 dark:text-neutral-100 mb-3 flex items-center gap-2">
                   <User className="w-5 h-5" />
                   Attorney Information
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                   <div>
-                    <span className="text-blue-700 dark:text-blue-300 font-medium">Name:</span>
-                    <p className="text-blue-900 dark:text-blue-100 mt-1">
+                    <span className="text-neutral-700 dark:text-neutral-300 font-medium">Name:</span>
+                    <p className="text-neutral-900 dark:text-neutral-100 mt-1">
                       {request.instructing_attorney_name || 'Not provided'}
                     </p>
                   </div>
                   <div>
-                    <span className="text-blue-700 dark:text-blue-300 font-medium">Email:</span>
-                    <p className="text-blue-900 dark:text-blue-100 mt-1 flex items-center gap-2">
+                    <span className="text-neutral-700 dark:text-neutral-300 font-medium">Email:</span>
+                    <p className="text-neutral-900 dark:text-neutral-100 mt-1 flex items-center gap-2">
                       <Mail className="w-4 h-4" />
                       {request.instructing_attorney_email || 'Not provided'}
                     </p>
                   </div>
                   {request.instructing_attorney_phone && (
                     <div>
-                      <span className="text-blue-700 dark:text-blue-300 font-medium">Phone:</span>
-                      <p className="text-blue-900 dark:text-blue-100 mt-1 flex items-center gap-2">
+                      <span className="text-neutral-700 dark:text-neutral-300 font-medium">Phone:</span>
+                      <p className="text-neutral-900 dark:text-neutral-100 mt-1 flex items-center gap-2">
                         <Phone className="w-4 h-4" />
                         {request.instructing_attorney_phone}
                       </p>
@@ -160,8 +160,8 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
                   )}
                   {request.instructing_firm && (
                     <div>
-                      <span className="text-blue-700 dark:text-blue-300 font-medium">Law Firm:</span>
-                      <p className="text-blue-900 dark:text-blue-100 mt-1 flex items-center gap-2">
+                      <span className="text-neutral-700 dark:text-neutral-300 font-medium">Law Firm:</span>
+                      <p className="text-neutral-900 dark:text-neutral-100 mt-1 flex items-center gap-2">
                         <Building className="w-4 h-4" />
                         {request.instructing_firm}
                       </p>
@@ -196,9 +196,9 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
                       <span className="text-sm text-neutral-600 dark:text-neutral-400 font-medium">Urgency:</span>
                       <span
                         className={`ml-2 px-2 py-1 rounded-full text-xs font-medium ${request.urgency === 'high'
-                            ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300'
+                            ? 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-800 dark:text-status-error-300'
                             : request.urgency === 'medium'
-                              ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
+                              ? 'bg-status-warning-100 dark:bg-status-warning-900/30 text-status-warning-800 dark:text-status-warning-300'
                               : 'bg-gray-100 dark:bg-metallic-gray-800 text-gray-700 dark:text-neutral-300'
                           }`}
                       >
@@ -244,9 +244,9 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
               </div>
 
               {/* Action Guidance */}
-              <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
-                <h4 className="font-medium text-green-900 dark:text-green-100 mb-2">Next Steps</h4>
-                <ul className="text-sm text-green-800 dark:text-green-200 space-y-1">
+              <div className="bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-700 rounded-lg p-4">
+                <h4 className="font-medium text-status-success-900 dark:text-status-success-100 mb-2">Next Steps</h4>
+                <ul className="text-sm text-status-success-800 dark:text-status-success-200 space-y-1">
                   <li>✓ Review the case details above</li>
                   <li>✓ Click "Create Pro Forma Quote" to generate pricing</li>
                   <li>✓ Use AI to analyze the case and suggest services</li>
@@ -263,7 +263,7 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
               variant="outline"
               onClick={() => setShowDeclineConfirm(true)}
               disabled={isProcessing}
-              className="text-red-600 dark:text-red-400 border-red-300 dark:border-red-700 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-400 dark:hover:border-red-600 transition-all"
+              className="text-status-error-600 dark:text-status-error-400 border-status-error-300 dark:border-status-error-700 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 hover:border-status-error-400 dark:hover:border-status-error-600 transition-all"
             >
               <XCircle className="w-4 h-4 mr-2" />
               Decline Request
@@ -296,8 +296,8 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
         <div className="fixed inset-0 bg-black/60 dark:bg-black/80 backdrop-blur-sm flex items-center justify-center z-[60] p-4 animate-in fade-in duration-200">
           <div className="bg-white dark:bg-metallic-gray-800 rounded-xl theme-shadow-2xl max-w-md w-full p-6 animate-in slide-in-from-bottom-4 duration-300">
             <div className="flex items-start gap-4 mb-5">
-              <div className="w-12 h-12 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center flex-shrink-0">
-                <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+              <div className="w-12 h-12 rounded-xl bg-status-error-100 dark:bg-status-error-900/30 flex items-center justify-center flex-shrink-0">
+                <AlertCircle className="w-6 h-6 text-status-error-600 dark:text-status-error-400" />
               </div>
               <div className="flex-1">
                 <h3 className="text-lg font-bold text-neutral-900 dark:text-neutral-100 mb-1">
@@ -317,7 +317,7 @@ export const ReviewProFormaRequestModal: React.FC<ReviewProFormaRequestModalProp
                 value={declineReason}
                 onChange={handleDeclineReasonChange}
                 rows={3}
-                className="w-full px-3 py-2.5 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all resize-none"
+                className="w-full px-3 py-2.5 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-status-error-500 focus:border-status-error-500 transition-all resize-none"
                 placeholder="e.g., Conflict of interest, outside area of expertise, insufficient information..."
                 maxLength={500}
               />

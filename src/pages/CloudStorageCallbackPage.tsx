@@ -73,7 +73,7 @@ export const CloudStorageCallbackPage: React.FC = () => {
 
         {status === 'success' && (
           <>
-            <div className="text-green-500 dark:text-green-400 text-6xl mb-4">✓</div>
+            <div className="text-status-success-500 dark:text-status-success-400 text-6xl mb-4">✓</div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Successfully Connected!
             </h2>
@@ -85,7 +85,7 @@ export const CloudStorageCallbackPage: React.FC = () => {
 
         {status === 'error' && (
           <>
-            <div className="text-red-500 dark:text-red-400 text-6xl mb-4">✕</div>
+            <div className="text-status-error-500 dark:text-status-error-400 text-6xl mb-4">✕</div>
             <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">
               Connection Failed
             </h2>

@@ -186,9 +186,9 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
     return (
       <div className="bg-white dark:bg-metallic-gray-800 rounded-lg p-6">
         <div className="text-center py-8">
-          <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
-          <p className="text-red-600 font-medium">Failed to load milestones</p>
-          <p className="text-sm text-red-500 mt-1">{error.message}</p>
+          <AlertCircle className="w-12 h-12 text-status-error-400 mx-auto mb-3" />
+          <p className="text-status-error-600 font-medium">Failed to load milestones</p>
+          <p className="text-sm text-status-error-500 mt-1">{error.message}</p>
           <Button onClick={() => refetch()} className="mt-3">
             Try Again
           </Button>
@@ -210,7 +210,7 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
           </p>
         </div>
         <div className="text-right">
-          <p className="text-2xl font-bold text-judicial-blue-600 dark:text-judicial-blue-400">
+          <p className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
             {progress.percentage}%
           </p>
           <p className="text-xs text-neutral-500">
@@ -223,7 +223,7 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
       <div className="mb-6">
         <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-3">
           <div
-            className="bg-gradient-to-r from-judicial-blue-500 to-mpondo-gold-500 h-3 rounded-full transition-all duration-500"
+            className="bg-gradient-to-r from-neutral-500 to-mpondo-gold-500 h-3 rounded-full transition-all duration-500"
             style={{ width: `${progress.percentage}%` }}
           />
         </div>
@@ -242,9 +242,9 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
               className={cn(
                 'flex items-start gap-4 p-4 rounded-lg border-2 transition-all duration-200',
                 milestone.isCompleted
-                  ? 'border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800'
+                  ? 'border-status-success-200 bg-status-success-50 dark:bg-status-success-900/20 dark:border-status-success-800'
                   : isNext
-                  ? 'border-judicial-blue-200 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 dark:border-judicial-blue-800 cursor-pointer hover:shadow-md'
+                  ? 'border-neutral-200 bg-neutral-50 dark:bg-neutral-900/20 dark:border-neutral-800 cursor-pointer hover:shadow-md'
                   : 'border-neutral-200 bg-neutral-50 dark:bg-neutral-800 dark:border-neutral-700',
                 !milestone.isCompleted && !isNext && 'opacity-60',
                 completingMilestoneId === milestone.id && 'opacity-50 cursor-wait'
@@ -255,9 +255,9 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
               <div className={cn(
                 'w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0',
                 milestone.isCompleted
-                  ? 'bg-green-500 text-white'
+                  ? 'bg-status-success-500 text-white'
                   : isNext
-                  ? 'bg-judicial-blue-500 text-white'
+                  ? 'bg-neutral-500 text-white'
                   : 'bg-neutral-300 dark:bg-neutral-600 text-neutral-500 dark:text-neutral-400'
               )}>
                 {milestone.isCompleted ? (
@@ -273,9 +273,9 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
                   <h4 className={cn(
                     'font-medium',
                     milestone.isCompleted
-                      ? 'text-green-900 dark:text-green-100'
+                      ? 'text-status-success-900 dark:text-status-success-100'
                       : isNext
-                      ? 'text-judicial-blue-900 dark:text-judicial-blue-100'
+                      ? 'text-neutral-900 dark:text-neutral-100'
                       : 'text-neutral-700 dark:text-neutral-300'
                   )}>
                     {milestone.name}
@@ -284,7 +284,7 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
                     <span className={cn(
                       'text-sm font-medium px-2 py-1 rounded',
                       milestone.isCompleted
-                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300'
+                        ? 'bg-status-success-100 text-status-success-700 dark:bg-status-success-900/30 dark:text-status-success-300'
                         : 'bg-neutral-100 text-neutral-600 dark:bg-neutral-700 dark:text-neutral-400'
                     )}>
                       {milestone.percentage}%
@@ -295,22 +295,22 @@ export const FeeMilestonesWidget: React.FC<FeeMilestonesWidgetProps> = ({
                 <p className={cn(
                   'text-sm mb-2',
                   milestone.isCompleted
-                    ? 'text-green-700 dark:text-green-300'
+                    ? 'text-status-success-700 dark:text-status-success-300'
                     : isNext
-                    ? 'text-judicial-blue-700 dark:text-judicial-blue-300'
+                    ? 'text-neutral-700 dark:text-neutral-300'
                     : 'text-neutral-600 dark:text-neutral-400'
                 )}>
                   {milestone.description}
                 </p>
 
                 {milestone.isCompleted && milestone.completedAt && (
-                  <p className="text-xs text-green-600 dark:text-green-400">
+                  <p className="text-xs text-status-success-600 dark:text-status-success-400">
                     Completed {formatCompletionDate(milestone.completedAt)}
                   </p>
                 )}
 
                 {isNext && (
-                  <p className="text-xs text-judicial-blue-600 dark:text-judicial-blue-400 font-medium">
+                  <p className="text-xs text-neutral-600 dark:text-neutral-400 font-medium">
                     {completingMilestoneId === milestone.id ? 'Completing...' : 'Click to mark as completed'}
                   </p>
                 )}

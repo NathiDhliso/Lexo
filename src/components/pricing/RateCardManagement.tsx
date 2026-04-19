@@ -106,13 +106,13 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
 
   const getCategoryColor = (category: ServiceCategory) => {
     const colors: Record<ServiceCategory, string> = {
-      consultation: 'bg-blue-100 text-blue-800',
-      research: 'bg-green-100 text-green-800',
-      drafting: 'bg-purple-100 text-purple-800',
-      court_appearance: 'bg-red-100 text-red-800',
+      consultation: 'bg-neutral-100 text-neutral-800',
+      research: 'bg-status-success-100 text-status-success-800',
+      drafting: 'bg-neutral-100 text-neutral-800',
+      court_appearance: 'bg-status-error-100 text-status-error-800',
       negotiation: 'bg-orange-100 text-orange-800',
-      document_review: 'bg-yellow-100 text-yellow-800',
-      correspondence: 'bg-indigo-100 text-indigo-800',
+      document_review: 'bg-status-warning-100 text-status-warning-800',
+      correspondence: 'bg-neutral-100 text-neutral-800',
       filing: 'bg-pink-100 text-pink-800',
       travel: 'bg-gray-100 text-gray-800',
       other: 'bg-slate-100 text-slate-800'
@@ -135,7 +135,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
   if (loading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -150,7 +150,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                 <p className="text-sm text-gray-600 dark:text-neutral-400">Total Rate Cards</p>
                 <p className="text-3xl font-bold text-gray-900 dark:text-neutral-100">{stats.totalCards}</p>
               </div>
-              <DollarSign className="h-10 w-10 text-blue-600" />
+              <DollarSign className="h-10 w-10 text-neutral-600" />
             </div>
           </CardContent>
         </Card>
@@ -160,9 +160,9 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-neutral-400">Active Cards</p>
-                <p className="text-3xl font-bold text-green-600">{stats.activeCards}</p>
+                <p className="text-3xl font-bold text-status-success-600">{stats.activeCards}</p>
               </div>
-              <CheckCircle className="h-10 w-10 text-green-600" />
+              <CheckCircle className="h-10 w-10 text-status-success-600" />
             </div>
           </CardContent>
         </Card>
@@ -172,11 +172,11 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-gray-600 dark:text-neutral-400">Avg Hourly Rate</p>
-                <p className="text-3xl font-bold text-purple-600">
+                <p className="text-3xl font-bold text-neutral-600">
                   {formatCurrency(stats.avgHourlyRate)}
                 </p>
               </div>
-              <TrendingUp className="h-10 w-10 text-purple-600" />
+              <TrendingUp className="h-10 w-10 text-neutral-600" />
             </div>
           </CardContent>
         </Card>
@@ -186,19 +186,19 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <Sparkles className="h-5 w-5 text-blue-600" />
+              <Sparkles className="h-5 w-5 text-neutral-600" />
               Standard Service Templates
             </CardTitle>
             <Badge variant="outline">{templates.length} templates</Badge>
           </div>
         </CardHeader>
         <CardContent>
-          <div className="mb-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="mb-4 p-4 bg-neutral-50 border border-neutral-200 rounded-lg">
             <div className="flex items-start gap-3">
-              <AlertCircle className="h-5 w-5 text-blue-600 mt-0.5" />
+              <AlertCircle className="h-5 w-5 text-neutral-600 mt-0.5" />
               <div>
-                <h4 className="font-medium text-blue-900">Quick Start with Templates</h4>
-                <p className="text-sm text-blue-700 mt-1">
+                <h4 className="font-medium text-neutral-900">Quick Start with Templates</h4>
+                <p className="text-sm text-neutral-700 mt-1">
                   Create rate cards instantly from our pre-configured South African legal service templates. 
                   These templates include standard pricing for common legal services.
                 </p>
@@ -232,7 +232,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                   )}
                   
                   <div className="flex items-center gap-2 mb-3 text-sm">
-                    <DollarSign className="h-4 w-4 text-green-600" />
+                    <DollarSign className="h-4 w-4 text-status-success-600" />
                     <span className="font-medium">
                       {template.default_hourly_rate 
                         ? `${formatCurrency(template.default_hourly_rate)}/hour`
@@ -241,7 +241,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                     </span>
                     {template.estimated_hours && (
                       <>
-                        <Clock className="h-4 w-4 text-blue-600 ml-2" />
+                        <Clock className="h-4 w-4 text-neutral-600 ml-2" />
                         <span className="text-gray-600 dark:text-neutral-400">{template.estimated_hours}h</span>
                       </>
                     )}
@@ -274,7 +274,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-green-600" />
+              <DollarSign className="h-5 w-5 text-status-success-600" />
               Your Rate Cards
             </CardTitle>
             <Button onClick={onCreateNew} size="sm">
@@ -311,7 +311,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                           {card.service_category.replace('_', ' ')}
                         </Badge>
                         {card.is_active ? (
-                          <Badge className="bg-green-100 text-green-800">
+                          <Badge className="bg-status-success-100 text-status-success-800">
                             <CheckCircle className="h-3 w-3 mr-1" />
                             Active
                           </Badge>
@@ -322,7 +322,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                           </Badge>
                         )}
                         {card.is_default && (
-                          <Badge className="bg-blue-100 text-blue-800">Default</Badge>
+                          <Badge className="bg-neutral-100 text-neutral-800">Default</Badge>
                         )}
                       </div>
                       
@@ -332,7 +332,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                       
                       <div className="flex items-center gap-6 text-sm">
                         <div className="flex items-center gap-2">
-                          <DollarSign className="h-4 w-4 text-green-600" />
+                          <DollarSign className="h-4 w-4 text-status-success-600" />
                           <span className="font-medium">
                             {card.pricing_type === 'hourly'
                               ? `${formatCurrency(card.hourly_rate || 0)}/hour`
@@ -343,7 +343,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                         
                         {card.estimated_hours_min && (
                           <div className="flex items-center gap-2">
-                            <Clock className="h-4 w-4 text-blue-600" />
+                            <Clock className="h-4 w-4 text-neutral-600" />
                             <span className="text-gray-600 dark:text-neutral-400">
                               {card.estimated_hours_min}
                               {card.estimated_hours_max && card.estimated_hours_max !== card.estimated_hours_min 
@@ -372,7 +372,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                         {card.is_active ? (
                           <XCircle className="h-4 w-4 text-gray-600 dark:text-neutral-400" />
                         ) : (
-                          <CheckCircle className="h-4 w-4 text-green-600" />
+                          <CheckCircle className="h-4 w-4 text-status-success-600" />
                         )}
                       </Button>
                       <Button variant="ghost" size="sm">
@@ -385,7 +385,7 @@ export const RateCardManagement: React.FC<RateCardManagementProps> = ({ onCreate
                         variant="ghost"
                         size="sm"
                         onClick={() => handleDelete(card.id)}
-                        className="text-red-600 hover:text-red-700"
+                        className="text-status-error-600 hover:text-status-error-700"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

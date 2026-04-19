@@ -115,12 +115,12 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                       <button
                         key={preset.name}
                         onClick={() => applyLayoutPreset(preset.name)}
-                        className="p-4 border-2 border-neutral-300 dark:border-metallic-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-mpondo-gold-500 hover:theme-shadow-md transition-all text-left group"
+                        className="p-4 border-2 border-neutral-300 dark:border-metallic-gray-600 rounded-lg hover:border-neutral-500 dark:hover:border-mpondo-gold-500 hover:theme-shadow-md transition-all text-left group"
                       >
                         <div className="flex items-start gap-3">
                           <span className="text-3xl">{preset.icon}</span>
                           <div className="flex-1">
-                            <div className="font-semibold text-neutral-900 dark:text-neutral-100 mb-1 group-hover:text-blue-600 dark:group-hover:text-mpondo-gold-500 transition-colors">
+                            <div className="font-semibold text-neutral-900 dark:text-neutral-100 mb-1 group-hover:text-neutral-600 dark:group-hover:text-mpondo-gold-500 transition-colors">
                               {preset.name}
                             </div>
                             <div className="text-xs text-neutral-600 dark:text-neutral-400 mb-2">
@@ -150,7 +150,7 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                   {['A4', 'Letter', 'Legal'].map((size) => (
                     <button
                       key={size}
-                      className="px-4 py-3 border-2 border-neutral-300 dark:border-metallic-gray-600 rounded-lg hover:border-blue-500 dark:hover:border-mpondo-gold-500 transition-colors text-neutral-900 dark:text-neutral-100 font-medium"
+                      className="px-4 py-3 border-2 border-neutral-300 dark:border-metallic-gray-600 rounded-lg hover:border-neutral-500 dark:hover:border-mpondo-gold-500 transition-colors text-neutral-900 dark:text-neutral-100 font-medium"
                     >
                       {size}
                     </button>
@@ -169,8 +169,8 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                     onClick={() => setTemplate({ ...template, sectionLayout: 'horizontal' })}
                     className={`p-4 border-2 rounded-lg transition-all ${
                       template.sectionLayout === 'horizontal' || !template.sectionLayout
-                        ? 'border-blue-500 dark:border-mpondo-gold-500 bg-blue-50 dark:bg-mpondo-gold-900/20'
-                        : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-blue-400 dark:hover:border-mpondo-gold-400'
+                        ? 'border-neutral-500 dark:border-mpondo-gold-500 bg-neutral-50 dark:bg-mpondo-gold-900/20'
+                        : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-neutral-400 dark:hover:border-mpondo-gold-400'
                     }`}
                   >
                     <div className="text-2xl mb-2">↔️</div>
@@ -181,8 +181,8 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                     onClick={() => setTemplate({ ...template, sectionLayout: 'vertical' })}
                     className={`p-4 border-2 rounded-lg transition-all ${
                       template.sectionLayout === 'vertical'
-                        ? 'border-blue-500 dark:border-mpondo-gold-500 bg-blue-50 dark:bg-mpondo-gold-900/20'
-                        : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-blue-400 dark:hover:border-mpondo-gold-400'
+                        ? 'border-neutral-500 dark:border-mpondo-gold-500 bg-neutral-50 dark:bg-mpondo-gold-900/20'
+                        : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-neutral-400 dark:hover:border-mpondo-gold-400'
                     }`}
                   >
                     <div className="text-2xl mb-2">↕️</div>
@@ -296,8 +296,8 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                       })}
                       className={`px-4 py-3 border-2 rounded-lg transition-colors font-medium ${
                         template.header.logoPlacement === placement.value
-                          ? 'border-blue-500 dark:border-mpondo-gold-500 bg-blue-50 dark:bg-mpondo-gold-900/20 text-blue-700 dark:text-mpondo-gold-300'
-                          : 'border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 hover:border-blue-400 dark:hover:border-mpondo-gold-600'
+                          ? 'border-neutral-500 dark:border-mpondo-gold-500 bg-neutral-50 dark:bg-mpondo-gold-900/20 text-neutral-700 dark:text-mpondo-gold-300'
+                          : 'border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400 dark:hover:border-mpondo-gold-600'
                       }`}
                     >
                       <span className="text-2xl mr-2">{placement.icon}</span>
@@ -378,8 +378,8 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                           })}
                           className={`px-3 py-2 border-2 rounded-lg transition-colors capitalize ${
                             template.header.titleStyle.alignment === align
-                              ? 'border-blue-500 dark:border-mpondo-gold-500 bg-blue-50 dark:bg-mpondo-gold-900/20 text-blue-700 dark:text-mpondo-gold-300'
-                              : 'border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 hover:border-blue-400'
+                              ? 'border-neutral-500 dark:border-mpondo-gold-500 bg-neutral-50 dark:bg-mpondo-gold-900/20 text-neutral-700 dark:text-mpondo-gold-300'
+                              : 'border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400'
                           }`}
                         >
                           {align}
@@ -409,8 +409,8 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                           className={`p-3 border-2 rounded-lg transition-colors ${
                             (template.header as any).titleOrientation === orientation.value || 
                             (!((template.header as any).titleOrientation) && orientation.value === 'horizontal')
-                              ? 'border-blue-500 dark:border-mpondo-gold-500 bg-blue-50 dark:bg-mpondo-gold-900/20 text-blue-700 dark:text-mpondo-gold-300'
-                              : 'border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 hover:border-blue-400'
+                              ? 'border-neutral-500 dark:border-mpondo-gold-500 bg-neutral-50 dark:bg-mpondo-gold-900/20 text-neutral-700 dark:text-mpondo-gold-300'
+                              : 'border-neutral-300 dark:border-metallic-gray-600 text-neutral-700 dark:text-neutral-300 hover:border-neutral-400'
                           }`}
                         >
                           <div className="font-semibold">{orientation.label}</div>
@@ -441,7 +441,7 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                             showBorder: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-neutral-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-neutral-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Border</span>
                     </label>
@@ -466,8 +466,8 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                               })}
                               className={`px-3 py-2 border-2 rounded-lg transition-colors capitalize ${
                                 template.header.borderStyle === style
-                                  ? 'border-blue-500 dark:border-mpondo-gold-500 bg-blue-50 dark:bg-mpondo-gold-900/20'
-                                  : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-blue-400'
+                                  ? 'border-neutral-500 dark:border-mpondo-gold-500 bg-neutral-50 dark:bg-mpondo-gold-900/20'
+                                  : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-neutral-400'
                               }`}
                             >
                               {style}
@@ -545,8 +545,8 @@ export const LayoutTab: React.FC<LayoutTabProps> = ({ template, setTemplate, log
                           })}
                           className={`p-3 border-2 rounded-lg transition-all ${
                             template.colorScheme.background === preset.color
-                              ? 'border-blue-500 dark:border-mpondo-gold-500 ring-2 ring-blue-200 dark:ring-mpondo-gold-200'
-                              : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-blue-400'
+                              ? 'border-neutral-500 dark:border-mpondo-gold-500 ring-2 ring-neutral-200 dark:ring-mpondo-gold-200'
+                              : 'border-neutral-300 dark:border-metallic-gray-600 hover:border-neutral-400'
                           }`}
                           style={{ backgroundColor: preset.color }}
                         >

@@ -203,7 +203,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
     return (
       <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-lg p-8 text-center">
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <AlertCircle className="w-16 h-16 text-status-error-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Access Error</h1>
           <p className="text-neutral-600 dark:text-neutral-300 mb-6">{error}</p>
           <p className="text-sm text-neutral-500 dark:text-neutral-400">
@@ -218,17 +218,17 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
     return (
       <div className="min-h-screen w-full max-w-full overflow-x-hidden bg-neutral-50 dark:bg-metallic-gray-950 flex items-center justify-center px-4">
         <div className="max-w-md w-full bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-lg p-8 text-center">
-          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <CheckCircle className="w-16 h-16 text-status-success-500 mx-auto mb-4" />
           <h1 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-4">Request Submitted</h1>
           <p className="text-neutral-600 dark:text-neutral-300 mb-6">
             Your pro forma request has been submitted successfully. The advocate will review your details and respond accordingly.
           </p>
-          <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-700 rounded-lg p-4">
-            <p className="text-sm text-green-700 dark:text-green-300">
+          <div className="bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-700 rounded-lg p-4">
+            <p className="text-sm text-status-success-700 dark:text-status-success-300">
               <strong>Work Title:</strong> {request?.work_title}
             </p>
             {request?.estimated_amount && (
-              <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+              <p className="text-sm text-status-success-700 dark:text-status-success-300 mt-1">
                 <strong>Estimated Amount:</strong> {formatCurrency(request.estimated_amount)}
               </p>
             )}
@@ -244,7 +244,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
         {/* Header */}
         <div className="bg-white dark:bg-metallic-gray-800 rounded-lg theme-shadow-sm border border-neutral-200 dark:border-metallic-gray-700 p-4 sm:p-6 mb-6">
           <div className="flex items-start gap-3 mb-4">
-            <FileText className="w-8 h-8 text-blue-600 dark:text-blue-400 flex-shrink-0" />
+            <FileText className="w-8 h-8 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
             <div className="min-w-0 flex-1">
               <h1 className="text-xl sm:text-2xl font-bold text-neutral-900 dark:text-neutral-100 break-words">Pro Forma Request</h1>
               <p className="text-sm sm:text-base text-neutral-600 dark:text-neutral-300 break-words">Please provide your details for this legal matter</p>
@@ -274,7 +274,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                 {request?.estimated_amount && (
                   <div>
                     <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Estimated Amount</label>
-                    <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+                    <p className="text-lg font-semibold text-status-success-600 dark:text-status-success-400">
                       {formatCurrency(request.estimated_amount)}
                     </p>
                   </div>
@@ -284,9 +284,9 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                   <div>
                     <label className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Urgency</label>
                     <span className={`inline-block px-2 py-1 rounded-full text-xs font-medium ${
-                      request.urgency === 'high' ? 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300' :
-                      request.urgency === 'medium' ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
-                      'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300'
+                      request.urgency === 'high' ? 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-800 dark:text-status-error-300' :
+                      request.urgency === 'medium' ? 'bg-status-warning-100 dark:bg-status-warning-900/30 text-status-warning-800 dark:text-status-warning-300' :
+                      'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300'
                     }`}>
                       {request.urgency.charAt(0).toUpperCase() + request.urgency.slice(1)}
                     </span>
@@ -339,7 +339,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                           required
                           value={formData.case_title}
                           onChange={handleCaseTitleChange}
-                          className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                           placeholder="e.g., Smith v. Jones Contract Dispute"
                         />
                       </div>
@@ -353,7 +353,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                             required
                             value={formData.matter_type}
                             onChange={handleMatterTypeChange}
-                            className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                           >
                             <option value="">Select matter type...</option>
                             <option value="civil_litigation">Civil Litigation</option>
@@ -375,7 +375,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                             required
                             value={formData.urgency_level}
                             onChange={handleUrgencyLevelChange}
-                            className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                           >
                             <option value="low">Low - No rush</option>
                             <option value="medium">Medium - Standard timeline</option>
@@ -393,7 +393,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                           value={formData.work_description}
                           onChange={handleWorkDescriptionChange}
                           rows={8}
-                          className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                           placeholder="Please provide a comprehensive description including:&#10;&#10;• Background and context of the case&#10;• Key issues and legal questions&#10;• Work required from the advocate&#10;• Important deadlines or time constraints&#10;• Any relevant documents or evidence&#10;• Expected outcomes or objectives&#10;&#10;Example:&#10;Our client is facing a breach of contract claim. We need an advocate to:&#10;- Review the 50-page commercial agreement&#10;- Draft heads of argument for the upcoming hearing&#10;- Appear in court on 15 March 2025&#10;- Provide an opinion on liability and quantum"
                         />
                         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-1">
@@ -423,7 +423,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                       required
                       value={formData.instructing_attorney_name}
                       onChange={handleAttorneyNameChange}
-                      className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                       placeholder="Enter your full name"
                     />
                   </div>
@@ -440,7 +440,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                           required
                           value={formData.instructing_attorney_email}
                           onChange={handleAttorneyEmailChange}
-                          className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                           placeholder="your.email@example.com"
                         />
                       </div>
@@ -456,7 +456,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                           type="tel"
                           value={formData.instructing_attorney_phone}
                           onChange={handleAttorneyPhoneChange}
-                          className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                          className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                           placeholder="+27 11 123 4567"
                         />
                       </div>
@@ -474,7 +474,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                         required
                         value={formData.instructing_firm}
                         onChange={handleInstructingFirmChange}
-                        className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                        className="w-full pl-10 pr-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                         placeholder="Your law firm or organization"
                       />
                     </div>
@@ -488,7 +488,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                       required
                       value={formData.preferred_contact_method}
                       onChange={handlePreferredContactChange}
-                      className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                      className="w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 bg-white dark:bg-metallic-gray-700 text-neutral-900 dark:text-neutral-100 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500"
                     >
                       <option value="email">Email</option>
                       <option value="phone">Phone</option>
@@ -498,9 +498,9 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                 </div>
                     {/* Submit Button */}
                     <div className="pt-6 border-t border-neutral-200 dark:border-metallic-gray-700">
-                      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-700 rounded-lg p-4 mb-4">
-                        <h4 className="font-medium text-blue-900 dark:text-blue-100 mb-2">What happens next?</h4>
-                        <ul className="text-sm text-blue-800 dark:text-blue-200 space-y-1">
+                      <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-700 rounded-lg p-4 mb-4">
+                        <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-2">What happens next?</h4>
+                        <ul className="text-sm text-neutral-800 dark:text-neutral-200 space-y-1">
                           <li>✓ The advocate will review your case details</li>
                           <li>✓ You'll receive a detailed pro forma quote via email</li>
                           <li>✓ The quote will include estimated costs and timeline</li>
@@ -511,7 +511,7 @@ const ProFormaRequestPage: React.FC<ProFormaRequestPageProps> = ({ token: tokenP
                       <button
                         type="submit"
                         disabled={submitting}
-                        className="w-full px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2 transition-colors"
+                        className="w-full px-6 py-3 bg-neutral-600 text-white rounded-lg hover:bg-neutral-700 disabled:opacity-50 disabled:cursor-not-allowed font-medium flex items-center justify-center gap-2 transition-colors"
                       >
                         {submitting ? (
                           <>

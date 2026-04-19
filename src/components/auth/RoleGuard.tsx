@@ -54,8 +54,8 @@ export const RoleGuard: React.FC<RoleGuardProps> = ({
   return (
     <div className="flex items-center justify-center min-h-[60vh]">
       <div className="text-center max-w-md mx-auto p-8">
-        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-red-50 dark:bg-red-900/20 flex items-center justify-center">
-          <ShieldOff className="w-8 h-8 text-red-500 dark:text-red-400" />
+        <div className="w-16 h-16 mx-auto mb-6 rounded-full bg-status-error-50 dark:bg-status-error-900/20 flex items-center justify-center">
+          <ShieldOff className="w-8 h-8 text-status-error-500 dark:text-status-error-400" />
         </div>
         <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
           Access Denied

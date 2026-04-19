@@ -105,14 +105,14 @@ export const CreditNoteForm: React.FC<CreditNoteFormProps> = ({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* Invoice Balance Info */}
-      <div className="bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg p-4">
+      <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-judicial-blue-600 dark:text-judicial-blue-400 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="text-sm font-medium text-judicial-blue-900 dark:text-judicial-blue-100">
+            <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
               Invoice Balance: {formatRand(balanceDue)}
             </p>
-            <p className="text-xs text-judicial-blue-700 dark:text-judicial-blue-300 mt-1">
+            <p className="text-xs text-neutral-700 dark:text-neutral-300 mt-1">
               Credit notes reduce the amount owed by the client
             </p>
           </div>
@@ -122,7 +122,7 @@ export const CreditNoteForm: React.FC<CreditNoteFormProps> = ({
       {/* Credit Amount */}
       <div>
         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-          Credit Amount <span className="text-red-500">*</span>
+          Credit Amount <span className="text-status-error-500">*</span>
         </label>
         <Input
           type="number"
@@ -147,7 +147,7 @@ export const CreditNoteForm: React.FC<CreditNoteFormProps> = ({
       {/* Reason Category */}
       <div>
         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-          Reason Category <span className="text-red-500">*</span>
+          Reason Category <span className="text-status-error-500">*</span>
         </label>
         <select
           value={category}
@@ -167,7 +167,7 @@ export const CreditNoteForm: React.FC<CreditNoteFormProps> = ({
       {/* Reason / Notes */}
       <div>
         <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-          Reason / Notes <span className="text-red-500">*</span>
+          Reason / Notes <span className="text-status-error-500">*</span>
         </label>
         <textarea
           value={reason}

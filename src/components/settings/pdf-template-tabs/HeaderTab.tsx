@@ -35,7 +35,7 @@ export const HeaderTab: React.FC<HeaderTabProps> = ({ template, setTemplate, log
                             showLogo: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-neutral-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-neutral-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Logo</span>
                     </label>

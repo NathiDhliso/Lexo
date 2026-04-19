@@ -177,7 +177,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
           role="alert"
           aria-live="assertive"
         >
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" aria-hidden="true" />
+          <AlertCircle className="w-16 h-16 text-status-error-500 mx-auto mb-4" aria-hidden="true" />
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             No Firm Associated
           </h2>
@@ -197,7 +197,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
           <div className="mb-6" role="status" aria-label="Step 2 of 2: Matter submitted successfully">
             <div className="flex items-center justify-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
               <span className="flex items-center gap-1 opacity-50">
-                <span className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
+                <span className="w-6 h-6 rounded-full bg-status-success-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
                 Register
               </span>
               <span className="w-8 h-px bg-neutral-300 dark:bg-neutral-600" aria-hidden="true"></span>
@@ -210,7 +210,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
 
           {/* Success Message */}
           <div className="text-center mb-8" role="status" aria-live="polite" aria-atomic="true">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" aria-hidden="true" />
+            <CheckCircle className="w-16 h-16 text-status-success-500 mx-auto mb-4" aria-hidden="true" />
             <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
               Matter Request Submitted!
             </h1>
@@ -218,11 +218,11 @@ export const SubmitMatterRequestPage: React.FC = () => {
               Your matter request has been successfully submitted to the advocate for review.
             </p>
             
-            <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-4 mb-6">
-              <p className="text-sm text-blue-900 dark:text-blue-100 font-medium mb-1">
+            <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 mb-6">
+              <p className="text-sm text-neutral-900 dark:text-neutral-100 font-medium mb-1">
                 Matter Reference Number
               </p>
-              <p className="text-lg font-mono font-bold text-blue-700 dark:text-blue-300">
+              <p className="text-lg font-mono font-bold text-neutral-700 dark:text-neutral-300">
                 {matterReference}
               </p>
             </div>
@@ -270,7 +270,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
         <div className="mb-6" role="status" aria-label="Step 2 of 2: Submit Matter">
           <div className="flex items-center justify-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
             <span className="flex items-center gap-1 opacity-50">
-              <span className="w-6 h-6 rounded-full bg-green-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
+              <span className="w-6 h-6 rounded-full bg-status-success-500 text-white flex items-center justify-center text-xs font-bold">✓</span>
               Register
             </span>
             <span className="w-8 h-px bg-neutral-300 dark:bg-neutral-600" aria-hidden="true"></span>
@@ -306,7 +306,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Description <span className="text-red-500" aria-label="required">*</span>
+              Description <span className="text-status-error-500" aria-label="required">*</span>
             </label>
             <textarea
               value={formData.description}
@@ -314,7 +314,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
               rows={6}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent ${
                 formErrors.description
-                  ? 'border-red-500'
+                  ? 'border-status-error-500'
                   : 'border-neutral-300 dark:border-neutral-600'
               } bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100`}
               placeholder="Provide a detailed description of the matter, including key facts, parties involved, and any urgent considerations..."
@@ -326,7 +326,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
               Provide a detailed description of at least 20 characters
             </span>
             {formErrors.description && (
-              <p className="mt-1 text-sm text-red-500" role="alert">{formErrors.description}</p>
+              <p className="mt-1 text-sm text-status-error-500" role="alert">{formErrors.description}</p>
             )}
             <p id="description-count" className="mt-1 text-xs text-neutral-500 dark:text-neutral-500">
               {formData.description.length} characters (minimum 20)
@@ -335,14 +335,14 @@ export const SubmitMatterRequestPage: React.FC = () => {
 
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Matter Type <span className="text-red-500">*</span>
+              Matter Type <span className="text-status-error-500">*</span>
             </label>
             <select
               value={formData.matter_type}
               onChange={handleMatterTypeChange}
               className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-mpondo-gold-500 focus:border-transparent ${
                 formErrors.matter_type
-                  ? 'border-red-500'
+                  ? 'border-status-error-500'
                   : 'border-neutral-300 dark:border-neutral-600'
               } bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100`}
             >
@@ -356,7 +356,7 @@ export const SubmitMatterRequestPage: React.FC = () => {
               <option value="other">Other</option>
             </select>
             {formErrors.matter_type && (
-              <p className="mt-1 text-sm text-red-500">{formErrors.matter_type}</p>
+              <p className="mt-1 text-sm text-status-error-500">{formErrors.matter_type}</p>
             )}
           </div>
 

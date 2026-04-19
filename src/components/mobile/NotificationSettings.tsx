@@ -93,7 +93,7 @@ export const NotificationSettings: React.FC = () => {
     <div className="bg-white rounded-lg shadow-sm border p-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center">
-          <Bell className="w-5 h-5 mr-2 text-blue-600" />
+          <Bell className="w-5 h-5 mr-2 text-neutral-600" />
           <h3 className="text-lg font-semibold">Push Notifications</h3>
         </div>
         
@@ -130,7 +130,7 @@ export const NotificationSettings: React.FC = () => {
                 type="checkbox"
                 checked={preferences.newRequests}
                 onChange={(e) => handlePreferenceChange('newRequests', e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-neutral-600 focus:ring-neutral-500"
               />
             </label>
             
@@ -140,7 +140,7 @@ export const NotificationSettings: React.FC = () => {
                 type="checkbox"
                 checked={preferences.paymentsReceived}
                 onChange={(e) => handlePreferenceChange('paymentsReceived', e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-neutral-600 focus:ring-neutral-500"
               />
             </label>
             
@@ -150,7 +150,7 @@ export const NotificationSettings: React.FC = () => {
                 type="checkbox"
                 checked={preferences.approvalsNeeded}
                 onChange={(e) => handlePreferenceChange('approvalsNeeded', e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-neutral-600 focus:ring-neutral-500"
               />
             </label>
             
@@ -160,7 +160,7 @@ export const NotificationSettings: React.FC = () => {
                 type="checkbox"
                 checked={preferences.reminders}
                 onChange={(e) => handlePreferenceChange('reminders', e.target.checked)}
-                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                className="rounded border-gray-300 text-neutral-600 focus:ring-neutral-500"
               />
             </label>
           </div>

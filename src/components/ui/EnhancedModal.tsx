@@ -241,7 +241,7 @@ export const EnhancedModal: React.FC<EnhancedModalProps> = ({
                     className={cn(
                       'flex-shrink-0 p-1 rounded-md transition-colors',
                       'hover:bg-neutral-100 dark:hover:bg-neutral-800',
-                      'focus:outline-none focus:ring-2 focus:ring-judicial-blue-500',
+                      'focus:outline-none focus:ring-2 focus:ring-neutral-500',
                       'disabled:opacity-50 disabled:cursor-not-allowed',
                       'text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300'
                     )}
@@ -258,14 +258,14 @@ export const EnhancedModal: React.FC<EnhancedModalProps> = ({
           <ModalBody>
             {/* Error Message */}
             {error && (
-              <div className="mb-4 p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
+              <div className="mb-4 p-3 bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+                  <AlertCircle className="w-5 h-5 text-status-error-600 dark:text-status-error-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-red-800 dark:text-red-200">
+                    <p className="text-sm font-medium text-status-error-800 dark:text-status-error-200">
                       Error
                     </p>
-                    <p className="text-sm text-red-700 dark:text-red-300 mt-1">
+                    <p className="text-sm text-status-error-700 dark:text-status-error-300 mt-1">
                       {error}
                     </p>
                   </div>
@@ -275,14 +275,14 @@ export const EnhancedModal: React.FC<EnhancedModalProps> = ({
 
             {/* Success Message */}
             {success && (
-              <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <div className="mb-4 p-3 bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg">
                 <div className="flex items-start gap-2">
-                  <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="w-5 h-5 text-status-success-600 dark:text-status-success-400 flex-shrink-0 mt-0.5" />
                   <div>
-                    <p className="text-sm font-medium text-green-800 dark:text-green-200">
+                    <p className="text-sm font-medium text-status-success-800 dark:text-status-success-200">
                       Success
                     </p>
-                    <p className="text-sm text-green-700 dark:text-green-300 mt-1">
+                    <p className="text-sm text-status-success-700 dark:text-status-success-300 mt-1">
                       {success}
                     </p>
                   </div>

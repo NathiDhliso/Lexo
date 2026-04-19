@@ -202,7 +202,7 @@ export const LogoUploadSection: React.FC<LogoUploadSectionProps> = ({
                   <button
                     type="button"
                     onClick={handleRemoveLogo}
-                    className="px-3 py-1.5 text-sm font-medium text-red-700 dark:text-red-400 bg-white dark:bg-neutral-700 border border-red-300 dark:border-red-600 rounded hover:bg-red-50 dark:hover:bg-red-900/20"
+                    className="px-3 py-1.5 text-sm font-medium text-status-error-700 dark:text-status-error-400 bg-white dark:bg-neutral-700 border border-status-error-300 dark:border-status-error-600 rounded hover:bg-status-error-50 dark:hover:bg-status-error-900/20"
                   >
                     Remove
                   </button>
@@ -223,7 +223,7 @@ export const LogoUploadSection: React.FC<LogoUploadSectionProps> = ({
 
         {/* Upload Error */}
         {uploadError && (
-          <div className="mt-2 text-sm text-red-600 dark:text-red-400">{uploadError}</div>
+          <div className="mt-2 text-sm text-status-error-600 dark:text-status-error-400">{uploadError}</div>
         )}
       </div>
 

@@ -117,7 +117,7 @@ export const FirmActionsMenu: React.FC<FirmActionsMenuProps> = ({
                 transition-colors
                 ${
                   action.variant === 'danger'
-                    ? 'text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20'
+                    ? 'text-status-error-600 dark:text-status-error-400 hover:bg-status-error-50 dark:hover:bg-status-error-900/20'
                     : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-700'
                 }
               `}

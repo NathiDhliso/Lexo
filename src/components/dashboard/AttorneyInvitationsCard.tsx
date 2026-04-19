@@ -27,13 +27,13 @@ export const AttorneyInvitationsCard: React.FC<AttorneyInvitationsCardProps> = (
       <CardHeader>
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Mail className="w-5 h-5 text-firm-secondary-500" />
+            <Mail className="w-5 h-5 text-neutral-500" />
             <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
               Pending Invitations
             </h3>
           </div>
           {pendingCount > 0 && (
-            <span className="inline-flex items-center justify-center h-6 min-w-[24px] px-2 text-sm font-semibold rounded-full bg-firm-secondary-500 text-white">
+            <span className="inline-flex items-center justify-center h-6 min-w-[24px] px-2 text-sm font-semibold rounded-full bg-neutral-500 text-white">
               {pendingCount}
             </span>
           )}

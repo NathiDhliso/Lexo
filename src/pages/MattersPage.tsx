@@ -767,12 +767,12 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">New Requests</p>
-                  <p className="text-3xl font-bold text-purple-600 dark:text-purple-400 mt-2">
+                  <p className="text-3xl font-bold text-neutral-600 dark:text-neutral-400 mt-2">
                     {stats.newRequestCount}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center">
-                  <Bell className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-900/30 flex items-center justify-center">
+                  <Bell className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
                 </div>
               </div>
             </CardContent>
@@ -783,12 +783,12 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Active Matters</p>
-                  <p className="text-3xl font-bold text-green-600 dark:text-green-400 mt-2">
+                  <p className="text-3xl font-bold text-status-success-600 dark:text-status-success-400 mt-2">
                     {stats.activeCount}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center">
-                  <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                <div className="w-12 h-12 rounded-full bg-status-success-100 dark:bg-status-success-900/30 flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-status-success-600 dark:text-status-success-400" />
                 </div>
               </div>
             </CardContent>
@@ -799,12 +799,12 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-neutral-600 dark:text-neutral-400">Total WIP</p>
-                  <p className="text-3xl font-bold text-blue-600 dark:text-blue-400 mt-2">
+                  <p className="text-3xl font-bold text-neutral-600 dark:text-neutral-400 mt-2">
                     R{stats.totalWIP.toLocaleString()}
                   </p>
                 </div>
-                <div className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center">
-                  <TrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-900/30 flex items-center justify-center">
+                  <TrendingUp className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
                 </div>
               </div>
             </CardContent>
@@ -843,55 +843,55 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
         <div className="flex flex-wrap gap-2 items-center">
           <span className="text-sm text-gray-600">Active filters:</span>
           {searchFilters.practice_area && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-800">
               Practice: {searchFilters.practice_area}
               <button
                 onClick={() => setSearchFilters(prev => ({ ...prev, practice_area: undefined }))}
-                className="ml-2 hover:text-blue-900"
+                className="ml-2 hover:text-neutral-900"
               >
                 <X className="h-3 w-3" />
               </button>
             </span>
           )}
           {searchFilters.matter_type && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-800">
               Type: {searchFilters.matter_type}
               <button
                 onClick={() => setSearchFilters(prev => ({ ...prev, matter_type: undefined }))}
-                className="ml-2 hover:text-blue-900"
+                className="ml-2 hover:text-neutral-900"
               >
                 <X className="h-3 w-3" />
               </button>
             </span>
           )}
           {searchFilters.status && searchFilters.status.length > 0 && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-800">
               Status: {searchFilters.status.join(', ')}
               <button
                 onClick={() => setSearchFilters(prev => ({ ...prev, status: undefined }))}
-                className="ml-2 hover:text-blue-900"
+                className="ml-2 hover:text-neutral-900"
               >
                 <X className="h-3 w-3" />
               </button>
             </span>
           )}
           {searchFilters.attorney_firm && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-800">
               Firm: {searchFilters.attorney_firm}
               <button
                 onClick={() => setSearchFilters(prev => ({ ...prev, attorney_firm: undefined }))}
-                className="ml-2 hover:text-blue-900"
+                className="ml-2 hover:text-neutral-900"
               >
                 <X className="h-3 w-3" />
               </button>
             </span>
           )}
           {searchFilters.include_archived && (
-            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+            <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-neutral-100 text-neutral-800">
               Including Archived
               <button
                 onClick={() => setSearchFilters(prev => ({ ...prev, include_archived: false }))}
-                className="ml-2 hover:text-blue-900"
+                className="ml-2 hover:text-neutral-900"
               >
                 <X className="h-3 w-3" />
               </button>
@@ -899,7 +899,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
           )}
           <button
             onClick={() => setSearchFilters({ sort_by: 'created_at', sort_order: 'desc', include_archived: false })}
-            className="text-sm text-blue-600 hover:text-blue-800"
+            className="text-sm text-neutral-600 hover:text-neutral-800"
           >
             Clear all filters
           </button>
@@ -966,12 +966,12 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
             ))}
           </div>
         ) : filteredMatters.length === 0 ? (
-          <div className="bg-blue-50 dark:bg-blue-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-8 text-center">
-            <Info className="w-16 h-16 text-blue-600 dark:text-blue-400 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-blue-900 dark:text-blue-100 mb-2">
+          <div className="bg-neutral-50 dark:bg-neutral-900/20 border-2 border-neutral-200 dark:border-neutral-800 rounded-lg p-8 text-center">
+            <Info className="w-16 h-16 text-neutral-600 dark:text-neutral-400 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
               {matters.length === 0 ? 'No Matters Yet' : 'No Matters Found'}
             </h3>
-            <p className="text-blue-800 dark:text-blue-200 mb-4 max-w-lg mx-auto">
+            <p className="text-neutral-800 dark:text-neutral-200 mb-4 max-w-lg mx-auto">
               {matters.length === 0 
                 ? 'New matters will appear here when attorneys submit briefs via the firm portal.'
                 : activeTab === 'active' 
@@ -981,7 +981,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                     : 'No matters match your search criteria.'}
             </p>
             {matters.length === 0 && (
-              <div className="inline-flex items-center gap-2 text-sm text-blue-700 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 px-4 py-2 rounded-lg">
+              <div className="inline-flex items-center gap-2 text-sm text-neutral-700 dark:text-neutral-300 bg-neutral-100 dark:bg-neutral-900/40 px-4 py-2 rounded-lg">
                 <Info className="w-4 h-4" />
                 <span>Tip: Share attorney registration links from the Firms page</span>
               </div>
@@ -1035,10 +1035,10 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                       <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">{matter.title}</h3>
                       <div className="flex items-center gap-2">
                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${
-                          matter.status === MatterStatus.NEW_REQUEST ? 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300 animate-pulse' :
-                          matter.status === MatterStatus.ACTIVE ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' :
-                          matter.status === MatterStatus.PENDING ? 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300' :
-                          matter.status === MatterStatus.SETTLED ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300' :
+                          matter.status === MatterStatus.NEW_REQUEST ? 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300 animate-pulse' :
+                          matter.status === MatterStatus.ACTIVE ? 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300' :
+                          matter.status === MatterStatus.PENDING ? 'bg-status-warning-100 dark:bg-status-warning-900/30 text-status-warning-800 dark:text-status-warning-300' :
+                          matter.status === MatterStatus.SETTLED ? 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300' :
                           'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300'
                         }`}>
                           {matter.status === MatterStatus.NEW_REQUEST ? 'NEW REQUEST' : matter.status}
@@ -1095,7 +1095,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                       {matter.status === MatterStatus.NEW_REQUEST && (matter as any).instructing_firm && (
                         <div>
                           <span className="text-neutral-600 dark:text-neutral-400">Firm:</span>
-                          <span className="ml-2 font-medium text-purple-700 dark:text-purple-300">{(matter as any).instructing_firm}</span>
+                          <span className="ml-2 font-medium text-neutral-700 dark:text-neutral-300">{(matter as any).instructing_firm}</span>
                         </div>
                       )}
                       <div>
@@ -1112,7 +1112,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                           {(matter as any).associatedServices.map((service: any, index: number) => (
                             <span
                               key={service.id || index}
-                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300"
+                              className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300"
                               title={service.description || service.name}
                             >
                               {service.name}
@@ -1168,12 +1168,12 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                       size="sm"
                       onClick={() => handleUnarchiveMatter(matter)}
                       disabled={archivingMatterId === matter.id}
-                      className="flex items-center gap-2 text-green-600 dark:text-green-400 border-green-300 dark:border-green-700 hover:bg-green-50 dark:hover:bg-green-950/30"
+                      className="flex items-center gap-2 text-status-success-600 dark:text-status-success-400 border-status-success-300 dark:border-status-success-700 hover:bg-status-success-50 dark:hover:bg-status-success-950/30"
                       title="Unarchive this matter"
                     >
                       {archivingMatterId === matter.id ? (
                         <>
-                          <div className="w-4 h-4 border-2 border-green-600 border-t-transparent rounded-full animate-spin" />
+                          <div className="w-4 h-4 border-2 border-status-success-600 border-t-transparent rounded-full animate-spin" />
                           Unarchiving...
                         </>
                       ) : (
@@ -1229,7 +1229,7 @@ const MattersPage: React.FC<MattersPageProps> = ({ onNavigate }) => {
                         setSelectedMatterForAction(matter);
                         setShowScopeAmendmentModal(true);
                       }}
-                      className="flex items-center gap-2 text-judicial-blue-700 dark:text-judicial-blue-400 border-judicial-blue-300 dark:border-judicial-blue-700 hover:bg-judicial-blue-50 dark:hover:bg-judicial-blue-950/30"
+                      className="flex items-center gap-2 text-neutral-700 dark:text-neutral-400 border-neutral-300 dark:border-neutral-700 hover:bg-neutral-50 dark:hover:bg-neutral-950/30"
                       title="Request scope amendment for additional work"
                     >
                       <AlertCircle className="w-4 h-4" />

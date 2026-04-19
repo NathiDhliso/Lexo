@@ -153,7 +153,7 @@ export const Pagination: React.FC<PaginationProps> = ({
               'min-w-[40px] h-[40px] px-3 rounded-lg font-medium transition-all duration-200',
               'focus:outline-none focus:ring-2 focus:ring-mpondo-gold-500 focus:ring-offset-2',
               isActive
-                ? 'bg-judicial-blue-600 text-white hover:bg-judicial-blue-700'
+                ? 'bg-neutral-600 text-white hover:bg-neutral-700'
                 : 'text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-metallic-gray-700',
               isLoading && 'opacity-50 cursor-not-allowed'
             )}

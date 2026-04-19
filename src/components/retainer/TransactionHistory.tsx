@@ -49,11 +49,11 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ retainer
   const getTransactionIcon = (type: string) => {
     switch (type) {
       case 'deposit':
-        return <ArrowDownCircle className="w-5 h-5 text-green-500" />;
+        return <ArrowDownCircle className="w-5 h-5 text-status-success-500" />;
       case 'drawdown':
         return <ArrowUpCircle className="w-5 h-5 text-amber-500" />;
       case 'refund':
-        return <RefreshCw className="w-5 h-5 text-purple-500" />;
+        return <RefreshCw className="w-5 h-5 text-neutral-500" />;
       default:
         return <DollarSign className="w-5 h-5 text-gray-500 dark:text-neutral-500" />;
     }
@@ -62,11 +62,11 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ retainer
   const getTransactionColor = (type: string) => {
     switch (type) {
       case 'deposit':
-        return 'text-green-600 dark:text-green-400';
+        return 'text-status-success-600 dark:text-status-success-400';
       case 'drawdown':
         return 'text-amber-600 dark:text-amber-400';
       case 'refund':
-        return 'text-purple-600 dark:text-purple-400';
+        return 'text-neutral-600 dark:text-neutral-400';
       default:
         return 'text-gray-600 dark:text-neutral-400';
     }
@@ -97,7 +97,7 @@ export const TransactionHistory: React.FC<TransactionHistoryProps> = ({ retainer
         </h3>
         <button
           onClick={loadTransactions}
-          className="text-sm text-blue-600 dark:text-mpondo-gold-500 hover:underline flex items-center gap-1"
+          className="text-sm text-neutral-600 dark:text-mpondo-gold-500 hover:underline flex items-center gap-1"
         >
           <RefreshCw className="w-4 h-4" />
           Refresh

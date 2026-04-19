@@ -280,8 +280,8 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
               <div
                 className={cn(
                   'w-10 h-10 rounded-full flex items-center justify-center font-semibold transition-all',
-                  isActive && 'bg-judicial-blue-500 text-white ring-4 ring-judicial-blue-100 dark:ring-judicial-blue-900',
-                  isCompleted && 'bg-green-500 text-white',
+                  isActive && 'bg-neutral-500 text-white ring-4 ring-neutral-100 dark:ring-neutral-900',
+                  isCompleted && 'bg-status-success-500 text-white',
                   !isActive && !isCompleted && 'bg-neutral-200 dark:bg-metallic-gray-700 text-neutral-500 dark:text-neutral-400'
                 )}
               >
@@ -295,7 +295,7 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
               </div>
               <span className={cn(
                 'text-xs mt-2 font-medium',
-                isActive && 'text-judicial-blue-600 dark:text-judicial-blue-400',
+                isActive && 'text-neutral-600 dark:text-neutral-400',
                 !isActive && 'text-neutral-500 dark:text-neutral-400'
               )}>
                 {label}
@@ -304,7 +304,7 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
             {index < 2 && (
               <div className={cn(
                 'flex-1 h-1 mx-2 rounded-full transition-all',
-                getStepNumber(currentStep) > stepNum ? 'bg-green-500' : 'bg-neutral-200 dark:bg-metallic-gray-700'
+                getStepNumber(currentStep) > stepNum ? 'bg-status-success-500' : 'bg-neutral-200 dark:bg-metallic-gray-700'
               )}></div>
             )}
           </React.Fragment>
@@ -319,8 +319,8 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
         {/* Pulsing animation rings */}
         {voiceRecording.isRecording && (
           <>
-            <div className="absolute inset-0 animate-ping rounded-full bg-red-400 opacity-30"></div>
-            <div className="absolute inset-0 animate-pulse rounded-full bg-red-400 opacity-20" style={{ animationDelay: '0.5s' }}></div>
+            <div className="absolute inset-0 animate-ping rounded-full bg-status-error-400 opacity-30"></div>
+            <div className="absolute inset-0 animate-pulse rounded-full bg-status-error-400 opacity-20" style={{ animationDelay: '0.5s' }}></div>
           </>
         )}
         
@@ -331,8 +331,8 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
           className={cn(
             'relative w-32 h-32 rounded-full flex items-center justify-center text-white transition-all shadow-2xl',
             voiceRecording.isRecording 
-              ? 'bg-red-500 hover:bg-red-600 scale-110' 
-              : 'bg-judicial-blue-500 hover:bg-judicial-blue-600',
+              ? 'bg-status-error-500 hover:bg-status-error-600 scale-110' 
+              : 'bg-neutral-500 hover:bg-neutral-600',
             !voiceRecording.isSupported && 'opacity-50 cursor-not-allowed'
           )}
         >
@@ -348,7 +348,7 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
       <div className="text-center mb-6">
         {voiceRecording.isRecording ? (
           <>
-            <p className="text-lg font-semibold text-red-600 dark:text-red-400 mb-2 animate-pulse">
+            <p className="text-lg font-semibold text-status-error-600 dark:text-status-error-400 mb-2 animate-pulse">
               Recording...
             </p>
             <p className="text-2xl font-mono text-neutral-700 dark:text-neutral-300">
@@ -356,7 +356,7 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
             </p>
           </>
         ) : voiceRecording.transcript ? (
-          <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+          <p className="text-lg font-semibold text-status-success-600 dark:text-status-success-400">
             Recording complete
           </p>
         ) : (
@@ -431,7 +431,7 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
           onChange={handleEditTranscript}
           placeholder="Enter or edit the matter description here..."
           rows={12}
-          className="font-mono text-sm w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-judicial-blue-500 dark:focus:ring-judicial-blue-400 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100"
+          className="font-mono text-sm w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:focus:ring-neutral-400 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100"
         />
         
         <p className="text-xs text-neutral-500 dark:text-neutral-400 mt-2">
@@ -488,8 +488,8 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
                   className={cn(
                     'p-4 text-left rounded-lg border-2 transition-all',
                     matterType === type.value
-                      ? 'border-judicial-blue-500 bg-judicial-blue-50 dark:bg-judicial-blue-900/20'
-                      : 'border-neutral-200 dark:border-metallic-gray-600 hover:border-judicial-blue-300 dark:hover:border-judicial-blue-700'
+                      ? 'border-neutral-500 bg-neutral-50 dark:bg-neutral-900/20'
+                      : 'border-neutral-200 dark:border-metallic-gray-600 hover:border-neutral-300 dark:hover:border-neutral-700'
                   )}
                 >
                   <div className="font-medium text-neutral-900 dark:text-neutral-100 mb-1">
@@ -575,7 +575,7 @@ export const MatterDescriptionModal: React.FC<MatterDescriptionModalProps> = ({
                 value={summary}
                 onChange={(e) => setSummary(e.target.value)}
                 rows={16}
-                className="font-mono text-sm w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-judicial-blue-500 dark:focus:ring-judicial-blue-400 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100"
+                className="font-mono text-sm w-full px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg focus:ring-2 focus:ring-neutral-500 dark:focus:ring-neutral-400 bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100"
               />
               
               <div className="flex items-center justify-between text-xs text-neutral-500 dark:text-neutral-400 mt-2">

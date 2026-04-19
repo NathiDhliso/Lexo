@@ -61,7 +61,7 @@ export const MobileTextInput: React.FC<MobileTextInputProps> = ({
       {label && (
         <label className="block text-base font-medium text-neutral-700 dark:text-neutral-300">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-status-error-500 ml-1">*</span>}
         </label>
       )}
       
@@ -85,7 +85,7 @@ export const MobileTextInput: React.FC<MobileTextInputProps> = ({
           "bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100",
           "disabled:opacity-50 disabled:cursor-not-allowed",
           "mobile-touch-target",
-          error && "border-red-500 focus:ring-red-500",
+          error && "border-status-error-500 focus:ring-status-error-500",
           // Prevent zoom on iOS
           "text-base"
         )}
@@ -93,7 +93,7 @@ export const MobileTextInput: React.FC<MobileTextInputProps> = ({
       />
       
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-status-error-600 dark:text-status-error-400">{error}</p>
       )}
       
       {helpText && !error && (
@@ -177,7 +177,7 @@ export const MobileCurrencyInput: React.FC<MobileCurrencyInputProps> = ({
       {label && (
         <label className="block text-base font-medium text-neutral-700 dark:text-neutral-300">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-status-error-500 ml-1">*</span>}
         </label>
       )}
       
@@ -206,14 +206,14 @@ export const MobileCurrencyInput: React.FC<MobileCurrencyInputProps> = ({
             "bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             "mobile-touch-target",
-            error && "border-red-500 focus:ring-red-500"
+            error && "border-status-error-500 focus:ring-status-error-500"
           )}
           style={{ fontSize: '16px' }}
         />
       </div>
       
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-status-error-600 dark:text-status-error-400">{error}</p>
       )}
       
       {helpText && !error && (
@@ -266,7 +266,7 @@ export const MobilePhoneInput: React.FC<MobilePhoneInputProps> = ({
       {label && (
         <label className="block text-base font-medium text-neutral-700 dark:text-neutral-300">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-status-error-500 ml-1">*</span>}
         </label>
       )}
       
@@ -293,14 +293,14 @@ export const MobilePhoneInput: React.FC<MobilePhoneInputProps> = ({
             "bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             "mobile-touch-target",
-            error && "border-red-500 focus:ring-red-500"
+            error && "border-status-error-500 focus:ring-status-error-500"
           )}
           style={{ fontSize: '16px' }}
         />
       </div>
       
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-status-error-600 dark:text-status-error-400">{error}</p>
       )}
       
       {helpText && !error && (
@@ -351,14 +351,14 @@ export const MobilePasswordInput: React.FC<MobilePasswordInputProps> = ({
 
   const strength = showStrengthIndicator ? getPasswordStrength(value) : 0;
   const strengthLabels = ['Very Weak', 'Weak', 'Fair', 'Good', 'Strong'];
-  const strengthColors = ['bg-red-500', 'bg-orange-500', 'bg-yellow-500', 'bg-blue-500', 'bg-green-500'];
+  const strengthColors = ['bg-status-error-500', 'bg-orange-500', 'bg-status-warning-500', 'bg-neutral-500', 'bg-status-success-500'];
 
   return (
     <div className={cn('space-y-2', className)}>
       {label && (
         <label className="block text-base font-medium text-neutral-700 dark:text-neutral-300">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-status-error-500 ml-1">*</span>}
         </label>
       )}
       
@@ -381,7 +381,7 @@ export const MobilePasswordInput: React.FC<MobilePasswordInputProps> = ({
             "bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             "mobile-touch-target",
-            error && "border-red-500 focus:ring-red-500"
+            error && "border-status-error-500 focus:ring-status-error-500"
           )}
           style={{ fontSize: '16px' }}
         />
@@ -416,7 +416,7 @@ export const MobilePasswordInput: React.FC<MobilePasswordInputProps> = ({
       )}
       
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-status-error-600 dark:text-status-error-400">{error}</p>
       )}
       
       {helpText && !error && (
@@ -498,7 +498,7 @@ export const MobileSearchInput: React.FC<MobileSearchInputProps> = ({
       {label && (
         <label className="block text-base font-medium text-neutral-700 dark:text-neutral-300">
           {label}
-          {required && <span className="text-red-500 ml-1">*</span>}
+          {required && <span className="text-status-error-500 ml-1">*</span>}
         </label>
       )}
       
@@ -526,7 +526,7 @@ export const MobileSearchInput: React.FC<MobileSearchInputProps> = ({
             "bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100",
             "disabled:opacity-50 disabled:cursor-not-allowed",
             "mobile-touch-target",
-            error && "border-red-500 focus:ring-red-500"
+            error && "border-status-error-500 focus:ring-status-error-500"
           )}
           style={{ fontSize: '16px' }}
         />
@@ -560,7 +560,7 @@ export const MobileSearchInput: React.FC<MobileSearchInputProps> = ({
       )}
       
       {error && (
-        <p className="text-sm text-red-600 dark:text-red-400">{error}</p>
+        <p className="text-sm text-status-error-600 dark:text-status-error-400">{error}</p>
       )}
       
       {helpText && !error && (

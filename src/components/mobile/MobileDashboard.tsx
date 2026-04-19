@@ -175,18 +175,18 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-white dark:bg-metallic-gray-800 rounded-xl p-4 border border-neutral-200 dark:border-metallic-gray-700">
             <div className="flex items-center gap-2 mb-2">
-              <TrendingUp className="w-5 h-5 text-green-500" />
+              <TrendingUp className="w-5 h-5 text-status-success-500" />
               <span className="text-sm text-neutral-600 dark:text-neutral-400">Revenue</span>
             </div>
             <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
               {formatRand(mockStats.totalRevenue)}
             </p>
-            <p className="text-xs text-green-600 dark:text-green-400">+12% this month</p>
+            <p className="text-xs text-status-success-600 dark:text-status-success-400">+12% this month</p>
           </div>
 
           <div className="bg-white dark:bg-metallic-gray-800 rounded-xl p-4 border border-neutral-200 dark:border-metallic-gray-700">
             <div className="flex items-center gap-2 mb-2">
-              <FileText className="w-5 h-5 text-blue-500" />
+              <FileText className="w-5 h-5 text-neutral-500" />
               <span className="text-sm text-neutral-600 dark:text-neutral-400">Invoices</span>
             </div>
             <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
@@ -208,7 +208,7 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
 
           <div className="bg-white dark:bg-metallic-gray-800 rounded-xl p-4 border border-neutral-200 dark:border-metallic-gray-700">
             <div className="flex items-center gap-2 mb-2">
-              <Clock className="w-5 h-5 text-purple-500" />
+              <Clock className="w-5 h-5 text-neutral-500" />
               <span className="text-sm text-neutral-600 dark:text-neutral-400">Hours</span>
             </div>
             <p className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
@@ -231,14 +231,14 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
         </div>
 
         {/* Urgent Matters Alert */}
-        <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-4">
+        <div className="bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 flex-shrink-0 mt-0.5" />
+            <AlertCircle className="w-5 h-5 text-status-error-600 dark:text-status-error-400 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-sm font-medium text-red-800 dark:text-red-300 mb-1">
+              <h3 className="text-sm font-medium text-status-error-800 dark:text-status-error-300 mb-1">
                 Urgent Matter Requires Attention
               </h3>
-              <p className="text-sm text-red-700 dark:text-red-400">
+              <p className="text-sm text-status-error-700 dark:text-status-error-400">
                 Employment Dispute - Due in 3 days
               </p>
             </div>
@@ -266,14 +266,14 @@ export const MobileDashboard: React.FC<MobileDashboardProps> = ({
         </div>
 
         {/* Success Message */}
-        <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-4">
+        <div className="bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-xl p-4">
           <div className="flex items-start gap-3">
-            <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+            <CheckCircle className="w-5 h-5 text-status-success-600 dark:text-status-success-400 flex-shrink-0 mt-0.5" />
             <div>
-              <h3 className="text-sm font-medium text-green-800 dark:text-green-300 mb-1">
+              <h3 className="text-sm font-medium text-status-success-800 dark:text-status-success-300 mb-1">
                 Payment Received
               </h3>
-              <p className="text-sm text-green-700 dark:text-green-400">
+              <p className="text-sm text-status-success-700 dark:text-status-success-400">
                 {formatRand(15000)} from Wilson & Partners
               </p>
             </div>

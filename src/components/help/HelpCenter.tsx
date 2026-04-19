@@ -207,7 +207,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
         aria-labelledby="help-center-title"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-metallic-gray-700 bg-gradient-to-r from-judicial-blue-600 to-judicial-blue-700">
+        <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-metallic-gray-700 bg-gradient-to-r from-neutral-600 to-neutral-700">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-white/10 rounded-lg">
               <HelpCircle className="w-6 h-6 text-white" />
@@ -247,7 +247,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
                   }}
                   className={`w-full text-left px-3 py-2 rounded-lg text-sm transition-colors ${
                     activeCategory === category
-                      ? 'bg-judicial-blue-100 dark:bg-judicial-blue-900/30 text-judicial-blue-700 dark:text-judicial-blue-300 font-medium'
+                      ? 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-700 dark:text-neutral-300 font-medium'
                       : 'text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-metallic-gray-800'
                   }`}
                 >
@@ -266,10 +266,10 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
                   <button
                     key={index}
                     onClick={action.action}
-                    className="w-full text-left p-3 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 hover:border-judicial-blue-400 dark:hover:border-judicial-blue-600 hover:bg-judicial-blue-50 dark:hover:bg-judicial-blue-900/20 transition-colors group"
+                    className="w-full text-left p-3 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 hover:border-neutral-400 dark:hover:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-900/20 transition-colors group"
                   >
                     <div className="flex items-start gap-2">
-                      <action.icon className="w-4 h-4 text-judicial-blue-600 dark:text-judicial-blue-400 mt-0.5 flex-shrink-0" />
+                      <action.icon className="w-4 h-4 text-neutral-600 dark:text-neutral-400 mt-0.5 flex-shrink-0" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                           {action.title}
@@ -306,7 +306,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
                 <div className="max-w-3xl">
                   <button
                     onClick={() => setSelectedArticle(null)}
-                    className="flex items-center gap-2 text-sm text-judicial-blue-600 dark:text-judicial-blue-400 hover:underline mb-4"
+                    className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 hover:underline mb-4"
                   >
                     ← Back to results
                   </button>
@@ -345,7 +345,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
                             <button
                               key={related.id}
                               onClick={() => setSelectedArticle(related)}
-                              className="flex items-center gap-2 text-judicial-blue-600 dark:text-judicial-blue-400 hover:underline"
+                              className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:underline"
                             >
                               <ChevronRight className="w-4 h-4" />
                               {related.title}
@@ -375,15 +375,15 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
                         <button
                           key={article.id}
                           onClick={() => setSelectedArticle(article)}
-                          className="text-left p-5 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 hover:border-judicial-blue-400 dark:hover:border-judicial-blue-600 hover:bg-judicial-blue-50 dark:hover:bg-judicial-blue-900/20 transition-all group"
+                          className="text-left p-5 rounded-lg border border-neutral-200 dark:border-metallic-gray-700 hover:border-neutral-400 dark:hover:border-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-900/20 transition-all group"
                         >
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
                               <div className="flex items-center gap-2 mb-2">
                                 {article.videoUrl && (
-                                  <Video className="w-4 h-4 text-judicial-blue-600 dark:text-judicial-blue-400 flex-shrink-0" />
+                                  <Video className="w-4 h-4 text-neutral-600 dark:text-neutral-400 flex-shrink-0" />
                                 )}
-                                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-judicial-blue-700 dark:group-hover:text-judicial-blue-300">
+                                <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 group-hover:text-neutral-700 dark:group-hover:text-neutral-300">
                                   {article.title}
                                 </h3>
                               </div>
@@ -401,7 +401,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
                                 ))}
                               </div>
                             </div>
-                            <ChevronRight className="w-5 h-5 text-neutral-400 group-hover:text-judicial-blue-600 dark:group-hover:text-judicial-blue-400 flex-shrink-0 transition-colors" />
+                            <ChevronRight className="w-5 h-5 text-neutral-400 group-hover:text-neutral-600 dark:group-hover:text-neutral-400 flex-shrink-0 transition-colors" />
                           </div>
                         </button>
                       ))}
@@ -421,7 +421,7 @@ export const HelpCenter: React.FC<HelpCenterProps> = ({
             </div>
             <a
               href="mailto:support@lexohub.com"
-              className="flex items-center gap-2 text-judicial-blue-600 dark:text-judicial-blue-400 hover:underline"
+              className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:underline"
             >
               Contact Support <ExternalLink className="w-4 h-4" />
             </a>

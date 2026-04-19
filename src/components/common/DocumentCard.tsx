@@ -26,9 +26,9 @@ const getDocumentTypeStyles = (type: DocumentType) => {
   switch (type) {
     case 'matter':
       return {
-        borderColor: 'border-l-judicial-blue-500 dark:border-l-judicial-blue-400',
-        badgeColor: 'bg-judicial-blue-100 text-judicial-blue-700 dark:bg-judicial-blue-900/30 dark:text-judicial-blue-300',
-        accentColor: 'text-judicial-blue-600 dark:text-judicial-blue-400'
+        borderColor: 'border-l-neutral-500 dark:border-l-neutral-400',
+        badgeColor: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/30 dark:text-neutral-300',
+        accentColor: 'text-neutral-600 dark:text-neutral-400'
       };
     case 'proforma':
       return {

@@ -75,7 +75,7 @@ export const AdminLayout: React.FC = () => {
           </button>
           <button
             onClick={() => signOut()}
-            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-red-400 hover:text-red-300 hover:bg-red-900/20 rounded-lg transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2 text-sm text-status-error-400 hover:text-status-error-300 hover:bg-status-error-900/20 rounded-lg transition-colors"
           >
             <LogOut className="w-4 h-4" />
             Sign Out

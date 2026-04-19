@@ -102,10 +102,10 @@ export const Toast: React.FC<ToastProps> = ({
         actionText: 'text-status-warning-700 dark:text-status-warning-300',
       },
       info: {
-        border: 'border-judicial-blue-200 dark:border-judicial-blue-800',
-        bg: 'bg-judicial-blue-50 dark:bg-judicial-blue-900/20',
-        icon: 'text-judicial-blue-600 dark:text-judicial-blue-400',
-        actionText: 'text-judicial-blue-700 dark:text-judicial-blue-300',
+        border: 'border-neutral-200 dark:border-neutral-800',
+        bg: 'bg-neutral-50 dark:bg-neutral-900/20',
+        icon: 'text-neutral-600 dark:text-neutral-400',
+        actionText: 'text-neutral-700 dark:text-neutral-300',
       },
     };
 

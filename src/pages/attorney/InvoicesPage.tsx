@@ -143,13 +143,13 @@ export const InvoicesPage: React.FC = () => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'paid':
-        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
+        return 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300';
       case 'partially_paid':
-        return 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300';
+        return 'bg-status-warning-100 dark:bg-status-warning-900/30 text-status-warning-800 dark:text-status-warning-300';
       case 'unpaid':
-        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
+        return 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300';
       case 'overdue':
-        return 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300';
+        return 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-800 dark:text-status-error-300';
       default:
         return 'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300';
     }
@@ -314,7 +314,7 @@ export const InvoicesPage: React.FC = () => {
                         {invoice.payment_status.replace('_', ' ').toUpperCase()}
                       </span>
                       {isOverdue(invoice.due_date) && invoice.payment_status !== 'paid' && (
-                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300">
+                        <span className="px-2 py-1 text-xs font-medium rounded-full bg-status-error-100 dark:bg-status-error-900/30 text-status-error-800 dark:text-status-error-300">
                           {getDaysOverdue(invoice.due_date)} DAYS OVERDUE
                         </span>
                       )}

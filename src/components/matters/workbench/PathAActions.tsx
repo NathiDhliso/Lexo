@@ -24,7 +24,7 @@ export const PathAActions: React.FC<PathAActionsProps> = ({
   onViewBudget,
 }) => {
   return (
-    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-blue-200 dark:border-blue-800 p-6">
+    <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-blue-900/20 dark:to-indigo-900/20 rounded-lg border border-neutral-200 dark:border-neutral-800 p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
@@ -34,7 +34,7 @@ export const PathAActions: React.FC<PathAActionsProps> = ({
             Track detailed work against approved estimate
           </p>
         </div>
-        <div className="px-3 py-1 bg-blue-600 text-white text-xs font-medium rounded-full">
+        <div className="px-3 py-1 bg-neutral-600 text-white text-xs font-medium rounded-full">
           PRO FORMA
         </div>
       </div>
@@ -83,7 +83,7 @@ export const PathAActions: React.FC<PathAActionsProps> = ({
         <Button
           variant="outline"
           onClick={onViewBudget}
-          className="flex items-center justify-center gap-2 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/30"
+          className="flex items-center justify-center gap-2 border-status-success-300 dark:border-status-success-700 text-status-success-700 dark:text-status-success-400 hover:bg-status-success-50 dark:hover:bg-status-success-950/30"
         >
           <TrendingUp className="w-4 h-4" />
           <span>View Budget Comparison</span>
@@ -91,8 +91,8 @@ export const PathAActions: React.FC<PathAActionsProps> = ({
       </div>
 
       {/* Info Box */}
-      <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-        <p className="text-xs text-blue-800 dark:text-blue-300">
+      <div className="mt-4 p-3 bg-neutral-100 dark:bg-neutral-900/30 rounded-lg">
+        <p className="text-xs text-neutral-800 dark:text-neutral-300">
           <strong>Path A:</strong> All work is tracked against the approved pro forma estimate. 
           If additional scope is needed, request an amendment for attorney approval.
         </p>

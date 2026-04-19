@@ -149,7 +149,7 @@ export const CreateMatterForm: React.FC<CreateMatterFormProps> = ({
                 step < currentStep
                   ? 'bg-status-success-600 text-white'
                   : step === currentStep
-                  ? 'bg-judicial-blue-600 text-white'
+                  ? 'bg-neutral-600 text-white'
                   : 'bg-neutral-200 dark:bg-metallic-gray-700 text-neutral-600 dark:text-neutral-400'
               }`}
             >

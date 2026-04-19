@@ -137,7 +137,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
         return cn(
           'rounded-lg',
           isListening
-            ? 'bg-red-500 text-white hover:bg-red-600 active:bg-red-700'
+            ? 'bg-status-error-500 text-white hover:bg-status-error-600 active:bg-status-error-700'
             : 'bg-neutral-100 text-neutral-600 hover:bg-neutral-200 active:bg-neutral-300 dark:bg-metallic-gray-700 dark:text-neutral-400 dark:hover:bg-metallic-gray-600'
         );
     }
@@ -182,8 +182,8 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
 
       {/* Recording indicator */}
       {isListening && (
-        <div className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full animate-pulse">
-          <div className="absolute inset-0 bg-red-500 rounded-full animate-ping opacity-75" />
+        <div className="absolute -top-1 -right-1 w-3 h-3 bg-status-error-500 rounded-full animate-pulse">
+          <div className="absolute inset-0 bg-status-error-500 rounded-full animate-ping opacity-75" />
         </div>
       )}
 
@@ -199,7 +199,7 @@ export const VoiceInputButton: React.FC<VoiceInputButtonProps> = ({
       {/* Error indicator */}
       {error && (
         <div className="absolute top-full left-1/2 transform -translate-x-1/2 mt-1">
-          <div className="bg-red-500 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
+          <div className="bg-status-error-500 text-white text-xs rounded px-2 py-1 whitespace-nowrap">
             Voice input error
           </div>
         </div>

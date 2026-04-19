@@ -170,7 +170,7 @@ export const IssueCreditNoteModal: React.FC<IssueCreditNoteModalProps> = ({
             </div>
             <div>
               <p className="text-xs text-neutral-600 dark:text-neutral-400 mb-1">Amount Paid</p>
-              <p className="text-lg font-semibold text-green-600 dark:text-green-400">
+              <p className="text-lg font-semibold text-status-success-600 dark:text-status-success-400">
                 {formatRand(invoice.amount_paid || 0)}
               </p>
             </div>
@@ -188,7 +188,7 @@ export const IssueCreditNoteModal: React.FC<IssueCreditNoteModalProps> = ({
           {/* Reason for Credit */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Reason for Credit <span className="text-red-500">*</span>
+              Reason for Credit <span className="text-status-error-500">*</span>
             </label>
             <select
               value={reason}
@@ -217,7 +217,7 @@ export const IssueCreditNoteModal: React.FC<IssueCreditNoteModalProps> = ({
           {/* Credit Amount */}
           <div>
             <label className="block text-sm font-medium text-neutral-700 dark:text-neutral-300 mb-2">
-              Credit Amount <span className="text-red-500">*</span>
+              Credit Amount <span className="text-status-error-500">*</span>
             </label>
             <div className="relative">
               <span className="absolute left-3 top-1/2 -translate-y-1/2 text-neutral-500">
@@ -245,9 +245,9 @@ export const IssueCreditNoteModal: React.FC<IssueCreditNoteModalProps> = ({
               <div className="mt-3 p-3 rounded-lg bg-neutral-100 dark:bg-metallic-gray-800 border border-neutral-200 dark:border-metallic-gray-700">
                 <div className="flex items-start gap-2">
                   {isOverCredit ? (
-                    <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <AlertCircle className="w-5 h-5 text-status-error-500 flex-shrink-0 mt-0.5" />
                   ) : (
-                    <FileText className="w-5 h-5 text-blue-500 flex-shrink-0 mt-0.5" />
+                    <FileText className="w-5 h-5 text-neutral-500 flex-shrink-0 mt-0.5" />
                   )}
                   <div className="flex-1">
                     <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
@@ -255,13 +255,13 @@ export const IssueCreditNoteModal: React.FC<IssueCreditNoteModalProps> = ({
                     </p>
                     <p className="text-sm text-neutral-600 dark:text-neutral-400 mt-1">
                       {isOverCredit ? (
-                        <span className="text-red-600 dark:text-red-400">
+                        <span className="text-status-error-600 dark:text-status-error-400">
                           Credit amount exceeds outstanding balance
                         </span>
                       ) : (
                         <>
                           New outstanding balance: <span className={`font-semibold ${
-                            Math.abs(newBalance) < 0.01 ? 'text-green-600 dark:text-green-400' : 
+                            Math.abs(newBalance) < 0.01 ? 'text-status-success-600 dark:text-status-success-400' : 
                             'text-neutral-900 dark:text-neutral-100'
                           }`}>
                             {formatRand(Math.max(0, newBalance))}
@@ -292,11 +292,11 @@ export const IssueCreditNoteModal: React.FC<IssueCreditNoteModalProps> = ({
           </div>
 
           {/* SARS Compliance Notice */}
-          <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-lg border border-blue-200 dark:border-blue-800">
-            <h4 className="text-sm font-semibold text-blue-900 dark:text-blue-100 mb-2">
+          <div className="p-4 bg-neutral-50 dark:bg-neutral-900/20 rounded-lg border border-neutral-200 dark:border-neutral-800">
+            <h4 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100 mb-2">
               SARS Compliance
             </h4>
-            <ul className="text-xs text-blue-800 dark:text-blue-200 space-y-1 list-disc list-inside">
+            <ul className="text-xs text-neutral-800 dark:text-neutral-200 space-y-1 list-disc list-inside">
               <li>Credit note will be assigned sequential number: {nextCreditNoteNumber}</li>
               <li>Original invoice reference will be included</li>
               <li>VAT adjustments will be calculated automatically</li>

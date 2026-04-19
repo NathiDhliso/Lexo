@@ -162,8 +162,8 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
             </div>
 
             {/* Explore First Notice */}
-            <div className="mt-4 p-3 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg">
-              <p className="text-sm text-judicial-blue-900 dark:text-judicial-blue-100">
+            <div className="mt-4 p-3 bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg">
+              <p className="text-sm text-neutral-900 dark:text-neutral-100">
                 💡 <strong>Want to explore first?</strong> Feel free to close this and tour the app. You can always complete setup later from Settings.
               </p>
             </div>
@@ -196,7 +196,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
                     className={cn(
                       'flex items-start p-4 rounded-lg border transition-all duration-200',
                       isCompleted
-                        ? 'border-green-200 bg-green-50 dark:bg-green-900/20 dark:border-green-800'
+                        ? 'border-status-success-200 bg-status-success-50 dark:bg-status-success-900/20 dark:border-status-success-800'
                         : 'border-neutral-200 bg-white dark:bg-neutral-800 dark:border-neutral-600 hover:shadow-md'
                     )}
                   >
@@ -205,7 +205,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
                       <div className={cn(
                         'w-12 h-12 rounded-full flex items-center justify-center',
                         isCompleted
-                          ? 'bg-green-600 text-white'
+                          ? 'bg-status-success-600 text-white'
                           : 'bg-neutral-100 dark:bg-neutral-700 text-neutral-600 dark:text-neutral-400'
                       )}>
                         {isCompleted ? (
@@ -222,7 +222,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
                         <h3 className={cn(
                           'font-semibold',
                           isCompleted
-                            ? 'text-green-900 dark:text-green-100'
+                            ? 'text-status-success-900 dark:text-status-success-100'
                             : 'text-neutral-900 dark:text-neutral-100'
                         )}>
                           {step.title}
@@ -238,7 +238,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
                       <p className={cn(
                         'text-sm mb-3',
                         isCompleted
-                          ? 'text-green-700 dark:text-green-300'
+                          ? 'text-status-success-700 dark:text-status-success-300'
                           : 'text-neutral-600 dark:text-neutral-400'
                       )}>
                         {step.description}
@@ -258,7 +258,7 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
                       )}
                       
                       {isCompleted && (
-                        <div className="flex items-center gap-2 text-sm text-green-600 dark:text-green-400">
+                        <div className="flex items-center gap-2 text-sm text-status-success-600 dark:text-status-success-400">
                           <CheckCircle className="w-4 h-4" />
                           <span>Completed</span>
                         </div>
@@ -271,14 +271,14 @@ export const OnboardingChecklist: React.FC<OnboardingChecklistProps> = ({
 
             {/* Completion Message */}
             {isOnboardingComplete && (
-              <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+              <div className="mt-6 p-4 bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg">
                 <div className="flex items-center gap-3">
-                  <CheckCircle className="w-6 h-6 text-green-600 dark:text-green-400" />
+                  <CheckCircle className="w-6 h-6 text-status-success-600 dark:text-status-success-400" />
                   <div>
-                    <h4 className="font-semibold text-green-900 dark:text-green-100">
+                    <h4 className="font-semibold text-status-success-900 dark:text-status-success-100">
                       Setup Complete!
                     </h4>
-                    <p className="text-sm text-green-700 dark:text-green-300">
+                    <p className="text-sm text-status-success-700 dark:text-status-success-300">
                       Your account is ready to use. You can always update these settings later.
                     </p>
                   </div>

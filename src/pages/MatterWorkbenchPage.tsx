@@ -136,7 +136,7 @@ const MatterWorkbenchPage: React.FC = () => {
               </Button>
               <div>
                 <h1 className="text-xl font-bold">{matter.title}</h1>
-                <span className="text-sm px-2 py-1 rounded bg-blue-100">
+                <span className="text-sm px-2 py-1 rounded bg-neutral-100">
                   {isPathA ? 'Path A' : 'Path B'}
                 </span>
               </div>
@@ -175,7 +175,7 @@ const MatterWorkbenchPage: React.FC = () => {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id as TabType)}
-                className={activeTab === tab.id ? 'border-b-2 border-blue-600 pb-2' : 'pb-2'}
+                className={activeTab === tab.id ? 'border-b-2 border-neutral-600 pb-2' : 'pb-2'}
               >
                 <Icon className="w-4 h-4 inline mr-2" />
                 {tab.label}

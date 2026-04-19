@@ -223,9 +223,9 @@ export const LayoutPresetSelector: React.FC<LayoutPresetSelectorProps> = ({
       </div>
 
       {/* Info Box */}
-      <div className="flex items-start gap-3 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
+      <div className="flex items-start gap-3 p-3 bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg">
         <svg
-          className="w-5 h-5 text-blue-600 dark:text-blue-400 flex-shrink-0 mt-0.5"
+          className="w-5 h-5 text-neutral-600 dark:text-neutral-400 flex-shrink-0 mt-0.5"
           fill="currentColor"
           viewBox="0 0 20 20"
         >
@@ -235,7 +235,7 @@ export const LayoutPresetSelector: React.FC<LayoutPresetSelectorProps> = ({
             clipRule="evenodd"
           />
         </svg>
-        <div className="text-sm text-blue-800 dark:text-blue-200">
+        <div className="text-sm text-neutral-800 dark:text-neutral-200">
           <strong>Tip:</strong> Layout presets provide professionally balanced spacing and margins.
           You can fine-tune individual values in the Advanced Layout Controls section.
         </div>

@@ -146,7 +146,7 @@ export const WIPAccumulator: React.FC<WIPAccumulatorProps> = ({ matterId }) => {
       <div className="px-6 py-4 border-b border-gray-200 dark:border-metallic-gray-700">
         <div className="flex items-center justify-between">
           <h3 className="text-lg font-semibold text-gray-900 dark:text-neutral-100">Work In Progress (WIP)</h3>
-          <TrendingUp className="h-5 w-5 text-blue-600" />
+          <TrendingUp className="h-5 w-5 text-neutral-600" />
         </div>
       </div>
 
@@ -198,9 +198,9 @@ interface WIPItemProps {
 
 const WIPItem: React.FC<WIPItemProps> = ({ icon: Icon, label, count, amount, color }) => {
   const colorClasses = {
-    blue: 'bg-blue-100 text-blue-600',
-    green: 'bg-green-100 text-green-600',
-    purple: 'bg-purple-100 text-purple-600'
+    blue: 'bg-neutral-100 text-neutral-600',
+    green: 'bg-status-success-100 text-status-success-600',
+    purple: 'bg-neutral-100 text-neutral-600'
   };
 
   return (

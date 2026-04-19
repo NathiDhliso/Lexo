@@ -92,7 +92,7 @@ export const ConfirmationDialog: React.FC<ConfirmationDialogProps> = ({
     const configs = {
       info: {
         icon: <Info className="w-6 h-6" />,
-        iconColor: 'text-judicial-blue-600 dark:text-judicial-blue-400',
+        iconColor: 'text-neutral-600 dark:text-neutral-400',
         confirmVariant: 'primary' as const,
         confirmText: confirmText || 'Confirm',
       },

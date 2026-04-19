@@ -195,7 +195,7 @@ export const GenerateInvoiceModal: React.FC<GenerateInvoiceModalProps> = ({
                               {matter.bar}
                             </span>
                             {matter.matter_type && (
-                              <span className="text-xs px-2 py-1 bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400 rounded">
+                              <span className="text-xs px-2 py-1 bg-neutral-100 dark:bg-neutral-900/30 text-neutral-700 dark:text-neutral-400 rounded">
                                 {matter.matter_type}
                               </span>
                             )}

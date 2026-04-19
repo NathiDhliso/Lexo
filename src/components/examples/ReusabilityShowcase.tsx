@@ -93,7 +93,7 @@ function DataFetchingExample() {
     );
 
     if (isLoading) return <div className="animate-pulse">Loading matters...</div>;
-    if (error) return <div className="text-red-600">Error: {error.message}</div>;
+    if (error) return <div className="text-status-error-600">Error: {error.message}</div>;
 
     return (
         <div className="space-y-4">
@@ -101,7 +101,7 @@ function DataFetchingExample() {
                 <h3 className="text-lg font-semibold">Matters ({matters?.length || 0})</h3>
                 <button
                     onClick={refetch}
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    className="px-4 py-2 bg-neutral-600 text-white rounded hover:bg-neutral-700"
                 >
                     Refresh
                 </button>
@@ -178,10 +178,10 @@ function CreateMatterModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                             type="text"
                             value={formData.title}
                             onChange={(e) => handleChange('title', e.target.value)}
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-2 border rounded focus:ring-2 focus:ring-neutral-500"
                         />
                         {validationErrors.title && (
-                            <p className="text-red-600 text-sm mt-1">{validationErrors.title}</p>
+                            <p className="text-status-error-600 text-sm mt-1">{validationErrors.title}</p>
                         )}
                     </div>
 
@@ -191,10 +191,10 @@ function CreateMatterModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                             type="text"
                             value={formData.client_name}
                             onChange={(e) => handleChange('client_name', e.target.value)}
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-2 border rounded focus:ring-2 focus:ring-neutral-500"
                         />
                         {validationErrors.client_name && (
-                            <p className="text-red-600 text-sm mt-1">{validationErrors.client_name}</p>
+                            <p className="text-status-error-600 text-sm mt-1">{validationErrors.client_name}</p>
                         )}
                     </div>
 
@@ -204,10 +204,10 @@ function CreateMatterModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                             type="number"
                             value={formData.estimated_fee}
                             onChange={(e) => handleChange('estimated_fee', Number(e.target.value))}
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-2 border rounded focus:ring-2 focus:ring-neutral-500"
                         />
                         {validationErrors.estimated_fee && (
-                            <p className="text-red-600 text-sm mt-1">{validationErrors.estimated_fee}</p>
+                            <p className="text-status-error-600 text-sm mt-1">{validationErrors.estimated_fee}</p>
                         )}
                     </div>
 
@@ -216,13 +216,13 @@ function CreateMatterModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                         <textarea
                             value={formData.description}
                             onChange={(e) => handleChange('description', e.target.value)}
-                            className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
+                            className="w-full p-2 border rounded focus:ring-2 focus:ring-neutral-500"
                             rows={3}
                         />
                     </div>
 
                     {error && (
-                        <div className="text-red-600 text-sm">{error.message}</div>
+                        <div className="text-status-error-600 text-sm">{error.message}</div>
                     )}
 
                     <div className="flex justify-end space-x-2">
@@ -236,7 +236,7 @@ function CreateMatterModal({ isOpen, onClose }: { isOpen: boolean; onClose: () =
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
+                            className="px-4 py-2 bg-neutral-600 text-white rounded hover:bg-neutral-700 disabled:opacity-50"
                         >
                             {isLoading ? 'Creating...' : 'Create Matter'}
                         </button>
@@ -320,7 +320,7 @@ function MattersTable() {
                     placeholder="Search matters..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                    className="px-3 py-2 border rounded-lg focus:ring-2 focus:ring-neutral-500"
                 />
 
                 <select
@@ -363,11 +363,11 @@ function MattersTable() {
 
             {/* Bulk Actions */}
             {selectedItems.length > 0 && (
-                <div className="flex items-center gap-2 p-3 bg-blue-50 rounded-lg">
+                <div className="flex items-center gap-2 p-3 bg-neutral-50 rounded-lg">
                     <span className="text-sm">{selectedItems.length} selected</span>
                     <button
                         onClick={() => handleBulkAction('delete')}
-                        className="px-3 py-1 bg-red-600 text-white text-sm rounded hover:bg-red-700"
+                        className="px-3 py-1 bg-status-error-600 text-white text-sm rounded hover:bg-status-error-700"
                     >
                         Delete Selected
                     </button>
@@ -409,7 +409,7 @@ function MattersTable() {
                                     <div className="flex items-center">
                                         {matter.title}
                                         {matter.is_urgent && (
-                                            <span className="ml-2 px-2 py-1 bg-red-100 text-red-800 text-xs rounded">
+                                            <span className="ml-2 px-2 py-1 bg-status-error-100 text-status-error-800 text-xs rounded">
                                                 Urgent
                                             </span>
                                         )}
@@ -417,8 +417,8 @@ function MattersTable() {
                                 </td>
                                 <td className="p-3">{matter.client_name}</td>
                                 <td className="p-3">
-                                    <span className={`px-2 py-1 rounded text-xs ${matter.status === 'active' ? 'bg-green-100 text-green-800' :
-                                        matter.status === 'pending' ? 'bg-yellow-100 text-yellow-800' :
+                                    <span className={`px-2 py-1 rounded text-xs ${matter.status === 'active' ? 'bg-status-success-100 text-status-success-800' :
+                                        matter.status === 'pending' ? 'bg-status-warning-100 text-status-warning-800' :
                                             'bg-gray-100 text-gray-800'
                                         }`}>
                                         {matter.status}
@@ -487,7 +487,7 @@ export default function ReusabilityShowcase() {
                     <h2 className="text-xl font-semibold">Advanced Table Management</h2>
                     <button
                         onClick={() => setShowCreateModal(true)}
-                        className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                        className="px-4 py-2 bg-neutral-600 text-white rounded hover:bg-neutral-700"
                     >
                         Create Matter
                     </button>

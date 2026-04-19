@@ -204,8 +204,8 @@ export const FirmAttorneySelector: React.FC<FirmAttorneySelectorProps> = ({
   return (
     <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-full bg-judicial-blue-100 dark:bg-judicial-blue-900/30 flex items-center justify-center">
-          <Building2 className="w-6 h-6 text-judicial-blue-600 dark:text-judicial-blue-400" />
+        <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-900/30 flex items-center justify-center">
+          <Building2 className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
         </div>
         <div>
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
@@ -271,11 +271,11 @@ export const FirmAttorneySelector: React.FC<FirmAttorneySelectorProps> = ({
 
           {/* Display selected attorney details */}
           {isValid && (
-            <div className="p-4 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
-              <p className="text-sm font-medium text-green-900 dark:text-green-100 mb-2">
+            <div className="p-4 bg-status-success-50 dark:bg-status-success-900/20 border border-status-success-200 dark:border-status-success-800 rounded-lg">
+              <p className="text-sm font-medium text-status-success-900 dark:text-status-success-100 mb-2">
                 Selected Attorney Details:
               </p>
-              <div className="space-y-1 text-sm text-green-800 dark:text-green-200">
+              <div className="space-y-1 text-sm text-status-success-800 dark:text-status-success-200">
                 <p><strong>Firm:</strong> {formData.firm_name}</p>
                 <p><strong>Attorney:</strong> {formData.attorney_name}</p>
                 <p><strong>Email:</strong> {formData.attorney_email}</p>

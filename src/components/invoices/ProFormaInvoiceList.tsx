@@ -50,15 +50,15 @@ export const ProFormaInvoiceList: React.FC = () => {
       case 'draft':
         return { color: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300', icon: FileCheck, label: 'Draft' };
       case 'sent':
-        return { color: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300', icon: Clock, label: 'Sent' };
+        return { color: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/30 dark:text-neutral-300', icon: Clock, label: 'Sent' };
       case 'accepted':
-        return { color: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300', icon: CheckCircle, label: 'Accepted' };
+        return { color: 'bg-status-success-100 text-status-success-700 dark:bg-status-success-900/30 dark:text-status-success-300', icon: CheckCircle, label: 'Accepted' };
       case 'declined':
-        return { color: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300', icon: XCircle, label: 'Declined' };
+        return { color: 'bg-status-error-100 text-status-error-700 dark:bg-status-error-900/30 dark:text-status-error-300', icon: XCircle, label: 'Declined' };
       case 'expired':
         return { color: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-300', icon: AlertCircle, label: 'Expired' };
       case 'converted':
-        return { color: 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-300', icon: ArrowRight, label: 'Converted' };
+        return { color: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-900/30 dark:text-neutral-300', icon: ArrowRight, label: 'Converted' };
       default:
         return { color: 'bg-neutral-100 text-neutral-700 dark:bg-neutral-800 dark:text-neutral-300', icon: FileCheck, label: status };
     }
@@ -122,8 +122,8 @@ export const ProFormaInvoiceList: React.FC = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="bg-white dark:bg-metallic-gray-900 p-4 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-              <FileCheck className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-900/30 rounded-lg">
+              <FileCheck className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             </div>
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Total Requests</p>
@@ -146,8 +146,8 @@ export const ProFormaInvoiceList: React.FC = () => {
 
         <div className="bg-white dark:bg-metallic-gray-900 p-4 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
-              <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />
+            <div className="p-2 bg-status-success-100 dark:bg-status-success-900/30 rounded-lg">
+              <CheckCircle className="w-5 h-5 text-status-success-600 dark:text-status-success-400" />
             </div>
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Accepted</p>
@@ -158,8 +158,8 @@ export const ProFormaInvoiceList: React.FC = () => {
 
         <div className="bg-white dark:bg-metallic-gray-900 p-4 rounded-lg border border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
-              <FileCheck className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-900/30 rounded-lg">
+              <FileCheck className="w-5 h-5 text-neutral-600 dark:text-neutral-400" />
             </div>
             <div>
               <p className="text-sm text-neutral-600 dark:text-neutral-400">Total Value</p>
@@ -270,7 +270,7 @@ export const ProFormaInvoiceList: React.FC = () => {
                     {proForma.status === 'accepted' && !proForma.converted_matter_id && (
                       <button
                         onClick={() => handleConvertToMatter(proForma.id)}
-                        className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm"
+                        className="flex items-center gap-2 px-4 py-2 bg-status-success-600 text-white rounded-lg hover:bg-status-success-700 transition-colors text-sm"
                       >
                         Convert to Matter
                         <ArrowRight className="w-4 h-4" />

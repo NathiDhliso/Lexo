@@ -59,8 +59,8 @@ export const FirmCard: React.FC<FirmCardProps> = ({
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-start gap-3 flex-1">
             {/* Firm Icon */}
-            <div className="p-2 bg-firm-primary-100 dark:bg-firm-primary-900/30 rounded-lg">
-              <Building2 className="w-6 h-6 text-firm-primary-600 dark:text-firm-primary-400" />
+            <div className="p-2 bg-neutral-100 dark:bg-neutral-900/30 rounded-lg">
+              <Building2 className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
             </div>
 
             {/* Firm Info */}

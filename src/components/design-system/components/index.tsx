@@ -64,7 +64,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ childr
   
   const variantClasses: Record<string, string> = {
     primary: 'bg-mpondo-gold-500 text-white hover:bg-mpondo-gold-600 active:bg-mpondo-gold-700 focus-visible:ring-mpondo-gold-400 dark:bg-mpondo-gold-400 dark:text-neutral-900 dark:hover:bg-mpondo-gold-300',
-    secondary: 'bg-judicial-blue-900 text-white hover:bg-judicial-blue-800 active:bg-judicial-blue-700 focus-visible:ring-judicial-blue-400 dark:bg-judicial-blue-700 dark:hover:bg-judicial-blue-600',
+    secondary: 'bg-neutral-900 text-white hover:bg-neutral-800 active:bg-neutral-700 focus-visible:ring-neutral-400 dark:bg-neutral-700 dark:hover:bg-neutral-600',
     outline: 'border-2 border-neutral-300 text-neutral-700 hover:border-neutral-400 hover:bg-neutral-50 active:bg-neutral-100 focus-visible:ring-neutral-400 dark:border-metallic-gray-600 dark:text-neutral-200 dark:hover:bg-metallic-gray-800',
     ghost: 'text-neutral-700 hover:bg-neutral-100 active:bg-neutral-200 focus-visible:ring-neutral-400 dark:text-neutral-200 dark:hover:bg-metallic-gray-800',
     destructive: 'bg-status-error-600 text-white hover:bg-status-error-700 active:bg-status-error-800 focus-visible:ring-status-error-400 dark:bg-status-error-500 dark:hover:bg-status-error-600'
@@ -229,7 +229,7 @@ export const Separator: React.FC<CardProps> = ({ className = '', ...props }) => 
 );
 
 export const SelectTrigger: React.FC<CardProps> = ({ children, className = '', ...props }) => (
-  <div className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 cursor-pointer ${className}`} {...props}>
+  <div className={`w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 cursor-pointer ${className}`} {...props}>
     {children}
   </div>
 );

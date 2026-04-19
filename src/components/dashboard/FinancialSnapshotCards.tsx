@@ -88,8 +88,8 @@ export const FinancialSnapshotCards: React.FC<FinancialSnapshotCardsProps> = ({
       >
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <div className="p-3 bg-judicial-blue-50 rounded-lg">
-              <Icon icon={FileText} className="w-6 h-6 text-judicial-blue-600" noGradient />
+            <div className="p-3 bg-neutral-50 rounded-lg">
+              <Icon icon={FileText} className="w-6 h-6 text-neutral-600" noGradient />
             </div>
             <span className="text-xs text-neutral-500">
               {snapshot.wipValue.count} {snapshot.wipValue.count === 1 ? 'matter' : 'matters'}
@@ -101,7 +101,7 @@ export const FinancialSnapshotCards: React.FC<FinancialSnapshotCardsProps> = ({
           <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-3">
             Work in Progress
           </p>
-          <div className="flex items-center text-xs text-judicial-blue-600 hover:text-judicial-blue-700">
+          <div className="flex items-center text-xs text-neutral-600 hover:text-neutral-700">
             View WIP Report <Icon icon={ArrowRight} className="w-3 h-3 ml-1" noGradient />
           </div>
         </CardContent>

@@ -64,7 +64,7 @@ export const WhatsAppInvoiceShare: React.FC<WhatsAppInvoiceShareProps> = ({
         onClick={handleWhatsAppShare}
         variant="outline"
         size="sm"
-        className="flex-1 bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+        className="flex-1 bg-status-success-50 border-status-success-200 text-status-success-700 hover:bg-status-success-100"
       >
         <MessageCircle className="w-4 h-4 mr-2" />
         WhatsApp

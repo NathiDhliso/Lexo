@@ -25,17 +25,17 @@ interface SupportTicket {
 }
 
 const PRIORITY_CONFIG = {
-  p1: { label: 'P1 — Critical', color: 'bg-red-500 text-white', sla: '1h' },
+  p1: { label: 'P1 — Critical', color: 'bg-status-error-500 text-white', sla: '1h' },
   p2: { label: 'P2 — High', color: 'bg-amber-500 text-white', sla: '4h' },
-  p3: { label: 'P3 — Medium', color: 'bg-blue-500 text-white', sla: '24h' },
+  p3: { label: 'P3 — Medium', color: 'bg-neutral-500 text-white', sla: '24h' },
   p4: { label: 'P4 — Low', color: 'bg-neutral-500 text-white', sla: '72h' },
 };
 
 const STATUS_CONFIG = {
-  open: { label: 'Open', color: 'text-red-400' },
+  open: { label: 'Open', color: 'text-status-error-400' },
   in_progress: { label: 'In Progress', color: 'text-amber-400' },
-  waiting: { label: 'Waiting', color: 'text-blue-400' },
-  resolved: { label: 'Resolved', color: 'text-green-400' },
+  waiting: { label: 'Waiting', color: 'text-neutral-400' },
+  resolved: { label: 'Resolved', color: 'text-status-success-400' },
   closed: { label: 'Closed', color: 'text-neutral-500' },
 };
 
@@ -157,7 +157,7 @@ export const AdminTicketsPage: React.FC = () => {
                 )}
                 {selectedTicket.status !== 'resolved' && selectedTicket.status !== 'closed' && (
                   <button onClick={() => updateStatus(selectedTicket.id, 'resolved')}
-                    className="px-3 py-1.5 text-xs font-medium bg-green-600 hover:bg-green-700 text-white rounded-lg">
+                    className="px-3 py-1.5 text-xs font-medium bg-status-success-600 hover:bg-status-success-700 text-white rounded-lg">
                     Resolve
                   </button>
                 )}

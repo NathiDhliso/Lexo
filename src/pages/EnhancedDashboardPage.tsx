@@ -165,7 +165,7 @@ export const EnhancedDashboardPage: React.FC = () => {
         </div>
         
         <div className="flex flex-col items-center justify-center py-12 text-center">
-          <div className="text-red-500 mb-4">
+          <div className="text-status-error-500 mb-4">
             <Icon icon={RefreshCw} className="w-12 h-12 mx-auto" noGradient />
           </div>
           <h3 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">

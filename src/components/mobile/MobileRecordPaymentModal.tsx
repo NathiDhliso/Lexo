@@ -271,7 +271,7 @@ export const MobileRecordPaymentModal: React.FC<MobileRecordPaymentModalProps> =
                         "p-3 rounded-lg text-sm font-medium transition-colors",
                         "mobile-touch-target",
                         quickAmount.variant === 'primary' 
-                          ? "bg-judicial-blue-900 text-white hover:bg-judicial-blue-800"
+                          ? "bg-neutral-900 text-white hover:bg-neutral-800"
                           : "bg-neutral-100 text-neutral-700 hover:bg-neutral-200 dark:bg-metallic-gray-700 dark:text-neutral-300 dark:hover:bg-metallic-gray-600"
                       )}
                     >
@@ -292,7 +292,7 @@ export const MobileRecordPaymentModal: React.FC<MobileRecordPaymentModalProps> =
               />
               
               {validationErrors.amount && (
-                <p className="mt-2 text-sm text-red-600 dark:text-red-400">
+                <p className="mt-2 text-sm text-status-error-600 dark:text-status-error-400">
                   {validationErrors.amount}
                 </p>
               )}
@@ -304,9 +304,9 @@ export const MobileRecordPaymentModal: React.FC<MobileRecordPaymentModalProps> =
                     {paymentCalculations.isOverpayment ? (
                       <AlertCircle className="w-5 h-5 text-orange-500 flex-shrink-0" />
                     ) : paymentCalculations.isFullPayment ? (
-                      <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                      <CheckCircle className="w-5 h-5 text-status-success-500 flex-shrink-0" />
                     ) : (
-                      <DollarSign className="w-5 h-5 text-blue-500 flex-shrink-0" />
+                      <DollarSign className="w-5 h-5 text-neutral-500 flex-shrink-0" />
                     )}
                     <div>
                       <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
@@ -360,8 +360,8 @@ export const MobileRecordPaymentModal: React.FC<MobileRecordPaymentModalProps> =
 
             {/* Error Display */}
             {error && (
-              <div className="p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl">
-                <p className="text-sm text-red-600 dark:text-red-400">
+              <div className="p-4 bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-xl">
+                <p className="text-sm text-status-error-600 dark:text-status-error-400">
                   {error.message || 'An error occurred while recording the payment.'}
                 </p>
               </div>

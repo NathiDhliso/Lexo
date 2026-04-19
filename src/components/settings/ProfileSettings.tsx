@@ -137,7 +137,7 @@ export const ProfileSettings: React.FC = () => {
   if (loadError) {
     return (
       <div className="text-center py-8">
-        <p className="text-red-600 mb-4">Failed to load profile data</p>
+        <p className="text-status-error-600 mb-4">Failed to load profile data</p>
         <Button onClick={() => refetch()}>Try Again</Button>
       </div>
     );
@@ -179,7 +179,7 @@ export const ProfileSettings: React.FC = () => {
             disabled={isSaving}
           />
           {validationErrors.first_name && (
-            <p className="text-xs text-red-600 mt-1">{validationErrors.first_name}</p>
+            <p className="text-xs text-status-error-600 mt-1">{validationErrors.first_name}</p>
           )}
         </div>
         <div>
@@ -191,7 +191,7 @@ export const ProfileSettings: React.FC = () => {
             disabled={isSaving}
           />
           {validationErrors.last_name && (
-            <p className="text-xs text-red-600 mt-1">{validationErrors.last_name}</p>
+            <p className="text-xs text-status-error-600 mt-1">{validationErrors.last_name}</p>
           )}
         </div>
         <div>
@@ -203,7 +203,7 @@ export const ProfileSettings: React.FC = () => {
             placeholder="john@example.com"
           />
           {validationErrors.email && (
-            <p className="text-xs text-red-600 mt-1">{validationErrors.email}</p>
+            <p className="text-xs text-status-error-600 mt-1">{validationErrors.email}</p>
           )}
         </div>
         <FormInput
@@ -276,8 +276,8 @@ export const ProfileSettings: React.FC = () => {
 
       {/* Error Display */}
       {saveError && (
-        <div className="p-3 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg">
-          <p className="text-sm text-red-600 dark:text-red-400">
+        <div className="p-3 bg-status-error-50 dark:bg-status-error-900/20 border border-status-error-200 dark:border-status-error-800 rounded-lg">
+          <p className="text-sm text-status-error-600 dark:text-status-error-400">
             {saveError.message || 'Failed to save profile'}
           </p>
         </div>
@@ -298,16 +298,16 @@ export const ProfileSettings: React.FC = () => {
       {/* Setup Guide Section */}
       <div className="pt-6 border-t border-gray-200 dark:border-metallic-gray-700">
         <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">Need Help Getting Started?</h3>
-        <div className="bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg p-4">
+        <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
           <div className="flex items-start gap-4">
-            <div className="flex-shrink-0 w-10 h-10 bg-judicial-blue-600 rounded-full flex items-center justify-center">
+            <div className="flex-shrink-0 w-10 h-10 bg-neutral-600 rounded-full flex items-center justify-center">
               <HelpCircle className="w-5 h-5 text-white" />
             </div>
             <div className="flex-1">
-              <h4 className="font-medium text-judicial-blue-900 dark:text-judicial-blue-100 mb-1">
+              <h4 className="font-medium text-neutral-900 dark:text-neutral-100 mb-1">
                 Reopen Setup Guide
               </h4>
-              <p className="text-sm text-judicial-blue-700 dark:text-judicial-blue-300 mb-3">
+              <p className="text-sm text-neutral-700 dark:text-neutral-300 mb-3">
                 Walked through the setup wizard yet? Or need to revisit billing preferences and templates? You can reopen the setup guide anytime.
               </p>
               <Button

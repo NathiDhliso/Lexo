@@ -130,8 +130,8 @@ export const RequestScopeAmendmentModal: React.FC<RequestScopeAmendmentModalProp
           {/* Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-3">
-              <div className="w-12 h-12 rounded-full bg-judicial-blue-100 dark:bg-judicial-blue-900/30 flex items-center justify-center">
-                <AlertCircle className="w-7 h-7 text-judicial-blue-600 dark:text-judicial-blue-400" />
+              <div className="w-12 h-12 rounded-full bg-neutral-100 dark:bg-neutral-900/30 flex items-center justify-center">
+                <AlertCircle className="w-7 h-7 text-neutral-600 dark:text-neutral-400" />
               </div>
               <div>
                 <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
@@ -181,7 +181,7 @@ export const RequestScopeAmendmentModal: React.FC<RequestScopeAmendmentModalProp
               value={reason}
               onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setReason(e.target.value)}
               placeholder="e.g., Opposing counsel filed new papers requiring additional work..."
-              className="w-full h-24 px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 resize-none focus:ring-2 focus:ring-judicial-blue-500"
+              className="w-full h-24 px-3 py-2 border border-neutral-300 dark:border-metallic-gray-600 rounded-lg bg-white dark:bg-metallic-gray-800 text-neutral-900 dark:text-neutral-100 resize-none focus:ring-2 focus:ring-neutral-500"
             />
           </div>
 
@@ -268,7 +268,7 @@ export const RequestScopeAmendmentModal: React.FC<RequestScopeAmendmentModalProp
           </div>
 
           {/* Summary */}
-          <div className="bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border border-judicial-blue-200 dark:border-judicial-blue-800 rounded-lg p-4 mb-6">
+          <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 mb-6">
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-neutral-700 dark:text-neutral-300">Original Pro Forma:</span>
@@ -278,11 +278,11 @@ export const RequestScopeAmendmentModal: React.FC<RequestScopeAmendmentModalProp
               </div>
               <div className="flex justify-between">
                 <span className="text-neutral-700 dark:text-neutral-300">Amendment Services:</span>
-                <span className="font-medium text-judicial-blue-700 dark:text-judicial-blue-300">
+                <span className="font-medium text-neutral-700 dark:text-neutral-300">
                   + {formatRand(amendmentTotal)}
                 </span>
               </div>
-              <div className="border-t border-judicial-blue-200 dark:border-judicial-blue-700 pt-2 flex justify-between">
+              <div className="border-t border-neutral-200 dark:border-neutral-700 pt-2 flex justify-between">
                 <span className="font-semibold text-neutral-900 dark:text-neutral-100">New Total:</span>
                 <span className="font-bold text-lg text-neutral-900 dark:text-neutral-100">
                   {formatRand(newTotal)}
@@ -312,7 +312,7 @@ export const RequestScopeAmendmentModal: React.FC<RequestScopeAmendmentModalProp
             <Button
               variant="primary"
               onClick={handleSubmit}
-              className="flex-1 bg-judicial-blue-600 hover:bg-judicial-blue-700"
+              className="flex-1 bg-neutral-600 hover:bg-neutral-700"
               disabled={isLoading}
             >
               Send Amendment Request

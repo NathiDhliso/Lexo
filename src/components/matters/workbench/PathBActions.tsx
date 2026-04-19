@@ -20,7 +20,7 @@ export const PathBActions: React.FC<PathBActionsProps> = ({
   onLogExpense,
 }) => {
   return (
-    <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-green-200 dark:border-green-800 p-6">
+    <div className="bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/20 dark:to-emerald-900/20 rounded-lg border border-status-success-200 dark:border-status-success-800 p-6">
       <div className="flex items-center justify-between mb-4">
         <div>
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100">
@@ -30,7 +30,7 @@ export const PathBActions: React.FC<PathBActionsProps> = ({
             Choose your billing method: flat fee or time-based
           </p>
         </div>
-        <div className="px-3 py-1 bg-green-600 text-white text-xs font-medium rounded-full">
+        <div className="px-3 py-1 bg-status-success-600 text-white text-xs font-medium rounded-full">
           ACCEPTED BRIEF
         </div>
       </div>
@@ -40,7 +40,7 @@ export const PathBActions: React.FC<PathBActionsProps> = ({
         <Button
           variant="primary"
           onClick={onSimpleFeeEntry}
-          className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700"
+          className="w-full flex items-center justify-center gap-2 bg-status-success-600 hover:bg-status-success-700"
           size="lg"
         >
           <DollarSign className="w-5 h-5" />
@@ -57,7 +57,7 @@ export const PathBActions: React.FC<PathBActionsProps> = ({
           <div className="w-full border-t border-neutral-300 dark:border-neutral-600"></div>
         </div>
         <div className="relative flex justify-center text-xs">
-          <span className="bg-green-50 dark:bg-green-900/20 px-2 text-neutral-500 dark:text-neutral-400">
+          <span className="bg-status-success-50 dark:bg-status-success-900/20 px-2 text-neutral-500 dark:text-neutral-400">
             OR use hybrid time tracking
           </span>
         </div>
@@ -68,7 +68,7 @@ export const PathBActions: React.FC<PathBActionsProps> = ({
         <Button
           variant="outline"
           onClick={onLogTime}
-          className="flex items-center justify-center gap-2 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/30"
+          className="flex items-center justify-center gap-2 border-status-success-300 dark:border-status-success-700 text-status-success-700 dark:text-status-success-400 hover:bg-status-success-50 dark:hover:bg-status-success-950/30"
         >
           <Clock className="w-4 h-4" />
           <span>Log Time (Hybrid)</span>
@@ -77,7 +77,7 @@ export const PathBActions: React.FC<PathBActionsProps> = ({
         <Button
           variant="outline"
           onClick={onLogExpense}
-          className="flex items-center justify-center gap-2 border-green-300 dark:border-green-700 text-green-700 dark:text-green-400 hover:bg-green-50 dark:hover:bg-green-950/30"
+          className="flex items-center justify-center gap-2 border-status-success-300 dark:border-status-success-700 text-status-success-700 dark:text-status-success-400 hover:bg-status-success-50 dark:hover:bg-status-success-950/30"
         >
           <Receipt className="w-4 h-4" />
           <span>Log Expense</span>
@@ -85,8 +85,8 @@ export const PathBActions: React.FC<PathBActionsProps> = ({
       </div>
 
       {/* Info Box */}
-      <div className="mt-4 p-3 bg-green-100 dark:bg-green-900/30 rounded-lg">
-        <p className="text-xs text-green-800 dark:text-green-300">
+      <div className="mt-4 p-3 bg-status-success-100 dark:bg-status-success-900/30 rounded-lg">
+        <p className="text-xs text-status-success-800 dark:text-status-success-300">
           <strong>Path B:</strong> Use Simple Fee Entry for traditional brief fees (fixed amount), 
           or switch to Hybrid mode to track hours + expenses if needed.
         </p>

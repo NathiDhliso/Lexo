@@ -182,7 +182,7 @@ export const AttorneyRegisterPage: React.FC = () => {
           role="alert"
           aria-live="assertive"
         >
-          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" aria-hidden="true" />
+          <AlertCircle className="w-16 h-16 text-status-error-500 mx-auto mb-4" aria-hidden="true" />
           <h2 className="text-2xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             Invalid Invitation
           </h2>
@@ -205,7 +205,7 @@ export const AttorneyRegisterPage: React.FC = () => {
           <div className="flex items-center justify-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
             <span className="flex items-center gap-2">
               <span 
-                className="w-8 h-8 rounded-full bg-judicial-blue-600 dark:bg-judicial-blue-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm"
+                className="w-8 h-8 rounded-full bg-neutral-600 dark:bg-neutral-500 text-white flex items-center justify-center text-sm font-semibold shadow-sm"
                 aria-current="step"
               >
                 1
@@ -222,8 +222,8 @@ export const AttorneyRegisterPage: React.FC = () => {
 
         {/* Welcome Message */}
         <div className="text-center mb-8">
-          <div className="p-3 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 rounded-full w-fit mx-auto mb-4">
-            <Building className="w-12 h-12 text-judicial-blue-600 dark:text-judicial-blue-400" aria-hidden="true" />
+          <div className="p-3 bg-neutral-50 dark:bg-neutral-900/20 rounded-full w-fit mx-auto mb-4">
+            <Building className="w-12 h-12 text-neutral-600 dark:text-neutral-400" aria-hidden="true" />
           </div>
           <h1 className="text-3xl font-bold text-neutral-900 dark:text-neutral-100 mb-2">
             Welcome, {firmData?.firm_name}!

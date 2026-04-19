@@ -122,7 +122,7 @@ const MegaMenuItem: React.FC<MegaMenuItemProps> = ({
                 </span>
               )}
               {item.badge && (
-                <span className="px-1.5 py-0.5 text-xs bg-judicial-blue-100 dark:bg-judicial-blue-900/30 text-judicial-blue-800 dark:text-judicial-blue-300 rounded-full">
+                <span className="px-1.5 py-0.5 text-xs bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300 rounded-full">
                   {item.badge}
                 </span>
               )}
@@ -188,7 +188,7 @@ const MegaMenuSection: React.FC<MegaMenuSectionProps> = ({
 
   return (
     <div className="space-y-2 bg-white dark:bg-metallic-gray-800 rounded-xl border border-neutral-200 dark:border-metallic-gray-700 p-5 theme-shadow-sm hover:theme-shadow-md transition-shadow">
-      <h3 className="text-xs font-bold text-judicial-blue-600 dark:text-judicial-blue-400 uppercase tracking-wider mb-4 pb-2 border-b border-neutral-100 dark:border-metallic-gray-700">
+      <h3 className="text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider mb-4 pb-2 border-b border-neutral-100 dark:border-metallic-gray-700">
         {section.title}
       </h3>
       <div className="space-y-2">
@@ -230,7 +230,7 @@ const FeaturedItems: React.FC<{
   }
 
   return (
-    <div className="bg-gradient-to-br from-mpondo-gold-50 to-judicial-blue-50 dark:from-mpondo-gold-950/20 dark:to-judicial-blue-950/20 rounded-lg p-4 border border-mpondo-gold-200 dark:border-mpondo-gold-800">
+    <div className="bg-gradient-to-br from-mpondo-gold-50 to-neutral-50 dark:from-mpondo-gold-950/20 dark:to-neutral-950/20 rounded-lg p-4 border border-mpondo-gold-200 dark:border-mpondo-gold-800">
       <div className="flex items-center gap-2 mb-3">
         <Star className="w-4 h-4 text-mpondo-gold-600 dark:text-mpondo-gold-400" />
         <h3 className="text-sm font-semibold text-neutral-900 dark:text-neutral-100">Featured Workflow</h3>

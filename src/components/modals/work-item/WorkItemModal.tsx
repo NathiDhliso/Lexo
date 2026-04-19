@@ -92,7 +92,7 @@ export const WorkItemModal: React.FC<WorkItemModalProps> = ({
     if (loading) {
       return (
         <div className="flex items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-judicial-blue-600 dark:border-mpondo-gold-400" />
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600 dark:border-mpondo-gold-400" />
         </div>
       );
     }

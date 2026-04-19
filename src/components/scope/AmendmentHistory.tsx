@@ -48,9 +48,9 @@ export const AmendmentHistory: React.FC<AmendmentHistoryProps> = ({ matterId }) 
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'approved':
-        return <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400" />;
+        return <CheckCircle className="w-5 h-5 text-status-success-600 dark:text-status-success-400" />;
       case 'rejected':
-        return <XCircle className="w-5 h-5 text-red-600 dark:text-red-400" />;
+        return <XCircle className="w-5 h-5 text-status-error-600 dark:text-status-error-400" />;
       case 'pending':
         return <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />;
       default:
@@ -60,8 +60,8 @@ export const AmendmentHistory: React.FC<AmendmentHistoryProps> = ({ matterId }) 
 
   const getStatusBadge = (status: string) => {
     const styles = {
-      approved: 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300',
-      rejected: 'bg-red-100 dark:bg-red-900/30 text-red-800 dark:text-red-300',
+      approved: 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300',
+      rejected: 'bg-status-error-100 dark:bg-status-error-900/30 text-status-error-800 dark:text-status-error-300',
       pending: 'bg-amber-100 dark:bg-amber-900/30 text-amber-800 dark:text-amber-300',
     };
     return styles[status as keyof typeof styles] || 'bg-gray-100 dark:bg-metallic-gray-950/30 text-gray-800 dark:text-neutral-300';
@@ -155,7 +155,7 @@ export const AmendmentHistory: React.FC<AmendmentHistoryProps> = ({ matterId }) 
 
                 {amendment.status === 'approved' && amendment.approved_at && (
                   <div className="mt-3 pt-3 border-t border-gray-200 dark:border-metallic-gray-700">
-                    <p className="text-xs text-green-600 dark:text-green-400">
+                    <p className="text-xs text-status-success-600 dark:text-status-success-400">
                       ✓ Approved on {formatDate(amendment.approved_at)}
                     </p>
                   </div>
@@ -163,7 +163,7 @@ export const AmendmentHistory: React.FC<AmendmentHistoryProps> = ({ matterId }) 
 
                 {amendment.status === 'rejected' && amendment.rejected_at && (
                   <div className="mt-3 pt-3 border-t border-gray-200 dark:border-metallic-gray-700">
-                    <p className="text-xs text-red-600 dark:text-red-400 mb-1">
+                    <p className="text-xs text-status-error-600 dark:text-status-error-400 mb-1">
                       ✗ Rejected on {formatDate(amendment.rejected_at)}
                     </p>
                     {amendment.rejection_reason && (

@@ -120,7 +120,7 @@ export const InvoiceSettingsForm: React.FC = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center p-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -139,7 +139,7 @@ export const InvoiceSettingsForm: React.FC = () => {
             <select
               value={invoiceFormat}
               onChange={(e) => setInvoiceFormat(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
             >
               {INVOICE_NUMBER_FORMAT_PRESETS.map((preset) => (
                 <option key={preset.format} value={preset.format}>
@@ -159,7 +159,7 @@ export const InvoiceSettingsForm: React.FC = () => {
             <select
               value={creditNoteFormat}
               onChange={(e) => setCreditNoteFormat(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
             >
               {CREDIT_NOTE_FORMAT_PRESETS.map((preset) => (
                 <option key={preset.format} value={preset.format}>
@@ -181,7 +181,7 @@ export const InvoiceSettingsForm: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-gray-600">Next Invoice Number:</span>
-                  <span className="ml-2 font-semibold text-blue-600">{previewInvoiceNumber}</span>
+                  <span className="ml-2 font-semibold text-neutral-600">{previewInvoiceNumber}</span>
                 </div>
                 <div>
                   <span className="text-gray-600">Current Credit Note Sequence:</span>
@@ -189,7 +189,7 @@ export const InvoiceSettingsForm: React.FC = () => {
                 </div>
                 <div>
                   <span className="text-gray-600">Next Credit Note Number:</span>
-                  <span className="ml-2 font-semibold text-blue-600">{previewCreditNoteNumber}</span>
+                  <span className="ml-2 font-semibold text-neutral-600">{previewCreditNoteNumber}</span>
                 </div>
               </div>
             </div>
@@ -208,7 +208,7 @@ export const InvoiceSettingsForm: React.FC = () => {
               id="vatRegistered"
               checked={vatRegistered}
               onChange={(e) => setVatRegistered(e.target.checked)}
-              className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+              className="h-4 w-4 text-neutral-600 focus:ring-neutral-500 border-gray-300 rounded"
             />
             <label htmlFor="vatRegistered" className="ml-2 block text-sm text-gray-900">
               I am VAT registered
@@ -236,7 +236,7 @@ export const InvoiceSettingsForm: React.FC = () => {
                   min="0"
                   max="100"
                   step="0.01"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
                 />
                 <p className="mt-1 text-sm text-gray-500">
                   Current South African VAT rate is 15%
@@ -270,7 +270,7 @@ export const InvoiceSettingsForm: React.FC = () => {
               value={advocateAddress}
               onChange={(e) => setAdvocateAddress(e.target.value)}
               rows={3}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-neutral-500"
               placeholder="123 Main Street&#10;Johannesburg, 2000&#10;South Africa"
             />
           </div>
@@ -304,9 +304,9 @@ export const InvoiceSettingsForm: React.FC = () => {
       </div>
 
       {/* Help Text */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-        <h4 className="text-sm font-semibold text-blue-900 mb-2">SARS Compliance</h4>
-        <ul className="text-sm text-blue-800 space-y-1 list-disc list-inside">
+      <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-4">
+        <h4 className="text-sm font-semibold text-neutral-900 mb-2">SARS Compliance</h4>
+        <ul className="text-sm text-neutral-800 space-y-1 list-disc list-inside">
           <li>Invoice numbers must be sequential and cannot have gaps</li>
           <li>VAT registered businesses must issue tax invoices with all required details</li>
           <li>Keep records of all invoice numbers, including voided ones</li>

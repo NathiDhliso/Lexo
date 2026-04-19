@@ -168,7 +168,7 @@ export const LogServiceModal: React.FC<LogServiceModalProps> = ({
       <div className="bg-white dark:bg-metallic-gray-800 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
         <div className="flex items-center justify-between p-6 border-b border-neutral-200 dark:border-metallic-gray-700">
           <div className="flex items-center gap-3">
-            <Briefcase className="w-6 h-6 text-blue-600 dark:text-mpondo-gold-400" />
+            <Briefcase className="w-6 h-6 text-neutral-600 dark:text-mpondo-gold-400" />
             <div>
               <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
                 {service ? 'Edit Service' : isEstimate ? 'Add Service (Estimate)' : 'Log Service'}

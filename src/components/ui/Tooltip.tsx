@@ -80,7 +80,7 @@ export const Tooltip: React.FC<TooltipProps> = ({
         showIcon && (
           <button
             type="button"
-            className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors focus:outline-none focus:ring-2 focus:ring-judicial-blue-500 rounded"
+            className="text-neutral-400 hover:text-neutral-600 dark:hover:text-neutral-300 transition-colors focus:outline-none focus:ring-2 focus:ring-neutral-500 rounded"
             aria-label="Help"
             tabIndex={0}
           >

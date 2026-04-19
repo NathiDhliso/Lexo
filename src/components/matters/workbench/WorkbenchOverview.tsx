@@ -45,7 +45,7 @@ export const WorkbenchOverview: React.FC<WorkbenchOverviewProps> = ({
           </div>
           <div className={`px-3 py-1 rounded-full text-xs font-medium ${
             matter.status === 'active' 
-              ? 'bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-400'
+              ? 'bg-status-success-100 text-status-success-800 dark:bg-status-success-900/30 dark:text-status-success-400'
               : 'bg-gray-100 text-gray-800 dark:bg-gray-900/30 dark:text-gray-400'
           }`}>
             {matter.status?.toUpperCase()}
@@ -129,8 +129,8 @@ export const WorkbenchOverview: React.FC<WorkbenchOverviewProps> = ({
 
       {/* Path B Info */}
       {!isPathA && (
-        <div className="bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800 p-4">
-          <p className="text-sm text-green-800 dark:text-green-300">
+        <div className="bg-status-success-50 dark:bg-status-success-900/20 rounded-lg border border-status-success-200 dark:border-status-success-800 p-4">
+          <p className="text-sm text-status-success-800 dark:text-status-success-300">
             <strong>Path B: Accept & Work</strong> - This matter was accepted without a pro forma. 
             Use Simple Fee Entry for traditional brief fees, or track time and expenses for hybrid billing.
           </p>

@@ -140,17 +140,17 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="text-center py-12 bg-red-50 rounded-lg border-2 border-dashed border-red-300">
-        <FileText className="w-12 h-12 text-red-400 mx-auto mb-3" />
-        <p className="text-red-600 font-medium">Failed to load disbursements</p>
-        <p className="text-sm text-red-500 mt-1">{error.message}</p>
+      <div className="text-center py-12 bg-status-error-50 rounded-lg border-2 border-dashed border-status-error-300">
+        <FileText className="w-12 h-12 text-status-error-400 mx-auto mb-3" />
+        <p className="text-status-error-600 font-medium">Failed to load disbursements</p>
+        <p className="text-sm text-status-error-500 mt-1">{error.message}</p>
         <Button onClick={() => refetch()} className="mt-3">
           Try Again
         </Button>
@@ -169,7 +169,7 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
               onClick={() => handleFilterChange('all')}
               className={`px-3 py-1 text-sm rounded-md transition-colors ${
                 currentFilter === 'all'
-                  ? 'bg-blue-100 text-blue-700 font-medium'
+                  ? 'bg-neutral-100 text-neutral-700 font-medium'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -179,7 +179,7 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
               onClick={() => handleFilterChange('unbilled')}
               className={`px-3 py-1 text-sm rounded-md transition-colors ${
                 currentFilter === 'unbilled'
-                  ? 'bg-blue-100 text-blue-700 font-medium'
+                  ? 'bg-neutral-100 text-neutral-700 font-medium'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -189,7 +189,7 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
               onClick={() => handleFilterChange('billed')}
               className={`px-3 py-1 text-sm rounded-md transition-colors ${
                 currentFilter === 'billed'
-                  ? 'bg-blue-100 text-blue-700 font-medium'
+                  ? 'bg-neutral-100 text-neutral-700 font-medium'
                   : 'text-gray-600 hover:bg-gray-100'
               }`}
             >
@@ -201,7 +201,7 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
         {showBulkSelect && filteredDisbursements.length > 0 && (
           <button
             onClick={() => handleSelectAll()}
-            className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+            className="text-sm text-neutral-600 hover:text-neutral-700 font-medium"
           >
             {isAllSelected ? 'Deselect All' : 'Select All'}
           </button>
@@ -233,7 +233,7 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
                         if (el) el.indeterminate = isIndeterminate;
                       }}
                       onChange={(e) => handleSelectAll(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                      className="w-4 h-4 text-neutral-600 border-gray-300 rounded focus:ring-neutral-500"
                     />
                   </th>
                 )}
@@ -265,7 +265,7 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
                 <tr
                   key={disbursement.id}
                   className={`hover:bg-gray-50 transition-colors ${
-                    selectedItems.includes(disbursement) ? 'bg-blue-50' : ''
+                    selectedItems.includes(disbursement) ? 'bg-neutral-50' : ''
                   }`}
                 >
                   {showBulkSelect && (
@@ -275,7 +275,7 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
                         checked={selectedItems.includes(disbursement)}
                         onChange={(e) => handleSelectItem(disbursement, e.target.checked)}
                         disabled={disbursement.is_billed}
-                        className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500 disabled:opacity-50"
+                        className="w-4 h-4 text-neutral-600 border-gray-300 rounded focus:ring-neutral-500 disabled:opacity-50"
                       />
                     </td>
                   )}
@@ -290,7 +290,7 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
                           href={disbursement.receipt_link}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-blue-600 hover:text-blue-700"
+                          className="text-neutral-600 hover:text-neutral-700"
                           title="View receipt"
                         >
                           <ExternalLink className="w-4 h-4" />
@@ -313,11 +313,11 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
                   </td>
                   <td className="px-4 py-3 text-center">
                     {disbursement.is_billed ? (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-success-100 text-status-success-800">
                         Billed
                       </span>
                     ) : (
-                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-status-warning-100 text-status-warning-800">
                         Unbilled
                       </span>
                     )}
@@ -328,14 +328,14 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
                         <>
                           <button
                             onClick={() => onEdit?.(disbursement)}
-                            className="text-blue-600 hover:text-blue-700 transition-colors"
+                            className="text-neutral-600 hover:text-neutral-700 transition-colors"
                             title="Edit disbursement"
                           >
                             <Edit2 className="w-4 h-4" />
                           </button>
                           <button
                             onClick={() => handleDelete(disbursement)}
-                            className="text-red-600 hover:text-red-700 transition-colors"
+                            className="text-status-error-600 hover:text-status-error-700 transition-colors"
                             title="Delete disbursement"
                           >
                             <Trash2 className="w-4 h-4" />
@@ -377,8 +377,8 @@ export const DisbursementsTable: React.FC<DisbursementsTableProps> = ({
 
       {/* Selection Summary */}
       {showBulkSelect && selectedItems.length > 0 && (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-          <p className="text-sm text-blue-900">
+        <div className="bg-neutral-50 border border-neutral-200 rounded-lg p-3">
+          <p className="text-sm text-neutral-900">
             <span className="font-semibold">{selectedItems.length}</span> disbursement
             {selectedItems.length !== 1 ? 's' : ''} selected for invoicing
           </p>

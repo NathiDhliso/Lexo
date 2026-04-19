@@ -277,13 +277,13 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
 
   const getCategoryColor = (category: ServiceCategory) => {
     const colors: Record<ServiceCategory, string> = {
-      consultation: 'bg-blue-100 text-blue-800',
-      research: 'bg-green-100 text-green-800',
-      drafting: 'bg-purple-100 text-purple-800',
-      court_appearance: 'bg-red-100 text-red-800',
+      consultation: 'bg-neutral-100 text-neutral-800',
+      research: 'bg-status-success-100 text-status-success-800',
+      drafting: 'bg-neutral-100 text-neutral-800',
+      court_appearance: 'bg-status-error-100 text-status-error-800',
       negotiation: 'bg-orange-100 text-orange-800',
-      document_review: 'bg-yellow-100 text-yellow-800',
-      correspondence: 'bg-indigo-100 text-indigo-800',
+      document_review: 'bg-status-warning-100 text-status-warning-800',
+      correspondence: 'bg-neutral-100 text-neutral-800',
       filing: 'bg-pink-100 text-pink-800',
       travel: 'bg-gray-100 text-gray-800',
       other: 'bg-slate-100 text-slate-800'
@@ -358,7 +358,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                   )}
                   
                   <div className={`flex items-center gap-2 ${compact ? 'mb-2' : 'mb-3'}`}>
-                    <DollarSign className="h-4 w-4 text-green-600" />
+                    <DollarSign className="h-4 w-4 text-status-success-600" />
                     <span className={`font-medium ${compact ? 'text-sm' : ''}`}>
                       {rateCard.pricing_type === 'hourly' 
                         ? `${formatCurrency(rateCard.hourly_rate || 0)}/hour`
@@ -367,7 +367,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                     </span>
                     {rateCard.estimated_hours_min && (
                       <>
-                        <Clock className="h-4 w-4 text-blue-600 ml-2" />
+                        <Clock className="h-4 w-4 text-neutral-600 ml-2" />
                         <span className="text-sm text-gray-600 dark:text-neutral-400">
                           {rateCard.estimated_hours_min}h
                         </span>
@@ -425,7 +425,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                     )}
                     
                     <div className="flex items-center gap-2 mb-3">
-                      <DollarSign className="h-4 w-4 text-green-600" />
+                      <DollarSign className="h-4 w-4 text-status-success-600" />
                       <span className="font-medium">
                         {template.default_hourly_rate 
                           ? `${formatCurrency(template.default_hourly_rate)}/hour`
@@ -434,7 +434,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                       </span>
                       {template.estimated_hours && (
                         <>
-                          <Clock className="h-4 w-4 text-blue-600 ml-2" />
+                          <Clock className="h-4 w-4 text-neutral-600 ml-2" />
                           <span className="text-sm text-gray-600 dark:text-neutral-400">
                             {template.estimated_hours}h
                           </span>
@@ -600,7 +600,7 @@ const RateCardSelector: React.FC<RateCardSelectorProps> = ({
                       variant="ghost"
                       size="sm"
                       onClick={() => removeService(index)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-status-error-600 hover:text-status-error-700"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>

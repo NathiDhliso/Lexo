@@ -195,11 +195,11 @@ export const WIPTrackerPage: React.FC = () => {
   const getTypeColor = (type: string) => {
     switch (type) {
       case 'time':
-        return 'bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300';
+        return 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300';
       case 'expense':
-        return 'bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300';
+        return 'bg-neutral-100 dark:bg-neutral-900/30 text-neutral-800 dark:text-neutral-300';
       case 'service':
-        return 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300';
+        return 'bg-status-success-100 dark:bg-status-success-900/30 text-status-success-800 dark:text-status-success-300';
       default:
         return 'bg-neutral-100 dark:bg-metallic-gray-800 text-neutral-800 dark:text-neutral-300';
     }
@@ -259,7 +259,7 @@ export const WIPTrackerPage: React.FC = () => {
                   {formatRand(stats.totalWIP)}
                 </p>
               </div>
-              <TrendingUp className="w-8 h-8 text-green-500" />
+              <TrendingUp className="w-8 h-8 text-status-success-500" />
             </div>
           </CardContent>
         </Card>
@@ -273,7 +273,7 @@ export const WIPTrackerPage: React.FC = () => {
                   {stats.activeMatters}
                 </p>
               </div>
-              <FileText className="w-8 h-8 text-blue-500" />
+              <FileText className="w-8 h-8 text-neutral-500" />
             </div>
           </CardContent>
         </Card>
@@ -283,11 +283,11 @@ export const WIPTrackerPage: React.FC = () => {
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm text-neutral-600 dark:text-neutral-400">This Matter</p>
-                <p className="text-2xl font-bold text-judicial-blue-600 dark:text-judicial-blue-400">
+                <p className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
                   {selectedMatter ? formatRand(selectedMatter.wip_value || 0) : '-'}
                 </p>
               </div>
-              <DollarSign className="w-8 h-8 text-judicial-blue-500" />
+              <DollarSign className="w-8 h-8 text-neutral-500" />
             </div>
           </CardContent>
         </Card>
@@ -301,7 +301,7 @@ export const WIPTrackerPage: React.FC = () => {
                   {wipItems.length}
                 </p>
               </div>
-              <Clock className="w-8 h-8 text-purple-500" />
+              <Clock className="w-8 h-8 text-neutral-500" />
             </div>
           </CardContent>
         </Card>
@@ -338,7 +338,7 @@ export const WIPTrackerPage: React.FC = () => {
                     onClick={() => setSelectedMatter(matter)}
                     className={`w-full text-left p-3 rounded-lg border-2 transition-colors ${
                       selectedMatter?.id === matter.id
-                        ? 'border-judicial-blue-500 bg-judicial-blue-50 dark:bg-judicial-blue-900/20'
+                        ? 'border-neutral-500 bg-neutral-50 dark:bg-neutral-900/20'
                         : 'border-neutral-200 dark:border-metallic-gray-700 hover:border-neutral-300 dark:hover:border-metallic-gray-600'
                     }`}
                   >
@@ -348,7 +348,7 @@ export const WIPTrackerPage: React.FC = () => {
                     <div className="text-sm text-neutral-600 dark:text-neutral-400 mb-2">
                       {matter.client_name}
                     </div>
-                    <div className="text-sm font-semibold text-judicial-blue-600 dark:text-judicial-blue-400">
+                    <div className="text-sm font-semibold text-neutral-600 dark:text-neutral-400">
                       {formatRand(matter.wip_value || 0)}
                     </div>
                   </button>

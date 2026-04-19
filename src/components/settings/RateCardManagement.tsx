@@ -490,7 +490,7 @@ export const RateCardManagement: React.FC = () => {
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDelete((card as RateCard).id)}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-status-error-600 hover:text-status-error-700"
                   >
                     <Trash2 className="h-4 w-4" />
                   </Button>
@@ -536,7 +536,7 @@ export const RateCardManagement: React.FC = () => {
 
                 <div className="flex gap-2">
                   {(card as RateCard).is_default && (
-                    <span className="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded text-xs">
+                    <span className="px-2 py-1 bg-status-success-100 dark:bg-status-success-900/20 text-status-success-700 dark:text-status-success-400 rounded text-xs">
                       Default
                     </span>
                   )}
@@ -559,7 +559,7 @@ export const RateCardManagement: React.FC = () => {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex-1">
                     <div className="flex items-center gap-2">
-                      <LayoutTemplate className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                      <LayoutTemplate className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                       <h3 className="font-semibold text-gray-900 dark:text-white">
                         {(template as ServiceTemplate).template_name}
                       </h3>
@@ -581,7 +581,7 @@ export const RateCardManagement: React.FC = () => {
                 </div>
 
                 <div className="space-y-2">
-                  <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded text-xs font-medium">
+                  <span className="px-2 py-1 bg-neutral-100 dark:bg-neutral-900/20 text-neutral-700 dark:text-neutral-400 rounded text-xs font-medium">
                     {(template as ServiceTemplate).service_category.replace('_', ' ')}
                   </span>
 
@@ -632,7 +632,7 @@ export const RateCardManagement: React.FC = () => {
                       {(card as RateCard).service_category.replace('_', ' ')}
                     </span>
                     {(card as RateCard).is_default && (
-                      <span className="px-2 py-1 bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded text-xs">
+                      <span className="px-2 py-1 bg-status-success-100 dark:bg-status-success-900/20 text-status-success-700 dark:text-status-success-400 rounded text-xs">
                         Default
                       </span>
                     )}
@@ -674,7 +674,7 @@ export const RateCardManagement: React.FC = () => {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleDelete((card as RateCard).id)}
-                      className="text-red-600 hover:text-red-700"
+                      className="text-status-error-600 hover:text-status-error-700"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -687,15 +687,15 @@ export const RateCardManagement: React.FC = () => {
             filteredData.map((template) => (
               <div
                 key={(template as ServiceTemplate).id}
-                className="flex items-center justify-between p-4 border border-gray-200 dark:border-metallic-gray-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/10"
+                className="flex items-center justify-between p-4 border border-gray-200 dark:border-metallic-gray-700 rounded-lg hover:bg-neutral-50 dark:hover:bg-neutral-900/10"
               >
                 <div className="flex-1">
                   <div className="flex items-center gap-3">
-                    <LayoutTemplate className="h-4 w-4 text-blue-600 dark:text-blue-400" />
+                    <LayoutTemplate className="h-4 w-4 text-neutral-600 dark:text-neutral-400" />
                     <h3 className="font-semibold text-gray-900 dark:text-white">
                       {(template as ServiceTemplate).template_name}
                     </h3>
-                    <span className="px-2 py-1 bg-blue-100 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 rounded text-xs">
+                    <span className="px-2 py-1 bg-neutral-100 dark:bg-neutral-900/20 text-neutral-700 dark:text-neutral-400 rounded text-xs">
                       {(template as ServiceTemplate).service_category.replace('_', ' ')}
                     </span>
                   </div>

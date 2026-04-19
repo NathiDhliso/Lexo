@@ -43,7 +43,7 @@ export const FooterTab: React.FC<FooterTabProps> = ({ template, setTemplate, log
                             showFooter: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-neutral-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-neutral-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Footer</span>
                     </label>
@@ -58,7 +58,7 @@ export const FooterTab: React.FC<FooterTabProps> = ({ template, setTemplate, log
                             showPageNumbers: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-neutral-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-neutral-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Page Numbers</span>
                     </label>
@@ -73,7 +73,7 @@ export const FooterTab: React.FC<FooterTabProps> = ({ template, setTemplate, log
                             showTimestamp: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-neutral-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-neutral-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Timestamp</span>
                     </label>
@@ -118,7 +118,7 @@ export const FooterTab: React.FC<FooterTabProps> = ({ template, setTemplate, log
                             showLegalDisclaimer: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-neutral-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-neutral-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Always Show Terms & Conditions</span>
                     </label>
@@ -164,7 +164,7 @@ export const FooterTab: React.FC<FooterTabProps> = ({ template, setTemplate, log
                             showThankYouNote: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-neutral-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-neutral-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Thank You Note</span>
                     </label>
@@ -209,7 +209,7 @@ export const FooterTab: React.FC<FooterTabProps> = ({ template, setTemplate, log
                             showBankDetails: e.target.checked,
                           },
                         })}
-                        className="w-4 h-4 text-blue-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-blue-500"
+                        className="w-4 h-4 text-neutral-600 border-gray-300 dark:border-metallic-gray-600 rounded focus:ring-neutral-500"
                       />
                       <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">Show Bank/Payment Details</span>
                     </label>

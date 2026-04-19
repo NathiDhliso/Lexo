@@ -82,11 +82,11 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     // Variant-specific classes with theme colors
     const variantClasses = {
       primary: cn(
-        'bg-judicial-blue-900 text-white',
-        'hover:bg-judicial-blue-800 active:bg-judicial-blue-700',
-        'focus-visible:ring-judicial-blue-400',
-        'dark:bg-judicial-blue-700 dark:hover:bg-judicial-blue-600',
-        loading && 'bg-judicial-blue-800 cursor-wait'
+        'bg-neutral-900 text-white',
+        'hover:bg-neutral-800 active:bg-neutral-700',
+        'focus-visible:ring-neutral-400',
+        'dark:bg-neutral-700 dark:hover:bg-neutral-600',
+        loading && 'bg-neutral-800 cursor-wait'
       ),
       secondary: cn(
         'bg-mpondo-gold-500 text-white',
@@ -96,14 +96,14 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         loading && 'bg-mpondo-gold-600 cursor-wait'
       ),
       ghost: cn(
-        'bg-transparent text-judicial-blue-900',
-        'border border-judicial-blue-900',
-        'hover:bg-judicial-blue-900 hover:text-white',
-        'active:bg-judicial-blue-800',
-        'focus-visible:ring-judicial-blue-400',
-        'dark:text-judicial-blue-400 dark:border-judicial-blue-400',
-        'dark:hover:bg-judicial-blue-400 dark:hover:text-neutral-900',
-        loading && 'bg-judicial-blue-100 cursor-wait dark:bg-judicial-blue-900/20'
+        'bg-transparent text-neutral-900',
+        'border border-neutral-900',
+        'hover:bg-neutral-900 hover:text-white',
+        'active:bg-neutral-800',
+        'focus-visible:ring-neutral-400',
+        'dark:text-neutral-400 dark:border-neutral-400',
+        'dark:hover:bg-neutral-400 dark:hover:text-neutral-900',
+        loading && 'bg-neutral-100 cursor-wait dark:bg-neutral-900/20'
       ),
       danger: cn(
         'bg-status-error-600 text-white',

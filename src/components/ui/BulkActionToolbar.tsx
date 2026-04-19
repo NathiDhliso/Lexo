@@ -102,7 +102,7 @@ export const BulkActionToolbar: React.FC<BulkActionToolbarProps> = ({
   return (
     <div
       className={cn(
-        'bg-judicial-blue-900 dark:bg-judicial-blue-800 text-white rounded-lg p-4',
+        'bg-neutral-900 dark:bg-neutral-800 text-white rounded-lg p-4',
         'flex items-center justify-between gap-4',
         'animate-in slide-in-from-bottom-4 duration-300',
         positionClasses[position],
@@ -192,10 +192,10 @@ export const SelectionCheckbox: React.FC<SelectionCheckboxProps> = ({
         onChange={onChange}
         className={cn(
           'w-5 h-5 rounded border-2 border-neutral-300 dark:border-neutral-600',
-          'text-judicial-blue-600 focus:ring-2 focus:ring-judicial-blue-500 focus:ring-offset-2',
+          'text-neutral-600 focus:ring-2 focus:ring-neutral-500 focus:ring-offset-2',
           'cursor-pointer transition-colors',
-          'checked:bg-judicial-blue-600 checked:border-judicial-blue-600',
-          'dark:checked:bg-judicial-blue-500 dark:checked:border-judicial-blue-500'
+          'checked:bg-neutral-600 checked:border-neutral-600',
+          'dark:checked:bg-neutral-500 dark:checked:border-neutral-500'
         )}
         aria-label={label || 'Select item'}
       />

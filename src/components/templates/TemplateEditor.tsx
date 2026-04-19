@@ -302,8 +302,8 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
                     onChange={(e) => setFormData(prev => ({ ...prev, case_type: e.target.value }))}
                     disabled={isSubmitting}
                     className={`w-full px-3 py-2 border rounded-lg bg-white dark:bg-metallic-gray-800 
-                             text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-judicial-blue-500 
-                             focus:border-judicial-blue-500 disabled:opacity-50 ${
+                             text-neutral-900 dark:text-neutral-100 focus:ring-2 focus:ring-neutral-500 
+                             focus:border-neutral-500 disabled:opacity-50 ${
                                errors.case_type 
                                  ? 'border-status-error-600' 
                                  : 'border-neutral-300 dark:border-metallic-gray-600'
@@ -342,8 +342,8 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
                   checked={formData.is_default}
                   onChange={(e) => setFormData(prev => ({ ...prev, is_default: e.target.checked }))}
                   disabled={isSubmitting}
-                  className="w-4 h-4 text-judicial-blue-600 border-neutral-300 rounded 
-                           focus:ring-judicial-blue-500 dark:border-metallic-gray-600 
+                  className="w-4 h-4 text-neutral-600 border-neutral-300 rounded 
+                           focus:ring-neutral-500 dark:border-metallic-gray-600 
                            dark:bg-metallic-gray-700"
                 />
                 <label htmlFor="is_default" className="text-sm text-neutral-700 dark:text-neutral-300 flex items-center gap-2">
@@ -513,13 +513,13 @@ export const TemplateEditor: React.FC<TemplateEditorProps> = ({
               </div>
 
               {/* Total Fee Summary */}
-              <div className="p-4 bg-judicial-blue-50 dark:bg-judicial-blue-900/20 rounded-lg 
-                            border border-judicial-blue-200 dark:border-judicial-blue-800">
+              <div className="p-4 bg-neutral-50 dark:bg-neutral-900/20 rounded-lg 
+                            border border-neutral-200 dark:border-neutral-800">
                 <div className="flex items-center justify-between">
                   <span className="text-sm font-medium text-neutral-700 dark:text-neutral-300">
                     Total Template Fee:
                   </span>
-                  <span className="text-2xl font-bold text-judicial-blue-600 dark:text-judicial-blue-400">
+                  <span className="text-2xl font-bold text-neutral-600 dark:text-neutral-400">
                     {formatRand(calculateTotalFee())}
                   </span>
                 </div>

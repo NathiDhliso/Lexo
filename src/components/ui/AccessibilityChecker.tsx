@@ -177,7 +177,7 @@ export const AccessibilityChecker: React.FC = () => {
       case 'warning':
         return <AlertCircle className="w-4 h-4 text-status-warning-600" />;
       case 'info':
-        return <CheckCircle className="w-4 h-4 text-judicial-blue-600" />;
+        return <CheckCircle className="w-4 h-4 text-neutral-600" />;
     }
   };
 
@@ -188,7 +188,7 @@ export const AccessibilityChecker: React.FC = () => {
       case 'warning':
         return 'bg-status-warning-50 dark:bg-status-warning-900/20 border-status-warning-200 dark:border-status-warning-800';
       case 'info':
-        return 'bg-judicial-blue-50 dark:bg-judicial-blue-900/20 border-judicial-blue-200 dark:border-judicial-blue-800';
+        return 'bg-neutral-50 dark:bg-neutral-900/20 border-neutral-200 dark:border-neutral-800';
     }
   };
 
@@ -201,7 +201,7 @@ export const AccessibilityChecker: React.FC = () => {
       {/* Toggle Button */}
       <button
         onClick={() => setIsMinimized(!isMinimized)}
-        className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-white dark:bg-metallic-gray-800 border-2 border-judicial-blue-500 dark:border-judicial-blue-600 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+        className="w-full flex items-center justify-between gap-3 px-4 py-3 bg-white dark:bg-metallic-gray-800 border-2 border-neutral-500 dark:border-neutral-600 rounded-lg shadow-lg hover:shadow-xl transition-shadow"
         aria-expanded={!isMinimized}
         aria-controls="a11y-issues-panel"
       >

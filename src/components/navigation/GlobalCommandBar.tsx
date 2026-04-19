@@ -276,7 +276,7 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
             <div className="p-2">
               {searchState.isLoading ? (
                 <div className="flex items-center justify-center py-8">
-                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-judicial-blue-500"></div>
+                  <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-neutral-500"></div>
                 </div>
               ) : searchState.results.length > 0 ? (
                 <div className="space-y-4">
@@ -296,25 +296,25 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                               onClick={() => handleSelectResult(result)}
                               className={`w-full text-left px-3 py-2 rounded-md transition-colors flex items-center justify-between group ${
                                 isSelected
-                                  ? 'bg-judicial-blue-50 dark:bg-judicial-blue-900/30 text-judicial-blue-900 dark:text-judicial-blue-300'
+                                  ? 'bg-neutral-50 dark:bg-neutral-900/30 text-neutral-900 dark:text-neutral-300'
                                   : 'hover:bg-neutral-50 dark:hover:bg-metallic-gray-800'
                               }`}
                             >
                               <div className="flex items-center gap-3 min-w-0">
                                 {result.icon && (
                                   <result.icon className={`h-4 w-4 flex-shrink-0 ${
-                                    isSelected ? 'text-judicial-blue-600 dark:text-judicial-blue-400' : 'text-neutral-400 dark:text-neutral-500'
+                                    isSelected ? 'text-neutral-600 dark:text-neutral-400' : 'text-neutral-400 dark:text-neutral-500'
                                   }`} />
                                 )}
                                 <div className="min-w-0">
                                   <div className={`text-sm font-medium truncate ${
-                                    isSelected ? 'text-judicial-blue-900' : 'text-neutral-900 dark:text-neutral-100'
+                                    isSelected ? 'text-neutral-900' : 'text-neutral-900 dark:text-neutral-100'
                                   }`}>
                                     {result.title}
                                   </div>
                                   {result.description && (
                                     <div className={`text-xs truncate ${
-                                      isSelected ? 'text-judicial-blue-700 dark:text-judicial-blue-400' : 'text-neutral-500 dark:text-neutral-400'
+                                      isSelected ? 'text-neutral-700 dark:text-neutral-400' : 'text-neutral-500 dark:text-neutral-400'
                                     }`}>
                                       {result.description}
                                     </div>
@@ -322,7 +322,7 @@ const GlobalCommandBar: React.FC<GlobalCommandBarProps> = ({
                                 </div>
                               </div>
                               <ArrowRight className={`h-3 w-3 opacity-0 group-hover:opacity-100 transition-opacity ${
-                                isSelected ? 'text-judicial-blue-600 dark:text-judicial-blue-400' : 'text-neutral-400 dark:text-neutral-500'
+                                isSelected ? 'text-neutral-600 dark:text-neutral-400' : 'text-neutral-400 dark:text-neutral-500'
                               }`} />
                             </button>
                           );

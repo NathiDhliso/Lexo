@@ -157,11 +157,11 @@ export const InviteAttorneyModal: React.FC<InviteAttorneyModalProps> = ({
     >
       <div className="space-y-4">
         {/* Firm Info */}
-        <div className="bg-firm-primary-50 dark:bg-firm-primary-900/20 border border-firm-primary-200 dark:border-firm-primary-800 rounded-lg p-4">
-          <h3 className="font-semibold text-firm-primary-900 dark:text-firm-primary-100 mb-1">
+        <div className="bg-neutral-50 dark:bg-neutral-900/20 border border-neutral-200 dark:border-neutral-800 rounded-lg p-4">
+          <h3 className="font-semibold text-neutral-900 dark:text-neutral-100 mb-1">
             {firm.firm_name}
           </h3>
-          <p className="text-sm text-firm-primary-700 dark:text-firm-primary-300">
+          <p className="text-sm text-neutral-700 dark:text-neutral-300">
             {firm.email}
           </p>
         </div>

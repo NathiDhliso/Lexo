@@ -143,10 +143,10 @@ export const DisbursementTypeManager: React.FC = () => {
 
   const getVATTreatmentBadge = (treatment: VATTreatment) => {
     const styles: Record<VATTreatment, string> = {
-      always_vat: 'bg-green-100 text-green-800 dark:bg-green-900/20 dark:text-green-400',
-      never_vat: 'bg-red-100 text-red-800 dark:bg-red-900/20 dark:text-red-400',
-      suggest_vat: 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400',
-      suggest_no_vat: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/20 dark:text-yellow-400'
+      always_vat: 'bg-status-success-100 text-status-success-800 dark:bg-status-success-900/20 dark:text-status-success-400',
+      never_vat: 'bg-status-error-100 text-status-error-800 dark:bg-status-error-900/20 dark:text-status-error-400',
+      suggest_vat: 'bg-neutral-100 text-neutral-800 dark:bg-neutral-900/20 dark:text-neutral-400',
+      suggest_no_vat: 'bg-status-warning-100 text-status-warning-800 dark:bg-status-warning-900/20 dark:text-status-warning-400'
     };
     return (
       <span className={`px-2 py-1 rounded-full text-xs font-medium ${styles[treatment]}`}>
@@ -170,7 +170,7 @@ export const DisbursementTypeManager: React.FC = () => {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-12">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-neutral-600"></div>
       </div>
     );
   }
@@ -199,7 +199,7 @@ export const DisbursementTypeManager: React.FC = () => {
 
       {/* Edit Form */}
       {isEditing && editingType && (
-        <div className="bg-blue-50 dark:bg-blue-900/10 border-2 border-blue-200 dark:border-blue-800 rounded-lg p-6">
+        <div className="bg-neutral-50 dark:bg-neutral-900/10 border-2 border-neutral-200 dark:border-neutral-800 rounded-lg p-6">
           <h3 className="text-lg font-semibold text-neutral-900 dark:text-neutral-100 mb-4">
             {editingType.id ? 'Edit Disbursement Type' : 'Create Disbursement Type'}
           </h3>
@@ -328,14 +328,14 @@ export const DisbursementTypeManager: React.FC = () => {
       )}
 
       {/* System Defaults Warning */}
-      <div className="bg-yellow-50 dark:bg-yellow-900/10 border border-yellow-200 dark:border-yellow-800 rounded-lg p-4">
+      <div className="bg-status-warning-50 dark:bg-status-warning-900/10 border border-status-warning-200 dark:border-status-warning-800 rounded-lg p-4">
         <div className="flex items-start gap-3">
-          <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+          <AlertCircle className="w-5 h-5 text-status-warning-600 dark:text-status-warning-400 flex-shrink-0 mt-0.5" />
           <div>
-            <h4 className="font-semibold text-yellow-900 dark:text-yellow-200">
+            <h4 className="font-semibold text-status-warning-900 dark:text-status-warning-200">
               System Default Types
             </h4>
-            <p className="text-sm text-yellow-800 dark:text-yellow-300 mt-1">
+            <p className="text-sm text-status-warning-800 dark:text-status-warning-300 mt-1">
               System default types cannot be deleted but can be edited. Changes will only apply to your practice.
             </p>
           </div>
@@ -411,8 +411,8 @@ export const DisbursementTypeManager: React.FC = () => {
                   <td className="px-6 py-4">
                     <span className={`px-2 py-1 rounded-full text-xs font-medium ${
                       type.is_system_default 
-                        ? 'bg-purple-100 text-purple-800 dark:bg-purple-900/20 dark:text-purple-400'
-                        : 'bg-blue-100 text-blue-800 dark:bg-blue-900/20 dark:text-blue-400'
+                        ? 'bg-neutral-100 text-neutral-800 dark:bg-neutral-900/20 dark:text-neutral-400'
+                        : 'bg-neutral-100 text-neutral-800 dark:bg-neutral-900/20 dark:text-neutral-400'
                     }`}>
                       {type.is_system_default ? 'System' : 'Custom'}
                     </span>
@@ -421,7 +421,7 @@ export const DisbursementTypeManager: React.FC = () => {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleEdit(type)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors"
+                        className="p-2 text-neutral-600 hover:bg-neutral-50 dark:hover:bg-neutral-900/20 rounded-lg transition-colors"
                         title="Edit"
                       >
                         <Edit2 className="w-4 h-4" />
@@ -429,7 +429,7 @@ export const DisbursementTypeManager: React.FC = () => {
                       {!type.is_system_default && (
                         <button
                           onClick={() => handleDelete(type.id, type.type_name)}
-                          className="p-2 text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors"
+                          className="p-2 text-status-error-600 hover:bg-status-error-50 dark:hover:bg-status-error-900/20 rounded-lg transition-colors"
                           title="Delete"
                         >
                           <Trash2 className="w-4 h-4" />

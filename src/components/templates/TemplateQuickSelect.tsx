@@ -85,7 +85,7 @@ export const TemplateQuickSelect: React.FC<TemplateQuickSelectProps> = ({
     return (
       <div className={`p-4 bg-neutral-50 dark:bg-metallic-gray-800 rounded-lg ${className}`}>
         <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400">
-          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-judicial-blue-600"></div>
+          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-neutral-600"></div>
           Loading templates...
         </div>
       </div>
@@ -109,14 +109,14 @@ export const TemplateQuickSelect: React.FC<TemplateQuickSelectProps> = ({
         type="button"
         onClick={() => setIsOpen(!isOpen)}
         className="w-full p-4 bg-white dark:bg-metallic-gray-900 rounded-lg border border-neutral-300 
-                 dark:border-metallic-gray-600 hover:border-judicial-blue-500 dark:hover:border-judicial-blue-500 
+                 dark:border-metallic-gray-600 hover:border-neutral-500 dark:hover:border-neutral-500 
                  transition-colors text-left"
       >
         {selectedTemplate ? (
           <div className="flex items-start justify-between gap-4">
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-1">
-                <FileText className="w-4 h-4 text-judicial-blue-600 dark:text-judicial-blue-400" />
+                <FileText className="w-4 h-4 text-neutral-600 dark:text-neutral-400" />
                 <span className="font-medium text-neutral-900 dark:text-neutral-100">
                   {selectedTemplate.template_name}
                 </span>
@@ -129,7 +129,7 @@ export const TemplateQuickSelect: React.FC<TemplateQuickSelectProps> = ({
                   <Clock className="w-3 h-3" />
                   {selectedTemplate.included_services.length} services
                 </span>
-                <span className="font-semibold text-judicial-blue-600 dark:text-judicial-blue-400">
+                <span className="font-semibold text-neutral-600 dark:text-neutral-400">
                   {formatRand(calculateTotalAmount(selectedTemplate))}
                 </span>
               </div>
@@ -170,7 +170,7 @@ export const TemplateQuickSelect: React.FC<TemplateQuickSelectProps> = ({
                 No template (manual entry)
               </span>
               {!selectedTemplate && (
-                <Check className="w-4 h-4 text-judicial-blue-600" />
+                <Check className="w-4 h-4 text-neutral-600" />
               )}
             </div>
           </button>
@@ -209,13 +209,13 @@ export const TemplateQuickSelect: React.FC<TemplateQuickSelectProps> = ({
                       <Clock className="w-3 h-3" />
                       {template.times_used || 0} uses
                     </span>
-                    <span className="font-semibold text-judicial-blue-600 dark:text-judicial-blue-400">
+                    <span className="font-semibold text-neutral-600 dark:text-neutral-400">
                       {formatRand(calculateTotalAmount(template))}
                     </span>
                   </div>
                 </div>
                 {selectedTemplate?.id === template.id && (
-                  <Check className="w-5 h-5 text-judicial-blue-600 flex-shrink-0" />
+                  <Check className="w-5 h-5 text-neutral-600 flex-shrink-0" />
                 )}
               </div>
             </button>

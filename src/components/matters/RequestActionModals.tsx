@@ -44,8 +44,8 @@ export const RequestInfoModal: React.FC<RequestInfoModalProps> = ({
         <div className="p-6">
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-judicial-blue-100 dark:bg-judicial-blue-900/30 flex items-center justify-center">
-                <MessageCircle className="w-6 h-6 text-judicial-blue-600 dark:text-judicial-blue-400" />
+              <div className="w-10 h-10 rounded-full bg-neutral-100 dark:bg-neutral-900/30 flex items-center justify-center">
+                <MessageCircle className="w-6 h-6 text-neutral-600 dark:text-neutral-400" />
               </div>
               <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-100">
                 Request More Information

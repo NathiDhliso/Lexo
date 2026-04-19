@@ -134,7 +134,7 @@ export const BillingModelChangeConfirmation: React.FC<BillingModelChangeConfirma
           </div>
           <div className="text-sm">
             <span className="font-medium text-neutral-700 dark:text-neutral-300">New Model:</span>
-            <span className="ml-2 font-semibold text-judicial-blue-600 dark:text-judicial-blue-400">
+            <span className="ml-2 font-semibold text-neutral-600 dark:text-neutral-400">
               {getModelLabel(newModel)}
             </span>
           </div>
@@ -149,7 +149,7 @@ export const BillingModelChangeConfirmation: React.FC<BillingModelChangeConfirma
             <ul className="space-y-1.5 text-sm text-neutral-700 dark:text-neutral-300">
               {implications.map((implication, index) => (
                 <li key={index} className="flex items-start gap-2">
-                  <span className="text-judicial-blue-600 dark:text-judicial-blue-400 mt-1">•</span>
+                  <span className="text-neutral-600 dark:text-neutral-400 mt-1">•</span>
                   <span>{implication}</span>
                 </li>
               ))}

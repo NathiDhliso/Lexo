@@ -85,7 +85,7 @@ export const ConnectionVerificationStep: React.FC<ConnectionVerificationStepProp
       {/* Connecting State */}
       {(isConnecting || connectionState === 'checking') && (
         <div className="text-center py-8">
-          <Loader className="w-12 h-12 text-judicial-blue-500 animate-spin mx-auto mb-4" />
+          <Loader className="w-12 h-12 text-neutral-500 animate-spin mx-auto mb-4" />
           <h4 className="text-lg font-medium text-neutral-900 dark:text-neutral-100 mb-2">
             Connecting to {providerInfo.name}
           </h4>

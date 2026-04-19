@@ -134,8 +134,8 @@ export const DisbursementForm: React.FC<DisbursementFormProps> = ({
   return (
     <div className="space-y-4">
       {matterTitle && (
-        <div className="bg-blue-50 dark:bg-blue-900/20 rounded-lg p-3">
-          <p className="text-sm text-blue-900 dark:text-blue-100">
+        <div className="bg-neutral-50 dark:bg-neutral-900/20 rounded-lg p-3">
+          <p className="text-sm text-neutral-900 dark:text-neutral-100">
             <strong>Matter:</strong> {matterTitle}
           </p>
         </div>

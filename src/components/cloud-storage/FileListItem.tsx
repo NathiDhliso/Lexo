@@ -57,7 +57,7 @@ export const FileListItem: React.FC<FileListItemProps> = ({
         isFolder
           ? 'cursor-pointer hover:bg-neutral-50 dark:hover:bg-metallic-gray-800'
           : isSelected
-          ? 'bg-judicial-blue-50 dark:bg-judicial-blue-950/20'
+          ? 'bg-neutral-50 dark:bg-neutral-950/20'
           : ''
       }`}
       onClick={handleClick}
@@ -66,7 +66,7 @@ export const FileListItem: React.FC<FileListItemProps> = ({
       <div className={`flex-shrink-0 ${
         isFolder 
           ? 'text-amber-500' 
-          : 'text-judicial-blue-500 dark:text-judicial-blue-400'
+          : 'text-neutral-500 dark:text-neutral-400'
       }`}>
         <Icon className="w-6 h-6" />
       </div>
