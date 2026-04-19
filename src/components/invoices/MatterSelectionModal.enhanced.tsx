@@ -238,7 +238,7 @@ export const MatterSelectionModalEnhanced: React.FC<MatterSelectionModalEnhanced
  *     <ModalBody>
  *       {loading && <div>Loading...</div>}
  *       {error && <div className="error">{error}</div>}
- *       {/* content */}
+ *       {/* content }
  *     </ModalBody>
  *   </Modal>
  * );
@@ -260,7 +260,7 @@ export const MatterSelectionModalEnhanced: React.FC<MatterSelectionModalEnhanced
  *     loading={isLoading}
  *     error={error?.message}
  *   >
- *     {/* content */}
+ *     {/* content }
  *   </EnhancedModal>
  * );
  * ```
