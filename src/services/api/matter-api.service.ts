@@ -45,7 +45,7 @@ export class MatterApiService extends BaseApiService<Matter> {
   constructor() {
     super('matters', `
       *,
-      advocate:user_profiles!advocate_id(first_name, last_name, practice_number),
+      advocate:advocates(first_name, last_name, practice_number),
       time_entries(count),
       invoices(count)
     `);
