@@ -7,6 +7,7 @@ import { MobileMegaMenu } from './MobileMegaMenu';
 import GlobalCommandBar from './GlobalCommandBar';
 import { RealTimeTicker, TickerItem } from './RealTimeTicker';
 import AlertsDropdown from '../notifications/AlertsDropdown';
+import { NotificationCentre } from '../notifications/NotificationCentre';
 import { NewMatterMultiStep } from '../matters/NewMatterMultiStep';
 
 import { navigationConfig, getFilteredNavigationConfig } from '../../config/navigation.config';
@@ -480,9 +481,11 @@ export const NavigationBar: React.FC<NavigationBarProps> = ({
                    </span>
                  )}
                </Button>
-               {alertsOpen && (
-                 <AlertsDropdown onNavigate={(page: string) => handlePageNavigation(page as Page)} onClose={() => setAlertsOpen(false)} />
-               )}
+               <NotificationCentre
+                 isOpen={alertsOpen}
+                 onClose={() => setAlertsOpen(false)}
+                 onNavigate={(page: string) => handlePageNavigation(page as Page)}
+               />
              </div>
 
              {/* User Menu */}

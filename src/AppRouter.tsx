@@ -8,6 +8,7 @@ import { ThemeProvider } from './contexts/ThemeContext';
 import { ProtectedRoute } from './components/auth/ProtectedRoute';
 import { NavigationBar } from './components/navigation';
 import { OnboardingProvider } from './components/onboarding/OnboardingProvider';
+import { RoleGuard } from './components/auth/RoleGuard';
 import { UserTier, Page } from './types'
 
 // Lazy load all page components for better performance
@@ -38,6 +39,14 @@ const WIPTrackerPage = lazy(() => import('./pages/WIPTrackerPage'));
 const WIPReportPage = lazy(() => import('./pages/WIPReportPage').then(m => ({ default: m.WIPReportPage })));
 const FirmsPage = lazy(() => import('./pages/FirmsPage'));
 const DocumentLinkingTest = lazy(() => import('./components/documents/DocumentLinkingTest').then(m => ({ default: m.DocumentLinkingTest })));
+
+// Sprint 1-5: New Pages
+const CourtDiaryPage = lazy(() => import('./pages/CourtDiaryPage'));
+const AdminLayout = lazy(() => import('./components/admin/AdminLayout'));
+const AdminDashboardPage = lazy(() => import('./pages/admin/AdminDashboardPage'));
+const AdminUsersPage = lazy(() => import('./pages/admin/AdminUsersPage'));
+const AdminFeatureFlagsPage = lazy(() => import('./pages/admin/AdminFeatureFlagsPage'));
+const AdminTicketsPage = lazy(() => import('./pages/admin/AdminTicketsPage'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -98,6 +107,12 @@ const MainLayout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         break;
       case 'reports':
         navigate('/reports');
+        break;
+      case 'calendar':
+        navigate('/calendar');
+        break;
+      case 'notifications':
+        navigate('/notifications');
         break;
       default:
         navigate('/dashboard');
@@ -317,6 +332,33 @@ const AppContent: React.FC = () => {
           </MainLayout>
         </ProtectedRoute>
       } />
+
+      {/* Court Diary / Calendar */}
+      <Route path="/calendar" element={
+        <ProtectedRoute>
+          <MainLayout>
+            <CourtDiaryPage />
+          </MainLayout>
+        </ProtectedRoute>
+      } />
+
+      {/* Admin Portal — Isolated layout, role-gated */}
+      <Route path="/admin" element={
+        <ProtectedRoute>
+          <RoleGuard roles={['super_admin', 'support_agent']}>
+            <AdminLayout />
+          </RoleGuard>
+        </ProtectedRoute>
+      }>
+        <Route index element={<AdminDashboardPage />} />
+        <Route path="users" element={<AdminUsersPage />} />
+        <Route path="tickets" element={<AdminTicketsPage />} />
+        <Route path="feature-flags" element={
+          <RoleGuard roles={['super_admin']}>
+            <AdminFeatureFlagsPage />
+          </RoleGuard>
+        } />
+      </Route>
       
       {/* Catch-all route - redirect to dashboard for authenticated users */}
       <Route path="*" element={
