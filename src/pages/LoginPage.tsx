@@ -73,6 +73,42 @@ const validateName = (name: string) => {
   return { isValid: true };
 };
 
+const normalizeAuthBaseUrl = (value?: string) => {
+  const raw = value?.trim();
+  if (!raw) return undefined;
+
+  try {
+    const withProtocol = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+    const parsed = new URL(withProtocol);
+    return parsed.origin;
+  } catch {
+    return undefined;
+  }
+};
+
+const isLocalHostName = (hostname: string) => hostname === 'localhost' || hostname === '127.0.0.1';
+
+const getAuthRedirectBase = () => {
+  const currentOrigin = window.location.origin;
+  const envBase = normalizeAuthBaseUrl(import.meta.env.VITE_APP_URL);
+
+  if (!envBase) return currentOrigin;
+
+  try {
+    const envHost = new URL(envBase).hostname;
+    const currentHost = window.location.hostname;
+
+    // Ignore localhost env misconfiguration in production deployments.
+    if (isLocalHostName(envHost) && !isLocalHostName(currentHost)) {
+      return currentOrigin;
+    }
+  } catch {
+    return currentOrigin;
+  }
+
+  return envBase;
+};
+
 // ===========================================
 // AUTH HOOK
 // ===========================================
@@ -149,6 +185,8 @@ const useAuth = (supabase: any) => {
   const signUp = async (email: string, password: string, metadata: any) => {
     try {
       await clearAuthStorage(supabase);
+
+      const redirectBase = getAuthRedirectBase();
       
       const { data, error } = await supabase.auth.signUp({
         email: email.trim().toLowerCase(),
@@ -158,7 +196,7 @@ const useAuth = (supabase: any) => {
             user_type: metadata.user_type,
             full_name: metadata.full_name,
           },
-          emailRedirectTo: `${window.location.origin}/auth?confirmed=true`,
+          emailRedirectTo: `${redirectBase}/?confirmed=true`,
         },
       });
 
@@ -172,10 +210,12 @@ const useAuth = (supabase: any) => {
 
   const signInWithMagicLink = async (email: string) => {
     try {
+      const redirectBase = getAuthRedirectBase();
+
       const { data, error } = await supabase.auth.signInWithOtp({
         email: email.trim().toLowerCase(),
         options: {
-          emailRedirectTo: `${window.location.origin}/auth`,
+          emailRedirectTo: `${redirectBase}/`,
         },
       });
 

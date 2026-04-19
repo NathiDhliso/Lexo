@@ -25,6 +25,36 @@ export interface ExtendedUser extends User {
 }
 
 class AuthService {
+  private normalizeAuthBaseUrl(value?: string): string | null {
+    const raw = value?.trim();
+    if (!raw) return null;
+
+    try {
+      const withProtocol = /^https?:\/\//i.test(raw) ? raw : `https://${raw}`;
+      return new URL(withProtocol).origin;
+    } catch {
+      return null;
+    }
+  }
+
+  private getAuthRedirectBase(): string {
+    const currentOrigin = window.location.origin;
+    const envBase = this.normalizeAuthBaseUrl(import.meta.env.VITE_APP_URL);
+
+    if (!envBase) return currentOrigin;
+
+    const currentHost = window.location.hostname;
+    const envHost = new URL(envBase).hostname;
+    const isLocal = (host: string) => host === 'localhost' || host === '127.0.0.1';
+
+    // Ignore localhost env misconfiguration in production browser context.
+    if (isLocal(envHost) && !isLocal(currentHost)) {
+      return currentOrigin;
+    }
+
+    return envBase;
+  }
+
   async signIn(email: string, password: string) {
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
@@ -36,9 +66,7 @@ class AuthService {
   }
 
   async signUp(email: string, password: string, metadata: UserMetadata) {
-    // Use current origin for development, production URL for production
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const redirectUrl = isDevelopment ? window.location.origin : (import.meta.env.VITE_APP_URL || window.location.origin);
+    const redirectUrl = this.getAuthRedirectBase();
     
     console.log('[Auth] Sign up redirect URL:', redirectUrl);
     
@@ -47,7 +75,7 @@ class AuthService {
       password,
       options: {
         data: metadata,
-        emailRedirectTo: `${redirectUrl}/#/login?confirmed=true`,
+        emailRedirectTo: `${redirectUrl}/?confirmed=true`,
       },
     });
 
@@ -89,30 +117,26 @@ class AuthService {
   }
 
   async signInWithMagicLink(email: string) {
-    // Use current origin for development, production URL for production
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const redirectUrl = isDevelopment ? window.location.origin : (import.meta.env.VITE_APP_URL || window.location.origin);
+    const redirectUrl = this.getAuthRedirectBase();
     
     console.log('[Auth] Magic link redirect URL:', redirectUrl);
     
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${redirectUrl}/#/login`,
+        emailRedirectTo: `${redirectUrl}/`,
       },
     });
     return { error };
   }
 
   async resetPassword(email: string) {
-    // Use current origin for development, production URL for production
-    const isDevelopment = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
-    const redirectUrl = isDevelopment ? window.location.origin : (import.meta.env.VITE_APP_URL || window.location.origin);
+    const redirectUrl = this.getAuthRedirectBase();
     
     console.log('[Auth] Reset password redirect URL:', redirectUrl);
     
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${redirectUrl}/#/reset-password`,
+      redirectTo: `${redirectUrl}/`,
     });
     return { error };
   }
